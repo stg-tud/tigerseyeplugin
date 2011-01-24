@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: SLF4J over Pde Plug-in
+Bundle-SymbolicName: org.slf4j.pde; singleton:=true
+Bundle-Version: 0.0.1
+Bundle-Activator: org.slf4j.pde.SLF4jPlugin
+Bundle-Vendor: John J. Franey and slf4j.org and Leo Roos
+Require-Bundle: org.eclipse.core.runtime
+Export-Package:  org.slf4j,
+ org.slf4j.helpers,
+ org.slf4j.impl,
+ org.slf4j.spi
+Eclipse-RegisterBuddy: org.apache.log4j
+Bundle-ClassPath: slf4j-api-1.6.1.jar,
+ .
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
