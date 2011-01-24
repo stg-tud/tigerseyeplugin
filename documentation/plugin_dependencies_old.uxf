@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><umlet_diagram><help_text>TODO Add exported packages</help_text><zoom_level>7</zoom_level><element><type>com.umlet.element.custom.Component</type><coordinates><x>518</x><y>630</y><w>266</w><h>133</h></coordinates><panel_attributes>'UI
+ &lt;&lt;Plug-in&gt;&gt;</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.custom.Component</type><coordinates><x>441</x><y>224</y><w>364</w><h>168</h></coordinates><panel_attributes>'Core
+ &lt;&lt;Plug-in&gt;&gt;</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>609</x><y>371</y><w>141</w><h>272</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;required-plug-in&gt;&gt;</panel_attributes><additional_attributes>70;21;77;259</additional_attributes></element><element><type>com.umlet.element.custom.Component</type><coordinates><x>105</x><y>413</y><w>280</w><h>238</h></coordinates><panel_attributes>' Builder
+ &lt;&lt;Plug-in&gt;&gt;
+</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.custom.Component</type><coordinates><x>231</x><y>469</y><w>91</w><h>35</h></coordinates><panel_attributes>' Parlex
+&lt;&lt;Library&gt;&gt;</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.custom.Component</type><coordinates><x>231</x><y>511</y><w>133</w><h>112</h></coordinates><panel_attributes>'&lt;&lt;Library&gt;&gt;
+-aterm
+-jjtraveler
+-shared-objects
+-edslNature
+-popart
+-popartAnnotations</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>357</x><y>371</y><w>141</w><h>55</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;required-plug-in&gt;&gt;</panel_attributes><additional_attributes>119;21;28;42</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>343</x><y>560</y><w>188</w><h>146</h></coordinates><panel_attributes>lt=&lt;[v]-(()-[^]&gt;
+r1=Language Provider</panel_attributes><additional_attributes>42;21;175;133</additional_attributes></element><element><type>com.umlet.element.custom.Component</type><coordinates><x>455</x><y>294</y><w>168</w><h>56</h></coordinates><panel_attributes> 
+'Modified Groovy 1.5.7 Core</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>392</x><y>147</y><w>94</w><h>90</h></coordinates><panel_attributes>r1=popartLanguages
+lt=&lt;[v]-(()-[^]&gt;
+</panel_attributes><additional_attributes>49;77;49;21</additional_attributes></element><element><type>com.umlet.element.custom.Component</type><coordinates><x>315</x><y>98</y><w>140</w><h>70</h></coordinates><panel_attributes>'&lt;&lt;Plug-in&gt;&gt;
+ A DSL language 
+ Contributor</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>224</x><y>630</y><w>146</w><h>118</h></coordinates><panel_attributes>lt=&lt;[v]-(()-[^]&gt;
+r1=transformations</panel_attributes><additional_attributes>49;21;49;105;133;105;133;21</additional_attributes></element><element><type>com.umlet.element.custom.Component</type><coordinates><x>532</x><y>693</y><w>119</w><h>56</h></coordinates><panel_attributes>'Modified Groovy
+ 1.5.7 UI
+ &lt;&lt;Source&gt;&gt;</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.custom.Component</type><coordinates><x>966</x><y>357</y><w>140</w><h>70</h></coordinates><panel_attributes> 
+'org.codehaus.groovy
+ &lt;&lt;plug-in&gt;&gt;</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.custom.Component</type><coordinates><x>966</x><y>427</y><w>238</w><h>56</h></coordinates><panel_attributes> 
+'org.codehaus.groovy.eclipse.collections
+ &lt;&lt;plug-in&gt;&gt;</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>784</x><y>322</y><w>195</w><h>83</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;required-plug-in&gt;&gt;</panel_attributes><additional_attributes>182;70;21;21</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>784</x><y>336</y><w>195</w><h>132</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;required-plug-in&gt;&gt;</panel_attributes><additional_attributes>182;119;21;21</additional_attributes></element><element><type>com.umlet.element.custom.Component</type><coordinates><x>658</x><y>294</y><w>140</w><h>42</h></coordinates><panel_attributes>'commons.io
+ &lt;&lt;library&gt;&gt;</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.custom.Component</type><coordinates><x>658</x><y>336</y><w>140</w><h>42</h></coordinates><panel_attributes>'commons.lang
+ &lt;&lt;library&gt;&gt;</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.custom.Component</type><coordinates><x>966</x><y>658</y><w>140</w><h>42</h></coordinates><panel_attributes>'groovy-eclipse
+ &lt;&lt;library&gt;&gt;</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.custom.Component</type><coordinates><x>658</x><y>252</y><w>140</w><h>42</h></coordinates><panel_attributes>'groovy-bin
+ &lt;&lt;library&gt;&gt;</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>763</x><y>644</y><w>216</w><h>49</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;uses&gt;&gt;</panel_attributes><additional_attributes>203;35;21;35</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>763</x><y>434</y><w>216</w><h>216</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;required-plug-in&gt;&gt;</panel_attributes><additional_attributes>203;21;21;203</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>763</x><y>371</y><w>216</w><h>279</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;required-plug-in&gt;&gt;</panel_attributes><additional_attributes>203;21;21;266</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>784</x><y>350</y><w>195</w><h>342</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;uses&gt;&gt;</panel_attributes><additional_attributes>182;329;21;21</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>364</x><y>371</y><w>615</w><h>174</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;required-plug-in&gt;&gt;</panel_attributes><additional_attributes>602;21;21;161</additional_attributes></element><element><type>com.umlet.element.custom.Component</type><coordinates><x>658</x><y>658</y><w>119</w><h>35</h></coordinates><panel_attributes>'Debug
+&lt;&lt;Source&gt;&gt;</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.custom.Component</type><coordinates><x>658</x><y>700</y><w>119</w><h>49</h></coordinates><panel_attributes>'New DSL
+ Language Wizard
+ &lt;&lt;Source&gt;&gt;</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Note</type><coordinates><x>105</x><y>231</y><w>126</w><h>49</h></coordinates><panel_attributes>TODO 
+add exported packages
+bg=red</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.custom.Component</type><coordinates><x>126</x><y>511</y><w>91</w><h>49</h></coordinates><panel_attributes>' popartLi
+&lt;&lt;Library&gt;&gt;
+
+ Usage Unknown??</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>434</x><y>98</y><w>674</w><h>272</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;required-plug-in&gt;&gt;</panel_attributes><additional_attributes>609;259;609;35;21;35</additional_attributes></element><element><type>com.umlet.element.custom.Component</type><coordinates><x>112</x><y>343</y><w>196</w><h>35</h></coordinates><panel_attributes>'org.codehaus.groovy.eclipse.ui
+</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>63</x><y>357</y><w>142</w><h>69</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;required-plug-in&gt;&gt;</panel_attributes><additional_attributes>77;21;77;56</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>98</x><y>630</y><w>118</w><h>111</h></coordinates><panel_attributes>lt=&lt;(
+r2=transformationselector</panel_attributes><additional_attributes>63;98;63;21</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>364</x><y>602</y><w>167</w><h>160</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;required-plug-in&gt;&gt;
+(e.g. DSLBuilderActivator)</panel_attributes><additional_attributes>21;21;154;147</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>252</x><y>147</y><w>142</w><h>279</h></coordinates><panel_attributes>lt=&lt;.
+&lt;&lt;required-plug-in&gt;&gt;</panel_attributes><additional_attributes>77;266;77;21</additional_attributes></element></umlet_diagram>

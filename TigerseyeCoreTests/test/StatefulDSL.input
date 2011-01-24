@@ -1,0 +1,12 @@
+package de.tud.stg.popart.builder.test.generated;
+
+import de.tud.stg.popart.builder.utils.DSLInvoker;
+import de.tud.stg.popart.builder.test.dsls.StatefulDSL;
+	 
+new DSLInvoker(StatefulDSL.class).eval() {
+
+	set i = 10
+	
+	print get i
+	
+}

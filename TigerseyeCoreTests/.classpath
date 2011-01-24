@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry excluding="de/tud/stg/popart/builder/eclipse/resources/" kind="src" path="unittests"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="lib" path="libs/mockito-all-1.8.5.jar"/>
+	<classpathentry kind="lib" path="libs/powermock-mockito-1.4.6-full.jar"/>
+	<classpathentry kind="lib" path="libs/stateMachineDSL.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

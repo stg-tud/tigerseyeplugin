@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: LogoDSL Plug-in
+Bundle-SymbolicName: LogoDSL;singleton:=true
+Bundle-Version: 1.0.0
+Export-Package: de.tud.stg.popart.builder.test.logo,
+ org.javalogo
+Bundle-ActivationPolicy: lazy
+Require-Bundle: de.tud.stg.tigerseye,
+ de.tud.stg.tigerseye.eclipse.core
+Bundle-ClassPath: .,
+ de/tud/stg/popart/builder/test/logo/,
+ lib/javalogo.jar
+Import-Package: de.tud.stg.popart.dslsupport

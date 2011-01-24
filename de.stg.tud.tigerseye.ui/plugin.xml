@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="DSL editor TOBE"
+            extensions="xml, dsl"
+            icon="icons/plane16.png"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            class="de.tud.stg.tigerseye.ui.editors.XMLEditor"
+            id="de.stg.tud.tigerseye.ui.editors.XMLEditor">
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="de.tud.stg.tigerseye.preferences.root"
+            class="de.tud.stg.tigerseye.ui.preferences.TigerseyeUIPreferencePage"
+            id="de.tud.stg.tigerseye.preferences.ui"
+            name="Tigerseye Editor">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="de.tud.stg.tigerseye.ui.preferences.TigerseyeUIPreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="de.tud.stg.popart.eclipse"
+            name="Popart">
+      </category>
+      <wizard
+            category="de.tud.stg.popart.eclipse"
+            class="de.tud.stg.popart.eclipse.wizards.NewPopartClassWizzard"
+            icon="icons/plane16.png"
+            id="de.tud.stg.popart.eclipse.wizards.newClassWizard"
+            name="Popart Class"
+            preferredPerspectives="org.eclipse.jdt.ui.JavaPerspective">
+         <description>
+            Create a new Popart Class
+         </description>
+      </wizard>
+      <wizard
+            category="de.tud.stg.popart.eclipse"
+            class="de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.NewPopartLanguageWizzard"
+            icon="icons/plane16.png"
+            id="de.tud.stg.popart.eclipse.wizards.newProjectWizard"
+            name="Popart Language Definition"
+            preferredPerspectives="org.eclipse.jdt.ui.JavaPerspective">
+         <description>
+            Create a new Popart Language Definition
+         </description>
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      <launchConfigurationTypeImage
+            configTypeID="de.tud.stg.tigerseye.eclipse.core.tigerseyeLaunchConfigurationType"
+            icon="icons/plane16.png"
+            id="de.tud.stg.tigerseye.eclipse.core.tigerseyeLaunchConfigurationTypeImage.icon">
+      </launchConfigurationTypeImage>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="de.tud.stg.tigerseye.ui.launch.TigerseyeLaunchConfigurationTabGroup"
+            description="Tigerseye Launch Configurations"
+            id="de.tud.stg.tigerseye.ui.launchConfigurationTabGroup"
+            type="de.tud.stg.tigerseye.eclipse.core.tigerseyeLaunchConfigurationType">
+      </launchConfigurationTabGroup>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            class="de.tud.stg.tigerseye.ui.launch.TigerseyeLaunchShortcut"
+            description="Tigerseye launch shortuct."
+            icon="icons/plane16.png"
+            id="de.tud.stg.tigerseye.ui.launch.defaultlaunchshortcut"
+            label="Launch Tigerseye"
+            modes="run,debug">
+      </shortcut>
+   </extension>
+
+</plugin>

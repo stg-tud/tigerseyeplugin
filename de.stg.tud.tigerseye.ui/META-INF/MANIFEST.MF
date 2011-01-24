@@ -1,0 +1,26 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tigerseye UI Provider
+Bundle-SymbolicName: de.tud.stg.tigerseye.ui;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: de.tud.stg.tigerseye.ui.TigerseyeUIActivator
+Bundle-Vendor: TUD
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.jface.text,
+ org.eclipse.ui.editors,
+ org.eclipse.core.resources,
+ de.tud.stg.tigerseye,
+ org.eclipse.jdt.core,
+ org.eclipse.jdt.ui,
+ org.codehaus.groovy.eclipse.ui,
+ de.tud.stg.tigerseye.eclipse.core,
+ org.eclipse.jdt.launching;bundle-version="3.5.100",
+ org.eclipse.debug.ui;bundle-version="3.6.1",
+ org.eclipse.jdt.debug;bundle-version="3.6.1",
+ org.eclipse.jdt.debug.ui;bundle-version="3.5.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Import-Package: de.tud.stg.tigerseye.core,
+ org.codehaus.groovy.eclipse.ui,
+ org.slf4j

@@ -1,0 +1,16 @@
+package de.tud.stg.popart.builder.test.generated;
+
+import de.tud.stg.popart.builder.utils.DSLInvoker;
+import de.tud.stg.popart.builder.test.dsls.ConditionalDSL;
+	 
+new DSLInvoker(ConditionalDSL.class).eval() {
+
+	boolean b = 1==0;
+	
+	if ( b )
+		then {
+			print "is true"
+		} else {
+			print "is false"
+		}
+}

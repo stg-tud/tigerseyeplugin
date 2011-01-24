@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension-point id="de.tud.stg.tigerseye.dslDefinitions" name="Tigerseye DSL Definitions" schema="schema/de.tud.stg.tigerseye.dslDefinitions.exsd"/>
+   <extension-point id="de.tud.stg.popart.builder.transformerSelector" name="transformer selector" schema="schema/builder.transformerSelector.exsd"/>
+   <extension-point id="de.tud.stg.tigerseye.transformers" name="Source Code Tranformers" schema="schema/de.tud.stg.tigerseye.transformers.exsd"/>
+
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="de.tud.stg.tigerseye.core.preferences.TigerseyeMainPreferencePage"
+            id="de.tud.stg.tigerseye.preferences.root"
+            name="Tigerseye">
+      </page>
+      <page
+            category="de.tud.stg.tigerseye.preferences.root"
+            class="de.tud.stg.tigerseye.core.preferences.TigerseyeDSLsPreferencesPage"
+            id="de.tud.stg.tigerseye.preferences.oldpreferences"
+            name="Languages">
+      </page>
+      <page
+            category="de.tud.stg.tigerseye.preferences.root"
+            class="de.tud.stg.tigerseye.core.preferences.TransformationsPreferencePage"
+            id="de.tud.stg.popart.builder.main"
+            name="Transformations">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="de.tud.stg.tigerseye.core.preferences.TigerseyePreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.jdt.core.classpathContainerInitializer">
+      <classpathContainerInitializer
+            class="de.tud.stg.popart.builder.eclipse.TigerseyeClassPathContainerInitializer"
+            id="TIGERSEYE_SUPPORT">
+      </classpathContainerInitializer>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="org.eclipse.core.resources.IFile"
+            class="org.codehaus.groovy.eclipse.core.adapters.GroovyFileAdapterFactory">
+         <adapter
+               type="org.codehaus.groovy.ast.ClassNode">
+         </adapter>
+      </factory>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            id="de.tud.stg.popart.eclipse.addnature.javaproject"
+            objectClass="org.eclipse.jdt.core.IJavaProject">
+         <action
+               class="de.tud.stg.popart.builder.eclipse.AddNatureAction"
+               enablesFor="1"
+               id="de.tud.stg.popart.eclipse.core.actions.addnature"
+               label="Add DSLBuilder Nature">
+         </action>
+      </objectContribution>
+      <objectContribution
+            id="de.tud.stg.popart.eclipse.addnature.project"
+            objectClass="org.eclipse.core.resources.IProject">
+         <action
+               class="de.tud.stg.popart.builder.eclipse.AddNatureAction"
+               enablesFor="1"
+               id="de.tud.stg.popart.eclipse.core.actions.addnature"
+               label="Add DSLBuilder Nature">
+         </action>
+      </objectContribution>
+   </extension>
+   <extension
+         id="TigerseyeNature"
+         name="Tigerseye Nature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="de.tud.stg.popart.builder.eclipse.DSLNature">
+         </run>
+      </runtime>
+      <builder
+            id="de.tud.stg.tigerseye.eclipse.core.tigerseyeBuilder">
+      </builder>
+      <requires-nature
+            id="org.eclipse.jdt.groovy.core.groovyNature">
+      </requires-nature>
+      <requires-nature
+            id="org.eclipse.jdt.core.javanature">
+      </requires-nature>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            class="de.tud.stg.popart.builder.eclipse.TigerseyeLaunchShortcut"
+            icon="icons/plane16.png"
+            id="de.tud.stg.popart.builder.eclipse.DSLBuilderLauncher"
+            label="Popart EDSL"
+            modes="run, debug">
+         <contextualLaunch>
+            <enablement>
+               <with
+                     variable="selection">
+                  <count
+                        value="1">
+                  </count>
+               </with>
+            </enablement>
+         </contextualLaunch>
+      </shortcut>
+   </extension>
+   <extension
+         id="tigerseyeBuilder"
+         name="Tigerseye Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder
+            hasNature="true">
+         <run
+               class="de.tud.stg.popart.builder.eclipse.Builder">
+            <parameter
+                  name="optimize"
+                  value="true">
+            </parameter>
+            <parameter
+                  name="comment"
+                  value="DSL Builder">
+            </parameter>
+         </run>
+      </builder>
+   </extension>
+   <extension
+         point="de.tud.stg.tigerseye.transformers">
+      <transformers>
+         <transformer
+               class="de.tud.stg.popart.builder.transformers.textual.KeywordTranslationTransformation"
+               name="TranslationTransformer">
+         </transformer>
+         <transformer
+               class="de.tud.stg.popart.builder.transformers.textual.BootStrapTransformation"
+               name="BootStrap">
+         </transformer>
+         <transformer
+               class="de.tud.stg.popart.builder.transformers.textual.PackageImporter"
+               name="PackageImporter">
+         </transformer>
+         <transformer
+               class="de.tud.stg.popart.builder.transformers.ast.KeywordChainingTransformation"
+               name="KeywordChaining">
+         </transformer>
+         <transformer
+               class="de.tud.stg.popart.builder.transformers.ast.ClosureResultTransformation"
+               name="ClosureResult">
+         </transformer>
+         <transformer
+               class="de.tud.stg.popart.builder.transformers.ast.InvokationDispatcherTransformation"
+               name="InvokationDispatcher">
+         </transformer>
+      </transformers>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="org.eclipse.jdt.launching.JavaLaunchDelegate"
+            delegateDescription="The standard Eclipse launcher for Java files."
+            delegateName="Eclipse JDT Launcher"
+            id="de.tud.stg.tigerseye.eclipse.core.tigerseyeLaunchConfigurationType"
+            modes="run,debug"
+            name="Tigerseye Launch Configuration"
+            public="true"
+            sourceLocatorId="org.eclipse.jdt.launching.javaSourceLocator"
+            sourcePathComputerId="org.eclipse.jdt.launching.sourceLookup.javaSourcePathComputer">
+      </launchConfigurationType>
+   </extension>
+
+</plugin>

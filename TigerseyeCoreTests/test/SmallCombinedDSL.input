@@ -1,0 +1,18 @@
+package de.tud.stg.popart.builder.test.generated;
+
+import de.tud.stg.popart.builder.utils.DSLInvoker;
+import de.tud.stg.popart.builder.test.dsls.MapDSL;
+import de.tud.stg.popart.builder.test.dsls.MapDSL.Entry;
+import de.tud.stg.popart.builder.test.dsls.MathDSL;
+
+DSLInvoker.eval([MapDSL.class, MathDSL.class] as Class[]) {
+	int a = ∑ 1, 2
+	int b = ∑ 2, 3
+	
+	println a
+	println b
+	
+	Map m = [Integer, String: a="Hans", b="Peter"]
+	
+	print m
+}
