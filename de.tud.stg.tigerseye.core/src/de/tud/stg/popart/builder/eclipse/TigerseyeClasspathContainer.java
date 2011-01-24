@@ -107,8 +107,9 @@ public class TigerseyeClasspathContainer implements IClasspathContainer {
 	     * assume that the relevant class folder is the specifically as
 	     * "output.." property defined folder.
 	     */
-	    file.getName().equals(".");
-	    return false;
+	    if (file.getName().equals(".")) {
+		return false;
+	    }
 	}
 	return true;
     }
