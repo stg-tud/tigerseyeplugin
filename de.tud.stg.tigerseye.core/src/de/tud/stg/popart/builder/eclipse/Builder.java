@@ -2,7 +2,6 @@ package de.tud.stg.popart.builder.eclipse;
 
 import java.util.Map;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
@@ -11,10 +10,13 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,40 +24,73 @@ import de.tud.stg.tigerseye.core.TigerseyeCore;
 
 //FIXME refactoring and tests for logic
 public class Builder extends IncrementalProjectBuilder {
-	private static final Logger logger = LoggerFactory.getLogger(Builder.class);
+    private static final Logger logger = LoggerFactory.getLogger(Builder.class);
 
-	private final ResourceVisitor[] visitors = { new PopartResourceVisitor(),
-			new GroovyResourceVisitor(), new JavaResourceVisitor() };
+    private final ResourceVisitor[] visitors = { new PopartResourceVisitor(),
+	    new GroovyResourceVisitor(), new JavaResourceVisitor() };
 
-	@Override
-	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) {
-		if (monitor == null) {
-			monitor = new NullProgressMonitor();
-		}
-
-	if (kind == IncrementalProjectBuilder.CLEAN_BUILD) {
-	    this.fullBuild(monitor);
+    @Override
+    protected IProject[] build(int kind, Map args, IProgressMonitor monitor) {
+	if (monitor == null) {
+	    monitor = new NullProgressMonitor();
 	}
+	try {
+	    if (kind == IncrementalProjectBuilder.CLEAN_BUILD) {
+		IJavaProject jp = JavaCore.create(getProject());
+		IPackageFragmentRoot[] packageFragmentRoots;
+		packageFragmentRoots = jp.getPackageFragmentRoots();
+		for (IPackageFragmentRoot packRoot : packageFragmentRoots) {
+		    if (!(packRoot.getKind() == IPackageFragmentRoot.K_SOURCE))
+			continue;
+		    String path = packRoot.getPath().toString();
+		    if (path.endsWith(TigerseyeCore.getOutputDirectoryPath())) {
+			IJavaElement[] resource = packRoot.getChildren();
+			for (IJavaElement iJavaElement : resource) {
 
-	if (kind == IncrementalProjectBuilder.FULL_BUILD) {
-			this.fullBuild(monitor);
-		} else {
-			IResourceDelta delta = this.getDelta(this.getProject());
-			if (delta == null) {
-				this.fullBuild(monitor);
-			} else {
-				this.incrementalBuild(delta, monitor);
+			    if (iJavaElement instanceof IPackageFragment) {
+				ICompilationUnit[] compilationUnits = ((IPackageFragment) iJavaElement)
+					.getCompilationUnits();
+				for (ICompilationUnit iCompilationUnit : compilationUnits) {
+				    try {
+					iCompilationUnit.delete(false,
+						new SubProgressMonitor(monitor,
+							1));
+				    } catch (JavaModelException e) {
+					logger.warn(
+						"Could not delete {} during full build",
+						iCompilationUnit);
+				    }
+				}
+			    }
 			}
-
+		    }
+		    this.fullBuild(monitor);
 		}
-		return null;
-	}
+	    } else
 
-	private void incrementalBuild(IResourceDelta delta, IProgressMonitor monitor) {
+	    if (kind == IncrementalProjectBuilder.FULL_BUILD) {
 		this.fullBuild(monitor);
+	    } else {
+		IResourceDelta delta = this.getDelta(this.getProject());
+		if (delta == null) {
+		    this.fullBuild(monitor);
+		} else {
+		    this.incrementalBuild(delta, monitor);
+		}
+
+	    }
+	} catch (JavaModelException e) {
+
 	}
+	return null;
+    }
+
+    private void incrementalBuild(IResourceDelta delta, IProgressMonitor monitor) {
+	this.fullBuild(monitor);
+    }
 
     private void fullBuild(IProgressMonitor monitor) {
+
 	logger.info("starting full build");
 	try {
 	    IProject project = this.getProject();
@@ -73,21 +108,12 @@ public class Builder extends IncrementalProjectBuilder {
 		IPackageFragmentRoot[] packageFragmentRoots = jp
 			.getPackageFragmentRoots();
 		for (IPackageFragmentRoot packRoot : packageFragmentRoots) {
+		    String path = packRoot.getPath().toString();
+
 		    if (!(packRoot.getKind() == IPackageFragmentRoot.K_SOURCE))
 			continue;
-		    String path = packRoot.getPath().toString();
-		    if (path.endsWith(TigerseyeCore.getOutputDirectoryPath())) {
-			IJavaElement[] resource = packRoot.getChildren();
-			for (IJavaElement iJavaElement : resource) {
-			    IResource javaElRes = iJavaElement
-				    .getCorrespondingResource();
-			    if (javaElRes instanceof IFile) {
-				javaElRes.delete(false, new SubProgressMonitor(
-					monitor, 1));
-			    }
-			}
 
-		    } else {
+		    if (!path.endsWith(TigerseyeCore.getOutputDirectoryPath())) {
 			Object[] nonJavaResources = packRoot
 				.getNonJavaResources();
 			for (Object object : nonJavaResources) {
