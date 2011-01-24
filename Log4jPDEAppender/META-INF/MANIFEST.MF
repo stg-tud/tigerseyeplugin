@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Log4jPDEAppender
+Bundle-SymbolicName: Log4jPDEAppender
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.apache.log4j,
+ org.apache.log4j.spi,
+ org.eclipse.core.runtime,
+ org.osgi.framework
+Eclipse-RegisterBuddy: org.apache.log4j
+Eclipse-AutoStart: true
