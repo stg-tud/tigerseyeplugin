@@ -83,6 +83,9 @@
       <builder
             id="de.tud.stg.tigerseye.eclipse.core.tigerseyeBuilder">
       </builder>
+      <builder
+            id="org.eclipse.jdt.core.javabuilder">
+      </builder>
       <requires-nature
             id="org.eclipse.jdt.groovy.core.groovyNature">
       </requires-nature>

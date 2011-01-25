@@ -2,9 +2,12 @@ package de.tud.stg.popart.eclipse.wizards;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.CheckForNull;
 
 import legacy.org.codehaus.groovy.eclipse.ui.ArtifactCodeGenerator;
 import legacy.org.codehaus.groovy.eclipse.ui.ArtifactCodeGenerator.IndentationDirection;
@@ -12,6 +15,7 @@ import legacy.org.codehaus.groovy.eclipse.ui.CodeGeneration;
 import legacy.org.codehaus.groovy.eclipse.ui.ImportManager;
 import legacy.org.codehaus.groovy.eclipse.wizards.WizardUtil;
 
+import org.apache.commons.lang.UnhandledException;
 import org.codehaus.groovy.eclipse.wizards.NewClassWizardPage;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -39,12 +43,12 @@ import de.tud.stg.tigerseye.core.DSLKey;
 import de.tud.stg.tigerseye.core.NoLegalPropertyFound;
 import de.tud.stg.tigerseye.core.TigerseyeCore;
 
-
 /**
  * NewPopartClassWizardPage is a wizard page for creating Popart classes.
  * 
  * @author Yevgen Fanshil
  * @author Leonid Melnyk
+ * @author Leo Roos
  */
 public class NewPopartClassWizardPage extends NewClassWizardPage {
 
@@ -250,7 +254,7 @@ public class NewPopartClassWizardPage extends NewClassWizardPage {
 		combo = new Combo(innerComposite, SWT.READ_ONLY);
 		combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-		getLanguagesExtensionFromStore();
+		setLanguagesExtensionFromStore();
 
 		Label b = new Label(innerComposite, SWT.NONE);
 		b.setLayoutData(new GridData());
@@ -263,32 +267,18 @@ public class NewPopartClassWizardPage extends NewClassWizardPage {
 	 * selection model, which is used for selection DSL extension by creating of
 	 * Popart classes.
 	 */
-    private void getLanguagesExtensionFromStore() {
-
-	// int numberOfLanguages = 0;
-	// // Get number of languages
-	// if (store
-	// .contains(PopartPreferenceConstants.POPART_EDITOR_NUMBER_OF_LANGUAGES))
-	// numberOfLanguages = store
-	// .getInt(PopartPreferenceConstants.POPART_EDITOR_NUMBER_OF_LANGUAGES);
-	//
-	// for (int languageId = 1; languageId <= numberOfLanguages;
-	// languageId++) {
-	//
-	// String extensionKey = PopartPreferenceConstants.POPART_LANGUAGE_KEY_
-	// + languageId + PopartPreferenceConstants._EXTENSION;
-	//
-	// if (store.contains(extensionKey)
-	// && store.getString(extensionKey) != null) {
-	//
-	// // Get extension for new Language
-	// String popartLanguageExtension = store.getString(extensionKey);
-	//
-	// combo.add(popartLanguageExtension);
-	// }
-	// }
-	for (String extension : getDsls().keySet()) {
-	    combo.add(extension);
+    private void setLanguagesExtensionFromStore() {
+	Collection<DSLDefinition> values = getDsls().values();
+	for (DSLDefinition extension : values) {
+	    if (extension.isActive()) {
+		try {
+		    combo.add(extension.getValue(DSLKey.EXTENSION));
+		} catch (NoLegalPropertyFound e) {
+		    throw new UnhandledException(
+			    "Since dsls have already been questioned once for the extension this exception should never be thrown.",
+			    e);
+		}
+	    }
 	}
 	combo.select(0);
     }
@@ -297,95 +287,15 @@ public class NewPopartClassWizardPage extends NewClassWizardPage {
      * This method prints class-path of used DSL language.
      */
     private String lookForLanguageClasspath() {
-
-	// int numberOfLanguages = 0;
-	// // Get number of languages
-	// if (store
-	// .contains(PopartPreferenceConstants.POPART_EDITOR_NUMBER_OF_LANGUAGES))
-	// numberOfLanguages = store
-	// .getInt(PopartPreferenceConstants.POPART_EDITOR_NUMBER_OF_LANGUAGES);
-	//
-	// for (int languageId = 1; languageId <= numberOfLanguages;
-	// languageId++) {
-	//
-	// String extensionKey = PopartPreferenceConstants.POPART_LANGUAGE_KEY_
-	// + languageId + PopartPreferenceConstants._EXTENSION;
-	//
-	// if (store.contains(extensionKey)
-	// && store.getString(extensionKey) != null) {
-	//
-	// // Get extension for new Language
-	// String popartLanguageExtension = store.getString(extensionKey);
-	//
-	// if ((combo.getText()).equals(popartLanguageExtension)) {
-	//
-	// // If store contains ClassPath and extension for Language
-	// String classPathKey = PopartPreferenceConstants.POPART_LANGUAGE_KEY_
-	// + languageId
-	// + PopartPreferenceConstants._CLASS_PATH;
-	//
-	// if (store.contains(classPathKey)) {
-	// // Get ClassPath for new Language
-	// String classPath = store.getString(classPathKey);
-	//
-	// return classPath;
-	// }
-	// }
-	// }
-	// }
-
 	return getDsls().get(combo.getText()).getClassPath();
     }
 
     /**
      * This method returns the contributorSymbolicName of the selected DSL.
      */
-	private String lookForLanguageContributorSymbolicName() {
-
-	// IPreferenceStore store =
-	// GroovyPlugin.getDefault().getPreferenceStore();
-	//
-	// int numberOfLanguages = 0;
-	// // Get number of languages
-	// if (store
-	// .contains(PopartPreferenceConstants.POPART_EDITOR_NUMBER_OF_LANGUAGES))
-	// numberOfLanguages = store
-	// .getInt(PopartPreferenceConstants.POPART_EDITOR_NUMBER_OF_LANGUAGES);
-	//
-	// for (int languageId = 1; languageId <= numberOfLanguages;
-	// languageId++) {
-	//
-	// String extensionKey = PopartPreferenceConstants.POPART_LANGUAGE_KEY_
-	// + languageId + PopartPreferenceConstants._EXTENSION;
-	//
-	// if (store.contains(extensionKey)
-	// && store.getString(extensionKey) != null) {
-	//
-	// // Get extension for new Language
-	// String popartLanguageExtension = store.getString(extensionKey);
-	//
-	// if ((combo.getText()).equals(popartLanguageExtension)) {
-	//
-	// // If store contains symbolic name of language contributing plugin
-	// and extension for Language
-	// String contributorSymbolicNameKey =
-	// PopartPreferenceConstants.POPART_LANGUAGE_KEY_
-	// + languageId
-	// + PopartPreferenceConstants._CONTRIBUTING_PLUGIN;
-	//
-	// if (store.contains(contributorSymbolicNameKey)) {
-	// // Get ClassPath for new Language
-	// String contributorSymbolicName =
-	// store.getString(contributorSymbolicNameKey);
-	//
-	// return contributorSymbolicName;
-	// }
-	// }
-	// }
-	// }
-	logger.trace("getting combo text");
+    private String lookForLanguageContributorSymbolicName() {
 	return getDsls().get(combo.getText()).getContributorSymbolicName();
-	}
+    }
 
 	/**
 	 * This method prints keywords of language for the given class-path.
@@ -445,4 +355,9 @@ public class NewPopartClassWizardPage extends NewClassWizardPage {
 		}
 		codeGenerator.addCode(" */").addLineBreak();
 	}
+
+    public @CheckForNull
+    IJavaProject getProject() {
+	return project;
+    }
 }

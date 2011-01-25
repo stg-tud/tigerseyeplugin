@@ -3,13 +3,15 @@ package de.tud.stg.popart.eclipse.wizards;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.internal.ui.wizards.NewElementWizard;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import de.tud.stg.tigerseye.core.TigerseyeCore;
 
 /**
  * NewPopartClassWizzard is used to provide responsibility that makes it
@@ -40,21 +42,32 @@ public class NewPopartClassWizzard extends NewElementWizard {
 
     private IFile file;
 	@Override
-	protected void finishPage(IProgressMonitor monitor) throws CoreException {
+    protected void finishPage(final IProgressMonitor monitor)
+	    throws CoreException {
+
+	
 
 	PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 
 	    @Override
 	    public void run() {
 		try {
-		    file = fPage.createGroovyType(new NullProgressMonitor());
+		    file = fPage.createGroovyType(new SubProgressMonitor(
+			    monitor, 1));
+
+		    openResource(file);
+
+		    TigerseyeCore
+.addTigerseyeDSLUsingConfiguration(fPage
+			    .getProject().getProject());
+
 		} catch (CoreException e) {
-		    logger.error("Error when running in main thread", e);
+		    logger.error("Error while creating new class", e);
 		}
 	    }
 	});
 
-		openResource(file);
+
 	}
 
     @Override

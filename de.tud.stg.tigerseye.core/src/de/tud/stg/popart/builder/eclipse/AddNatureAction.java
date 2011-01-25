@@ -1,9 +1,8 @@
 package de.tud.stg.popart.builder.eclipse;
-import org.apache.commons.lang.ArrayUtils;
+
+import javax.annotation.CheckForNull;
+
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -13,52 +12,54 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.tud.stg.tigerseye.core.TigerseyeCore;
 
 public class AddNatureAction implements IObjectActionDelegate {
-    private static final Logger logger = LoggerFactory.getLogger(AddNatureAction.class);
+    private static final Logger logger = LoggerFactory
+	    .getLogger(AddNatureAction.class);
 
+    private ISelection selection;
 
-	private ISelection selection;
+    public AddNatureAction() {
+    }
 
-	public AddNatureAction() {
-		logger.info("new AddNatureAction");
+    @Override
+    public void setActivePart(IAction action, IWorkbenchPart targetPart) {
+    }
+
+    @Override
+    public void run(IAction action) {
+	logger.info("AddNatureAction run");
+	IProject targetProject = getProjectForSelection();
+	if (targetProject == null) {
+	    logger.debug(
+		    "Cannot perform AddNatureAction on selected object {}",
+		    selection);
+	    return;
 	}
 
-	@Override
-	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
-		// TODO Auto-generated method stub
+	TigerseyeCore.addTigersEyeRuntimeConfiguration(targetProject);
+    }
 
+    private @CheckForNull
+    IProject getProjectForSelection() {
+	if (selection == null)
+	    return null;
+	final IStructuredSelection s = (IStructuredSelection) selection;
+	final Object selected = s.getFirstElement();
+	IProject targetProject;
+	if (selected instanceof IJavaProject) {
+	    targetProject = ((IJavaProject) selected).getProject();
+	} else if (selected instanceof IProject) {
+	    targetProject = (IProject) selected;
+	} else {
+	    return null;
 	}
+	return targetProject;
+    }
 
-	@Override
-	public void run(IAction action) {
-	    	logger.info("AddNatureAction run");
-		final IStructuredSelection s = (IStructuredSelection) selection;
-		final Object selected = s.getFirstElement();
-		if (!(selected instanceof IProject) && !(selected instanceof IJavaProject)) {
-			return;
-		}
-
-		final IProject targetProject = selected instanceof IProject ? (IProject) selected : ((IJavaProject) selected)
-				.getProject();
-
-		try {
-			addNature(targetProject);
-		} catch (CoreException e) {
-			logger.warn("Generated log statement",e);
-		}
-	}
-
-	@Override
-	public void selectionChanged(IAction action, ISelection selection) {
-		this.selection = selection;
-	}
-
-	private static void addNature(IProject project) throws CoreException {
-		final IProjectDescription description = project.getDescription();
-		final String[] ids = description.getNatureIds();
-		final String[] newIds = (String[]) ArrayUtils.add(ids, DSLNature.TIGERSEYE_NATURE_ID);
-		description.setNatureIds(newIds);
-		project.setDescription(description, new NullProgressMonitor());
-	}
+    @Override
+    public void selectionChanged(IAction action, ISelection selection) {
+	this.selection = selection;
+    }
 }

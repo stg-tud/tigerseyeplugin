@@ -2,12 +2,15 @@ package de.tud.stg.popart.eclipse.wizards.popartLanguageWizard;
 
 import legacy.org.codehaus.groovy.eclipse.wizards.WizardUtil;
 
+import org.apache.commons.lang.UnhandledException;
 import org.codehaus.groovy.eclipse.wizards.NewClassWizard;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.ui.INewWizard;
 
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.PopartLanguageModel;
+import de.tud.stg.tigerseye.core.TigerseyeCore;
 
 /**
  * Wizard for creating language definitions
@@ -40,18 +43,22 @@ public class NewPopartLanguageWizzard extends NewClassWizard implements INewWiza
 	 * (non-Javadoc)
 	 * @see org.codehaus.groovy.eclipse.wizards.NewClassWizard#performFinish()
 	 */
-	@Override
-	public boolean performFinish() {	
-		keywordPage.disposeCurrentView();		
-		IFile file;
-		try {			
-			newClassPage.createKewords();
-			file = newClassPage.createLanguageClass();
-			openResource(file);
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return true;
+    @Override
+    public boolean performFinish() {
+	keywordPage.disposeCurrentView();
+	IFile file;
+	try {
+	    newClassPage.createKewords();
+	    file = newClassPage.createLanguageClass();
+	    openResource(file);
+	} catch (CoreException e) {
+	    throw new UnhandledException(e);
 	}
+	// FIXME should be language dialog asking for adding the libraries
+	IJavaProject javaProject = newClassPage.getJavaProject();
+	TigerseyeCore
+		.addTigersEyeRuntimeConfiguration(javaProject.getProject());
+
+	return true;
+    }
 }	

@@ -90,7 +90,7 @@ public class DSLNature implements IProjectNature {
 	    // XXX Possible place to add extension libraries, but problem is
 	    // they might change
 	    IClasspathEntry entry = JavaCore.newContainerEntry(
-		    TigerseyeClassPathContainerInitializer.TIGERSEYE_SUPPORT, true);
+		    TigerseyeClasspathContainer.CONTAINER_ID, true);
 			this.addToClasspath(entry, project);
 		} catch (JavaModelException e) {
 			logger.warn("Generated log statement",e);
