@@ -7,7 +7,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.popart.builder.transformers.Filetype;
+import de.tud.stg.popart.builder.transformers.FileType;
 
 public class PreferencesStoreUtils {
 private static final Logger logger = LoggerFactory.getLogger(PreferencesStoreUtils.class);
@@ -56,8 +56,8 @@ private static final Logger logger = LoggerFactory.getLogger(PreferencesStoreUti
 	}
 
 	private static boolean isHostLanguageExtension(String extension) {
-		return extension.equals(Filetype.JAVA.name()) || extension.equals(Filetype.GROOVY.name())
-				|| extension.equals(Filetype.POPART.name());
+		return extension.equals(FileType.JAVA.name()) || extension.equals(FileType.GROOVY.name())
+				|| extension.equals(FileType.POPART.name());
 	}
 
 	private static void storeHostLanguageConfiguration(IPreferenceStore prefs,
@@ -100,9 +100,9 @@ private static final Logger logger = LoggerFactory.getLogger(PreferencesStoreUti
     private static Map<String, Map<String, Boolean>> getHostLanguageConfiguration(
 	    IPreferenceStore prefs,
 			Map<String, Map<String, Boolean>> map) {
-		Filetype[] types = { Filetype.JAVA, Filetype.GROOVY, Filetype.POPART };
+		FileType[] types = { FileType.JAVA, FileType.GROOVY, FileType.POPART };
 
-		for (Filetype ft : types) {
+		for (FileType ft : types) {
 			int numTransformers = prefs.getInt(ROOT + "_" + ft.name() + "_numTransformers");
 
 			Map<String, Boolean> dslMap = new HashMap<String, Boolean>();

@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tud.stg.popart.builder.eclipse.ITransformerConfigurationListener;
-import de.tud.stg.popart.builder.transformers.Filetype;
+import de.tud.stg.popart.builder.transformers.FileType;
 import de.tud.stg.tigerseye.core.TigerseyeCore;
 
 public class TransformerConfigurationDialoge {
@@ -92,11 +92,11 @@ private static final Logger logger = LoggerFactory.getLogger(TransformerConfigur
 
 		tabItem[0].setText(extension);
 		tabItem[0].setToolTipText("Transformers that can be used on this specific DSL (" + extension + ")");
-		tabItem[1].setText(Filetype.POPART.name());
+		tabItem[1].setText(FileType.POPART.name());
 		tabItem[1].setToolTipText("Transformers that can be used on pure popart files");
-		tabItem[2].setText(Filetype.GROOVY.name());
+		tabItem[2].setText(FileType.GROOVY.name());
 		tabItem[2].setToolTipText("Transformers that can be used on pure groovy files");
-		tabItem[3].setText(Filetype.JAVA.name());
+		tabItem[3].setText(FileType.JAVA.name());
 		tabItem[3].setToolTipText("Transformers that can be used on pure java files");
 
 		Map<String, Collection<String>> availableTransformers = transformerConfigurationListener
@@ -104,14 +104,14 @@ private static final Logger logger = LoggerFactory.getLogger(TransformerConfigur
 
 		ArrayList<Collection<String>> transformers = new ArrayList<Collection<String>>(4);
 
-		transformers.add(availableTransformers.get(Filetype.DSL.name));
+		transformers.add(availableTransformers.get(FileType.DSL.name));
 		transformers.get(0).addAll(availableTransformers.get(extension));
 
-		transformers.add(availableTransformers.get(Filetype.POPART.name));
-		transformers.add(availableTransformers.get(Filetype.GROOVY.name));
-		transformers.add(availableTransformers.get(Filetype.JAVA.name));
+		transformers.add(availableTransformers.get(FileType.POPART.name));
+		transformers.add(availableTransformers.get(FileType.GROOVY.name));
+		transformers.add(availableTransformers.get(FileType.JAVA.name));
 
-		String[] ext = { extension, Filetype.POPART.name(), Filetype.GROOVY.name(), Filetype.JAVA.name() };
+		String[] ext = { extension, FileType.POPART.name(), FileType.GROOVY.name(), FileType.JAVA.name() };
 
 		for (int i = 0; i < 4; i++) {
 			Map<String, Boolean> map = storedConfiguration.get(ext[i]);
@@ -268,8 +268,8 @@ private static final Logger logger = LoggerFactory.getLogger(TransformerConfigur
 
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			String[] extensions = { extension, Filetype.POPART.name(), Filetype.GROOVY.name(),
-					Filetype.JAVA.name() };
+			String[] extensions = { extension, FileType.POPART.name(), FileType.GROOVY.name(),
+					FileType.JAVA.name() };
 
 	    IPreferenceStore prefs = TigerseyeCore.getPreferences();
 
@@ -337,10 +337,10 @@ private static final Logger logger = LoggerFactory.getLogger(TransformerConfigur
 				String[] dsl = new String[] { "dsl1", "dsl2", "math1" };
 
 				HashMap<String, Collection<String>> map = new HashMap<String, Collection<String>>();
-				map.put(Filetype.JAVA.name(), Arrays.asList(java));
-				map.put(Filetype.GROOVY.name(), Arrays.asList(groovy));
-				map.put(Filetype.POPART.name(), Arrays.asList(popart));
-				map.put(Filetype.DSL.name(), Arrays.asList(dsl));
+				map.put(FileType.JAVA.name(), Arrays.asList(java));
+				map.put(FileType.GROOVY.name(), Arrays.asList(groovy));
+				map.put(FileType.POPART.name(), Arrays.asList(popart));
+				map.put(FileType.DSL.name(), Arrays.asList(dsl));
 						map.put(extension,
 								Collections
 										.unmodifiableCollection(new ArrayList<String>()));

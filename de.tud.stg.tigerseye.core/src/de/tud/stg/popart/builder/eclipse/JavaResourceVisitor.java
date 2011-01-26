@@ -3,12 +3,12 @@ package de.tud.stg.popart.builder.eclipse;
 import org.eclipse.core.resources.IResource;
 
 import de.tud.stg.popart.builder.core.aterm.PrettyJavaCodePrinter;
-import de.tud.stg.popart.builder.transformers.Filetype;
+import de.tud.stg.popart.builder.transformers.FileType;
 
 public class JavaResourceVisitor extends ResourceVisitor {
 
-    public static final String PRE_FILE_EXTENSION = Filetype.JAVA.srcFileEnding;// "java.dsl";
-    private static final String POST_FILE_EXTENSION = Filetype.JAVA.outputFileEnding;// "java";
+    public static final String PRE_FILE_EXTENSION = FileType.JAVA.srcFileEnding;// "java.dsl";
+    private static final String POST_FILE_EXTENSION = FileType.JAVA.outputFileEnding;// "java";
 
 	@Override
 	public DSLResourceHandler newResourceHandler() {

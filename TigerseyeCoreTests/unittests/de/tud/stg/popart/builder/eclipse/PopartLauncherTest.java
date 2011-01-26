@@ -37,12 +37,12 @@ import de.tud.stg.tigerseye.core.preferences.TigerseyePreferenceInitializer;
 @PrepareForTest({ ResourcesPlugin.class })
 public class PopartLauncherTest {
  
-    private TigerseyeLaunchShortcut launcher;
+    private LegacyTigerseyeLaunchShortcut launcher;
     public IResource testfile;
     private EclipseMock eclipseMock;
 
     private File testProjectRoot = new File("unittests/" 
-	    + TigerseyeLaunchShortcut.class.getPackage().getName()
+	    + LegacyTigerseyeLaunchShortcut.class.getPackage().getName()
 		    .replaceAll("\\.", "/") + "/resources/");
     private File expectedOutputSrcFolder = new File(testProjectRoot,
 	    TigerseyePreferenceInitializer.DEFAULT_OUTPUT_DIRECTORY_NAME);
@@ -54,7 +54,7 @@ public class PopartLauncherTest {
     @Before
     public void before() throws Exception {
 	// only the implemented method launchGroovy is to be tested
-	launcher = mock(TigerseyeLaunchShortcut.class);
+	launcher = mock(LegacyTigerseyeLaunchShortcut.class);
 //	doCallRealMethod().when(launcher).launch(
 //		any(ICompilationUnit.class), any(IJavaProject.class),
 //		anyString());

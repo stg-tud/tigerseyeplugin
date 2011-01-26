@@ -18,14 +18,14 @@ import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.popart.builder.transformers.Filetype;
+import de.tud.stg.popart.builder.transformers.FileType;
 import de.tud.stg.tigerseye.core.OutputPathHandler;
 
-public class TigerseyeLaunchShortcut extends AbstractGroovyLaunchShortcut
+public class LegacyTigerseyeLaunchShortcut extends AbstractGroovyLaunchShortcut
 		implements ILaunchShortcut {
 
     private static final Logger logger = LoggerFactory
-	    .getLogger(TigerseyeLaunchShortcut.class);
+	    .getLogger(LegacyTigerseyeLaunchShortcut.class);
 
 	@Override
 	public void launch(IEditorPart editor, String mode) {
@@ -58,7 +58,7 @@ public class TigerseyeLaunchShortcut extends AbstractGroovyLaunchShortcut
 	}
 
 	private void launchTigerseye(IFile file, String mode) {
-		Filetype filetype = Filetype.getTypeForSrcResource(file.getName());
+		FileType filetype = FileType.getTypeForSrcResource(file.getName());
 	if (filetype == null) {
 	    cannotRunTigerseyeErrorMessageDialog("No filetype could be determined for "
 		    + file);
@@ -126,7 +126,7 @@ public class TigerseyeLaunchShortcut extends AbstractGroovyLaunchShortcut
 	}
 
     private
-    IFile getDelegatedFile(IFile file, Filetype filetype) {
+    IFile getDelegatedFile(IFile file, FileType filetype) {
 		IPath projectRelativePath = file.getProjectRelativePath();
 		IPath delegatedPath = new OutputPathHandler(filetype)
 				.getProjectRelativePath(projectRelativePath);

@@ -18,15 +18,16 @@ import de.tud.stg.popart.builder.core.GrammarBuilder.MethodOptions;
 import de.tud.stg.popart.builder.core.aterm.RecursiveVisitor;
 import de.tud.stg.popart.builder.transformers.ASTTransformation;
 import de.tud.stg.popart.builder.transformers.Context;
-import de.tud.stg.popart.builder.transformers.Filetype;
+import de.tud.stg.popart.builder.transformers.FileType;
 import de.tud.stg.popart.builder.transformers.textual.TransformationUtils;
 
 /**
- * {@link ClosureResultTransformation} scans the AST for method calls to a dsl interface and encapsulates them into
- * closures. This supports multiple dsls in one AST.
- *
+ * {@link ClosureResultTransformation} scans the AST for method calls to a DSL
+ * interface and encapsulates them into closures. This supports multiple DSLs in
+ * one AST.
+ * 
  * @author Kamil Erhard
- *
+ * 
  */
 public class ClosureResultTransformation extends RecursiveVisitor implements ASTTransformation {
 private static final Logger logger = LoggerFactory.getLogger(ClosureResultTransformation.class);
@@ -91,19 +92,20 @@ private static final Logger logger = LoggerFactory.getLogger(ClosureResultTransf
 		return arg;
 	}
 
-	@Override
-	public ATerm transform(Context context, ATerm aterm) {
-		ClosureResultTransformation crt = new ClosureResultTransformation(context);
+    @Override
+    public ATerm transform(Context context, ATerm aterm) {
+	ClosureResultTransformation crt = new ClosureResultTransformation(
+		context);
 
-		logger.info("[ClosureResult] start");
-		try {
-			aterm = (ATerm) aterm.accept(crt);
-		} catch (VisitFailure e) {
-			logger.warn("Generated log statement",e);
-		}
-
-		return aterm;
+	logger.info("[ClosureResult] start");
+	try {
+	    aterm = (ATerm) aterm.accept(crt);
+	} catch (VisitFailure e) {
+	    logger.warn("Failed visiting ClosureResultTransformation", crt, e);
 	}
+
+	return aterm;
+    }
 
 	@Override
 	public Set<ATerm> getAssurances() {
@@ -116,13 +118,12 @@ private static final Logger logger = LoggerFactory.getLogger(ClosureResultTransf
 	}
 
 	@Override
-	public Set<Filetype> getSupportedFiletypes() {
-		return TransformationUtils.getSetForFiletypes(Filetype.GROOVY);
+	public Set<FileType> getSupportedFiletypes() {
+		return TransformationUtils.getSetForFiletypes(FileType.GROOVY);
 	}
 
 	@Override
-	public String getDescription() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public String getDescription() {
+	return "Scans the AST for method calls to a DSL interface and encapsulates them into closures";
+    }
 }

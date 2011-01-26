@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tud.stg.popart.builder.transformers.Context;
-import de.tud.stg.popart.builder.transformers.Filetype;
+import de.tud.stg.popart.builder.transformers.FileType;
 import de.tud.stg.popart.builder.transformers.TextualTransformation;
 import de.tud.stg.popart.dslsupport.DSL;
 
@@ -131,8 +131,8 @@ private static final Logger logger = LoggerFactory.getLogger(BootStrapTransforma
 	}
 
 	@Override
-	public Set<Filetype> getSupportedFiletypes() {
-		return TransformationUtils.getSetForFiletypes(Filetype.POPART);
+	public Set<FileType> getSupportedFiletypes() {
+		return TransformationUtils.getSetForFiletypes(FileType.POPART);
 	}
 
 	@Override

@@ -19,7 +19,7 @@ import de.tud.stg.popart.builder.core.GrammarBuilder.MethodOptions;
 import de.tud.stg.popart.builder.core.aterm.RecursiveVisitor;
 import de.tud.stg.popart.builder.transformers.ASTTransformation;
 import de.tud.stg.popart.builder.transformers.Context;
-import de.tud.stg.popart.builder.transformers.Filetype;
+import de.tud.stg.popart.builder.transformers.FileType;
 import de.tud.stg.popart.builder.transformers.textual.TransformationUtils;
 
 /**
@@ -150,9 +150,9 @@ private static final Logger logger = LoggerFactory.getLogger(KeywordChainingTran
 	}
 
 	@Override
-	public Set<Filetype> getSupportedFiletypes() {
-		return TransformationUtils.getSetForFiletypes(Filetype.POPART,
-				Filetype.JAVA, Filetype.GROOVY);
+	public Set<FileType> getSupportedFiletypes() {
+		return TransformationUtils.getSetForFiletypes(FileType.POPART,
+				FileType.JAVA, FileType.GROOVY);
 	}
 
 	@Override

@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import de.tud.stg.parlex.parser.earley.Pair;
 import de.tud.stg.popart.builder.transformers.AnnotationExtractor;
 import de.tud.stg.popart.builder.transformers.Context;
-import de.tud.stg.popart.builder.transformers.Filetype;
+import de.tud.stg.popart.builder.transformers.FileType;
 import de.tud.stg.popart.builder.transformers.TextualTransformation;
 
 public class KeywordTranslationTransformation implements TextualTransformation {
@@ -134,8 +134,8 @@ private static final Logger logger = LoggerFactory.getLogger(KeywordTranslationT
 	}
 
 	@Override
-	public Set<Filetype> getSupportedFiletypes() {
-		return TransformationUtils.getSetForFiletypes(Filetype.DSL);
+	public Set<FileType> getSupportedFiletypes() {
+		return TransformationUtils.getSetForFiletypes(FileType.DSL);
 	}
 
 }

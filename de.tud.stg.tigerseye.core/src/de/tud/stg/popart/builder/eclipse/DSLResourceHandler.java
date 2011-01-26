@@ -2,7 +2,6 @@ package de.tud.stg.popart.builder.eclipse;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -13,9 +12,11 @@ import jjtraveler.VisitFailure;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.slf4j.Logger;
@@ -34,7 +35,7 @@ import de.tud.stg.popart.builder.core.aterm.CodePrinter;
 import de.tud.stg.popart.builder.transformers.ASTTransformation;
 import de.tud.stg.popart.builder.transformers.AnnotationExtractor;
 import de.tud.stg.popart.builder.transformers.Context;
-import de.tud.stg.popart.builder.transformers.Filetype;
+import de.tud.stg.popart.builder.transformers.FileType;
 import de.tud.stg.popart.builder.transformers.TextualTransformation;
 import de.tud.stg.popart.dslsupport.DSL;
 import de.tud.stg.popart.eclipse.LanguageProviderImpl;
@@ -51,6 +52,7 @@ public class DSLResourceHandler implements ResourceHandler {
 	private final String srcFileNameEnding;
 
 	private final CodePrinter prettyPrinter;
+    private final IProgressMonitor nullMonitor = new NullProgressMonitor();
 
 	public DSLResourceHandler(String fileExtension, String fileNameEnding,
 			CodePrinter prettyPrinter) {
@@ -59,46 +61,52 @@ public class DSLResourceHandler implements ResourceHandler {
 		this.prettyPrinter = prettyPrinter;
 	}
 
-	@Override
-	public void handleResource(IResource resource) {
-		logger.debug("handling resource {}", resource);
+    @Override
+    public void handleResource(IResource resource) {
+	logger.debug("handling resource {}", resource);
 
-		StringBuffer input = this.readResource(resource);
+	StringBuffer resourceContent = this.readResource(resource);
 
-		Context context;
-		try {
-			context = this.determineInvolvedDSLs(resource, input);
-		} catch (DSLNotFoundException e) {
-			logger.error("Resource {} could not be handled. {}", new Object[] {
-					resource, e.noDSLMsg() }, e);
-			return;
-		}
-
-
-		Filetype filetype = Filetype.getTypeForSrcResource(resource.getName());
-
-		if (filetype == null) {
-			logger.error("No filetype for {} could be determined",
-					resource.getName());
-			return;
-		}
-
-		context.setFiletype(filetype);
-		input = this.performTextualTransformations(input, context);
-
-		GrammarBuilder grammar = this.buildNeccessaryGrammar(context);
-		context.setGrammarBuilder(grammar);
-
-		ATerm term = this.parseResource(input, context);
-
-		term = this.performASTTransformations(term, context);
-
-		ByteArrayOutputStream out = this.performPrettyPrinting(term);
-
-		IFile outputFile = new OutputPathHandler(filetype)
-				.getProjectRelativeOutputFile(resource);
-		this.writeResource(outputFile, out);
+	Context context;
+	try {
+	    context = this.determineInvolvedDSLs(resource, resourceContent);
+	} catch (DSLNotFoundException e) {
+	    logger.error("Resource {} could not be handled. {}", new Object[] {
+		    resource, e.noDSLMsg() }, e);
+	    return;
 	}
+	FileType filetype = FileType.getTypeForSrcResource(resource.getName());
+	if (filetype == null) {
+	    logger.error("No filetype could be determined for {}",
+		    resource.getName());
+	    return;
+	}
+
+	context.setFiletype(filetype);
+	ByteArrayOutputStream transformedContent = getTransformedContent(resourceContent, context);
+
+	IFile outputFile = new OutputPathHandler(filetype)
+		.getProjectRelativeOutputFile(resource);
+	this.writeResourceContent(outputFile, transformedContent);
+    }
+
+    private ByteArrayOutputStream getTransformedContent(StringBuffer input,
+	    Context context) {
+	StringBuffer textualTransformedInput = this
+		.performTextualTransformations(input, context);
+
+	GrammarBuilder grammar = this.buildNeccessaryGrammar(context);
+	context.setGrammarBuilder(grammar);
+
+	ATerm term = this.parseResource(textualTransformedInput, context);
+
+	ATerm astTransformedTerm = this
+		.performASTTransformations(term, context);
+
+	ByteArrayOutputStream out = this
+		.performPrettyPrinting(astTransformedTerm);
+	return out;
+    }
 
 	protected String getFileExtension() {
 		return outputFileNameEnding;
@@ -197,8 +205,8 @@ public class DSLResourceHandler implements ResourceHandler {
 	    if (dslList.size() != 1) {
 
 		logger.error(
-			"Found {} DSLdefinitions. Only exactly one active dsl for one extension is a valid configuration. DSLs where {}.",
-			dslList.size(), dslList);
+			"Found {} DSLdefinitions for extension {}. Only exactly one active dsl for one extension is a valid configuration. DSLs where {}.",
+			new Object[] { dslList.size(), dslName, dslList });
 		throw new DSLNotFoundException(
 			"Invalid number of DSLs configured: " + dslList.size())
 			.setDSL(dslName);
@@ -243,25 +251,25 @@ public class DSLResourceHandler implements ResourceHandler {
 		return out;
 	}
 
-	protected StringBuffer performTextualTransformations(StringBuffer input,
-			Context context) {
-		input = new StringBuffer(input);
-		logger.trace("starting textual transformations");
-	DSLBuilderActivator plugin = new DSLBuilderActivator();
-		Collection<TextualTransformation> textualTransformers = plugin
-				.getConfiguredTextualTransformers(context.getFiletype(),
-						context.getDSLExtensions());
-		logger.trace("Found textual transformers: {}",
-				textualTransformers.toArray());
-		for (TextualTransformation t : textualTransformers) {
-			input = t.transform(context, input);
-		}
-		return input;
+    private StringBuffer performTextualTransformations(
+	    StringBuffer origInput, Context context) {
+	StringBuffer transformedInput = new StringBuffer(origInput);
+	logger.trace("starting textual transformations");
+	DSLBuilderHelper plugin = new DSLBuilderHelper();
+	Collection<TextualTransformation> textualTransformers = plugin
+		.getConfiguredTextualTransformers(context.getFiletype(),
+			context.getDSLExtensions());
+	logger.trace("Found textual transformers: {}",
+		textualTransformers.toArray());
+	for (TextualTransformation t : textualTransformers) {
+	    transformedInput = t.transform(context, transformedInput);
 	}
+	return transformedInput;
+    }
 
 	protected ATerm performASTTransformations(ATerm aterm, Context context) {
 		logger.trace("starting ast transformations");
-	for (ASTTransformation t : new DSLBuilderActivator()
+	for (ASTTransformation t : new DSLBuilderHelper()
 				.getConfiguredASTTransformers(context.getFiletype(),
 						context.getDSLExtensions())) {
 			aterm = t.transform(context, aterm);
@@ -306,27 +314,36 @@ public class DSLResourceHandler implements ResourceHandler {
 		return buffer;
 	}
 
-	protected void writeResource(IFile file, ByteArrayOutputStream out) {
-		ByteArrayInputStream bais = new ByteArrayInputStream(out.toByteArray());
-		try {
-			NullProgressMonitor monitor = new NullProgressMonitor();
-			if (!file.exists()) {
-				File output = file.getRawLocation().toFile();
-				File dir = new File(output.getParent());
-		boolean mkdirs = dir.mkdirs();
-
-		logger.debug("dir: " + dir + ", mkdirs: ");
-				file.create(bais, IResource.FORCE | IResource.DERIVED, monitor);
-			} else {
-				/*
-				 * IResource.DERIVED is ignored in case of setContents
-				 */
-				file.setContents(bais, IResource.FORCE, monitor);
-			}
-		} catch (CoreException e) {
-			logger.error(
-					"Faild to write transformed resource to output location.",
-					e);
-		}
+    private void writeResourceContent(IFile file, ByteArrayOutputStream content) {
+	ByteArrayInputStream bais = new ByteArrayInputStream(content.toByteArray());
+	try {
+	    if (!file.exists()) {
+		IFolder fileParentFolder = file.getProject().getFolder(
+			file.getProjectRelativePath().removeLastSegments(1));
+		createFolders(fileParentFolder);
+		file.create(bais, IResource.FORCE | IResource.DERIVED,
+			nullMonitor);
+	    } else {
+		/*
+		 * IResource.DERIVED is ignored in case of setContents
+		 */
+		file.setContents(bais, IResource.FORCE, nullMonitor);
+	    }
+	} catch (CoreException e) {
+	    logger.error("Failed to write to {}", file.getFullPath(), e);
 	}
+    }
+
+    private void createFolders(IFolder folder)
+	    throws CoreException {
+
+	if (!folder.exists()) {
+	    IFolder parentFolder = folder.getProject().getFolder(
+		    folder.getProjectRelativePath().removeLastSegments(1));
+	    if (!parentFolder.exists()) {
+		createFolders(parentFolder);
+	    }
+	    folder.create(false, true, nullMonitor);
+	}
+    }
 }

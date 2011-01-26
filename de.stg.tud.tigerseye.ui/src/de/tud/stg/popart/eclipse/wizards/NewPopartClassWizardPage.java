@@ -68,11 +68,13 @@ public class NewPopartClassWizardPage extends NewClassWizardPage {
 	importManager = new ImportManager(project);
 	List<DSLDefinition> dslDefinitions = TigerseyeCore
 		.getLanguageProvider().getDSLDefinitions();
+	dsls.clear();
 	for (DSLDefinition dsl : dslDefinitions) {
 	    try {
-		// Check if a extension is set.
-		String extension = dsl.getValue(DSLKey.EXTENSION);
-		dsls.put(extension,dsl);
+		if (dsl.isActive()) {
+		    String extension = dsl.getValue(DSLKey.EXTENSION);
+		    dsls.put(extension, dsl);
+		}
 	    } catch (NoLegalPropertyFound e) {
 		// No extension defined. Can be ignored here.
 	    }
@@ -270,7 +272,8 @@ public class NewPopartClassWizardPage extends NewClassWizardPage {
     private void setLanguagesExtensionFromStore() {
 	Collection<DSLDefinition> values = getDsls().values();
 	for (DSLDefinition extension : values) {
-	    if (extension.isActive()) {
+	    boolean active = extension.isActive();
+	    if (active) {
 		try {
 		    combo.add(extension.getValue(DSLKey.EXTENSION));
 		} catch (NoLegalPropertyFound e) {

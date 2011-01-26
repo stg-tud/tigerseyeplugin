@@ -96,7 +96,7 @@
    <extension
          point="org.eclipse.debug.ui.launchShortcuts">
       <shortcut
-            class="de.tud.stg.popart.builder.eclipse.TigerseyeLaunchShortcut"
+            class="de.tud.stg.popart.builder.eclipse.LegacyTigerseyeLaunchShortcut"
             icon="icons/plane16.png"
             id="de.tud.stg.popart.builder.eclipse.DSLBuilderLauncher"
             label="Popart EDSL"

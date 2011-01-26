@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.tud.stg.popart.builder.transformers.Context;
-import de.tud.stg.popart.builder.transformers.Filetype;
+import de.tud.stg.popart.builder.transformers.FileType;
 import de.tud.stg.popart.builder.transformers.TextualTransformation;
 
 public class PackageImporter implements TextualTransformation {
@@ -91,9 +91,9 @@ public class PackageImporter implements TextualTransformation {
 	}
 
 	@Override
-	public Set<Filetype> getSupportedFiletypes() {
-		return TransformationUtils.getSetForFiletypes(Filetype.POPART,
-				Filetype.JAVA, Filetype.GROOVY);
+	public Set<FileType> getSupportedFiletypes() {
+		return TransformationUtils.getSetForFiletypes(FileType.POPART,
+				FileType.JAVA, FileType.GROOVY);
 	}
 
 	@Override

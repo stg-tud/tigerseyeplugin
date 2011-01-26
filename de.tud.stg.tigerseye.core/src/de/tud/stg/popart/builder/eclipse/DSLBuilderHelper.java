@@ -4,18 +4,17 @@ import java.util.*;
 
 import org.apache.commons.lang.UnhandledException;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import aterm.ATerm;
 import de.tud.stg.popart.builder.eclipse.dialoge.PreferencesStoreUtils;
 import de.tud.stg.popart.builder.transformers.ASTTransformation;
-import de.tud.stg.popart.builder.transformers.Filetype;
+import de.tud.stg.popart.builder.transformers.FileType;
 import de.tud.stg.popart.builder.transformers.TextualTransformation;
 import de.tud.stg.popart.builder.transformers.Transformation;
 import de.tud.stg.tigerseye.core.TigerseyeCore;
+import de.tud.stg.tigerseye.core.TransformationHandler;
 
 /**
  * 
@@ -24,80 +23,44 @@ import de.tud.stg.tigerseye.core.TigerseyeCore;
  * what it does now or move the different functionalities.
  * 
  */
-public class DSLBuilderActivator implements
+public class DSLBuilderHelper implements
 		ITransformerConfigurationListener {
-	private static final String transformersExtensionId = "de.tud.stg.tigerseye.transformers";
+
 
 	private static final Logger logger = LoggerFactory
-			.getLogger(DSLBuilderActivator.class);
+			.getLogger(DSLBuilderHelper.class);
 
-	private final List<Class<? extends Transformation>> transformations = new ArrayList<Class<? extends Transformation>>();
+    private final List<Class<? extends Transformation>> transformations = new ArrayList<Class<? extends Transformation>>();
 
     private final Map<String, Map<String, Boolean>> transformers = new HashMap<String, Map<String, Boolean>>();
-	/**
-	 * The constructor
-	 */
-    public DSLBuilderActivator() {
-		try {
-			initializePluginTransformers();
-		} catch (CoreException e) {
-			logger.error("Failed initialization of DSLBuilder");
-		}
+
+    public DSLBuilderHelper() {
+	try {
+	    setConfiguredTransformations();
+	    setConfiguredTransformers();
+	} catch (CoreException e) {
+	    logger.error("Failed initialization of DSLBuilder");
 	}
+    }
 
-
-
-	// private void pluginLanguageProvider() throws CoreException {
-	// IConfigurationElement[] config =
-	// Platform.getExtensionRegistry().getConfigurationElementsFor(
-	// "de.tud.stg.popart.builder.languageProvider");
-	//
-	// if(config.length < 1){
-	// logger.warn("No language extensions found, language provider will be null");
-	// }
-	//
-	// if (config.length > 0) {
-	// languageProvider = (ILanguageProvider)
-	// config[0].createExecutableExtension("class");
-	// logger.info("language provider set");
-	// }
-	// languageProvider = new PopartLanguageProvider();
-	// }
-
-	private void initializePluginTransformers() throws CoreException {
-		setConfiguredTransformers();
+    private void setConfiguredTransformers() {
 	this.transformers.clear();
 	this.transformers.putAll(PreferencesStoreUtils
 		.getConfiguration(TigerseyeCore.getPreferences()));
-		logger.info("found {} transformations: {}",
-				Integer.toString(transformations.size()), transformations);
-	}
+	logger.info("found {} transformations: {}",
+		Integer.toString(transformations.size()), transformations);
+    }
 
-	private void setConfiguredTransformers() throws CoreException {
+    private void setConfiguredTransformations() throws CoreException {
 	this.transformations.clear();
-	    ArrayList<Transformation> configuredTransformations = getConfiguredTransformations();
-	    for (Transformation transformation : configuredTransformations) {
-	    	this.addToList(transformation);
-	    }
+	ArrayList<TransformationHandler> configuredTransformations = TigerseyeCore
+		.getConfiguredTransformations();
+	for (TransformationHandler transformation : configuredTransformations) {
+	    this.addToList(transformation.getTransformation());
 	}
+    }
 
-	private ArrayList<Transformation> getConfiguredTransformations()
-			throws CoreException
- {
-		IConfigurationElement[] config = Platform.getExtensionRegistry()
-				.getConfigurationElementsFor(transformersExtensionId);
 
-		ArrayList<Transformation> transformationsList = new ArrayList<Transformation>();
-		for (IConfigurationElement configEl : config) {
-			for (IConfigurationElement children : configEl.getChildren()) {
-				// String name = children.getAttribute("name");
-				Transformation t = (Transformation) children
-						.createExecutableExtension("class");
-				transformationsList.add(t);
-			}
-		}
-		return transformationsList;
-	}
 
 	private void addToList(Transformation t) {
 		if ((t instanceof ASTTransformation) || (t instanceof TextualTransformation)) {
@@ -164,11 +127,11 @@ public class DSLBuilderActivator implements
 			}
 		}
 
-	for (Filetype ext : Filetype.values()) {
+	for (FileType ext : FileType.values()) {
 			List<String> list = new LinkedList<String>();
 
 			for (Transformation t : transformers) {
-				Set<Filetype> supportedFileExtensions = t
+		Set<FileType> supportedFileExtensions = t
 						.getSupportedFiletypes();
 				if (supportedFileExtensions.contains(ext)) {
 					list.add(t.getClass().getCanonicalName());
@@ -186,9 +149,9 @@ public class DSLBuilderActivator implements
 
     private <T> Collection<T> getConfiguredTransformers(
 			Collection<Class<? extends T>> availableTransformers,
-			Filetype filetype, String... extensions) {
+	    FileType filetype, String... extensions) {
 	try {
-	    setConfiguredTransformers();
+	    setConfiguredTransformations();
 	} catch (CoreException e1) {
 	    logger.error("Failed to return transformations.");
 	    return new ArrayList<T>();
@@ -235,14 +198,14 @@ public class DSLBuilderActivator implements
 	}
 
     public Collection<TextualTransformation> getConfiguredTextualTransformers(
-			Filetype filetype, String... extensions) {
+	    FileType filetype, String... extensions) {
 		return this.getConfiguredTransformers(getTextualTransformations(),
 				filetype,
 				extensions);
 	}
 
 	public Collection<ASTTransformation> getConfiguredASTTransformers(
-			Filetype filetype, String... extensions) {
+	    FileType filetype, String... extensions) {
 		return this.getConfiguredTransformers(getASTTransformations(),
 				filetype,
 				extensions);
@@ -284,7 +247,7 @@ public class DSLBuilderActivator implements
 			}
 		}
 
-		Set<Filetype> supportedFileExtensions = t.getSupportedFiletypes();
+	Set<FileType> supportedFileExtensions = t.getSupportedFiletypes();
 
 		return "Description:\n" + description + "\n\nSupported Filetypes:\n"
 				+ supportedFileExtensions + "\n\nRequirements:\n"

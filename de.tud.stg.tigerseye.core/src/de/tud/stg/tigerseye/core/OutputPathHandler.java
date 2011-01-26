@@ -7,19 +7,19 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
-import de.tud.stg.popart.builder.transformers.Filetype;
+import de.tud.stg.popart.builder.transformers.FileType;
 
 public class OutputPathHandler {
     
-    private final Filetype filetype;
+    private final FileType filetype;
     private String localOutputDirectoryName;
 
-    public OutputPathHandler(@Nonnull Filetype filetype) {
+    public OutputPathHandler(@Nonnull FileType filetype) {
 	this.filetype = filetype;
 	this.localOutputDirectoryName = TigerseyeCore.getOutputDirectoryPath();
     }
 
-    public OutputPathHandler(Filetype filetype, String outPutDir) {
+    public OutputPathHandler(FileType filetype, String outPutDir) {
 	// Avoid calling TigerseyeCore if not necessary
 	this.filetype = filetype;
 	this.localOutputDirectoryName = outPutDir;

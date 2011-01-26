@@ -20,7 +20,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.popart.builder.eclipse.DSLBuilderActivator;
+import de.tud.stg.popart.builder.eclipse.DSLBuilderHelper;
 import de.tud.stg.popart.builder.eclipse.dialoge.TransformerConfigurationDialoge;
 import de.tud.stg.popart.eclipse.LanguageProviderImpl;
 import de.tud.stg.tigerseye.core.DSLDefinition;
@@ -68,7 +68,7 @@ public class TransformationsPreferencePage extends PreferencePage implements
 		}
 		TableItem item = languagesTable.getItem(selectionIndex);
 		new TransformerConfigurationDialoge(item.getText(0),
-			getShell(), new DSLBuilderActivator(),
+			getShell(), new DSLBuilderHelper(),
 			getPreferenceStore());
 	    }
 

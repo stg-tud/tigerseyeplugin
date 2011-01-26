@@ -1,5 +1,6 @@
 package de.tud.stg.tigerseye.core;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,7 +12,9 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -23,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import de.tud.stg.popart.builder.eclipse.DSLNature;
 import de.tud.stg.popart.builder.eclipse.TigerseyeClassPathContainerInitializer;
 import de.tud.stg.popart.builder.eclipse.TigerseyeClasspathContainer;
+import de.tud.stg.popart.builder.transformers.Transformation;
 import de.tud.stg.popart.eclipse.LanguageProviderImpl;
 import de.tud.stg.tigerseye.core.preferences.TigerseyePreferenceConstants;
 
@@ -97,6 +101,35 @@ public class TigerseyeCore {
 	    return iProject.isNatureEnabled(DSLNature.TIGERSEYE_NATURE_ID);
 	} catch (CoreException e) {
 	    return false;
+	}
+    }
+
+    /**
+     * Returns the registered {@link Transformation} classes. This will return
+     * new Objects every time it is invoked.
+     * 
+     * @return
+     */
+    public static ArrayList<TransformationHandler> getConfiguredTransformations() {
+	IConfigurationElement[] config = Platform.getExtensionRegistry()
+		.getConfigurationElementsFor(TransformationHandler.ID);
+	try {
+	    ArrayList<TransformationHandler> transformationsList = new ArrayList<TransformationHandler>();
+	    for (IConfigurationElement configEl : config) {
+		for (IConfigurationElement children : configEl.getChildren()) {
+		    String name = children.getAttribute("name");
+		    Transformation t = (Transformation) children
+			    .createExecutableExtension("class");
+		    TransformationHandler handler = new TransformationHandler(
+			    name, t);
+		    transformationsList.add(handler);
+		}
+	    }
+	    return transformationsList;
+	} catch (CoreException e) {
+	    throw new UnhandledException(
+		    "Failed to create a registered Transformations. Check the implementation.",
+		    e);
 	}
     }
 

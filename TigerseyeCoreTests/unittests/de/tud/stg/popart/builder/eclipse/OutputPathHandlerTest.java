@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import utilities.TestUtilities;
-import de.tud.stg.popart.builder.transformers.Filetype;
+import de.tud.stg.popart.builder.transformers.FileType;
 import de.tud.stg.tigerseye.core.OutputPathHandler;
 
 public class OutputPathHandlerTest {
@@ -59,9 +59,9 @@ public class OutputPathHandlerTest {
 
     @Test
     public void testGetFileOutputPathJavaFile() {
-	File originalSrcProjRelPath = new File("SimpleSet."+Filetype.JAVA.srcFileEnding);
+	File originalSrcProjRelPath = new File("SimpleSet."+FileType.JAVA.srcFileEnding);
 	final File expectedOutputPat = new File(
-		"SimpleSet." + Filetype.JAVA.outputFileEnding);
+		"SimpleSet." + FileType.JAVA.outputFileEnding);
 	testCorrectConversion(originalSrcProjRelPath, expectedOutputPat);
     }
 
@@ -69,7 +69,7 @@ public class OutputPathHandlerTest {
 	    final File expectedOutputPath) {
 	
 	Path originialPath = new Path(originalSrcRelPath.getPath());	
-	Filetype filetype = Filetype.getTypeForSrcResource(originalSrcRelPath.toString());
+	FileType filetype = FileType.getTypeForSrcResource(originalSrcRelPath.toString());
 	IPath fileOutputPath = new OutputPathHandler(filetype, OUTPUT_DIRECTORY).getSrcRelativeOutputPath(originialPath);
 	File generatedOutputFile = fileOutputPath.toFile();
 	logger.debug("for path {} was generated {} ", originialPath, fileOutputPath);
@@ -133,7 +133,7 @@ public class OutputPathHandlerTest {
 	String expected = new File(new File(outputDir) ,"/only/src/matters.any.thing").getPath();
 	
 	Path projRelOriginPath = new Path(origin);	
-	OutputPathHandler resourceHandler = new OutputPathHandler(Filetype.POPART, OUTPUT_DIRECTORY);
+	OutputPathHandler resourceHandler = new OutputPathHandler(FileType.POPART, OUTPUT_DIRECTORY);
 	resourceHandler.setLocalOutputDirectoryName(outputDir);
 	//execute
 	IPath actual = resourceHandler.getProjectRelativePath(projRelOriginPath);

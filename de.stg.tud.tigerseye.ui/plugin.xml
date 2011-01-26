@@ -81,8 +81,17 @@
             description="Tigerseye launch shortuct."
             icon="icons/plane16.png"
             id="de.tud.stg.tigerseye.ui.launch.defaultlaunchshortcut"
-            label="Launch Tigerseye"
+            label="Launch Tigerseye DSL"
             modes="run,debug">
+         <perspective
+               id="org.eclipse.jdt.ui.JavaHierarchyPerspective">
+         </perspective>
+         <perspective
+               id="de.tud.stg.tigerseye.ui.perspective3">
+         </perspective>
+         <perspective
+               id="org.eclipse.jdt.ui.JavaBrowsingPerspective">
+         </perspective>
       </shortcut>
    </extension>
 

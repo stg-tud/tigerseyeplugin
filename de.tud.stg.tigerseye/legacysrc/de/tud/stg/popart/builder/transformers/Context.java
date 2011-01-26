@@ -20,13 +20,13 @@ public class Context {
 
 	public GrammarBuilder grammarBuilder;
 
-	private Filetype filetype;
+	private FileType filetype;
 
-	public Filetype getFiletype() {
+	public FileType getFiletype() {
 		return this.filetype;
 	}
 
-	public void setFiletype(Filetype filetype) {
+	public void setFiletype(FileType filetype) {
 		this.filetype = filetype;
 	}
 
