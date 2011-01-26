@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.annotation.CheckForNull;
+
 import jjtraveler.VisitFailure;
 
 import org.apache.commons.io.IOUtils;
@@ -66,7 +68,10 @@ public class DSLResourceHandler implements ResourceHandler {
 	logger.debug("handling resource {}", resource);
 
 	StringBuffer resourceContent = this.readResource(resource);
-
+	if (resourceContent == null) {
+	    logger.debug("Skipping unhandled resource {}", resource);
+	    return;
+	}
 	Context context;
 	try {
 	    context = this.determineInvolvedDSLs(resource, resourceContent);
@@ -293,26 +298,31 @@ public class DSLResourceHandler implements ResourceHandler {
 		return term;
 	}
 
-	protected StringBuffer readResource(IResource resource) {
+    /**
+     * @param resource
+     *            the resource to read
+     * @return The content of {@code resource} or <code>null</code> if resource
+     *         is not a file.
+     */
+    private @CheckForNull
+    StringBuffer readResource(IResource resource) {
 
-		if (!(IResource.FILE == resource.getType())) {
-			throw new IllegalArgumentException(
-					"Only file resources are processed, but was of IResource integer: "
-							+ resource.getType());
-		}
-		StringBuffer buffer = new StringBuffer();
-		try {
-			IPath path = resource.getProjectRelativePath();
-			IFile file = resource.getProject().getFile(path);
-			String stringFromReader = IOUtils.toString(file.getContents());
-			buffer = new StringBuffer(stringFromReader);
-		} catch (IOException e) {
-			logger.error("Failed to read resource.", e);
-		} catch (CoreException e) {
-			logger.error("Failed to obtain content of specified resource.", e);
-		}
-		return buffer;
+	if (!(IResource.FILE == resource.getType())) {
+	    return null;
 	}
+	StringBuffer buffer = new StringBuffer();
+	try {
+	    IPath path = resource.getProjectRelativePath();
+	    IFile file = resource.getProject().getFile(path);
+	    String stringFromReader = IOUtils.toString(file.getContents());
+	    buffer = new StringBuffer(stringFromReader);
+	} catch (IOException e) {
+	    logger.error("Failed to read resource.", e);
+	} catch (CoreException e) {
+	    logger.error("Failed to obtain content of specified resource.", e);
+	}
+	return buffer;
+    }
 
     private void writeResourceContent(IFile file, ByteArrayOutputStream content) {
 	ByteArrayInputStream bais = new ByteArrayInputStream(content.toByteArray());

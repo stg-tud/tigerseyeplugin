@@ -308,7 +308,8 @@ public class TigerseyeDSLsPreferencesPage extends PreferencePage implements
         for (Entry<PrefDSL, Button> entry : values) {
             entry.getKey().setIsActive(isActive);
             entry.getValue().setSelection(isActive);
-        }
+	}
+	updateValidState();
     }
 
     private void editDSL() {
