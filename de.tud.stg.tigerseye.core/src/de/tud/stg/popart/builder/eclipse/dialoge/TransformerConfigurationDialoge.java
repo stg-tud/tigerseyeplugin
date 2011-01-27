@@ -2,10 +2,12 @@ package de.tud.stg.popart.builder.eclipse.dialoge;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
+import java.util.Set;
 
 import org.eclipse.jdt.internal.ui.text.PreferencesAdapter;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -31,7 +33,9 @@ import org.slf4j.LoggerFactory;
 
 import de.tud.stg.popart.builder.eclipse.ITransformerConfigurationListener;
 import de.tud.stg.popart.builder.transformers.FileType;
+import de.tud.stg.popart.builder.transformers.Transformation;
 import de.tud.stg.tigerseye.core.TigerseyeCore;
+import de.tud.stg.tigerseye.core.TransformationHandler;
 
 public class TransformerConfigurationDialoge {
 private static final Logger logger = LoggerFactory.getLogger(TransformerConfigurationDialoge.class);
@@ -58,17 +62,8 @@ private static final Logger logger = LoggerFactory.getLogger(TransformerConfigur
 
 	TransformerConfigurationDialoge.this
 		.createBuilderConfigurationTable(shell);
-	// shell.pack();
 	shell.open();
     }
-
-    // public TransformerConfigurationDialoge(
-    // final String extension,
-    // ITransformerConfigurationListener
-    // transformerConfigurationListenerParameter) {
-    // this(extension, new Shell(Display.getDefault()),
-    // transformerConfigurationListenerParameter);
-    // }
 
 	private void createBuilderConfigurationTable(final Shell innerParent) {
 		CTabFolder tabFolder = new CTabFolder(innerParent, SWT.TOP | SWT.MULTI | SWT.BORDER);
@@ -99,13 +94,17 @@ private static final Logger logger = LoggerFactory.getLogger(TransformerConfigur
 		tabItem[3].setText(FileType.JAVA.name());
 		tabItem[3].setToolTipText("Transformers that can be used on pure java files");
 
-		Map<String, Collection<String>> availableTransformers = transformerConfigurationListener
-				.getAvailableTransformers(extension);
+	Map<FileType, Collection<TransformationHandler>> availableTransformationHandlers = transformerConfigurationListener
+		.getAvailableTransformers();
+
+	Map<String, Collection<String>> availableTransformers = getAvailableTransformersAsFiletypeNameToTransformerClassStringMap(availableTransformationHandlers);
 
 		ArrayList<Collection<String>> transformers = new ArrayList<Collection<String>>(4);
 
 		transformers.add(availableTransformers.get(FileType.DSL.name));
-		transformers.get(0).addAll(availableTransformers.get(extension));
+	// transformers.get(0).addAll(availableTransformers.get(extension));
+	transformers.get(0).addAll(new ArrayList<String>());// Dummy to avoid
+							    // null pointer
 
 		transformers.add(availableTransformers.get(FileType.POPART.name));
 		transformers.add(availableTransformers.get(FileType.GROOVY.name));
@@ -178,6 +177,23 @@ private static final Logger logger = LoggerFactory.getLogger(TransformerConfigur
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
+	}
+
+	private Map<String, Collection<String>> getAvailableTransformersAsFiletypeNameToTransformerClassStringMap(
+		Map<FileType, Collection<TransformationHandler>> availableTransformationHandlers) {
+	    Map<String, Collection<String>> availableTransformers = new HashMap<String, Collection<String>>();
+	    for (FileType ft : FileType.values()) {
+	        Collection<TransformationHandler> collection = availableTransformationHandlers
+	    	    .get(ft);
+	        Collection<String> transformations = new ArrayList<String>();
+	        for (TransformationHandler transformationHandler : collection) {
+	    	transformations.add(transformationHandler.getTransformation()
+	    		.getClass().getName());
+	        }
+
+	        availableTransformers.put(ft.name, transformations);
+	    }
+	    return availableTransformers;
 	}
 
     private class TableItemListener implements Listener {
@@ -330,22 +346,54 @@ private static final Logger logger = LoggerFactory.getLogger(TransformerConfigur
 			}
 
 			@Override
-			public Map<String, Collection<String>> getAvailableTransformers(String extension) {
-				String[] java = new String[] { "jgp1", "java1", "java2" };
-				String[] groovy = new String[] { "jgp1", "groovy1", "groovy2" };
-				String[] popart = new String[] { "jgp1", "popart1", "popart2" };
-				String[] dsl = new String[] { "dsl1", "dsl2", "math1" };
+		    public Map<FileType, Collection<TransformationHandler>> getAvailableTransformers() {
+			TransformationHandler[] java = getAsTransformationHandler(new String[] {
+				"jgp1", "java1", "java2" });
+				TransformationHandler[] groovy = getAsTransformationHandler(new String[] { "jgp1", "groovy1", "groovy2" });
+				TransformationHandler[] popart = getAsTransformationHandler(new String[] { "jgp1", "popart1", "popart2" });
+				TransformationHandler[] dsl = getAsTransformationHandler(new String[] { "dsl1", "dsl2", "math1" });
 
-				HashMap<String, Collection<String>> map = new HashMap<String, Collection<String>>();
-				map.put(FileType.JAVA.name(), Arrays.asList(java));
-				map.put(FileType.GROOVY.name(), Arrays.asList(groovy));
-				map.put(FileType.POPART.name(), Arrays.asList(popart));
-				map.put(FileType.DSL.name(), Arrays.asList(dsl));
-						map.put(extension,
-								Collections
-										.unmodifiableCollection(new ArrayList<String>()));
+			Map<FileType, Collection<TransformationHandler>> map = new HashMap<FileType, Collection<TransformationHandler>>();
+			map.put(FileType.JAVA, Arrays.asList(java));
+			map.put(FileType.GROOVY, Arrays.asList(groovy));
+			map.put(FileType.POPART, Arrays.asList(popart));
+			map.put(FileType.DSL, Arrays.asList(dsl));
+			// map.put(extension,
+			// Collections
+			// .unmodifiableCollection(new ArrayList<String>()));
+
 				return map;
 			}
+
+		    private TransformationHandler[] getAsTransformationHandler(
+			    String[] strings) {
+			TransformationHandler[] ths = new TransformationHandler[strings.length];
+			for (int i = 0; i < strings.length; i++) {
+			    String string = strings[i];
+			    ths[i] = new TransformationHandler(string,
+				    new Transformation() {
+
+					@Override
+					public Set<FileType> getSupportedFileTypes() {
+					    FileType[] values = FileType
+						    .values();
+					    Random r = new Random();
+					    Set<FileType> sups = new HashSet<FileType>();
+					    for (int i = 0; i < 3; i++) {
+						int index = r.nextInt(4);
+						sups.add(values[index]);
+					    }
+					    return sups;
+					}
+
+					@Override
+					public String getDescription() {
+					    return null;
+					}
+				    });
+			}
+			return ths;
+		    }
 		}, new PreferencesAdapter());
 
 		shell.pack();

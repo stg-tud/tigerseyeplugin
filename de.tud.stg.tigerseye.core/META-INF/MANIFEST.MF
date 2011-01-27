@@ -26,4 +26,5 @@ Import-Package: org.eclipse.jdt.internal.debug.core.breakpoints,
 Export-Package: 
  de.tud.stg.popart.eclipse,
  de.tud.stg.popart.eclipse.editor,
- de.tud.stg.tigerseye.core
+ de.tud.stg.tigerseye.core,
+ de.tud.stg.tigerseye.launching

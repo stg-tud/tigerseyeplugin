@@ -119,7 +119,7 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 					+ Arrays.toString(clazz.getAnnotations()));
 
 			// check for configuration options
-			Map<String, String> classOptions = GrammarBuilder.getOptions(clazz.getAnnotation(DSL.class), getDefaultOptions());
+			Map<String, String> classOptions = getOptions(clazz.getAnnotation(DSL.class), getDefaultOptions());
 
 			// logger.info("clazz: " + clazz + ", " + classOptions + " : " + getDefaultOptions() + ", ");
 
@@ -190,7 +190,7 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 		}
 	}
 
-	public static String getMethodProduction(AnnotatedElement element, String defaultName) {
+	public String getMethodProduction(AnnotatedElement element, String defaultName) {
 		DSLMethod dslAnnotation = element.getAnnotation(DSLMethod.class);
 
 		String methodProduction = null;
@@ -202,7 +202,7 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 		return assignFirstStringOrDefault(methodProduction, defaultName);
 	}
 
-	public static Map<String, String> getOptions(DSL dslAnnotation, Map<String, String> currentOptions) {
+	public Map<String, String> getOptions(DSL dslAnnotation, Map<String, String> currentOptions) {
 		Map<String, String> resultMap = new HashMap<String, String>();
 
 		if (dslAnnotation != null) {
@@ -221,7 +221,7 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 		return resultMap;
 	}
 
-	private static String assignFirstStringOrDefault(String stringToCheck, String defaultString) {
+	private  String assignFirstStringOrDefault(String stringToCheck, String defaultString) {
 		final String UNASSIGNED = "[unassigned]";
 
 		return (stringToCheck == null || stringToCheck.equals(UNASSIGNED)) ? defaultString : stringToCheck;
@@ -261,7 +261,7 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 		return false;
 	}
 
-	public static class MethodOptions {
+	public  class MethodOptions {
 
 		private final List<Integer> parameterIndices;
 		private final String methodCallName;
@@ -305,10 +305,10 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 	// }
 
 	private void handleMethod(Method method, Map<String, String> methodOptions) {
-		String methodProduction = GrammarBuilder.getMethodProduction(method, method.getName());
+		String methodProduction = getMethodProduction(method, method.getName());
 
-		Pattern[] pattern = GrammarBuilder
-				.getPattern(methodOptions.get("parameterEscape"), methodOptions.get("whitespaceEscape"));
+		Pattern[] pattern = 
+				getPattern(methodOptions.get("parameterEscape"), methodOptions.get("whitespaceEscape"));
 
 		Type[] parameters = method.getGenericParameterTypes();
 
@@ -317,7 +317,7 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 	}
 
 	// TODO: check if caching would speed up this method
-	public static Pattern[] getPattern(String methodParameterEscape, String methodWhitespaceEscape) {
+	public  Pattern[] getPattern(String methodParameterEscape, String methodWhitespaceEscape) {
 		return new Pattern[] {
 				Pattern.compile("((?:\\Q" + methodWhitespaceEscape + "\\E{1,2})|(?:\\Q" + methodParameterEscape
 						+ "\\E\\d+)|(?:(?!(?:\\Q" + methodParameterEscape + "\\E\\d+|\\Q" + methodWhitespaceEscape
@@ -327,7 +327,7 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 				Pattern.compile("\\Q" + methodWhitespaceEscape + "\\E{1,2}") };
 	}
 
-	public static ICategory<String> getWhitespaceCategory(IGrammar<String> grammar, boolean optional) {
+	public  ICategory<String> getWhitespaceCategory(IGrammar<String> grammar, boolean optional) {
 
 		ICategory<String> optionalWhitespaces = new StringCategory("\\s*");
 
@@ -385,9 +385,9 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 
 				if (isWhitespace) {
 					if (keyword.length() == 1) {
-						categories.add(GrammarBuilder.getWhitespaceCategory(this.grammar, true));
+						categories.add(getWhitespaceCategory(this.grammar, true));
 					} else {
-						categories.add(GrammarBuilder.getWhitespaceCategory(this.grammar, false));
+						categories.add(getWhitespaceCategory(this.grammar, false));
 					}
 				} else {
 
@@ -430,7 +430,7 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 					}
 				}
 
-				Map<String, String> parameterOptions = GrammarBuilder.getOptions(parameterDSLAnnotation, methodOptions);
+				Map<String, String> parameterOptions = getOptions(parameterDSLAnnotation, methodOptions);
 
 				ICategory<String> parameterMapping = this.typeHandler.handle(parameterType, parameterOptions);
 				Rule rule = new Rule(parameterCategory, parameterMapping);
@@ -504,7 +504,7 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 		return this.keywords;
 	}
 
-	public static Map<String, String> getDefaultOptions() {
+	public Map<String, String> getDefaultOptions() {
 		Map<String, String> defaultOptions = new HashMap<String, String>();
 		defaultOptions.put("parameterEscape", DEFAULT_PARAMETER_ESCAPE);
 		defaultOptions.put("whitespaceEscape", DEFAULT_WHITESPACE_ESCAPE);

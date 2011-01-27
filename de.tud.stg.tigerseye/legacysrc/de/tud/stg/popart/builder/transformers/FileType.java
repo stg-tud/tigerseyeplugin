@@ -9,7 +9,8 @@ import javax.annotation.CheckForNull;
 
 /**
  * Describes different source file types and the corresponding applied file
- * extensions as they are used in the source and the translated context.
+ * extensions as they are used in the source folder and the translated output
+ * folder context.
  * 
  * @author Leo Roos
  */
@@ -18,13 +19,22 @@ public enum FileType {
 	GROOVY("GROOVY", "groovy.dsl", "groovy"), //
 	POPART("POPART", "dsl", "dsl.groovy"), //
 	DSL("DSL", "notset", "notset"); /*
-									 * XXX When is that used instead of POPART?
-									 * Not actually a filetype. Renaming the
-									 * enum to Domaintype?
+									 * XXX Not actually a FileType. Renaming
+									 * this enumeration to DomainType?
 									 */
 
+	/**
+	 * File extension for this FileType in the Tigerseye source folder context.
+	 */
 	public final String srcFileEnding;
+	/**
+	 * File extension for this FileType in the Tigerseye output folder context,
+	 * for the transformed files.
+	 */
 	public final String outputFileEnding;
+	/**
+	 * This FileTypes descriptive, unique name.
+	 */
 	public final String name;
 
 	private FileType(String name, String srcFileEnding, String outPutFileEnding) {
@@ -34,15 +44,15 @@ public enum FileType {
 	}
 
 	/**
-	 * Tries to determine the {@link FileType} for given
-	 * {@code resourceName}. Since the file endings are ambiguous the
-	 * assumption is made, that the {@link FileType} with the longest internal
-	 * string representation of a file ending that matches the file
-	 * ending of {@code resourceName} is the correct, searched for, type.
+	 * Tries to determine the {@link FileType} for given {@code resourceName}.
+	 * Since the file endings are ambiguous the assumption is made, that the
+	 * {@link FileType} with the longest internal string representation of a
+	 * file ending that matches the file ending of {@code resourceName} is the
+	 * correct, searched for, type.
 	 * 
 	 * @param resourceName
-	 * @return the corresponding {@link FileType} to {@code resourceName}
-	 *         or <code>null</code> if no matching type could be found.
+	 * @return the corresponding {@link FileType} to {@code resourceName} or
+	 *         <code>null</code> if no matching type could be found.
 	 */
 	public static @CheckForNull
 	FileType getTypeForSrcResource(String resourceName) {
@@ -101,6 +111,18 @@ public enum FileType {
 		return -1 * (o1Ending.length() - o2Ending.length());
 	}
 
+	/**
+	 * @return returns a user friendly description of this FileType, e.g. for
+	 *         JAVA:
+	 * 
+	 *         <pre>
+	 * FileType:JAVA[java.dsl,java]
+	 * </pre>
+	 * 
+	 *         where JAVA is the FileType {@link #name}, {@code java.dsl} the
+	 *         {@link #srcFileEnding} and {@code java} the
+	 *         {@link #outputFileEnding}.
+	 */
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + ":" + name + "[" + srcFileEnding

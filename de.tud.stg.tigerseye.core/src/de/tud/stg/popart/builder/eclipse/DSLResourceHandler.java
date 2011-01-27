@@ -17,7 +17,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
@@ -64,35 +63,41 @@ public class DSLResourceHandler implements ResourceHandler {
 	}
 
     @Override
-    public void handleResource(IResource resource) {
-	logger.debug("handling resource {}", resource);
-
-	StringBuffer resourceContent = this.readResource(resource);
-	if (resourceContent == null) {
-	    logger.debug("Skipping unhandled resource {}", resource);
+    public void handleResource(IResource orgresource) {
+	logger.debug("handling resource {}", orgresource);
+	if (!(orgresource instanceof IFile)) {
+	    logger.debug("Skipping resource {}, since not of type IFile",
+		    orgresource);
 	    return;
 	}
-	Context context;
-	try {
-	    context = this.determineInvolvedDSLs(resource, resourceContent);
-	} catch (DSLNotFoundException e) {
-	    logger.error("Resource {} could not be handled. {}", new Object[] {
-		    resource, e.noDSLMsg() }, e);
-	    return;
-	}
-	FileType filetype = FileType.getTypeForSrcResource(resource.getName());
+	IFile srcFile = (IFile) orgresource;
+	FileType filetype = FileType.getTypeForSrcResource(srcFile.getName());
 	if (filetype == null) {
 	    logger.error("No filetype could be determined for {}",
-		    resource.getName());
+		    srcFile.getName());
 	    return;
 	}
-
-	context.setFiletype(filetype);
-	ByteArrayOutputStream transformedContent = getTransformedContent(resourceContent, context);
-
-	IFile outputFile = new OutputPathHandler(filetype)
-		.getProjectRelativeOutputFile(resource);
-	this.writeResourceContent(outputFile, transformedContent);
+	IFile outputFile = new OutputPathHandler().getOutputFile(srcFile);
+	if (outputFile == null) {
+	    logger.error("Can not determine output file for {}", orgresource);
+	    return;
+	}
+	StringBuffer resourceContent = this.readResource(srcFile);
+	if (resourceContent == null) {
+	    logger.error("Skipping unhandled resource {}", srcFile);
+	    return;
+	}
+	try {
+	    Context context = this.determineInvolvedDSLs(srcFile,
+		    resourceContent);
+	    context.setFiletype(filetype);
+	    ByteArrayOutputStream transformedContent = getTransformedContent(
+		    resourceContent, context);
+	    this.writeResourceContent(outputFile, transformedContent);
+	} catch (DSLNotFoundException e) {
+	    logger.debug("Resource {} could not be handled. {}", new Object[] {
+		    srcFile, e.noDSLMsg() }, e);
+	}
     }
 
     private ByteArrayOutputStream getTransformedContent(StringBuffer input,
@@ -129,6 +134,14 @@ public class DSLResourceHandler implements ResourceHandler {
 		return gb;
 	}
 
+    /**
+     * Will perform transformations on the passed input
+     * 
+     * @param resource
+     * @param input
+     * @return
+     * @throws DSLNotFoundException
+     */
 	protected Context determineInvolvedDSLs(IResource resource,
 			StringBuffer input) throws DSLNotFoundException {
 		Context context = new Context(resource.getName());
@@ -168,6 +181,7 @@ public class DSLResourceHandler implements ResourceHandler {
 			}
 		}
 
+	// Has this any effect?
 		for (int[] b : edslAnnotations) {
 			input.delete(b[0], b[1]);
 		}
@@ -209,7 +223,7 @@ public class DSLResourceHandler implements ResourceHandler {
 	    }
 	    if (dslList.size() != 1) {
 
-		logger.error(
+		logger.debug(
 			"Found {} DSLdefinitions for extension {}. Only exactly one active dsl for one extension is a valid configuration. DSLs where {}.",
 			new Object[] { dslList.size(), dslName, dslList });
 		throw new DSLNotFoundException(
@@ -301,27 +315,19 @@ public class DSLResourceHandler implements ResourceHandler {
     /**
      * @param resource
      *            the resource to read
-     * @return The content of {@code resource} or <code>null</code> if resource
-     *         is not a file.
+     * @return The content of {@code resource} or <code>null</code> if resource can not be read
      */
     private @CheckForNull
-    StringBuffer readResource(IResource resource) {
-
-	if (!(IResource.FILE == resource.getType())) {
-	    return null;
-	}
-	StringBuffer buffer = new StringBuffer();
+    StringBuffer readResource(IFile resource) {
 	try {
-	    IPath path = resource.getProjectRelativePath();
-	    IFile file = resource.getProject().getFile(path);
-	    String stringFromReader = IOUtils.toString(file.getContents());
-	    buffer = new StringBuffer(stringFromReader);
+	    String stringFromReader = IOUtils.toString(resource.getContents());
+	    return new StringBuffer(stringFromReader);
 	} catch (IOException e) {
 	    logger.error("Failed to read resource.", e);
 	} catch (CoreException e) {
 	    logger.error("Failed to obtain content of specified resource.", e);
 	}
-	return buffer;
+	return null;
     }
 
     private void writeResourceContent(IFile file, ByteArrayOutputStream content) {

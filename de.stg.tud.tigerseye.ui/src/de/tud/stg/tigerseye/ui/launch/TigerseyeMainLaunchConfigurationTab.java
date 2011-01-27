@@ -3,9 +3,20 @@ package de.tud.stg.tigerseye.ui.launch;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+
+import org.codehaus.groovy.eclipse.launchers.AbstractGroovyLauncherTab;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.ILaunchConfigurationTab;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
@@ -15,112 +26,147 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.debug.ui.launchConfigurations.JavaMainTab;
-import org.eclipse.jdt.launching.AbstractJavaLaunchConfigurationDelegate;
+import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
+import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TigerseyeMainLaunchConfigurationTab extends JavaMainTab
-	implements
+import de.tud.stg.popart.builder.transformers.FileType;
+import de.tud.stg.tigerseye.core.OutputPathHandler;
+import de.tud.stg.tigerseye.core.TigerseyeCore;
+import de.tud.stg.tigerseye.core.TigerseyeImage;
+import de.tud.stg.tigerseye.launching.ITigerseyeLaunchConfigurationConstants;
+
+/**
+ * The Tigerseye launch configuration tab in the Launch Configurations Dialog
+ * for the launch configuration type Tigerseye. <br />
+ * The Tab reuses mainly the JavaMainTab but adjusts function of the search for
+ * Main type button.
+ * 
+ * @author Leo Roos
+ * 
+ */
+public class TigerseyeMainLaunchConfigurationTab extends JavaMainTab implements
 	ILaunchConfigurationTab {
 
     private static final Logger logger = LoggerFactory
 	    .getLogger(TigerseyeMainLaunchConfigurationTab.class);
-
-
-
-    // FIXME move important logic to TigerseyeLaunchConfigurationDelegate to
-    // separate UI from core logic.
-
-    // ----------------------Probably useful methods for delegate
-    /**
-     * 
-     * @see {@link AbstractJavaLaunchConfigurationDelegate#getJavaProject(org.eclipse.debug.core.ILaunchConfiguration)}
-     * @param configuration
-     * @return
-     * @throws CoreException
-     */
-    // public IJavaProject getJavaProject(ILaunchConfiguration configuration)
-    // throws CoreException {
-    // String projectName = getJavaProjectName(configuration);
-    // if (projectName != null) {
-    // projectName = projectName.trim();
-    // if (projectName.length() > 0) {
-    // IProject project = ResourcesPlugin.getWorkspace().getRoot()
-    // .getProject(projectName);
-    // IJavaProject javaProject = JavaCore.create(project);
-    // if (javaProject != null && javaProject.exists()) {
-    // return javaProject;
-    // }
-    // }
-    // }
-    // return null;
-    // }
-
-    // public String getJavaProjectName(ILaunchConfiguration configuration)
-    // throws CoreException {
-    // return configuration.getAttribute(
-    // IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME,
-    // (String) null);
-    // }
-    // ______________________________________________________________________________________________________
+    private Text tigerDsltext;
 
     @Override
     public String getName() {
 	return "TigerseyeMain";
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.jdt.debug.ui.launchConfigurations.JavaMainTab#
-     * handleSearchButtonSelected() copied from AbstractGroovyLauncherTab
-     */
     @Override
-    protected void handleSearchButtonSelected() {
-	IJavaProject javaProject = getJavaProject();
-	/*
-	 * Note that the set of available classes may be zero and hence the
-	 * dialog will obviously not display any classes; in which case the
-	 * project needs to be compiled.
-	 */
+    public void createControl(Composite parent) {
+	super.createControl(parent);
+	Composite control = (Composite) getControl();
+
+	Group correspondingDSLGroup = new Group(control, SWT.NONE);
+	correspondingDSLGroup.setText("Corresponding Tigerseye File:");
+	correspondingDSLGroup.setFont(control.getFont());
+	correspondingDSLGroup.setLayout(new GridLayout());
+	correspondingDSLGroup.setLayoutData(new GridData(SWT.FILL, SWT.TOP,
+		true, false));
+	tigerDsltext = new Text(correspondingDSLGroup, SWT.READ_ONLY
+		| SWT.BORDER);
+	tigerDsltext
+		.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+	tigerDsltext
+		.setToolTipText("The corresponding Tigerseye DSL currently chosen as Main class or none if no corresponding file exists");
+	PlatformUI.getWorkbench().getHelpSystem().setHelp(getControl(), "");
+    }
+
+    @Override
+    public void initializeFrom(ILaunchConfiguration config) {
+	super.initializeFrom(config);
 	try {
-	    final List<IType> availableClasses = findAllRunnableDSLs(javaProject);
-	    if (availableClasses.size() == 0) {
-		MessageDialog
-.openWarning(getShell(), "No classes to run",
-			"There are no compiled classes to run in this project");
-		return;
+	    String attribute = config.getAttribute(
+		    IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME,
+		    (String) null);
+	    if (attribute != null) {
+		IType findType = getJavaProject().findType(attribute);
+		String stringForCorrespondingDSL = getStringForCorrespondingDSL(findType);
+		tigerDsltext.setText(stringForCorrespondingDSL);
 	    }
-	    ListDialog dialog = new ListDialog(getShell());
-	    dialog.setBlockOnOpen(true);
-	    dialog.setMessage("Select a class to run");
-	    dialog.setTitle("Choose DSL Class");
-	    dialog.setContentProvider(new ArrayContentProvider());
-	    dialog.setLabelProvider(new LabelProvider());
-	    dialog.setInput(availableClasses.toArray(new IType[availableClasses
-		    .size()]));
-	    if (dialog.open() == Window.CANCEL) {
-		return;
-	    }
-
-	    Object[] results = dialog.getResult();
-	    if (results == null || results.length == 0) {
-		return;
-	    }
-	    if (results[0] instanceof IType) {
-		fMainText.setText(((IType) results[0]).getFullyQualifiedName());
-	    }
-
-	} catch (Exception e) {
-	    logger.error("Exception when launching " + javaProject, e);
+	} catch (CoreException e) {
+	    // Can be safely ignored
 	}
     }
 
+    /**
+     * 
+     * This method is an adjusted version of
+     * {@link AbstractGroovyLauncherTab#handleSearchButtonSelected()}
+     */
+    @SuppressWarnings("restriction")
+    @Override
+    protected void handleSearchButtonSelected() {
+	/*
+	 * Using _getJavaProject()_ and _fMainText_ from Superclass though the
+	 * access is discouraged. Alternative would be to duplicate the
+	 * functionality.
+	 */
+	IJavaProject javaProject = getJavaProject();
+	List<IType> availableClasses = new LinkedList<IType>();
+	try {
+	    availableClasses = findAllRunnableDSLs(javaProject);
+	} catch (JavaModelException e) {
+	    logger.info("Seach failed for ", e);
+	}
+	if (availableClasses.size() == 0) {
+	    MessageDialog.openWarning(getShell(), "No classes to run",
+		    "There are no compiled classes to run in this project");
+	    return;
+	}
+	ListDialog dialog = new ListDialog(getShell());
+	dialog.setBlockOnOpen(true);
+	dialog.setMessage("Select a class to run");
+	dialog.setTitle("Choose Tigerseye file or GroovyStarter");
+	dialog.setContentProvider(new ArrayContentProvider());
+	dialog.setLabelProvider(new TigerseyesDSLLabelProvider());
+	dialog.setInput(availableClasses.toArray(new IType[availableClasses
+		.size()]));
+	if (dialog.open() == Window.CANCEL) {
+	    return;
+	}
+	Object[] results = dialog.getResult();
+	if (results == null || results.length == 0) {
+	    return;
+	}
+	if (results[0] instanceof IType) {
+	    IType result = (IType) results[0];
+	    fMainText.setText(result.getFullyQualifiedName());
+	    tigerDsltext.setText(getStringForCorrespondingDSL(result));
+	}
+    }
+
+    private @Nonnull
+    String getStringForCorrespondingDSL(IType result) {
+	String tigerTextString = "";
+	IFile tigerFile = extractCorrespondingDSLFile(result);
+	if (tigerFile != null && tigerFile.exists())
+	    tigerTextString = tigerFile.getProjectRelativePath()
+		    .removeFirstSegments(1).toString();
+	return tigerTextString;
+    }
+
+    /**
+     * @see org.codehaus.groovy.eclipse.core.model.GroovyProjectFaced#findAllRunnableTypes()
+     */
     private List<IType> findAllRunnableDSLs(IJavaProject project)
 	    throws JavaModelException {
 	final List<IType> results = new ArrayList<IType>();
@@ -139,21 +185,117 @@ public class TigerseyeMainLaunchConfigurationTab extends JavaMainTab
 		}
 	    }
 	}
+	/*
+	 * Provide easy possibility to use the GroovyStarter to start Tigerseye
+	 * transformed Groovy script instead of directly launching it.
+	 */
+	IType groovyStarter = project
+		.findType(ITigerseyeLaunchConfigurationConstants.GROOVY_STARTER_TYPE_ID);
+	results.add(groovyStarter);
 	return results;
     }
 
     private Collection<? extends IType> findAllRunnableTypes(
-	    ICompilationUnit unit) throws JavaModelException {
-	// List<IType> results = new ArrayList<IType>();
-	IType[] types = unit.getAllTypes();
-	// for (IType type : types) {
-	// if (hasRunnableMain(type)) {
-	// results.add(type);
-	// }
-	// }
-
-	return Arrays.asList(types);
+            ICompilationUnit unit) throws JavaModelException {
+        IType[] types = unit.getAllTypes();
+	List<IType> results = new ArrayList<IType>(types.length);
+	for (IType t : types) {
+	    boolean exists = existsCorrespondingDSLFile(t);
+	    if (exists)
+		results.add(t);
+	}
+        return Arrays.asList(types);
     }
 
+    private boolean existsCorrespondingDSLFile(IType t) {
+	IFile correspondingDSLFile = extractCorrespondingDSLFile(t);
+	if (correspondingDSLFile == null)
+	    return false;
+	return correspondingDSLFile.exists();
+    }
+
+    /**
+     * Handle-only. This method returns the file name if one would exist, it
+     * does not guarantee that is indeed available.
+     * 
+     * @param t
+     * @return
+     */
+    private @CheckForNull
+    IFile extractCorrespondingDSLFile(IType t) {
+	IResource resource = t.getResource();
+	if (resource == null)
+	    return null;
+	IPath fullPath = resource.getProjectRelativePath();
+	String srcName = new OutputPathHandler()
+	    .getSourceNameForOutputName(fullPath.lastSegment());
+	IPath outFileWithSrcFileName = fullPath.removeLastSegments(1).append(
+		srcName);
+	// FIXME should be dynamically searching for source folders
+	IPath srcFile = new Path("src").append(outFileWithSrcFileName
+		.removeFirstSegments(1));
+	IFile correspondingDSLFile = resource.getProject().getFile(srcFile);
+	return correspondingDSLFile;
+    }
+
+    /**
+     * Renders ITypes which originated from
+     * 
+     * @author Leo Roos
+     * 
+     */
+    class TigerseyesDSLLabelProvider extends JavaElementLabelProvider {
+	@Override
+	public Image getImage(Object element) {
+	    if (element instanceof IType) {
+		IResource r = ((IType) element).getResource();
+		if (r instanceof IFile) {
+		    IFile file = (IFile) r;
+		    FileType fileType = FileType
+			    .getTypeForOutputResource(file.getName());
+		    if (fileType != null)
+			return TigerseyeCore.getImage(
+				TigerseyeImage.FileTypeTigerseye)
+				.createImage();
+
+		}
+	    }
+	    return super.getImage(element);
+	}
+
+	@Override
+	public String getText(Object element) {
+	    if (element instanceof IType) {
+		IFile dslFile = extractCorrespondingDSLFile((IType) element);
+		if (dslFile != null && dslFile.exists())
+		    return dslFile.getProjectRelativePath()
+			    .removeFirstSegments(1)
+			    .toString();
+		}
+	    return super.getText(element);
+	}
+
+    }
+
+    @Override
+    public void performApply(ILaunchConfigurationWorkingCopy config) {
+	/**
+	 * Inform TigerseyeLaunchDelegate that user made adjustments and
+	 * therefore the default groovy launch configuration should not be
+	 * chosen.
+	 */
+	config.setAttribute(
+		ITigerseyeLaunchConfigurationConstants.ATTR_IS_DEFAULT_GROOVY_LAUNCH,
+		false);
+	super.performApply(config);
+    }
+
+    @Override
+    public void setDefaults(ILaunchConfigurationWorkingCopy config) {
+	config.setAttribute(
+		ITigerseyeLaunchConfigurationConstants.ATTR_IS_DEFAULT_GROOVY_LAUNCH,
+		true);
+	super.setDefaults(config);
+    }
 
 }

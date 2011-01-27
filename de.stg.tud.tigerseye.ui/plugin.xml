@@ -87,11 +87,21 @@
                id="org.eclipse.jdt.ui.JavaHierarchyPerspective">
          </perspective>
          <perspective
-               id="de.tud.stg.tigerseye.ui.perspective3">
+               id="org.eclipse.jdt.ui.JavaPerspective">
          </perspective>
          <perspective
                id="org.eclipse.jdt.ui.JavaBrowsingPerspective">
          </perspective>
+         <contextualLaunch>
+            <enablement>
+               <with
+                     variable="selection">
+                  <count
+                        value="1">
+                  </count>
+               </with>
+            </enablement>
+         </contextualLaunch>
       </shortcut>
    </extension>
 

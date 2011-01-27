@@ -50,6 +50,17 @@ configuration for some file already exists this should be reused
 otherwise some default configuration should be created with which the
 transformed DSL file will be executed.</p>
 
+<h1>The implementation</h1>
+<p>Tigerseye supports the generation of Java file as well as of
+Groovy files. Depending on which transformed file type has to be
+launched different launch configurations have to be chosen. When
+launching a Java file the default configurations should be enough, i.e.
+extending or just reusing the JavaLaunchDelegate would be enough to only
+support that case. To support launching Groovy scripts the classpath has
+to be set accordingly and the actual type to start is not the groovy
+file but rather the GroovyStarter which can make dynamic adjustments
+which will make the transformed file launch-able.</p>
+<p>Different DSLs might need different Groovy configurations, which is not always self explanatory.</p>
 <h2>References</h2>
 <ul>
 	<li>[1] <a

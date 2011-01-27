@@ -88,7 +88,8 @@ private static final Logger logger = LoggerFactory.getLogger(PreferencesStoreUti
 
 			for (int j = 0; j < numTransformers; j++) {
 				String transformerName = prefs.getString(ROOT + "_DSL_TRANSFORMER_" + j + "_name");
-				boolean checked = prefs.getBoolean(ROOT + "_DSL_TRANSFORMER_" + j + "_checked");
+		boolean checked = prefs.getBoolean(ROOT + "_DSL_TRANSFORMER_"
+			+ j + "_checked");
 
 				dslMap.put(transformerName, checked);
 			}
@@ -98,22 +99,24 @@ private static final Logger logger = LoggerFactory.getLogger(PreferencesStoreUti
 	}
 
     private static Map<String, Map<String, Boolean>> getHostLanguageConfiguration(
-	    IPreferenceStore prefs,
-			Map<String, Map<String, Boolean>> map) {
-		FileType[] types = { FileType.JAVA, FileType.GROOVY, FileType.POPART };
+	    IPreferenceStore prefs, Map<String, Map<String, Boolean>> map) {
+	FileType[] types = { FileType.JAVA, FileType.GROOVY, FileType.POPART };
 
-		for (FileType ft : types) {
-			int numTransformers = prefs.getInt(ROOT + "_" + ft.name() + "_numTransformers");
+	for (FileType ft : types) {
+	    int numTransformers = prefs.getInt(ROOT + "_" + ft.name()
+		    + "_numTransformers");
 
 			Map<String, Boolean> dslMap = new HashMap<String, Boolean>();
-			map.put(ft.name(), dslMap);
+	    map.put(ft.name(), dslMap);
 
 			for (int j = 0; j < numTransformers; j++) {
-				String transformerName = prefs.getString(ROOT + "_" + ft.name() + "_TRANSFORMER_" + j + "_name");
-				boolean checked = prefs.getBoolean(ROOT + "_" + ft.name() + "_TRANSFORMER_" + j + "_checked");
+		String transformerName = prefs.getString(ROOT + "_" + ft.name()
+			+ "_TRANSFORMER_" + j + "_name");
+		boolean checked = prefs.getBoolean(ROOT + "_" + ft.name()
+			+ "_TRANSFORMER_" + j + "_checked");
 
 				dslMap.put(transformerName, checked);
-			}
+	    }
 		}
 	return map;
 	}

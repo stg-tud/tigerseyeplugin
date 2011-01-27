@@ -20,6 +20,6 @@ public interface Transformation {
 	/**
 	 * @return the {@link FileType} for which this transformer can be used.
 	 */
-	public Set<FileType> getSupportedFiletypes();
+	public Set<FileType> getSupportedFileTypes();
 
 }

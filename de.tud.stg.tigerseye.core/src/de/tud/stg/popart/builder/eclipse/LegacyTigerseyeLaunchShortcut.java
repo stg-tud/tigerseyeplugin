@@ -4,7 +4,6 @@ import org.codehaus.groovy.eclipse.launchers.AbstractGroovyLaunchShortcut;
 import org.codehaus.groovy.eclipse.launchers.GroovyScriptLaunchShortcut;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.ui.ILaunchShortcut;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -64,7 +63,7 @@ public class LegacyTigerseyeLaunchShortcut extends AbstractGroovyLaunchShortcut
 		    + file);
 	    return;
 	}
-		IFile delegatedFile = getDelegatedFile(file, filetype);
+	IFile delegatedFile = getDelegatedFile(file);
 	if (delegatedFile == null) {
 	    cannotRunTigerseyeErrorMessageDialog("Failed to determine output file name for "
 		    + file + " and filetype " + filetype);
@@ -126,11 +125,9 @@ public class LegacyTigerseyeLaunchShortcut extends AbstractGroovyLaunchShortcut
 	}
 
     private
-    IFile getDelegatedFile(IFile file, FileType filetype) {
-		IPath projectRelativePath = file.getProjectRelativePath();
-		IPath delegatedPath = new OutputPathHandler(filetype)
-				.getProjectRelativePath(projectRelativePath);
-		IFile delegatedFile = file.getProject().getFile(delegatedPath);
+ IFile getDelegatedFile(IFile file) {
+
+	IFile delegatedFile = new OutputPathHandler().getOutputFile(file);
 		return delegatedFile;
 	}
 

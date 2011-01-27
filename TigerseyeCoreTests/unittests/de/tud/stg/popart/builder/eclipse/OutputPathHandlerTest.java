@@ -1,5 +1,6 @@
 package de.tud.stg.popart.builder.eclipse;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -12,6 +13,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -70,7 +72,7 @@ public class OutputPathHandlerTest {
 	
 	Path originialPath = new Path(originalSrcRelPath.getPath());	
 	FileType filetype = FileType.getTypeForSrcResource(originalSrcRelPath.toString());
-	IPath fileOutputPath = new OutputPathHandler(filetype, OUTPUT_DIRECTORY).getSrcRelativeOutputPath(originialPath);
+	IPath fileOutputPath = new OutputPathHandler(OUTPUT_DIRECTORY).getSrcRelativeOutputPath(originialPath);
 	File generatedOutputFile = fileOutputPath.toFile();
 	logger.debug("for path {} was generated {} ", originialPath, fileOutputPath);
 	assertEquals("Generated name does not equal expected",
@@ -79,29 +81,38 @@ public class OutputPathHandlerTest {
     
     private static IPath actualOutputPath = null;
     
+    private IProject getProjectgetFileMock(IPath pathOfReturnedFile){
+    	IProject mock = mock(IProject.class);
+    	when(mock.getFile(any(IPath.class))).thenReturn(getFileMock(pathOfReturnedFile, mock));
+    	return mock;
+    }
+    
+    private IFile getFileMock(IPath path, IProject project){
+    	IFile resource = mock(IFile.class);
+    	when(resource.getProjectRelativePath()).thenReturn(path);
+    	when(resource.getProject()).thenReturn(project);
+    	return resource;
+    }
+    
     @Test
-    public void testProjRelativeOutputFile() throws Exception {
+    public void testOutputFile() throws Exception {
 	//setup
-	File origin = new File("/src/only/src/matters.any.thing");
-	Path outputDirectory = new Path(OUTPUT_DIRECTORY);
+	File origin = new File("/src/only/src/matters.sql."+FileType.POPART.srcFileEnding);
 		
-	IProject project = mock(IProject.class);
+	final IProject project = mock(IProject.class);
 	when(project.getFile(any(IPath.class))).thenAnswer(new Answer<IFile>() {
 
 	    @Override
 	    public IFile answer(InvocationOnMock invocation) throws Throwable {
 		actualOutputPath = (IPath) invocation.getArguments()[0];
-		return null;
+		return getFileMock(actualOutputPath, project);
 	    }
 	});	
-	IResource resource = mock(IResource.class);
-	when(resource.getProjectRelativePath()).thenReturn(new Path(origin.getName()));
-	when(resource.getProject()).thenReturn(project);
-	OutputPathHandler resourceHandler = mock(OutputPathHandler.class);
-	when(resourceHandler.getProjectRelativeOutputFile(any(IResource.class))).thenCallRealMethod();
-	when(resourceHandler.getProjectRelativePath(any(IPath.class))).thenReturn(outputDirectory.append(new Path("/forced/Return")));
+	IFile resource = getFileMock(new Path(origin.getPath()), project);
+	OutputPathHandler resourceHandler = new OutputPathHandler(OUTPUT_DIRECTORY);
+//	when(resourceHandler.getProjectRelativePath(any(IPath.class))).thenReturn(outputDirectory.append(new Path("/forced/Return")));
 	//execute
-	resourceHandler.getProjectRelativeOutputFile(resource);
+	resourceHandler.getOutputFile(resource);
 	//validate
 	logger.debug("For origin {} generated {}", origin, actualOutputPath.toFile());
 	assertEquals(new File(OUTPUT_DIRECTORY), getRootFolder(actualOutputPath.toFile()));
@@ -129,18 +140,71 @@ public class OutputPathHandlerTest {
     public void testProjRelativeOutputPath() throws Exception {
 	//setup
 	String outputDir = "src-tigerseye";
-	String origin = new File("/src/only/src/matters.any.dsl").getPath();
-	String expected = new File(new File(outputDir) ,"/only/src/matters.any.thing").getPath();
+	String origin = new File("/only/src/matters.any.dsl").getPath();
+	String expected = new File("/only/src/matters$_any_dsl.groovy").getPath();
 	
 	Path projRelOriginPath = new Path(origin);	
-	OutputPathHandler resourceHandler = new OutputPathHandler(FileType.POPART, OUTPUT_DIRECTORY);
+	OutputPathHandler resourceHandler = new OutputPathHandler(OUTPUT_DIRECTORY);
 	resourceHandler.setLocalOutputDirectoryName(outputDir);
 	//execute
-	IPath actual = resourceHandler.getProjectRelativePath(projRelOriginPath);
+	IPath actual = resourceHandler.getSrcRelativeOutputPath(projRelOriginPath);
 	//validate
 	logger.debug("For origin {} generated {}", origin, actual.toFile());
-	assertEquals(getRootFolder(new Path(expected).toFile()), getRootFolder(actual.toFile()));
+	assertEquals(new File(expected), actual.toFile());
     }
+    
+    @Test
+	public void testGetSrcNameForOutputNameJava() throws Exception {		    
+    	String outputName = "myjavafile.java";
+    	String expected = "myjavafile.java.dsl";    	    	
+		assertCorrectOutputforSourceName( outputName, expected);
+	}
+    
+    @Test
+	public void testGetSrcNameForOutputNamePureGroovy() throws Exception {		    
+    	String outputName = "myjavafile.groovy";
+    	String expected = "myjavafile.groovy.dsl";    	    	
+		assertCorrectOutputforSourceName(outputName, expected);
+	}
+    
+    @Test
+	public void testGetSrcNameForOutputNameDsl1() throws Exception {		    
+    	String outputName = "myjavafile$_sql_dsl.groovy";
+    	String expected = "myjavafile.sql.dsl";    	    	
+		assertCorrectOutputforSourceName(outputName, expected);
+	}
+    
+    @Test
+	public void testGetSrcNameForOutputNameDsl2() throws Exception {		    
+    	String outputName = "myjavafile$_sql_set_cond_foreach_dsl.groovy";
+    	String expected = "myjavafile.sql.set.cond.foreach.dsl";    	    	
+		assertCorrectOutputforSourceName(outputName, expected);
+	}
+    
+    @Test
+	public void testGetSrcNameForOutputNameIllegaluseofdsl() throws Exception {		    
+    	String outputName = "myjavafile$_sql_set_cond_foreach_dsl.groovy.notexistent";    	    	
+		assertCorrectOutputforSourceName(outputName, null);
+	}
+    
+    @Test(expected=IllegalArgumentException.class)
+	public void testGetSrcNameForOutputNameIllegalusedslformat() throws Exception {		    
+    	String outputName = "myjavafile$_sql_set_cond_foreach.dsl.groovy";	    	
+		assertCorrectOutputforSourceName( outputName, "");
+	}
+    
+    @Ignore("Not sure if this should be treated as illegal format")
+    @Test(expected=IllegalArgumentException.class)
+	public void testGetSrcNameForOutputNameIllegalformat2() throws Exception {		    
+    	String outputName = "myjavafile$sql_set_cond_foreach_dsl.groovy";	    	
+		assertCorrectOutputforSourceName(outputName, "");
+	}
+
+	private void assertCorrectOutputforSourceName(String outputName, String expected) {
+		OutputPathHandler outputPathHandler = new OutputPathHandler(OUTPUT_DIRECTORY);
+    	String actual = outputPathHandler.getSourceNameForOutputName(outputName);
+    	assertEquals(expected, actual);
+	}
 
     
 }

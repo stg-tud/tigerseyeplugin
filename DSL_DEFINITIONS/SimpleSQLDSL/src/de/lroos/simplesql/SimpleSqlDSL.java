@@ -12,7 +12,7 @@ import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeyword;
 
 /**
- * {@link SimpleSqlDSL} is a small DSL modelling a very simple subset of SQL operations
+ * {@link SimpleSqlDSL} is a small DSL modeling a very simple subset of SQL operations
  *
  * @author Kamil Erhard
  *

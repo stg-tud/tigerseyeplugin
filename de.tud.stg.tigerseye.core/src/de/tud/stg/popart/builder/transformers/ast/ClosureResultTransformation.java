@@ -118,7 +118,7 @@ private static final Logger logger = LoggerFactory.getLogger(ClosureResultTransf
 	}
 
 	@Override
-	public Set<FileType> getSupportedFiletypes() {
+	public Set<FileType> getSupportedFileTypes() {
 		return TransformationUtils.getSetForFiletypes(FileType.GROOVY);
 	}
 

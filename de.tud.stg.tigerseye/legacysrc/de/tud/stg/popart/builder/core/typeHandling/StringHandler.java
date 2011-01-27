@@ -12,7 +12,7 @@ public class StringHandler implements ClassTypeHandler {
 
 	@Override
 	public ICategory<String> handle(IGrammar<String> grammar, Class<?> clazz, Map<String, String> parameterOptions) {
-		ICategory<String> stringCategory = HandlingDispatcher.getObjectHierarchy(grammar, String.class);
+		ICategory<String> stringCategory = new HandlingDispatcher().getObjectHierarchy(grammar, String.class);
 
 		String stringQuotation = parameterOptions.get("stringQuotation");
 

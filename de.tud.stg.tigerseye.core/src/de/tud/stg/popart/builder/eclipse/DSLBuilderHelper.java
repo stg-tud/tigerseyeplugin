@@ -2,7 +2,6 @@ package de.tud.stg.popart.builder.eclipse;
 
 import java.util.*;
 
-import org.apache.commons.lang.UnhandledException;
 import org.eclipse.core.runtime.CoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,14 +22,12 @@ import de.tud.stg.tigerseye.core.TransformationHandler;
  * what it does now or move the different functionalities.
  * 
  */
-public class DSLBuilderHelper implements
-		ITransformerConfigurationListener {
+public class DSLBuilderHelper implements ITransformerConfigurationListener {
 
+    private static final Logger logger = LoggerFactory
+	    .getLogger(DSLBuilderHelper.class);
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(DSLBuilderHelper.class);
-
-    private final List<Class<? extends Transformation>> transformations = new ArrayList<Class<? extends Transformation>>();
+    private final List<TransformationHandler> transformations = new ArrayList<TransformationHandler>();
 
     private final Map<String, Map<String, Boolean>> transformers = new HashMap<String, Map<String, Boolean>>();
 
@@ -55,100 +52,56 @@ public class DSLBuilderHelper implements
 	this.transformations.clear();
 	ArrayList<TransformationHandler> configuredTransformations = TigerseyeCore
 		.getConfiguredTransformations();
-	for (TransformationHandler transformation : configuredTransformations) {
-	    this.addToList(transformation.getTransformation());
+	transformations.clear();
+	transformations.addAll(configuredTransformations);
+    }
+
+    private List<ASTTransformation> getASTTransformations() {
+	ArrayList<ASTTransformation> arrayList = new ArrayList<ASTTransformation>();
+	for (TransformationHandler t : transformations) {
+	    Transformation newInstance = t.getTransformation();
+	    if (newInstance instanceof ASTTransformation) {
+		arrayList.add((ASTTransformation) newInstance);
+	    }
 	}
+	return arrayList;
+    }
+
+    private List<TextualTransformation> getTextualTransformations() {
+	ArrayList<TextualTransformation> arrayList = new ArrayList<TextualTransformation>();
+	for (TransformationHandler t : transformations) {
+	    Transformation newInstance = t.getTransformation();
+	    if (newInstance instanceof TextualTransformation) {
+		arrayList.add((TextualTransformation) newInstance);
+	    }
+	}
+	return arrayList;
     }
 
 
+    @Override
+    public Map<FileType, Collection<TransformationHandler>> getAvailableTransformers() {
 
-	private void addToList(Transformation t) {
-		if ((t instanceof ASTTransformation) || (t instanceof TextualTransformation)) {
-			transformations.add(t.getClass());
-		} else {
-			throw new IllegalArgumentException(
-					"Unsupported transformation type");
+	Map<FileType, Collection<TransformationHandler>> map = new HashMap<FileType, Collection<TransformationHandler>>();
+
+	for (FileType filetype : FileType.values()) {
+	    List<TransformationHandler> list = new LinkedList<TransformationHandler>();
+
+	    for (TransformationHandler t : transformations) {
+		Set<FileType> supportedFileExtensions = t.getTransformation()
+			.getSupportedFileTypes();
+		if (supportedFileExtensions.contains(filetype)) {
+		    list.add(t);
 		}
+	    }
+
+	    map.put(filetype, list);
 	}
+	return map;
+    }
 
-    // TODO #getASTTransformations and # getTextualTransformations do pretty
-    // much the same only for different Superclasses. Should be possible to
-    // generalize the functionality
-	private List<Class<? extends ASTTransformation>> getASTTransformations()
- {
-		ArrayList<Class<? extends ASTTransformation>> arrayList = new ArrayList<Class<? extends ASTTransformation>>();
-		for (Class<? extends Transformation> t : transformations) {
-			Transformation newInstance = getInstantiation(t);
-			if (newInstance instanceof ASTTransformation) {
-				arrayList.add((Class<? extends ASTTransformation>) newInstance
-						.getClass());
-			}
-		}
-		return arrayList;
-	}
-
-	private List<Class<? extends TextualTransformation>> getTextualTransformations() {
-		ArrayList<Class<? extends TextualTransformation>> arrayList = new ArrayList<Class<? extends TextualTransformation>>();
-		for (Class<? extends Transformation> t : transformations) {
-			Transformation newInstance = getInstantiation(t);
-			if (newInstance instanceof TextualTransformation) {
-				arrayList
-						.add((Class<? extends TextualTransformation>) newInstance
-								.getClass());
-			}
-		}
-		return arrayList;
-	}
-
-	private Transformation getInstantiation(Class<? extends Transformation> t) {
-		try {
-			return t.newInstance();
-		} catch (InstantiationException e) {
-			throw new UnhandledException(e);
-		} catch (IllegalAccessException e) {
-			throw new UnhandledException(e);
-		}
-	}
-
-	@Override
-	public Map<String, Collection<String>> getAvailableTransformers(
-			String extension) {
-
-		Map<String, Collection<String>> map = new HashMap<String, Collection<String>>();
-
-		List<Transformation> transformers = new LinkedList<Transformation>();
-		for (Class<? extends Transformation> clazz : transformations) {
-			try {
-				transformers.add(clazz.newInstance());
-			} catch (InstantiationException e) {
-				logger.error("Transformer class instantiation failed", e);
-			} catch (IllegalAccessException e) {
-				logger.error("Transformer class instantiation failed", e);
-			}
-		}
-
-	for (FileType ext : FileType.values()) {
-			List<String> list = new LinkedList<String>();
-
-			for (Transformation t : transformers) {
-		Set<FileType> supportedFileExtensions = t
-						.getSupportedFiletypes();
-				if (supportedFileExtensions.contains(ext)) {
-					list.add(t.getClass().getCanonicalName());
-				}
-			}
-
-			map.put(ext.name, list);
-		}
-
-		// Adding empty list to avoid null pointer in using class
-		map.put(extension, new LinkedList<String>());
-
-		return map;
-	}
-
-    private <T> Collection<T> getConfiguredTransformers(
-			Collection<Class<? extends T>> availableTransformers,
+    private <T extends Transformation> Collection<T> getConfiguredTransformers(
+	    Collection<T> availableTransformers,
 	    FileType filetype, String... extensions) {
 	try {
 	    setConfiguredTransformations();
@@ -156,119 +109,114 @@ public class DSLBuilderHelper implements
 	    logger.error("Failed to return transformations.");
 	    return new ArrayList<T>();
 	}
-		Set<Class<? extends T>> set = new LinkedHashSet<Class<? extends T>>();
+	Set<T> set = new LinkedHashSet<T>();
 
-		for (Class<? extends T> clazz : availableTransformers) {
-			// interessted in filetype
-			Boolean active = this.getMap(filetype.name()).get(
-					clazz.getCanonicalName());
+	for (T clazz : availableTransformers) {
+	    // interessted in filetype
+	    Boolean active = this.getMap(filetype.name()).get(
+		    clazz.getClass().getCanonicalName());
 
-			if ((active != null) && active.booleanValue()) {
-				set.add(clazz);
+	    if ((active != null) && active.booleanValue()) {
+		set.add(clazz);
 
-			} else {
-				for (String ext : extensions) {
-					// interessted in dsl extension
-					active = this.getMap(ext).get(clazz.getCanonicalName());
+	    } else {
+		for (String ext : extensions) {
+		    // interessted in dsl extension
+		    active = this.getMap(ext).get(
+			    clazz.getClass().getCanonicalName());
 
-					if ((active != null) && active.booleanValue()) {
-						set.add(clazz);
-						break;
-					}
-				}
-			}
+		    if ((active != null) && active.booleanValue()) {
+			set.add(clazz);
+			break;
+		    }
 		}
-
-		Collection<T> result = new ArrayList<T>(set.size());
-		try {
-			for (Class<? extends T> clazz : set) {
-				result.add(clazz.newInstance());
-			}
-		} catch (InstantiationException e) {
-			logger.warn("Generated log statement", e);
-		} catch (IllegalAccessException e) {
-			logger.warn("Generated log statement", e);
-		}
-
-		logger.trace("For filetype " + filetype + " available transformers"
-				+ Arrays.toString(availableTransformers.toArray()));
-		logger.trace("For extensions " + Arrays.toString(extensions)
-				+ " configured transformers  " + set);
-		return result;
+	    }
 	}
+
+	Collection<T> result = new ArrayList<T>(set.size());
+	for (T clazz : set) {
+	    result.add(clazz);
+	    }
+
+	logger.trace("For filetype " + filetype + " available transformers"
+		+ Arrays.toString(availableTransformers.toArray()));
+	logger.trace("For extensions " + Arrays.toString(extensions)
+		+ " configured transformers  " + set);
+	return result;
+    }
 
     public Collection<TextualTransformation> getConfiguredTextualTransformers(
 	    FileType filetype, String... extensions) {
-		return this.getConfiguredTransformers(getTextualTransformations(),
-				filetype,
-				extensions);
-	}
-
-	public Collection<ASTTransformation> getConfiguredASTTransformers(
-	    FileType filetype, String... extensions) {
-		return this.getConfiguredTransformers(getASTTransformations(),
-				filetype,
-				extensions);
-	}
-
-	@Override
-	public String getInformation(String transformer) {
-
-		try {
-			Transformation t = (Transformation) Class.forName(transformer)
-					.newInstance();
-			return this.getTransformerInformation(t);
-		} catch (Exception e) {
-			logger.warn("Generated log statement", e);
-		}
-
-		return null;
-	}
-
-	private String getTransformerInformation(Transformation t) {
-		String description = t.getDescription();
-		Set<String> assurances = new HashSet<String>();
-		Set<String> requirements = new HashSet<String>();
-
-		if (t instanceof TextualTransformation) {
-			assurances = ((TextualTransformation) t).getAssurances();
-			requirements = ((TextualTransformation) t).getRequirements();
-		} else if (t instanceof ASTTransformation) {
-			// XXX when is this used?
-			Set<ATerm> assurances2 = ((ASTTransformation) t).getAssurances();
-			Set<ATerm> requirements2 = ((ASTTransformation) t)
-					.getRequirements();
-
-			for (ATerm aterm : assurances2) {
-				assurances.add(aterm.toString());
-			}
-			for (ATerm aterm : requirements2) {
-				requirements.add(aterm.toString());
-			}
-		}
-
-	Set<FileType> supportedFileExtensions = t.getSupportedFiletypes();
-
-		return "Description:\n" + description + "\n\nSupported Filetypes:\n"
-				+ supportedFileExtensions + "\n\nRequirements:\n"
-				+ requirements + "\n\nAssurances:\n" + assurances;
+	return this.getConfiguredTransformers(getTextualTransformations(),
+		filetype, extensions);
     }
 
-	@Override
-	public void setEnabled(String extension, String transformer, boolean enabled) {
-		Map<String, Boolean> map = this.getMap(extension);
+    public Collection<ASTTransformation> getConfiguredASTTransformers(
+	    FileType filetype, String... extensions) {
+	return this.getConfiguredTransformers(getASTTransformations(),
+		filetype, extensions);
+    }
 
-		map.put(transformer, enabled);
+    @Override
+    public String getInformation(String transformer) {
+	Transformation t;
+	try {
+	    t = (Transformation) Class.forName(transformer).newInstance();
+	    return this.getTransformerInformation(t);
+	} catch (InstantiationException e) {
+	    logger.warn("Generated log statement", e);
+	} catch (IllegalAccessException e) {
+	    logger.warn("Generated log statement", e);
+	} catch (ClassNotFoundException e) {
+	    logger.warn("Generated log statement", e);
 	}
+	return null;
+    }
+
+    private String getTransformerInformation(Transformation t) {
+	String description = t.getDescription();
+	Set<String> assurances = new HashSet<String>();
+	Set<String> requirements = new HashSet<String>();
+
+	if (t instanceof TextualTransformation) {
+	    assurances = ((TextualTransformation) t).getAssurances();
+	    requirements = ((TextualTransformation) t).getRequirements();
+	} else if (t instanceof ASTTransformation) {
+	    // XXX when is this used?
+	    Set<ATerm> assurances2 = ((ASTTransformation) t).getAssurances();
+	    Set<ATerm> requirements2 = ((ASTTransformation) t)
+		    .getRequirements();
+
+	    for (ATerm aterm : assurances2) {
+		assurances.add(aterm.toString());
+	    }
+	    for (ATerm aterm : requirements2) {
+		requirements.add(aterm.toString());
+	    }
+	}
+
+	Set<FileType> supportedFileExtensions = t.getSupportedFileTypes();
+
+	return "Description:\n" + description + "\n\nSupported Filetypes:\n"
+		+ supportedFileExtensions + "\n\nRequirements:\n"
+		+ requirements + "\n\nAssurances:\n" + assurances;
+    }
+
+    @Override
+    public void setEnabled(String extension, String transformer, boolean enabled) {
+	Map<String, Boolean> map = this.getMap(extension);
+
+	map.put(transformer, enabled);
+    }
 
     private Map<String, Boolean> getMap(String extension) {
-		Map<String, Boolean> map = transformers.get(extension);
+	Map<String, Boolean> map = transformers.get(extension);
 
-		if (map == null) {
-			map = new HashMap<String, Boolean>();
-			transformers.put(extension, map);
-		}
-
-		return map;
+	if (map == null) {
+	    map = new HashMap<String, Boolean>();
+	    transformers.put(extension, map);
 	}
+
+	return map;
+    }
 }

@@ -164,7 +164,7 @@
    <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
-            delegate="org.eclipse.jdt.launching.JavaLaunchDelegate"
+            delegate="de.tud.stg.tigerseye.launching.TigerseyeLaunchDelegate"
             delegateDescription="The standard Eclipse launcher for Java files."
             delegateName="Eclipse JDT Launcher"
             id="de.tud.stg.tigerseye.eclipse.core.tigerseyeLaunchConfigurationType"

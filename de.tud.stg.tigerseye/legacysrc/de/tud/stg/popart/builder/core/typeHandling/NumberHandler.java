@@ -26,7 +26,7 @@ public class NumberHandler implements ClassTypeHandler {
 
 	private ICategory<String> handleInteger(IGrammar<String> grammar, Class<?> clazz,
 			Map<String, String> parameterOptions) {
-		ICategory<String> numberCategory = HandlingDispatcher.getObjectHierarchy(grammar, Integer.class);
+		ICategory<String> numberCategory = new HandlingDispatcher().getObjectHierarchy(grammar, Integer.class);
 
 		Category group = new IntegerCategory();
 
@@ -44,7 +44,7 @@ public class NumberHandler implements ClassTypeHandler {
 	}
 
 	private ICategory<String> handleReal(IGrammar<String> grammar, Class<?> clazz, Map<String, String> parameterOptions) {
-		ICategory<String> doubleCategory = HandlingDispatcher.getObjectHierarchy(grammar, Double.class);
+		ICategory<String> doubleCategory = new HandlingDispatcher().getObjectHierarchy(grammar, Double.class);
 
 		Category group = new DoubleCategory();
 		Category floatCategory = new Category("Float", false);

@@ -13,10 +13,13 @@ import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import de.tud.stg.parlex.core.Category;
+import de.tud.stg.parlex.core.Grammar;
 import de.tud.stg.parlex.core.ICategory;
 import de.tud.stg.parlex.core.IGrammar;
+import de.tud.stg.parlex.core.IRule;
 import de.tud.stg.parlex.core.Rule;
 import de.tud.stg.popart.builder.core.GrammarBuilder;
 
@@ -25,9 +28,9 @@ private static final Logger logger = LoggerFactory.getLogger(HandlingDispatcher.
 
 
 	private final IGrammar<String> grammar;
-	private final static Map<Class<?>, ClassTypeHandler> classHandlers = new HashMap<Class<?>, ClassTypeHandler>();
+	private final Map<Class<?>, ClassTypeHandler> classHandlers = new HashMap<Class<?>, ClassTypeHandler>();
 
-	static {
+	private void initHandlers() {
 		registerTypeHandler(new StringHandler(), String.class);
 		registerTypeHandler(new BooleanHandler(), Boolean.class, boolean.class);
 		registerTypeHandler(new NumberHandler(), Integer.class, int.class, Double.class, double.class, Float.class,
@@ -36,16 +39,77 @@ private static final Logger logger = LoggerFactory.getLogger(HandlingDispatcher.
 		registerTypeHandler(new ClassHandler(), Class.class);
 	}
 
-	public static void registerTypeHandler(ClassTypeHandler handler, Class<?>... types) {
+	private void registerTypeHandler(ClassTypeHandler handler, Class<?>... types) {
 		if (types != null) {
 			for (Class<?> type : types) {
 				classHandlers.put(type, handler);
 			}
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	public HandlingDispatcher(){
+		this(new IGrammar<String>(){
 
+			@Override
+			public void setCategories(Set categories) {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public Set getCategories() {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public void setRules(Set rules) {
+				throw new UnsupportedOperationException();
+				
+			}
+
+			@Override
+			public Set getRules() {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public void setStartRule(IRule startRule) {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public IRule getStartRule() {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public void addRule(IRule rule) {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public void addRules(IRule... rules) {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public void addCategory(ICategory category) {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public void addCategories(ICategory... categories) {
+				throw new UnsupportedOperationException();
+			}});
+	}
+
+	/**
+	 * FIXME never used?
+	 * @param grammar
+	 */
 	public HandlingDispatcher(IGrammar<String> grammar) {
 		this.grammar = grammar;
+		initHandlers();
 	}
 
 	public ICategory<String> handle(Type type, Map<String, String> parameterOptions) {
@@ -125,15 +189,18 @@ private static final Logger logger = LoggerFactory.getLogger(HandlingDispatcher.
 
 		ICategory<String> object = this.getObjectHierarchy(this.grammar, clazz.getComponentType());
 
+		//FIXME GrammarBuilder has obviously some methods used by different classes independently, he should be decomposed in independent modules 
+		GrammarBuilder gb = new GrammarBuilder();
+		
 		Rule r1 = null;
 		if (parameterOptions.get("arrayDelimiter").matches("\\s+")) {
-			r1 = new Rule(objects, objects, GrammarBuilder.getWhitespaceCategory(this.grammar, false), objects);
+			r1 = new Rule(objects, objects, gb.getWhitespaceCategory(this.grammar, false), objects);
 		} else if (parameterOptions.get("arrayDelimiter").isEmpty()) {
 			r1 = new Rule(objects, objects, objects);
 		} else {
 			Category ad = new Category(parameterOptions.get("arrayDelimiter"), true);
 			this.grammar.addCategory(ad);
-			ICategory<String> WS = GrammarBuilder.getWhitespaceCategory(this.grammar, true);
+			ICategory<String> WS = gb.getWhitespaceCategory(this.grammar, true);
 			r1 = new Rule(objects, objects, WS, ad, WS, objects);
 		}
 
@@ -152,7 +219,7 @@ private static final Logger logger = LoggerFactory.getLogger(HandlingDispatcher.
 		return object;
 	}
 
-	static ICategory<String> getExplicitObjectHierarchy(IGrammar<String> grammar, Class<?> clazz) {
+	ICategory<String> getExplicitObjectHierarchy(IGrammar<String> grammar, Class<?> clazz) {
 		if (clazz == null) {
 			return null;
 		}
@@ -180,7 +247,7 @@ private static final Logger logger = LoggerFactory.getLogger(HandlingDispatcher.
 		return nodeCategory;
 	}
 
-	static ICategory<String> getObjectHierarchy(IGrammar<String> grammar, Class<?> clazz) {
+	 ICategory<String> getObjectHierarchy(IGrammar<String> grammar, Class<?> clazz) {
 		// if (clazz == null) {
 		// return null;
 		// }

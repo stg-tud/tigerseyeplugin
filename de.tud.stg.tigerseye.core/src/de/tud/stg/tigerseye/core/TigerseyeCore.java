@@ -45,8 +45,8 @@ public class TigerseyeCore {
 	return TigerseyeCoreActivator.getDefault().getPreferenceStore();
     }
 
-    public static ImageDescriptor getImageByName(String imageName) {
-	String imagePath = "/icons/" + imageName;
+    public static ImageDescriptor getImage(TigerseyeImage imageName) {
+	String imagePath = "/icons/" + imageName.imageName;
 	return TigerseyeCoreActivator.getImageDescriptor(imagePath);
     }
 

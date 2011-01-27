@@ -91,7 +91,7 @@ public class PackageImporter implements TextualTransformation {
 	}
 
 	@Override
-	public Set<FileType> getSupportedFiletypes() {
+	public Set<FileType> getSupportedFileTypes() {
 		return TransformationUtils.getSetForFiletypes(FileType.POPART,
 				FileType.JAVA, FileType.GROOVY);
 	}
