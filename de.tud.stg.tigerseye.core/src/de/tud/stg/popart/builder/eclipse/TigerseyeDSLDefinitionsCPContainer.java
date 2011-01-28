@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 
-// could have common superclass with the more general TigerseyeDSLDefinitionsCPContainer
 public class TigerseyeDSLDefinitionsCPContainer implements IClasspathContainer {
 
     public static final IPath CONTAINER_ID = new Path(

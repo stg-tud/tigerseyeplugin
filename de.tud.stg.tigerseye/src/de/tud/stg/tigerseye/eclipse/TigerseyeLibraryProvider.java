@@ -26,20 +26,19 @@ public class TigerseyeLibraryProvider extends Plugin {
 		return plugin;
 	}
 
-	public static File getTigerseyeRuntimeLibraryFolder() {
+	/**
+	 * @return the folder containing the minimal dependencies for a project with Tigerseye nature.
+	 * @throws IOException
+	 */
+	public static File getTigerseyeRuntimeLibraryFolder() throws IOException {
 		String runtimeJarsFolder = "runtimeJars";
 		File bundleFolder;
-		try {
 			bundleFolder = FileLocator.getBundleFile(getDefault().getBundle());
-		} catch (IOException e) {
-			throw new UnhandledException(e);
-		}
 		File runtimeFolder = new File(bundleFolder, runtimeJarsFolder);
 		if (!runtimeFolder.exists())
 			throw new IllegalStateException(
-					"Couldn't Tigerseye runtime jar folder" + runtimeJarsFolder);
+					"Expected Tigerseye runtime folder does not exist." + runtimeJarsFolder);
 		List<String> runtimeJars = new LinkedList<String>();
-		// The minimal dependencies for a project of Tigerseye nature
 		Collections.addAll(runtimeJars, "edslNature.jar",
 				"popartAnnotations.jar", "popart.jar");
 		String[] listFiles = runtimeFolder.list();

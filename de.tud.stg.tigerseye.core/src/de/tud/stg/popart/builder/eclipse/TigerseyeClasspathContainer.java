@@ -2,6 +2,7 @@ package de.tud.stg.popart.builder.eclipse;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,6 +15,7 @@ import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.JavaCore;
 
 import de.tud.stg.tigerseye.eclipse.TigerseyeLibraryProvider;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeRuntimeException;
 
 public class TigerseyeClasspathContainer implements IClasspathContainer {
 
@@ -31,8 +33,13 @@ public class TigerseyeClasspathContainer implements IClasspathContainer {
 
     public void reset() {
 	cpEntries.clear();
-	File allRuntimeJars = TigerseyeLibraryProvider
-		.getTigerseyeRuntimeLibraryFolder();
+	File allRuntimeJars;
+	try {
+	    allRuntimeJars = TigerseyeLibraryProvider
+		    .getTigerseyeRuntimeLibraryFolder();
+	} catch (IOException e) {
+	    throw new TigerseyeRuntimeException(e);
+	}
 	File[] runtimeJars = allRuntimeJars.listFiles(new FilenameFilter() {
 	    @Override
 	    public boolean accept(File parentFile, String fileName) {
@@ -44,6 +51,13 @@ public class TigerseyeClasspathContainer implements IClasspathContainer {
 	    IClasspathEntry entry2 = JavaCore.newLibraryEntry(path, null, null);
 	    cpEntries.add(entry2);
 	}
+	/*
+	 * FIXME the TigerseyeDSLDefinitionsCPContainer should be added as
+	 * separate container, since it is possible, e.g. when designing
+	 * languages that one only needs the runtime support. Found no working
+	 * solution Hitherto, therefore I just add DSL definition libraries to
+	 * the main runtime Tigerseye class path container.
+	 */
 	IClasspathEntry[] classpathEntries = new TigerseyeDSLDefinitionsCPContainer(project).getClasspathEntries();
 	Collections.addAll(cpEntries, classpathEntries);
     }

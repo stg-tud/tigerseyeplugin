@@ -10,7 +10,7 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.ui.INewWizard;
 
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.PopartLanguageModel;
-import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeRuntime;
 
 /**
  * Wizard for creating language definitions
@@ -56,7 +56,7 @@ public class NewPopartLanguageWizzard extends NewClassWizard implements INewWiza
 	}
 	// FIXME should be language dialog asking for adding the libraries
 	IJavaProject javaProject = newClassPage.getJavaProject();
-	TigerseyeCore
+	TigerseyeRuntime
 		.addTigersEyeRuntimeConfiguration(javaProject.getProject());
 
 	return true;

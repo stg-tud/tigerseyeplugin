@@ -46,6 +46,7 @@ import de.tud.stg.tigerseye.eclipse.core.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
 import de.tud.stg.tigerseye.eclipse.core.PreferenceDSL;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeRuntime;
 
 /**
  * TigerseyeDSLsPreferencesPage is the DSL languages configuration page. It provides
@@ -416,7 +417,7 @@ public class TigerseyeDSLsPreferencesPage extends PreferencePage implements
 	if (logger.isDebugEnabled()) {
 	    outputAllPropertiesInStoreToLog();
 	}
-	TigerseyeCore.updateTigerseyeClassPaths();
+	TigerseyeRuntime.updateTigerseyeClassPaths();
 	return super.performOk();
     }
 

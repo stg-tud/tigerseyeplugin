@@ -1,6 +1,6 @@
 package de.tud.stg.tigerseye.eclipse.core;
 
-
+import javax.annotation.Nonnull;
 
 /**
  * Indicates that the property store does not contain the attribute searched
@@ -9,6 +9,7 @@ package de.tud.stg.tigerseye.eclipse.core;
  * @author Leo Roos
  * 
  */
+@Nonnull
 public class NoLegalPropertyFound extends Exception {
 
     /**
@@ -32,16 +33,16 @@ public class NoLegalPropertyFound extends Exception {
     }
 
     public DSLKey<?> getKey() {
-	if(key == null) {
+	if (key == null) {
 	    key = NullKey;
-	}   
-    return key;
+	}
+	return key;
     }
 
     @Override
     public String toString() {
-
-	return super.toString();
+	return this.getClass().getSimpleName() + ":Key:" + getKey().toString()
+		+ (getMessage() == null ? "" : ":Msg:" + getMessage());
     }
 
 }

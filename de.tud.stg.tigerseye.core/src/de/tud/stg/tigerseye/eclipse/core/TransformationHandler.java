@@ -5,7 +5,8 @@ import javax.annotation.Nonnull;
 import de.tud.stg.popart.builder.transformers.Transformation;
 
 /**
- * This class wraps actual transformations and their attributes.
+ * This class wraps actual transformations and provides access to some meta
+ * attributes.
  * 
  * @author Leo Roos
  * 
@@ -34,8 +35,8 @@ public class TransformationHandler {
     }
 
     /**
-     * @return The user friendly name under which the transformer has been
-     *         registered.
+     * @return The user friendly name under which the {@link Transformation}
+     *         object of this handler has been registered.
      */
     public String getName() {
 	return this.name;

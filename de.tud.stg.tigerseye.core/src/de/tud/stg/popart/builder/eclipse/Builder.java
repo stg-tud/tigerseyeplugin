@@ -20,7 +20,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeRuntime;
 
 //FIXME refactoring and tests for logic
 public class Builder extends IncrementalProjectBuilder {
@@ -43,7 +43,7 @@ public class Builder extends IncrementalProjectBuilder {
 		    if (!(packRoot.getKind() == IPackageFragmentRoot.K_SOURCE))
 			continue;
 		    String path = packRoot.getPath().toString();
-		    if (path.endsWith(TigerseyeCore.getOutputDirectoryPath())) {
+		    if (path.endsWith(TigerseyeRuntime.getOutputDirectoryPath())) {
 			IJavaElement[] resource = packRoot.getChildren();
 			for (IJavaElement iJavaElement : resource) {
 
@@ -113,7 +113,7 @@ public class Builder extends IncrementalProjectBuilder {
 		    if (!(packRoot.getKind() == IPackageFragmentRoot.K_SOURCE))
 			continue;
 
-		    if (!path.endsWith(TigerseyeCore.getOutputDirectoryPath())) {
+		    if (!path.endsWith(TigerseyeRuntime.getOutputDirectoryPath())) {
 			Object[] nonJavaResources = packRoot
 				.getNonJavaResources();
 			for (Object object : nonJavaResources) {

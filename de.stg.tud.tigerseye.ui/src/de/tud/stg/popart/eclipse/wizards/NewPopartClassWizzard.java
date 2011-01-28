@@ -11,7 +11,7 @@ import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeRuntime;
 
 /**
  * NewPopartClassWizzard is used to provide responsibility that makes it
@@ -57,7 +57,7 @@ public class NewPopartClassWizzard extends NewElementWizard {
 
 		    openResource(file);
 
-		    TigerseyeCore
+		    TigerseyeRuntime
 .addTigerseyeDSLUsingConfiguration(fPage
 			    .getProject().getProject());
 

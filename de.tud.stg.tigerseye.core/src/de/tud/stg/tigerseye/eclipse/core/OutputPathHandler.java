@@ -23,7 +23,7 @@ public class OutputPathHandler {
     private String localOutputDirectoryName;
 
     public OutputPathHandler() {
-	this.localOutputDirectoryName = TigerseyeCore.getOutputDirectoryPath();
+	this.localOutputDirectoryName = TigerseyeRuntime.getOutputDirectoryPath();
     }
 
     public OutputPathHandler(String outPutDir) {

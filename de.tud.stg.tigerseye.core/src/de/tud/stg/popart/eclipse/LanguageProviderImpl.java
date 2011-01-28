@@ -12,7 +12,7 @@ import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.ILanguageProvider;
 import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
-import de.tud.stg.tigerseye.eclipse.core.preferences.DSLDefinitionImpl;
+import de.tud.stg.tigerseye.eclipse.core.internal.DSLDefinitionImpl;
 
 /**
  * Provides access to registered DSLs.

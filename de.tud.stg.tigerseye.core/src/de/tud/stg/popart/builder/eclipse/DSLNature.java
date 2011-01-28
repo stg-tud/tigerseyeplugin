@@ -17,8 +17,8 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
-import de.tud.stg.tigerseye.eclipse.core.activator.TigerseyeCoreActivator;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeRuntime;
+import de.tud.stg.tigerseye.eclipse.core.internal.TigerseyeCoreActivator;
 
 //FIXME renaming, refactoring, tests
 public class DSLNature implements IProjectNature {
@@ -107,7 +107,7 @@ public class DSLNature implements IProjectNature {
 	 * stay?) and force a rebuild for all projects
 	 */
 	IClasspathEntry entry = null;
-	IFolder outPutFolder = project.getFolder(TigerseyeCore
+	IFolder outPutFolder = project.getFolder(TigerseyeRuntime
 		.getOutputDirectoryPath());
 	try {
 		outPutFolder.create(false, true, new NullProgressMonitor());

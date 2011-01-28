@@ -1,4 +1,4 @@
-package de.tud.stg.tigerseye.eclipse.core.preferences;
+package de.tud.stg.tigerseye.eclipse.core.internal;
 
 import java.util.HashMap;
 
