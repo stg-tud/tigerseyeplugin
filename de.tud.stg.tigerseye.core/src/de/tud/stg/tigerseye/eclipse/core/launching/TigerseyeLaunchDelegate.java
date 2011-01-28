@@ -1,4 +1,4 @@
-package de.tud.stg.tigerseye.launching;
+package de.tud.stg.tigerseye.eclipse.core.launching;
 
 import java.util.Map;
 import java.util.Map.Entry;

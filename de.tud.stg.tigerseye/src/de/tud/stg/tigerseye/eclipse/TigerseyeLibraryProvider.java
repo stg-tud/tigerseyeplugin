@@ -1,4 +1,4 @@
-package de.tud.stg.tigerseye;
+package de.tud.stg.tigerseye.eclipse;
 
 import java.io.File;
 import java.io.IOException;

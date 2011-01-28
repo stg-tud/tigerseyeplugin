@@ -1,6 +1,8 @@
-package de.tud.stg.tigerseye.core;
+package de.tud.stg.tigerseye.eclipse.core;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+
+
 
 /**
  * A thin {@link DSLDefinition} wrapper for convenient handling when adjusting

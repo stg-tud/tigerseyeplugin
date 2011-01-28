@@ -8,11 +8,11 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
 
-import de.tud.stg.tigerseye.core.DSLDefinition;
-import de.tud.stg.tigerseye.core.DSLKey;
-import de.tud.stg.tigerseye.core.ILanguageProvider;
-import de.tud.stg.tigerseye.core.NoLegalPropertyFound;
-import de.tud.stg.tigerseye.core.preferences.DSLDefinitionImpl;
+import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
+import de.tud.stg.tigerseye.eclipse.core.DSLKey;
+import de.tud.stg.tigerseye.eclipse.core.ILanguageProvider;
+import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
+import de.tud.stg.tigerseye.eclipse.core.preferences.DSLDefinitionImpl;
 
 /**
  * Provides access to registered DSLs.

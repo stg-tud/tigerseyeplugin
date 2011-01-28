@@ -1,4 +1,4 @@
-package de.tud.stg.tigerseye.core;
+package de.tud.stg.tigerseye.eclipse.core.activator;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;

@@ -13,7 +13,7 @@ import org.eclipse.jdt.core.IClasspathContainer;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.JavaCore;
 
-import de.tud.stg.tigerseye.TigerseyeLibraryProvider;
+import de.tud.stg.tigerseye.eclipse.TigerseyeLibraryProvider;
 
 public class TigerseyeClasspathContainer implements IClasspathContainer {
 

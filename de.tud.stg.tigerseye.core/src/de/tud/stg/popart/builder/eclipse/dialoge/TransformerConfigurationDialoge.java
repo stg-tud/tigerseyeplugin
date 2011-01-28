@@ -34,8 +34,8 @@ import org.slf4j.LoggerFactory;
 import de.tud.stg.popart.builder.eclipse.ITransformerConfigurationListener;
 import de.tud.stg.popart.builder.transformers.FileType;
 import de.tud.stg.popart.builder.transformers.Transformation;
-import de.tud.stg.tigerseye.core.TigerseyeCore;
-import de.tud.stg.tigerseye.core.TransformationHandler;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.TransformationHandler;
 
 public class TransformerConfigurationDialoge {
 private static final Logger logger = LoggerFactory.getLogger(TransformerConfigurationDialoge.class);

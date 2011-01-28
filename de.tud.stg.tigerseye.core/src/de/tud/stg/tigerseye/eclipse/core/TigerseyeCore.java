@@ -1,4 +1,4 @@
-package de.tud.stg.tigerseye.core;
+package de.tud.stg.tigerseye.eclipse.core;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,7 +28,8 @@ import de.tud.stg.popart.builder.eclipse.TigerseyeClassPathContainerInitializer;
 import de.tud.stg.popart.builder.eclipse.TigerseyeClasspathContainer;
 import de.tud.stg.popart.builder.transformers.Transformation;
 import de.tud.stg.popart.eclipse.LanguageProviderImpl;
-import de.tud.stg.tigerseye.core.preferences.TigerseyePreferenceConstants;
+import de.tud.stg.tigerseye.eclipse.core.activator.TigerseyeCoreActivator;
+import de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyePreferenceConstants;
 
 /**
  * Core class providing core plug-in functionality needed by many other code

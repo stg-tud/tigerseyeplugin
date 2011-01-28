@@ -1,4 +1,4 @@
-package de.tud.stg.tigerseye.launching;
+package de.tud.stg.tigerseye.eclipse.core.launching;
 
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jdt.core.IJavaProject;

@@ -44,10 +44,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tud.stg.popart.builder.transformers.FileType;
-import de.tud.stg.tigerseye.core.OutputPathHandler;
-import de.tud.stg.tigerseye.core.TigerseyeCore;
-import de.tud.stg.tigerseye.core.TigerseyeImage;
-import de.tud.stg.tigerseye.launching.ITigerseyeLaunchConfigurationConstants;
+import de.tud.stg.tigerseye.eclipse.core.OutputPathHandler;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeImage;
+import de.tud.stg.tigerseye.eclipse.core.launching.ITigerseyeLaunchConfigurationConstants;
 
 /**
  * The Tigerseye launch configuration tab in the Launch Configurations Dialog

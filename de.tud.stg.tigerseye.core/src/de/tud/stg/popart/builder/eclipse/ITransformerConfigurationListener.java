@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import de.tud.stg.popart.builder.transformers.FileType;
-import de.tud.stg.tigerseye.core.TransformationHandler;
+import de.tud.stg.tigerseye.eclipse.core.TransformationHandler;
 
 public interface ITransformerConfigurationListener {
 	public String getInformation(String transformer);

@@ -23,8 +23,8 @@ import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.tigerseye.core.DSLDefinition;
-import de.tud.stg.tigerseye.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 
 // could have common superclass with the more general TigerseyeDSLDefinitionsCPContainer
 public class TigerseyeDSLDefinitionsCPContainer implements IClasspathContainer {

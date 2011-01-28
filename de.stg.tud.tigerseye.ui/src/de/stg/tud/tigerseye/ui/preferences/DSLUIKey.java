@@ -4,9 +4,9 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.swt.graphics.RGB;
 
-import de.tud.stg.tigerseye.core.DSLDefinition;
-import de.tud.stg.tigerseye.core.DSLKey;
-import de.tud.stg.tigerseye.core.NoLegalPropertyFound;
+import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
+import de.tud.stg.tigerseye.eclipse.core.DSLKey;
+import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
 
 public abstract class DSLUIKey extends DSLKey<Object> {
 

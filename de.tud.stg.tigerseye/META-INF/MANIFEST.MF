@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Common Libraries, Model
 Bundle-SymbolicName: de.tud.stg.tigerseye;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-Activator: de.tud.stg.tigerseye.TigerseyeLibraryProvider
+Bundle-Activator: de.tud.stg.tigerseye.eclipse.TigerseyeLibraryProvider
 Bundle-Vendor: TUD
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -32,7 +32,7 @@ Export-Package: aterm,
  de.tud.stg.popart.eclipse.core.debug,
  de.tud.stg.popart.eclipse.core.debug.annotations,
  de.tud.stg.popart.eclipse.core.debug.model.keywords,
- de.tud.stg.tigerseye,
+ de.tud.stg.tigerseye.eclipse,
  javax.annotation,
  javax.annotation.meta,
  jjtraveler,

@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import utilities.TestUtilities;
 import de.tud.stg.popart.builder.transformers.FileType;
-import de.tud.stg.tigerseye.core.OutputPathHandler;
+import de.tud.stg.tigerseye.eclipse.core.OutputPathHandler;
 
 public class OutputPathHandlerTest {
     private static final String OUTPUT_DIRECTORY = "src-popart";

@@ -25,10 +25,10 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import de.tud.stg.popart.eclipse.LanguageProviderImpl;
-import de.tud.stg.tigerseye.core.DSLDefinition;
-import de.tud.stg.tigerseye.core.NoLegalPropertyFound;
-import de.tud.stg.tigerseye.core.PreferenceDSL;
-import de.tud.stg.tigerseye.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
+import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
+import de.tud.stg.tigerseye.eclipse.core.PreferenceDSL;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 
 public class TigerseyeUIPreferencePage extends PreferencePage
 	implements

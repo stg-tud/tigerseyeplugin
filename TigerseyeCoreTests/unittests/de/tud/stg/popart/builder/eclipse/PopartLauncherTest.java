@@ -30,7 +30,7 @@ import org.mockito.stubbing.Answer;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import de.tud.stg.tigerseye.core.preferences.TigerseyePreferenceInitializer;
+import de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyePreferenceInitializer;
 
 @Ignore("No longer up to date with current implementation")
 @RunWith(PowerMockRunner.class)

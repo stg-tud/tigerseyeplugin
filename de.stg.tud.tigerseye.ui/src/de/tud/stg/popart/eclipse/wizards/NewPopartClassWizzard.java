@@ -11,7 +11,7 @@ import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.tigerseye.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 
 /**
  * NewPopartClassWizzard is used to provide responsibility that makes it

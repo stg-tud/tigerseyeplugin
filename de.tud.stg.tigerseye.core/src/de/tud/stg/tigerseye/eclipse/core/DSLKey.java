@@ -1,8 +1,8 @@
-package de.tud.stg.tigerseye.core;
+package de.tud.stg.tigerseye.eclipse.core;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 
-import de.tud.stg.tigerseye.core.preferences.TigerseyePreferenceConstants;
+import de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyePreferenceConstants;
 
 /**
  * A class to centralize the naming scheme of properties for different DSLs. If
@@ -162,8 +162,7 @@ public abstract class DSLKey<T> {
 	 * This implementation only forwards to
 	 * {@link #getDefaultLanguageActiveValue(IPreferenceStore)}
 	 * 
-	 * @see de.tud.stg.tigerseye.core.DSLKey#getDefault(de.tud.stg.tigerseye.
-	 *      core.DSLDefinition,
+	 * @see de.tud.stg.tigerseye.eclipse.core.DSLKey#getDefault(de.tud.stg.tigerseye.eclipse.core.DSLDefinition,
 	 *      org.eclipse.jface.preference.IPreferenceStore)
 	 */
 	@Override

@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-import de.tud.stg.tigerseye.TigerseyeLibraryProvider;
+import de.tud.stg.tigerseye.eclipse.TigerseyeLibraryProvider;
 
 /**
  * {@link UnicodeLookupTable} stores the mapping between unicodes and their textual representation.

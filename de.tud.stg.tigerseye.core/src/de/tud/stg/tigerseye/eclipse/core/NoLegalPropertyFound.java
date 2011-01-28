@@ -1,4 +1,5 @@
-package de.tud.stg.tigerseye.core;
+package de.tud.stg.tigerseye.eclipse.core;
+
 
 
 /**

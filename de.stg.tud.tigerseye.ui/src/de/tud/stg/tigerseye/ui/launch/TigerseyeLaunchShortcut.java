@@ -22,8 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tud.stg.popart.builder.transformers.FileType;
-import de.tud.stg.tigerseye.core.OutputPathHandler;
-import de.tud.stg.tigerseye.launching.ITigerseyeLaunchConfigurationConstants;
+import de.tud.stg.tigerseye.eclipse.core.OutputPathHandler;
+import de.tud.stg.tigerseye.eclipse.core.launching.ITigerseyeLaunchConfigurationConstants;
 
 public class TigerseyeLaunchShortcut extends JavaApplicationLaunchShortcut
 	implements ILaunchShortcut {

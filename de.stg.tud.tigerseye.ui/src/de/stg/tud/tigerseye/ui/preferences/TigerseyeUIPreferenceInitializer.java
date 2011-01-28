@@ -5,7 +5,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.swt.graphics.RGB;
 
-import de.tud.stg.tigerseye.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 
 public class TigerseyeUIPreferenceInitializer extends
 	AbstractPreferenceInitializer {

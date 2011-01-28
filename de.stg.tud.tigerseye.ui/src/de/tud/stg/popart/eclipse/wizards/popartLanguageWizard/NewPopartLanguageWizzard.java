@@ -10,7 +10,7 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.ui.INewWizard;
 
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.PopartLanguageModel;
-import de.tud.stg.tigerseye.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 
 /**
  * Wizard for creating language definitions

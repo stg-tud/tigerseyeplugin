@@ -38,10 +38,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tud.stg.popart.eclipse.editor.PopartEditorUtils;
-import de.tud.stg.tigerseye.core.DSLDefinition;
-import de.tud.stg.tigerseye.core.DSLKey;
-import de.tud.stg.tigerseye.core.NoLegalPropertyFound;
-import de.tud.stg.tigerseye.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
+import de.tud.stg.tigerseye.eclipse.core.DSLKey;
+import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 
 /**
  * NewPopartClassWizardPage is a wizard page for creating Popart classes.

@@ -8,19 +8,19 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            class="de.tud.stg.tigerseye.core.preferences.TigerseyeMainPreferencePage"
+            class="de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyeMainPreferencePage"
             id="de.tud.stg.tigerseye.preferences.root"
             name="Tigerseye">
       </page>
       <page
             category="de.tud.stg.tigerseye.preferences.root"
-            class="de.tud.stg.tigerseye.core.preferences.TigerseyeDSLsPreferencesPage"
+            class="de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyeDSLsPreferencesPage"
             id="de.tud.stg.tigerseye.preferences.oldpreferences"
             name="Languages">
       </page>
       <page
             category="de.tud.stg.tigerseye.preferences.root"
-            class="de.tud.stg.tigerseye.core.preferences.TransformationsPreferencePage"
+            class="de.tud.stg.tigerseye.eclipse.core.preferences.TransformationsPreferencePage"
             id="de.tud.stg.popart.builder.main"
             name="Transformations">
       </page>
@@ -28,7 +28,7 @@
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
-            class="de.tud.stg.tigerseye.core.preferences.TigerseyePreferenceInitializer">
+            class="de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyePreferenceInitializer">
       </initializer>
    </extension>
    <extension
@@ -164,7 +164,7 @@
    <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
-            delegate="de.tud.stg.tigerseye.launching.TigerseyeLaunchDelegate"
+            delegate="de.tud.stg.tigerseye.eclipse.core.launching.TigerseyeLaunchDelegate"
             delegateDescription="The standard Eclipse launcher for Java files."
             delegateName="Eclipse JDT Launcher"
             id="de.tud.stg.tigerseye.eclipse.core.tigerseyeLaunchConfigurationType"
