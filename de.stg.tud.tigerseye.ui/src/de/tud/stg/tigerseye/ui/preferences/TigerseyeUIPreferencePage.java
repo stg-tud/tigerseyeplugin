@@ -24,7 +24,6 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
-import de.tud.stg.popart.eclipse.LanguageProviderImpl;
 import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
 import de.tud.stg.tigerseye.eclipse.core.PreferenceDSL;
@@ -42,7 +41,7 @@ public class TigerseyeUIPreferencePage extends PreferencePage
     public void init(IWorkbench workbench) {
 	setPreferenceStore(TigerseyeCore.getPreferences());
 	setDescription("Tigerseye Editor preferences.");
-	for (DSLDefinition dsl : new LanguageProviderImpl(TigerseyeCore.getPreferences())
+	for (DSLDefinition dsl : TigerseyeCore.getLanguageProvider()
 		.getDSLDefinitions()) {
 	    this.dsls.add(new UiDSL(dsl, getPreferenceStore()));
 	}

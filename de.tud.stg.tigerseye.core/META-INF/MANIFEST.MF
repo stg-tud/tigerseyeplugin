@@ -24,7 +24,6 @@ Import-Package: org.eclipse.jdt.internal.debug.core.breakpoints,
  org.slf4j,
  org.slf4j.impl
 Export-Package: 
- de.tud.stg.popart.eclipse,
  de.tud.stg.popart.eclipse.editor,
  de.tud.stg.tigerseye.eclipse.core,
  de.tud.stg.tigerseye.eclipse.core.launching

@@ -25,7 +25,7 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.debug.ui.launchConfigurations.JavaMainTab;
+import org.eclipse.jdt.internal.debug.ui.launcher.SharedJavaMainTab;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -58,8 +58,8 @@ import de.tud.stg.tigerseye.eclipse.core.launching.ITigerseyeLaunchConfiguration
  * @author Leo Roos
  * 
  */
-public class TigerseyeMainLaunchConfigurationTab extends JavaMainTab implements
-	ILaunchConfigurationTab {
+public class TigerseyeMainLaunchConfigurationTab extends SharedJavaMainTab
+	implements ILaunchConfigurationTab {
 
     private static final Logger logger = LoggerFactory
 	    .getLogger(TigerseyeMainLaunchConfigurationTab.class);
@@ -72,23 +72,37 @@ public class TigerseyeMainLaunchConfigurationTab extends JavaMainTab implements
 
     @Override
     public void createControl(Composite parent) {
-	super.createControl(parent);
-	Composite control = (Composite) getControl();
+	Composite dialog = new Composite(parent, SWT.NONE);
+	dialog.setFont(parent.getFont());
+	GridLayout gl = new GridLayout(1, false);
+	dialog.setLayout(gl);
+	GridData gd = getVerticalFillGD();
+	dialog.setLayoutData(gd);
 
-	Group correspondingDSLGroup = new Group(control, SWT.NONE);
+	createProjectEditor(dialog);
+	createMainTypeEditor(dialog, "&Executed Type:");
+
+	Group correspondingDSLGroup = new Group(dialog, SWT.NONE);
 	correspondingDSLGroup.setText("Corresponding Tigerseye File:");
-	correspondingDSLGroup.setFont(control.getFont());
+	correspondingDSLGroup.setFont(dialog.getFont());
 	correspondingDSLGroup.setLayout(new GridLayout());
-	correspondingDSLGroup.setLayoutData(new GridData(SWT.FILL, SWT.TOP,
-		true, false));
+	correspondingDSLGroup.setLayoutData(getVerticalFillGD());
 	tigerDsltext = new Text(correspondingDSLGroup, SWT.READ_ONLY
 		| SWT.BORDER);
 	tigerDsltext
-		.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		.setLayoutData(getVerticalFillGD());
 	tigerDsltext
 		.setToolTipText("The corresponding Tigerseye DSL currently chosen as Main class or none if no corresponding file exists");
+	setControl(dialog);
 	PlatformUI.getWorkbench().getHelpSystem().setHelp(getControl(), "");
     }
+
+    private GridData getVerticalFillGD() {
+	return new GridData(SWT.FILL, SWT.TOP,
+		true, false);
+    }
+
+
 
     @Override
     public void initializeFrom(ILaunchConfiguration config) {
@@ -105,6 +119,7 @@ public class TigerseyeMainLaunchConfigurationTab extends JavaMainTab implements
 	} catch (CoreException e) {
 	    // Can be safely ignored
 	}
+	updateMainTypeFromConfig(config);
     }
 
     /**
@@ -196,15 +211,15 @@ public class TigerseyeMainLaunchConfigurationTab extends JavaMainTab implements
     }
 
     private Collection<? extends IType> findAllRunnableTypes(
-            ICompilationUnit unit) throws JavaModelException {
-        IType[] types = unit.getAllTypes();
+	    ICompilationUnit unit) throws JavaModelException {
+	IType[] types = unit.getAllTypes();
 	List<IType> results = new ArrayList<IType>(types.length);
 	for (IType t : types) {
 	    boolean exists = existsCorrespondingDSLFile(t);
 	    if (exists)
 		results.add(t);
 	}
-        return Arrays.asList(types);
+	return Arrays.asList(types);
     }
 
     private boolean existsCorrespondingDSLFile(IType t) {
@@ -228,7 +243,7 @@ public class TigerseyeMainLaunchConfigurationTab extends JavaMainTab implements
 	    return null;
 	IPath fullPath = resource.getProjectRelativePath();
 	String srcName = new OutputPathHandler()
-	    .getSourceNameForOutputName(fullPath.lastSegment());
+		.getSourceNameForOutputName(fullPath.lastSegment());
 	IPath outFileWithSrcFileName = fullPath.removeLastSegments(1).append(
 		srcName);
 	// FIXME should be dynamically searching for source folders
@@ -251,12 +266,11 @@ public class TigerseyeMainLaunchConfigurationTab extends JavaMainTab implements
 		IResource r = ((IType) element).getResource();
 		if (r instanceof IFile) {
 		    IFile file = (IFile) r;
-		    FileType fileType = FileType
-			    .getTypeForOutputResource(file.getName());
+		    FileType fileType = FileType.getTypeForOutputResource(file
+			    .getName());
 		    if (fileType != null)
 			return TigerseyeCore.getImage(
-				TigerseyeImage.FileTypeTigerseye)
-				.createImage();
+				TigerseyeImage.FileTypeTigerseye).createImage();
 
 		}
 	    }
@@ -269,9 +283,8 @@ public class TigerseyeMainLaunchConfigurationTab extends JavaMainTab implements
 		IFile dslFile = extractCorrespondingDSLFile((IType) element);
 		if (dslFile != null && dslFile.exists())
 		    return dslFile.getProjectRelativePath()
-			    .removeFirstSegments(1)
-			    .toString();
-		}
+			    .removeFirstSegments(1).toString();
+	    }
 	    return super.getText(element);
 	}
 
@@ -279,6 +292,14 @@ public class TigerseyeMainLaunchConfigurationTab extends JavaMainTab implements
 
     @Override
     public void performApply(ILaunchConfigurationWorkingCopy config) {
+
+	config.setAttribute(
+		IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, fProjText
+			.getText().trim());
+	config.setAttribute(
+		IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME,
+		fMainText.getText().trim());
+	mapResources(config);
 	/**
 	 * Inform TigerseyeLaunchDelegate that user made adjustments and
 	 * therefore the default groovy launch configuration should not be
@@ -287,7 +308,7 @@ public class TigerseyeMainLaunchConfigurationTab extends JavaMainTab implements
 	config.setAttribute(
 		ITigerseyeLaunchConfigurationConstants.ATTR_IS_DEFAULT_GROOVY_LAUNCH,
 		false);
-	super.performApply(config);
+
     }
 
     @Override
@@ -295,7 +316,14 @@ public class TigerseyeMainLaunchConfigurationTab extends JavaMainTab implements
 	config.setAttribute(
 		ITigerseyeLaunchConfigurationConstants.ATTR_IS_DEFAULT_GROOVY_LAUNCH,
 		true);
-	super.setDefaults(config);
+	IJavaElement javaElement = getContext();
+	if (javaElement != null) {
+	    initializeJavaProject(javaElement, config);
+	} else {
+	    config.setAttribute(
+		    IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, "");
+	}
+	initializeMainTypeAndName(javaElement, config);
     }
 
 }

@@ -21,8 +21,8 @@ public interface ITigerseyeLaunchConfigurationConstants {
     public static final String TIGERSEYE_LAUNCH_CONFIGURATION_TYPE = "de.tud.stg.tigerseye.eclipse.core.tigerseyeLaunchConfigurationType";
     /**
      * Indicating that the launch configuration has no adjustments from the
-     * user. Therefore the configuration for groovy types will be set with the
-     * default groovy launch configuration
+     * user. Therefore the default groovy launch configuration will be used for
+     * groovy file types.
      * 
      * @see TigerseyeLaunchDelegate
      */

@@ -11,7 +11,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.osgi.framework.Bundle;
 
 import de.tud.stg.popart.builder.transformers.Transformation;
-import de.tud.stg.popart.eclipse.LanguageProviderImpl;
+import de.tud.stg.tigerseye.eclipse.core.internal.LanguageProviderImpl;
 import de.tud.stg.tigerseye.eclipse.core.internal.TigerseyeCoreActivator;
 
 /**

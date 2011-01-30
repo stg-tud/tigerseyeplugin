@@ -24,7 +24,7 @@ import de.tud.stg.tigerseye.eclipse.core.internal.TigerseyeCoreActivator;
 public class DSLNature implements IProjectNature {
 
     public static final String TIGERSEYE_NATURE_ID = TigerseyeCoreActivator.PLUGIN_ID
-	    + ".TigerseyeNature";
+	    + ".tigerseyeNature";
 
     private static final String tigerseyeBuilder = "de.tud.stg.tigerseye.eclipse.core.tigerseyeBuilder";
 

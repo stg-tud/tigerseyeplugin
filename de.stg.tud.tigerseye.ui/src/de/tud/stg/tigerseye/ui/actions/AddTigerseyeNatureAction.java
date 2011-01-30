@@ -1,9 +1,8 @@
-package de.tud.stg.popart.builder.eclipse;
+package de.tud.stg.tigerseye.ui.actions;
 
 import javax.annotation.CheckForNull;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -14,13 +13,13 @@ import org.slf4j.LoggerFactory;
 
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeRuntime;
 
-public class AddNatureAction implements IObjectActionDelegate {
+public class AddTigerseyeNatureAction implements IObjectActionDelegate {
     private static final Logger logger = LoggerFactory
-	    .getLogger(AddNatureAction.class);
+	    .getLogger(AddTigerseyeNatureAction.class);
 
     private ISelection selection;
 
-    public AddNatureAction() {
+    public AddTigerseyeNatureAction() {
     }
 
     @Override
@@ -37,7 +36,6 @@ public class AddNatureAction implements IObjectActionDelegate {
 		    selection);
 	    return;
 	}
-
 	TigerseyeRuntime.addTigersEyeRuntimeConfiguration(targetProject);
     }
 
@@ -48,9 +46,7 @@ public class AddNatureAction implements IObjectActionDelegate {
 	final IStructuredSelection s = (IStructuredSelection) selection;
 	final Object selected = s.getFirstElement();
 	IProject targetProject;
-	if (selected instanceof IJavaProject) {
-	    targetProject = ((IJavaProject) selected).getProject();
-	} else if (selected instanceof IProject) {
+	if (selected instanceof IProject) {
 	    targetProject = (IProject) selected;
 	} else {
 	    return null;

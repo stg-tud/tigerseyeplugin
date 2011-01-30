@@ -39,11 +39,12 @@ import de.tud.stg.popart.builder.transformers.Context;
 import de.tud.stg.popart.builder.transformers.FileType;
 import de.tud.stg.popart.builder.transformers.TextualTransformation;
 import de.tud.stg.popart.dslsupport.DSL;
-import de.tud.stg.popart.eclipse.LanguageProviderImpl;
 import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
+import de.tud.stg.tigerseye.eclipse.core.DSLNotFoundException;
 import de.tud.stg.tigerseye.eclipse.core.ILanguageProvider;
 import de.tud.stg.tigerseye.eclipse.core.OutputPathHandler;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.internal.LanguageProviderImpl;
 
 public class DSLResourceHandler implements ResourceHandler {
 	private static final Logger logger = LoggerFactory

@@ -49,30 +49,7 @@
       </factory>
    </extension>
    <extension
-         point="org.eclipse.ui.popupMenus">
-      <objectContribution
-            id="de.tud.stg.popart.eclipse.addnature.javaproject"
-            objectClass="org.eclipse.jdt.core.IJavaProject">
-         <action
-               class="de.tud.stg.popart.builder.eclipse.AddNatureAction"
-               enablesFor="1"
-               id="de.tud.stg.popart.eclipse.core.actions.addnature"
-               label="Add DSLBuilder Nature">
-         </action>
-      </objectContribution>
-      <objectContribution
-            id="de.tud.stg.popart.eclipse.addnature.project"
-            objectClass="org.eclipse.core.resources.IProject">
-         <action
-               class="de.tud.stg.popart.builder.eclipse.AddNatureAction"
-               enablesFor="1"
-               id="de.tud.stg.popart.eclipse.core.actions.addnature"
-               label="Add DSLBuilder Nature">
-         </action>
-      </objectContribution>
-   </extension>
-   <extension
-         id="TigerseyeNature"
+         id="tigerseyeNature"
          name="Tigerseye Nature"
          point="org.eclipse.core.resources.natures">
       <runtime>
@@ -92,26 +69,6 @@
       <requires-nature
             id="org.eclipse.jdt.core.javanature">
       </requires-nature>
-   </extension>
-   <extension
-         point="org.eclipse.debug.ui.launchShortcuts">
-      <shortcut
-            class="de.tud.stg.popart.builder.eclipse.LegacyTigerseyeLaunchShortcut"
-            icon="icons/plane16.png"
-            id="de.tud.stg.popart.builder.eclipse.DSLBuilderLauncher"
-            label="Popart EDSL"
-            modes="run, debug">
-         <contextualLaunch>
-            <enablement>
-               <with
-                     variable="selection">
-                  <count
-                        value="1">
-                  </count>
-               </with>
-            </enablement>
-         </contextualLaunch>
-      </shortcut>
    </extension>
    <extension
          id="tigerseyeBuilder"

@@ -19,7 +19,7 @@ public enum FileType {
 	GROOVY("GROOVY", "groovy.dsl", "groovy"), //
 	POPART("POPART", "dsl", "dsl.groovy"), //
 	DSL("DSL", "notset", "notset"); /*
-									 * XXX Not actually a FileType. Renaming
+									 * XXX Actually not a FileType. Renaming
 									 * this enumeration to DomainType?
 									 */
 

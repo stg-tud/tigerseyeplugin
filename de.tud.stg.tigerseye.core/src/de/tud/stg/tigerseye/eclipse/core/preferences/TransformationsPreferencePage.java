@@ -22,9 +22,9 @@ import org.slf4j.LoggerFactory;
 
 import de.tud.stg.popart.builder.eclipse.DSLBuilderHelper;
 import de.tud.stg.popart.builder.eclipse.dialoge.TransformerConfigurationDialoge;
-import de.tud.stg.popart.eclipse.LanguageProviderImpl;
 import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.internal.LanguageProviderImpl;
 
 public class TransformationsPreferencePage extends PreferencePage implements
 	IWorkbenchPreferencePage {

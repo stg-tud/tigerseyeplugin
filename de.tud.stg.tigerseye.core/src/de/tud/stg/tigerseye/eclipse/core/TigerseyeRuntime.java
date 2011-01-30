@@ -110,7 +110,14 @@ public class TigerseyeRuntime {
             String[] necessaryNatures = new String[] { //
             DSLNature.TIGERSEYE_NATURE_ID,//
         	    GroovyNature.GROOVY_NATURE,//
-        	    JavaCore.NATURE_ID, //
+	    /*
+	     * If the Java nature has not already been initialized, simply
+	     * adding it won't result in a completely configured java project.
+	     * Therefore I won't allow it at first. This results in an error
+	     * message that the java nature is required before Tigerseye can be
+	     * configured.
+	     */
+	    // JavaCore.NATURE_ID, //
             };
             for (String necessaryNature : necessaryNatures) {
         	if (!natureIds.contains(necessaryNature)) {

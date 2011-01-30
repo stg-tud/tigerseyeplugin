@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Tigerseye UI Provider
-Bundle-SymbolicName: de.tud.stg.tigerseye.ui;singleton:=true
+Bundle-Name: %plugin.name
+Bundle-SymbolicName: de.tud.stg.tigerseye.eclipse.ui;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: de.tud.stg.tigerseye.ui.TigerseyeUIActivator
-Bundle-Vendor: TUD
+Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.jface.text,

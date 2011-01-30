@@ -111,22 +111,22 @@ public class DSLBuilderHelper implements ITransformerConfigurationListener {
 	}
 	Set<T> set = new LinkedHashSet<T>();
 
-	for (T clazz : availableTransformers) {
+	for (T transformation : availableTransformers) {
 	    // interessted in filetype
 	    Boolean active = this.getMap(filetype.name()).get(
-		    clazz.getClass().getCanonicalName());
+		    transformation.getClass().getCanonicalName());
 
 	    if ((active != null) && active.booleanValue()) {
-		set.add(clazz);
+		set.add(transformation);
 
 	    } else {
 		for (String ext : extensions) {
 		    // interessted in dsl extension
 		    active = this.getMap(ext).get(
-			    clazz.getClass().getCanonicalName());
+			    transformation.getClass().getCanonicalName());
 
 		    if ((active != null) && active.booleanValue()) {
-			set.add(clazz);
+			set.add(transformation);
 			break;
 		    }
 		}

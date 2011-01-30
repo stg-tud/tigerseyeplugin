@@ -5,12 +5,12 @@
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            name="DSL editor TOBE"
-            extensions="xml, dsl"
+            name="%editor.name"
+            extensions="dsl"
             icon="icons/plane16.png"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             class="de.tud.stg.tigerseye.ui.editors.XMLEditor"
-            id="de.stg.tud.tigerseye.ui.editors.XMLEditor">
+            id="de.stg.tud.tigerseye.ui.editors.TigerseyeEditor">
       </editor>
    </extension>
    <extension
@@ -19,7 +19,7 @@
             category="de.tud.stg.tigerseye.preferences.root"
             class="de.tud.stg.tigerseye.ui.preferences.TigerseyeUIPreferencePage"
             id="de.tud.stg.tigerseye.preferences.ui"
-            name="Tigerseye Editor">
+            name="%page.name">
       </page>
    </extension>
    <extension
@@ -32,17 +32,17 @@
          point="org.eclipse.ui.newWizards">
       <category
             id="de.tud.stg.popart.eclipse"
-            name="Popart">
+            name="%category.name">
       </category>
       <wizard
             category="de.tud.stg.popart.eclipse"
             class="de.tud.stg.popart.eclipse.wizards.NewPopartClassWizzard"
             icon="icons/plane16.png"
             id="de.tud.stg.popart.eclipse.wizards.newClassWizard"
-            name="Popart Class"
+            name="%wizard.name"
             preferredPerspectives="org.eclipse.jdt.ui.JavaPerspective">
          <description>
-            Create a new Popart Class
+            %wizard.description
          </description>
       </wizard>
       <wizard
@@ -50,10 +50,10 @@
             class="de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.NewPopartLanguageWizzard"
             icon="icons/plane16.png"
             id="de.tud.stg.popart.eclipse.wizards.newProjectWizard"
-            name="Popart Language Definition"
+            name="%wizard.name.0"
             preferredPerspectives="org.eclipse.jdt.ui.JavaPerspective">
          <description>
-            Create a new Popart Language Definition
+            %wizard.description.0
          </description>
       </wizard>
    </extension>
@@ -69,7 +69,7 @@
          point="org.eclipse.debug.ui.launchConfigurationTabGroups">
       <launchConfigurationTabGroup
             class="de.tud.stg.tigerseye.ui.launch.TigerseyeLaunchConfigurationTabGroup"
-            description="Tigerseye Launch Configurations"
+            description="%launchConfigurationTabGroup.description"
             id="de.tud.stg.tigerseye.ui.launchConfigurationTabGroup"
             type="de.tud.stg.tigerseye.eclipse.core.tigerseyeLaunchConfigurationType">
       </launchConfigurationTabGroup>
@@ -78,20 +78,11 @@
          point="org.eclipse.debug.ui.launchShortcuts">
       <shortcut
             class="de.tud.stg.tigerseye.ui.launch.TigerseyeLaunchShortcut"
-            description="Tigerseye launch shortuct."
+            description="%shortcut.description"
             icon="icons/plane16.png"
             id="de.tud.stg.tigerseye.ui.launch.defaultlaunchshortcut"
-            label="Launch Tigerseye DSL"
-            modes="run,debug">
-         <perspective
-               id="org.eclipse.jdt.ui.JavaHierarchyPerspective">
-         </perspective>
-         <perspective
-               id="org.eclipse.jdt.ui.JavaPerspective">
-         </perspective>
-         <perspective
-               id="org.eclipse.jdt.ui.JavaBrowsingPerspective">
-         </perspective>
+            label="%shortcut.launch.tigerseye"
+            modes="run,debug">        
          <contextualLaunch>
             <enablement>
                <with
@@ -99,10 +90,40 @@
                   <count
                         value="1">
                   </count>
+                  <iterate
+                        operator="and">
+                     <test
+                           property="org.eclipse.debug.ui.projectNature"
+                           value="de.tud.stg.tigerseye.eclipse.core.tigerseyeNature">
+                     </test>
+                  </iterate>
                </with>
             </enablement>
          </contextualLaunch>
       </shortcut>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="true"
+            id="de.tud.stg.popart.eclipse.addnature.project"
+            objectClass="org.eclipse.core.resources.IProject">
+         <action
+               class="de.tud.stg.tigerseye.ui.actions.AddTigerseyeNatureAction"
+               enablesFor="1"
+               id="de.tud.stg.popart.eclipse.core.actions.addnature"
+               label="%action.add.nature"
+               menubarPath="org.eclipse.ui.projectConfigure/additions">
+         </action>
+         <visibility>
+            <not>
+               <objectState
+                     name="nature"
+                     value="de.tud.stg.tigerseye.eclipse.core.tigerseyeNature">
+               </objectState>
+            </not>
+         </visibility>
+      </objectContribution>
    </extension>
 
 </plugin>

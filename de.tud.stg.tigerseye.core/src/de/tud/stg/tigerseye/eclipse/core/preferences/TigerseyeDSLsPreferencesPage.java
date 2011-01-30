@@ -625,7 +625,6 @@ public class TigerseyeDSLsPreferencesPage extends PreferencePage implements
         Field[] publicDeclaredFields = PopartEditorUtils
         	.getDeclaredLiteralKeywords(contributorSymbolicName,
         		externalClassPath);
-        if (publicDeclaredFields != null) {
             for (Field declaredField : publicDeclaredFields) {
         	TableItem tableItem = null;
     
@@ -636,11 +635,10 @@ public class TigerseyeDSLsPreferencesPage extends PreferencePage implements
         	tableItem.setText(1, declaredField.getType().getSimpleName());
         	tableItem.setText(2, "(native literal)");
     
-            }
         }
     
         Method[] publicDeclaredMethods = PopartEditorUtils
-        	.printDeclaredMethodKeywords(contributorSymbolicName,
+        	.getMethodKeywords(contributorSymbolicName,
         		externalClassPath);
     
         // Read all getter setter from external class

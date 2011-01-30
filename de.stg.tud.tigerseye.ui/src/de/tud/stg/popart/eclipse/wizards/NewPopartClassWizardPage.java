@@ -333,7 +333,7 @@ public class NewPopartClassWizardPage extends NewClassWizardPage {
 		
 		// Read all public declared methods from external class
 		Method[] declaredMethods = PopartEditorUtils
-				.printDeclaredMethodKeywords(contributorSymbolicName, externalClassPath);
+				.getMethodKeywords(contributorSymbolicName, externalClassPath);
 		if (declaredMethods != null) {
 			for (Method publicDeclaredMethod : declaredMethods) {
 
