@@ -1,16 +1,23 @@
 package de.tud.stg.popart.eclipse.wizards;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.internal.ui.wizards.NewElementWizard;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeRuntime;
 
 /**
@@ -23,29 +30,44 @@ import de.tud.stg.tigerseye.eclipse.core.TigerseyeRuntime;
  * @author Leonid Melnyk
  */
 public class NewPopartClassWizzard extends NewElementWizard {
-	private NewPopartClassWizardPage fPage;
+    private NewPopartClassWizardPage fPage;
 
     private static final Logger logger = LoggerFactory
 	    .getLogger(NewPopartClassWizzard.class);
 
-	public NewPopartClassWizzard() {
-		super();
+    public NewPopartClassWizzard() {
+	super();
 	setWindowTitle("Create a new Tigerseye class");
-	}
+    }
 
-	@Override
-	public void addPages() {
-		fPage = new NewPopartClassWizardPage();
-		addPage(fPage);
-		fPage.init(getSelection());
+    @Override
+    public void addPages() {
+
+	List<DSLDefinition> dslDefinitions = TigerseyeCore
+		.getLanguageProvider().getDSLDefinitions();
+	Set<DSLDefinition> activeDSLs = new HashSet<DSLDefinition>();
+	for (DSLDefinition dsl : dslDefinitions) {
+	    if (dsl.isActive()) {
+		activeDSLs.add(dsl);
+	    }
 	}
+	if (activeDSLs.size() < 1) {
+	    MessageDialog
+		    .openInformation(getShell(), "No active DSL",
+			    "At least one dsl must have been activated in order to create a new one.");
+	    addPage(null);
+	    return;
+	}
+	fPage = new NewPopartClassWizardPage(activeDSLs);
+	addPage(fPage);
+	fPage.init(getSelection());
+    }
 
     private IFile file;
-	@Override
+
+    @Override
     protected void finishPage(final IProgressMonitor monitor)
 	    throws CoreException {
-
-	
 
 	PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 
@@ -57,8 +79,7 @@ public class NewPopartClassWizzard extends NewElementWizard {
 
 		    openResource(file);
 
-		    TigerseyeRuntime
-.addTigerseyeDSLUsingConfiguration(fPage
+		    TigerseyeRuntime.addTigerseyeDSLUsingConfiguration(fPage
 			    .getProject().getProject());
 
 		} catch (CoreException e) {
@@ -67,8 +88,7 @@ public class NewPopartClassWizzard extends NewElementWizard {
 	    }
 	});
 
-
-	}
+    }
 
     @Override
     public IJavaElement getCreatedElement() {
