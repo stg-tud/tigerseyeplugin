@@ -108,19 +108,36 @@ public class TigerseyeRuntime {
     }
 
     public static void setSourceFolder(IProject project) {
-	IClasspathEntry entry = null;
 	IFolder outPutFolder = project.getFolder(TigerseyeRuntime
 		.getOutputDirectoryPath());
+	setSourceFolder(project, outPutFolder);
+    }
+
+    // Change parameter to JavaProject
+    public static void setSourceFolder(IProject project, IFolder outPutFolder) {
 	try {
 	    if (!outPutFolder.exists()) {
 		outPutFolder.create(IResource.DERIVED, true,
 			new NullProgressMonitor());
 	    }
-	    entry = JavaCore.newSourceEntry(outPutFolder.getFullPath());
+	    IClasspathEntry entry = JavaCore.newSourceEntry(outPutFolder
+		    .getFullPath());
 	    addClassPathEntry(JavaCore.create(project), entry);
 	} catch (CoreException e) {
 	    throw new TigerseyeRuntimeException("Failed to set source folder "
 		    + outPutFolder);
+	}
+    }
+
+    public static void removeSourceFolder(IJavaProject project,
+	    IFolder outPutFolder) {
+	try {
+	    IClasspathEntry entry = JavaCore.newSourceEntry(outPutFolder
+		    .getFullPath());
+	    removeClassPathEntry(project, entry);
+	} catch (CoreException e) {
+	    throw new TigerseyeRuntimeException(
+		    "Failed to remove source folder " + outPutFolder);
 	}
     }
 
@@ -133,6 +150,19 @@ public class TigerseyeRuntime {
 	if (!ArrayUtils.contains(oldClassPath, newEntry)) {
 	    IClasspathEntry[] newEntries = (IClasspathEntry[]) ArrayUtils.add(
 		    oldClassPath, newEntry);
+	    project.setRawClasspath(newEntries, null);
+	}
+    }
+
+    /**
+     * @see GroovyRuntime#addClassPathEntry(IJavaProject, IClasspathEntry)
+     */
+    public static void removeClassPathEntry(IJavaProject project,
+	    IClasspathEntry newEntry) throws JavaModelException {
+	IClasspathEntry[] oldClassPath = project.getRawClasspath();
+	if (ArrayUtils.contains(oldClassPath, newEntry)) {
+	    IClasspathEntry[] newEntries = (IClasspathEntry[]) ArrayUtils
+		    .removeElement(oldClassPath, newEntry);
 	    project.setRawClasspath(newEntries, null);
 	}
     }

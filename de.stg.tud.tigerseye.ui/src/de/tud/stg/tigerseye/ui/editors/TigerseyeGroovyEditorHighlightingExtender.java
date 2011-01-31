@@ -1,5 +1,6 @@
 package de.tud.stg.tigerseye.ui.editors;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -84,6 +85,8 @@ public class TigerseyeGroovyEditorHighlightingExtender implements
 	return additionalRules;
     }
 
+    // FIXME refactor keywordextractor: so that it takes class in constructor
+    // and provides differnt methods working on that class
     private List<String> getMethodKeyWordsForDSL(DSLDefinition dsl) {
 	List<String> keywords = new ArrayList<String>();
 	Method[] methodKeywords = new KeyWordExtractor().getMethodKeywords(dsl
@@ -91,6 +94,13 @@ public class TigerseyeGroovyEditorHighlightingExtender implements
 	for (Method method : methodKeywords) {
 	    keywords.add(method.getName());
 	}
+
+	Field[] declaredLiteralKeywords = new KeyWordExtractor()
+		.getDeclaredLiteralKeywords(dsl.loadClass());
+	for (Field field : declaredLiteralKeywords) {
+	    keywords.add(field.getName());
+	}
+
 	return keywords;
     }
 

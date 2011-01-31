@@ -7,13 +7,23 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeNature;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeRuntime;
 
 /**
  * Preference page root for all pages of the Tigerseye Plug-in. Provides core
@@ -24,6 +34,12 @@ import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
  */
 public class TigerseyeMainPreferencePage extends FieldEditorPreferencePage
 	implements IWorkbenchPreferencePage {
+
+    private static final Logger logger = LoggerFactory
+	    .getLogger(TigerseyeMainPreferencePage.class);
+
+    private String originalOutputFolder;
+    private StringFieldEditor outPutDirEditor;
 
     public TigerseyeMainPreferencePage() {
 	super(GRID);
@@ -43,16 +59,42 @@ public class TigerseyeMainPreferencePage extends FieldEditorPreferencePage
 
     @Override
     public void createFieldEditors() {
-	/*
-	 * FIXME: Old output directories should be deleted if the name is
-	 * changed and a complete rebuild of all Tigerseye projects performed.
-	 */
-	StringFieldEditor outPutDirEditor = new OutPutDirectoryFieldEditor(
-		TigerseyePreferenceConstants.TIGERSEYE_OUTPUT_FOLDER_PATH,
-		"&Output Directory",
-		getFieldEditorParent());
+	String outputFolderProperty = TigerseyePreferenceConstants.TIGERSEYE_OUTPUT_FOLDER_PATH;
+	outPutDirEditor = new OutPutDirectoryFieldEditor(outputFolderProperty,
+		"&Output Directory", getFieldEditorParent());
+	originalOutputFolder = TigerseyeRuntime.getOutputDirectoryPath();
 	addField(outPutDirEditor);
-	outPutDirEditor.setEnabled(false, getFieldEditorParent());
+	// outPutDirEditor.setEnabled(false, getFieldEditorParent());
+    }
+
+    @Override
+    public boolean performOk() {
+	boolean performOk = super.performOk();
+	if (!performOk)
+	    return performOk;
+	String newDir = this.outPutDirEditor.getStringValue();
+	IProject[] projects = ResourcesPlugin.getWorkspace().getRoot()
+		.getProjects();
+	Path oldSrc = new Path(originalOutputFolder);
+	Path newSrc = new Path(newDir);
+	for (IProject proj : projects) {
+	    try {
+		if (proj.isOpen()) {
+		    if (proj.hasNature(TigerseyeNature.TIGERSEYE_NATURE_ID)) {
+			IJavaProject jp = JavaCore.create(proj);
+			TigerseyeRuntime.removeSourceFolder(jp,
+				proj.getFolder(oldSrc));
+			TigerseyeRuntime.setSourceFolder(proj,
+				proj.getFolder(newSrc));
+		    }
+		}
+	    } catch (CoreException e) {
+		logger.warn(
+			"Failed to set new output source folder path. Old was: {} new would be {}",
+			originalOutputFolder, newDir);
+	    }
+	}
+	return true;
     }
 
     /**
@@ -74,7 +116,6 @@ public class TigerseyeMainPreferencePage extends FieldEditorPreferencePage
 	    setValidateStrategy(StringFieldEditor.VALIDATE_ON_FOCUS_LOST);
 	}
 
-
 	@Override
 	protected boolean doCheckState() {
 	    boolean valid = false;
@@ -88,7 +129,6 @@ public class TigerseyeMainPreferencePage extends FieldEditorPreferencePage
 	    }
 	    return valid;
 	}
-
 
 	private boolean checkDirectoryNameValid(String outputDirName)
 		throws IOException, URISyntaxException {
@@ -106,8 +146,7 @@ public class TigerseyeMainPreferencePage extends FieldEditorPreferencePage
 	    if (!mkdir) {
 		setErrorMessage("Invalid name: " + "'" + outputDirName + "'");
 		return false;
-	    }
-	    else {
+	    } else {
 		FileUtils.deleteDirectory(outPutDir);
 	    }
 	    return true;

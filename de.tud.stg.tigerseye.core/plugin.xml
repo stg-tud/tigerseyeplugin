@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension-point id="de.tud.stg.tigerseye.dslDefinitions" name="Tigerseye DSL Definitions" schema="schema/de.tud.stg.tigerseye.dslDefinitions.exsd"/>
-   <extension-point id="de.tud.stg.popart.builder.transformerSelector" name="transformer selector" schema="schema/builder.transformerSelector.exsd"/>
-   <extension-point id="de.tud.stg.tigerseye.transformers" name="Source Code Tranformers" schema="schema/de.tud.stg.tigerseye.transformers.exsd"/>
+   <extension-point id="de.tud.stg.tigerseye.dslDefinitions" name="%extension-point.name" schema="schema/de.tud.stg.tigerseye.dslDefinitions.exsd"/>
+   <extension-point id="de.tud.stg.popart.builder.transformerSelector" name="%extension-point.name.0" schema="schema/builder.transformerSelector.exsd"/>
+   <extension-point id="de.tud.stg.tigerseye.transformers" name="%extension-point.name.1" schema="schema/de.tud.stg.tigerseye.transformers.exsd"/>
 
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
             class="de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyeMainPreferencePage"
             id="de.tud.stg.tigerseye.preferences.root"
-            name="Tigerseye">
+            name="%page.name">
       </page>
       <page
             category="de.tud.stg.tigerseye.preferences.root"
             class="de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyeDSLsPreferencesPage"
             id="de.tud.stg.tigerseye.preferences.oldpreferences"
-            name="Languages">
+            name="%page.name.0">
       </page>
       <page
             category="de.tud.stg.tigerseye.preferences.root"
             class="de.tud.stg.tigerseye.eclipse.core.preferences.TransformationsPreferencePage"
             id="de.tud.stg.popart.builder.main"
-            name="Transformations">
+            name="%page.name.1">
       </page>
    </extension>
    <extension
@@ -50,7 +50,7 @@
    </extension>
    <extension
          id="tigerseyeNature"
-         name="Tigerseye Nature"
+         name="%extension.name"
          point="org.eclipse.core.resources.natures">
       <runtime>
          <run
@@ -72,7 +72,7 @@
    </extension>
    <extension
          id="tigerseyeBuilder"
-         name="Tigerseye Builder"
+         name="%extension.name.0"
          point="org.eclipse.core.resources.builders">
       <builder
             hasNature="true">
@@ -122,11 +122,11 @@
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
             delegate="de.tud.stg.tigerseye.eclipse.core.launching.TigerseyeLaunchDelegate"
-            delegateDescription="The standard Eclipse launcher for Java files."
-            delegateName="Eclipse JDT Launcher"
+            delegateDescription="%launchConfigurationType.delegateDescription"
+            delegateName="%launchConfigurationType.delegateName"
             id="de.tud.stg.tigerseye.eclipse.core.tigerseyeLaunchConfigurationType"
             modes="run,debug"
-            name="Tigerseye Launch Configuration"
+            name="%launchConfigurationType.name"
             public="true"
             sourceLocatorId="org.eclipse.jdt.launching.javaSourceLocator"
             sourcePathComputerId="org.eclipse.jdt.launching.sourceLookup.javaSourcePathComputer">

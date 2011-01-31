@@ -12,7 +12,7 @@ import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
  */
 public class TigerseyePreferenceInitializer extends AbstractPreferenceInitializer {
 
-    public static final String DEFAULT_OUTPUT_DIRECTORY_NAME = "src-popart";
+    public static final String DEFAULT_OUTPUT_DIRECTORY_NAME = "src-tigerseye";
     private static final boolean DEFAULT_LANGUAGE_ACTIVE_VALUE = false;
 
     @Override

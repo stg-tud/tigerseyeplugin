@@ -88,7 +88,8 @@ private static final Logger logger = LoggerFactory.getLogger(TransformerConfigur
 		tabItem[0].setText(extension);
 		tabItem[0].setToolTipText("Transformers that can be used on this specific DSL (" + extension + ")");
 		tabItem[1].setText(FileType.POPART.name());
-		tabItem[1].setToolTipText("Transformers that can be used on pure popart files");
+	tabItem[1]
+		.setToolTipText("Transformers that can be used on pure tigerseye files");
 		tabItem[2].setText(FileType.GROOVY.name());
 		tabItem[2].setToolTipText("Transformers that can be used on pure groovy files");
 		tabItem[3].setText(FileType.JAVA.name());

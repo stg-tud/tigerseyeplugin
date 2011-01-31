@@ -29,6 +29,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -42,6 +43,7 @@ import de.tud.stg.tigerseye.eclipse.core.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.KeyWordExtractor;
 import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeImage;
 
 /**
  * NewPopartClassWizardPage is a wizard page for creating Popart classes.
@@ -79,6 +81,12 @@ public class NewPopartClassWizardPage extends NewClassWizardPage {
 		// No extension defined. Can be ignored here.
 	    }
 	}
+    }
+
+    @Override
+    public Image getImage() {
+	return TigerseyeCore.getImage(TigerseyeImage.FileTypeTigerseye64)
+		.createImage();
     }
 
     public Map<String, DSLDefinition> getDsls() {

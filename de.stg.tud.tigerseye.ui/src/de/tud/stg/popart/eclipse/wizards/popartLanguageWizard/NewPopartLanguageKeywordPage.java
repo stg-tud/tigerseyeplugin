@@ -13,6 +13,7 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
@@ -33,6 +34,8 @@ import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.view.LengthValidat
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.view.LiteralKeywordView;
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.view.OperationKeywordView;
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.view.StructuredElementKeywordView;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeImage;
 /**
  * Second Page in PopartLanguageDefinition
  * 
@@ -41,7 +44,6 @@ import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.view.StructuredEle
  */
 public class NewPopartLanguageKeywordPage extends WizardPage {
 private static final Logger logger = LoggerFactory.getLogger(NewPopartLanguageKeywordPage.class);
-
 
 	private ListViewer viewer;
 	private Composite composite;
@@ -73,6 +75,12 @@ private static final Logger logger = LoggerFactory.getLogger(NewPopartLanguageKe
 
 	}
 	
+    @Override
+    public Image getImage() {
+	return TigerseyeCore.getImage(TigerseyeImage.FileTypeTigerseye64)
+		.createImage();
+    }
+
 	private void createLeft(Composite left) {
 
 		

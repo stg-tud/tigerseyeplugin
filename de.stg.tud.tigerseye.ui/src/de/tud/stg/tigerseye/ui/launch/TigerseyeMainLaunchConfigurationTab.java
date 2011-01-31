@@ -244,8 +244,18 @@ public class TigerseyeMainLaunchConfigurationTab extends SharedJavaMainTab
 	if (resource == null)
 	    return null;
 	IPath fullPath = resource.getProjectRelativePath();
+	String nameToAnalyze = fullPath.lastSegment().toString();
+	if (nameToAnalyze.endsWith(".class")) {
+	    if (nameToAnalyze.contains("$_") && nameToAnalyze.contains("dsl")) {
+		nameToAnalyze = nameToAnalyze.replaceAll("\\.class",
+			"\\.groovy");
+	    } else {
+		nameToAnalyze = nameToAnalyze.replaceAll("\\.class", "\\.java");
+	    }
+	}
+
 	String srcName = new OutputPathHandler()
-		.getSourceNameForOutputName(fullPath.lastSegment());
+		.getSourceNameForOutputName(nameToAnalyze);
 	IPath outFileWithSrcFileName = fullPath.removeLastSegments(1).append(
 		srcName);
 	// FIXME should be dynamically searching for source folders

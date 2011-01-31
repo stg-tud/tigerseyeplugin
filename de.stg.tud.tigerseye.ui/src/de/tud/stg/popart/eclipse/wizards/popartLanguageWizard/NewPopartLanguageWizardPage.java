@@ -16,11 +16,14 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.ui.wizards.NewClassWizardPage;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.graphics.Image;
 
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartKeyword;
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.IPopartKeywordCodeGenerator;
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.PopartKeywordCodeGeneratorFactory;
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.PopartLanguageModel;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeImage;
 import de.tud.stg.tigerseye.ui.TigerseyeUIActivator;
 
 /**
@@ -44,6 +47,7 @@ public class NewPopartLanguageWizardPage extends NewClassWizardPage {
 	public void init(IStructuredSelection selection) {
 		super.init(selection);
 		IJavaElement jelem = getInitialJavaElement(selection);
+	if (jelem != null)
 		this.project = jelem.getJavaProject();
 	}
 
@@ -61,6 +65,12 @@ public class NewPopartLanguageWizardPage extends NewClassWizardPage {
 	return packageFragment;
 	}
 
+
+    @Override
+    public Image getImage() {
+	return TigerseyeCore.getImage(TigerseyeImage.FileTypeTigerseye64)
+		.createImage();
+    }
 
 	/**
      * Invokes create on each keyword. Literals are created and Operations /
