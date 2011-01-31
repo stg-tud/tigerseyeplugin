@@ -21,6 +21,11 @@ public abstract class DSLUIKey extends DSLKey<Object> {
 		TigerseyeUIPreferenceConstants.DEFAULT_COLOR_VALUE);
     }
 
+    public static boolean isTigerseyeHighlightingActive(IPreferenceStore store) {
+	return store
+		.getBoolean(TigerseyeUIPreferenceConstants.TIGERSEYE_EDITOR_HIGHLIGHT_KEYWORDS_ENABLED);
+    }
+
     public static final class DSLColorKey extends DSLKey<RGB> {
 
 	private DSLColorKey() {

@@ -18,12 +18,20 @@ public interface ILanguageProvider {
     public List<DSLDefinition> getDSLDefinitions();
 
     /**
-     * Returns a list of DSLs according to the given extension.
+     * Returns the currently active {@link DSLDefinition} for extension
+     * {@code extension}.
      * 
      * @param extension
      *            the DSL file extension
-     * @return DSLs associated with the extension
+     * @return {@code DSLDefinition} associated with the extension or
+     *         <code>null</code> if none is active or none can be found.
+     * @throws DSLNotFoundException
+     *             if no DSL for {@code extension} can be found
+     * @throws TigerseyeRuntimeException
+     *             if more than one DSL is active for {@code extension}, which
+     *             is an illegal and should be an unreachable state.
      */
-    public List<DSLDefinition> getDSLForExtension(String dslName);
+    public DSLDefinition getActiveDSLForExtension(String extension)
+	    throws DSLNotFoundException;
 
 }

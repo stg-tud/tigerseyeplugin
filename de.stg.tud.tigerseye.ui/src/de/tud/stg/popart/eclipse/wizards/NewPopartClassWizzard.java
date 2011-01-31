@@ -30,7 +30,7 @@ public class NewPopartClassWizzard extends NewElementWizard {
 
 	public NewPopartClassWizzard() {
 		super();
-		setWindowTitle("Create a new Popart class");
+	setWindowTitle("Create a new Tigerseye class");
 	}
 
 	@Override

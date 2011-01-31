@@ -7,11 +7,14 @@ import java.util.List;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.ILanguageProvider;
 import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeRuntimeException;
 
 /**
  * Provides access to registered DSLs.
@@ -20,6 +23,9 @@ import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
  * 
  */
 public class LanguageProviderImpl implements ILanguageProvider {
+
+    private static final Logger logger = LoggerFactory
+	    .getLogger(LanguageProviderImpl.class);
 
     private final IPreferenceStore store;
 
@@ -74,20 +80,32 @@ public class LanguageProviderImpl implements ILanguageProvider {
     }
 
     @Override
-    public List<DSLDefinition> getDSLForExtension(String dslName) {
-	List<DSLDefinition> dsls = this.getDSLDefinitions();
-	List<DSLDefinition> possibleTarget = new ArrayList<DSLDefinition>();
-	for (DSLDefinition dsl : dsls) {
-	    String nextExt;
-	    try {
-		nextExt = dsl.getValue(DSLKey.EXTENSION);
-		if (nextExt.equals(dslName))
-		    possibleTarget.add(dsl);
-	    } catch (NoLegalPropertyFound e) {
-		// Can be safely ignored
+    public DSLDefinition getActiveDSLForExtension(String dslName) {
+	List<DSLDefinition> possibleTargets = new ArrayList<DSLDefinition>();
+	for (DSLDefinition dsl : this.getDSLDefinitions()) {
+	    if (dsl.isActive()) {
+		try {
+		    String nextExt = dsl.getValue(DSLKey.EXTENSION);
+		    if (nextExt.equals(dslName))
+			possibleTargets.add(dsl);
+		} catch (NoLegalPropertyFound e) {
+		    // Can be safely ignored
+		}
 	    }
 	}
-	return possibleTarget;
+	if (possibleTargets.isEmpty()) {
+	    logger.warn("No active DSL for extension '{}' found", dslName);
+	    return null;
+	}
+	if (possibleTargets.size() > 1) {
+	    logger.error(
+		    "At most one active DSL of the same extension may be active but where {}: {}",
+		    possibleTargets.size(), possibleTargets);
+	    throw new TigerseyeRuntimeException(
+		    "More than one DSL of same extension are active for extension "
+			    + dslName);
+	}
+	return possibleTargets.get(0);
     }
 
 }

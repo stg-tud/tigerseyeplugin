@@ -238,6 +238,8 @@ public class TigerseyeMainLaunchConfigurationTab extends SharedJavaMainTab
      */
     private @CheckForNull
     IFile extractCorrespondingDSLFile(IType t) {
+	if (t == null)
+	    return null;
 	IResource resource = t.getResource();
 	if (resource == null)
 	    return null;

@@ -7,9 +7,11 @@ import org.codehaus.groovy.eclipse.wizards.NewClassWizard;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.INewWizard;
 
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.PopartLanguageModel;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeNature;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeRuntime;
 
 /**
@@ -23,6 +25,11 @@ public class NewPopartLanguageWizzard extends NewClassWizard implements INewWiza
 	private NewPopartLanguageKeywordPage keywordPage;
 	private NewPopartLanguageWizardPage newClassPage;
 	
+    public NewPopartLanguageWizzard() {
+	super();
+	setWindowTitle("Create new Tigerseye Language.");
+    }
+
 	@Override
 	public void addPages() {
 		newClassPage = new NewPopartLanguageWizardPage();
@@ -30,8 +37,9 @@ public class NewPopartLanguageWizzard extends NewClassWizard implements INewWiza
 		addPage(newClassPage);		
 		
 		keywordPage = new NewPopartLanguageKeywordPage("");
-		keywordPage.setTitle("Create a new popart language definition");
-		keywordPage.setDescription("");
+	keywordPage.setTitle("New Tigersye Language Definition.");
+	keywordPage
+		.setDescription("Create a new Tigerseye language definition.");
 		addPage(keywordPage);
 		
 		PopartLanguageModel.getInstance().reset();
@@ -54,11 +62,26 @@ public class NewPopartLanguageWizzard extends NewClassWizard implements INewWiza
 	} catch (CoreException e) {
 	    throw new UnhandledException(e);
 	}
-	// FIXME should be language dialog asking for adding the libraries
+	dialogAskToAddNature();
+	return true;
+    }
+
+    private void dialogAskToAddNature() {
 	IJavaProject javaProject = newClassPage.getJavaProject();
+	boolean hasNature = false;
+	try {
+	    hasNature = javaProject.getProject().hasNature(
+		    TigerseyeNature.TIGERSEYE_NATURE_ID);
+	} catch (CoreException e) {
+	}
+	if (!hasNature) {
+	boolean openQuestion = MessageDialog.openQuestion(getShell(),
+		"Add Tigerseye Nature",
+		"Do you want to add the Tigerseye runtime libraries?");
+	if (openQuestion) {	
 	TigerseyeRuntime
 		.addTigersEyeRuntimeConfiguration(javaProject.getProject());
-
-	return true;
+	}
+	}
     }
 }	

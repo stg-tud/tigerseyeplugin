@@ -8,8 +8,8 @@
             name="%editor.name"
             extensions="dsl"
             icon="icons/plane16.png"
-            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
-            class="de.tud.stg.tigerseye.ui.editors.XMLEditor"
+            contributorClass="org.eclipse.jdt.internal.ui.javaeditor.BasicCompilationUnitEditorActionContributor"
+            class="de.tud.stg.tigerseye.ui.editors.TigerseyeEditor"
             id="de.stg.tud.tigerseye.ui.editors.TigerseyeEditor">
       </editor>
    </extension>
@@ -124,6 +124,13 @@
             </not>
          </visibility>
       </objectContribution>
+   </extension>
+   <extension
+         point="org.codehaus.groovy.eclipse.ui.syntaxHighlightingExtension">
+      <highlightingExtender
+            extender="de.tud.stg.tigerseye.ui.editors.TigerseyeGroovyEditorHighlightingExtender"
+            natureID="de.tud.stg.tigerseye.eclipse.core.tigerseyeNature">
+      </highlightingExtender>
    </extension>
 
 </plugin>

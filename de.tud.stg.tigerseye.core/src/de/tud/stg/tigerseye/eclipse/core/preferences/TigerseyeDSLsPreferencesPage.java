@@ -40,9 +40,9 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.popart.eclipse.editor.PopartEditorUtils;
 import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.DSLKey;
+import de.tud.stg.tigerseye.eclipse.core.KeyWordExtractor;
 import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
 import de.tud.stg.tigerseye.eclipse.core.PreferenceDSL;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
@@ -616,15 +616,11 @@ public class TigerseyeDSLsPreferencesPage extends PreferencePage implements
      */
     private void setDeclaredMethodsList(DSLDefinition language) {
     
-        String externalClassPath = language.getClassPath();
-        String contributorSymbolicName = language.getContributorSymbolicName();
-    
         declaredKeywordsTable.removeAll();
     
         // Read all public declared Fields from external class
-        Field[] publicDeclaredFields = PopartEditorUtils
-        	.getDeclaredLiteralKeywords(contributorSymbolicName,
-        		externalClassPath);
+	Field[] publicDeclaredFields = new KeyWordExtractor()
+		.getDeclaredLiteralKeywords(language.loadClass());
             for (Field declaredField : publicDeclaredFields) {
         	TableItem tableItem = null;
     
@@ -637,9 +633,8 @@ public class TigerseyeDSLsPreferencesPage extends PreferencePage implements
     
         }
     
-        Method[] publicDeclaredMethods = PopartEditorUtils
-        	.getMethodKeywords(contributorSymbolicName,
-        		externalClassPath);
+	Method[] publicDeclaredMethods = new KeyWordExtractor()
+		.getMethodKeywords(language.loadClass());
     
         // Read all getter setter from external class
         Set<String> fieldAccessors = new HashSet<String>();

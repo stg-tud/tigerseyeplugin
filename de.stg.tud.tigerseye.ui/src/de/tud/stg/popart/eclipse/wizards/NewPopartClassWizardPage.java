@@ -37,9 +37,9 @@ import org.eclipse.swt.widgets.Label;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.popart.eclipse.editor.PopartEditorUtils;
 import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.DSLKey;
+import de.tud.stg.tigerseye.eclipse.core.KeyWordExtractor;
 import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 
@@ -62,8 +62,8 @@ public class NewPopartClassWizardPage extends NewClassWizardPage {
 
     public NewPopartClassWizardPage() {
 	super();
-	setTitle("Popart Class");
-	setDescription("Create a new Popart class");
+	setTitle("Tigerseye Class");
+	setDescription("Create a new Tigerseye class");
 	codeGenerator = new ArtifactCodeGenerator(project);
 	importManager = new ImportManager(project);
 	List<DSLDefinition> dslDefinitions = TigerseyeCore
@@ -98,7 +98,7 @@ public class NewPopartClassWizardPage extends NewClassWizardPage {
 	public IFile createGroovyType(IProgressMonitor monitor)
 			throws CoreException {
 
-		monitor.beginTask("Creating Popart Class...", 2);
+	monitor.beginTask("Creating Tigerseye Class...", 2);
 		IPackageFragment packageFragment = getPackageFragment();
 		List<String> superInterfaces = getSuperInterfaces();
 		getModifiers();
@@ -111,7 +111,7 @@ public class NewPopartClassWizardPage extends NewClassWizardPage {
 		importManager.setBasePackage(getPackageText());
 
 		// Print popart-language information
-		printDeclaredMethods(lookForLanguageContributorSymbolicName(), lookForLanguageClasspath());
+	printDeclaredMethods(getDsls().get(combo.getText()));
 
 		codeGenerator.addLineBreak().addCode("##imports##").addLineBreak();
 
@@ -286,37 +286,23 @@ public class NewPopartClassWizardPage extends NewClassWizardPage {
 	combo.select(0);
     }
 
-    /**
-     * This method prints class-path of used DSL language.
-     */
-    private String lookForLanguageClasspath() {
-	return getDsls().get(combo.getText()).getClassPath();
-    }
-
-    /**
-     * This method returns the contributorSymbolicName of the selected DSL.
-     */
-    private String lookForLanguageContributorSymbolicName() {
-	return getDsls().get(combo.getText()).getContributorSymbolicName();
-    }
-
 	/**
 	 * This method prints keywords of language for the given class-path.
 	 * 
 	 * @param externalClassPath
 	 *            the path from a class with methods that should be found
 	 */
-	private void printDeclaredMethods(String contributorSymbolicName, String externalClassPath) {
+    private void printDeclaredMethods(DSLDefinition dsl) {
 
 		// Print Language classpath
 		codeGenerator.addLineBreak().addCode("/**");
-		codeGenerator.addCode(" * Popart language: " + externalClassPath);
+	codeGenerator.addCode(" * Tigerseye language: " + dsl.getClassPath());
 		codeGenerator.addCode(" *");
 		codeGenerator.addCode(" * Declared keywords:");
 
 		// Read all public declared fields from external class
-		Field[] declaredFields = PopartEditorUtils
-				.getDeclaredLiteralKeywords(contributorSymbolicName, externalClassPath);
+	Field[] declaredFields = new KeyWordExtractor()
+		.getDeclaredLiteralKeywords(dsl.loadClass());
 		if (declaredFields != null) {
 			for (Field publicDeclaredField : declaredFields) {
 
@@ -332,8 +318,9 @@ public class NewPopartClassWizardPage extends NewClassWizardPage {
 		}
 		
 		// Read all public declared methods from external class
-		Method[] declaredMethods = PopartEditorUtils
-				.getMethodKeywords(contributorSymbolicName, externalClassPath);
+	Method[] declaredMethods = new KeyWordExtractor()
+.getMethodKeywords(dsl
+		.loadClass());
 		if (declaredMethods != null) {
 			for (Method publicDeclaredMethod : declaredMethods) {
 

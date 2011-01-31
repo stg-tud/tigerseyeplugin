@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -207,32 +206,15 @@ public class DSLResourceHandler implements ResourceHandler {
 
     protected Class<? extends DSL> getDslClass(String dslName)
 	    throws DSLNotFoundException {
-		if (dslName != null) {
 			String className;
 			String symbolicName;
 			
 
 			ILanguageProvider iLanguageProvider = new LanguageProviderImpl(TigerseyeCore.getPreferences());
 
-	    List<DSLDefinition> dslList = iLanguageProvider
-						.getDSLForExtension(dslName);
-	    Iterator<DSLDefinition> iterator = dslList.iterator();
-	    while (iterator.hasNext()) {
-		DSLDefinition next = iterator.next();
-		if (!next.isActive())
-		    iterator.remove();
-	    }
-	    if (dslList.size() != 1) {
+	    DSLDefinition dslDef = iLanguageProvider
+						.getActiveDSLForExtension(dslName);
 
-		logger.debug(
-			"Found {} DSLdefinitions for extension {}. Only exactly one active dsl for one extension is a valid configuration. DSLs where {}.",
-			new Object[] { dslList.size(), dslName, dslList });
-		throw new DSLNotFoundException(
-			"Invalid number of DSLs configured: " + dslList.size())
-			.setDSL(dslName);
-	    }
-
-	    DSLDefinition dslDef = dslList.get(0);
 				className = dslDef.getClassPath();
 				symbolicName = dslDef.getContributorSymbolicName();
 				logger.debug(
@@ -248,13 +230,13 @@ public class DSLResourceHandler implements ResourceHandler {
 			} catch (ClassNotFoundException e) {
 				logger.warn("class not found in bundle " + symbolicName
 						+ " for name " + className, e);
+	    return null;
 			} catch (ClassCastException e) {
 				logger.error(
 						"class {} was not of type {}. Cannot process dsl {}",
 						new Object[] { className, DSL.class.getName(), dslName });
+	    return null;
 			}
-		}
-		return null;
 	}
 
     protected ByteArrayOutputStream performPrettyPrinting(ATerm term) {

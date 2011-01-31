@@ -54,7 +54,7 @@
          point="org.eclipse.core.resources.natures">
       <runtime>
          <run
-               class="de.tud.stg.popart.builder.eclipse.DSLNature">
+               class="de.tud.stg.tigerseye.eclipse.core.TigerseyeNature">
          </run>
       </runtime>
       <builder

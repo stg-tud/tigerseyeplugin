@@ -5,6 +5,8 @@ import javax.annotation.CheckForNull;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.tud.stg.popart.builder.transformers.FileType;
 
@@ -18,12 +20,16 @@ import de.tud.stg.popart.builder.transformers.FileType;
  */
 public class OutputPathHandler {
 
+    private static final Logger logger = LoggerFactory
+	    .getLogger(OutputPathHandler.class);
+
     private static final String dotReplacement = "_";
     private static final String beginningDSLPrefixString = "$";
     private String localOutputDirectoryName;
 
     public OutputPathHandler() {
-	this.localOutputDirectoryName = TigerseyeRuntime.getOutputDirectoryPath();
+	this.localOutputDirectoryName = TigerseyeRuntime
+		.getOutputDirectoryPath();
     }
 
     public OutputPathHandler(String outPutDir) {
@@ -37,7 +43,7 @@ public class OutputPathHandler {
 	// the first element might be wrong.
 	IPath projectRelativePath = srcFile.getProjectRelativePath();
 	IPath delegatedPath = getSrcRelativeOutputPath(projectRelativePath
-			.removeFirstSegments(1));
+		.removeFirstSegments(1));
 	IPath newProjRelPath = new Path(localOutputDirectoryName)
 		.append(delegatedPath);
 	IFile delegatedFile = srcFile.getProject().getFile(newProjRelPath);
@@ -55,8 +61,7 @@ public class OutputPathHandler {
      * @return the transformed {@code srcRelativePath}
      * @see getOutputNameForSourceName(String)
      */
-    public
-    IPath getSrcRelativeOutputPath(IPath srcRelativePath) {
+    public IPath getSrcRelativeOutputPath(IPath srcRelativePath) {
 
 	IPath srcPath = srcRelativePath;
 	String resourcefileName = srcPath.lastSegment();
@@ -132,20 +137,19 @@ public class OutputPathHandler {
      *            the output folder name
      * @return the source name for {@code outputName} or <code>null</code> if
      *         none can be determined.
-     * @throws IllegalArgumentException
-     *             <ul>
-     *             <li>If {@code outputName} has illegal format.</li>
-     *             </ul>
      */
     public @CheckForNull
     String getSourceNameForOutputName(String outputName) {
 	FileType actualType = FileType.getTypeForOutputResource(outputName);
-	if (actualType == null)
+	if (actualType == null) {
+	    logger.warn("Failed to determine filetype for " + outputName);
 	    return null;
-	if (outputName.substring(outputName.indexOf(".") + 1).contains("."))
-	    throw new IllegalArgumentException(
-		    "Expected at most one dot in file name but was: "
-			    + outputName);
+	}
+	if (outputName.substring(outputName.indexOf(".") + 1).contains(".")) {
+	    logger.warn("Expected at most one dot in file name but was: "
+		    + outputName);
+	    return null;
+	}
 	return transformOutputToSrcName(outputName, actualType);
     }
 

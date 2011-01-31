@@ -9,6 +9,8 @@ import legacy.org.codehaus.groovy.eclipse.wizards.WizardUtil;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
@@ -19,6 +21,7 @@ import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartKeyword;
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.IPopartKeywordCodeGenerator;
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.PopartKeywordCodeGeneratorFactory;
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.PopartLanguageModel;
+import de.tud.stg.tigerseye.ui.TigerseyeUIActivator;
 
 /**
  * First Page in the PopartLanguageWizard
@@ -33,8 +36,8 @@ public class NewPopartLanguageWizardPage extends NewClassWizardPage {
 
 	public NewPopartLanguageWizardPage() {
 		codeGenerator = new ArtifactCodeGenerator(project);
-		setDescription("Create a new popart language definition");
-		setTitle("popart language definition");
+	setDescription("Create a new Tigerseye language definition.");
+	setTitle("Tigerseye Language Definition");
 	}
 
 	@Override
@@ -50,13 +53,19 @@ public class NewPopartLanguageWizardPage extends NewClassWizardPage {
 		String sourceCode = codeGenerator.toString();
 		return WizardUtil.createGroovyType(getPackageFragmentRoot(),
 				packageFragment, getTypeName() + ".groovy", sourceCode);
+    }
 
+    @Override
+    public IPackageFragment getPackageFragment() {
+	IPackageFragment packageFragment = super.getPackageFragment();
+	return packageFragment;
 	}
 
+
 	/**
-	 * Invokes create on each keyword. Literals are created and Operations /
-	 * Nested Element write themself into the code generator
-	 */
+     * Invokes create on each keyword. Literals are created and Operations /
+     * Nested Elements write themselves into the code generator
+     */
 	public void createKewords() {
 
 		codeGenerator.addCode("import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;");
@@ -93,6 +102,21 @@ public class NewPopartLanguageWizardPage extends NewClassWizardPage {
 		codeGenerator.addCode("}");
 		
 		
+    }
+
+    @Override
+    protected IStatus packageChanged() {
+	IStatus packageChanged = super.packageChanged();
+	if (packageChanged.getSeverity() == IStatus.ERROR)
+	    return packageChanged;
+
+	String packageText = getPackageText();
+	if (packageText.isEmpty()) {
+	    String msg = "<default> package is not allowed for language definitions.";
+	    return new Status(IStatus.ERROR, TigerseyeUIActivator.PLUGIN_ID,
+		    msg);
 	}
 
+	return packageChanged;
+	}
 }

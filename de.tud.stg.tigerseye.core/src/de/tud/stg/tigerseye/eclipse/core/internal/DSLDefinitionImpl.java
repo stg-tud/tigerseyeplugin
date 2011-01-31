@@ -1,14 +1,16 @@
 package de.tud.stg.tigerseye.eclipse.core.internal;
 
-import java.util.HashMap;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.osgi.framework.Bundle;
 
+import de.tud.stg.popart.dslsupport.DSL;
 import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeRuntimeException;
 
 public class DSLDefinitionImpl implements DSLDefinition {
 
@@ -16,7 +18,6 @@ public class DSLDefinitionImpl implements DSLDefinition {
     private final String contributorSymbolicName;
     private final String languageKey;
     private final String dslName;
-    private final HashMap<DSLKey<?>, Object> keyValueMap;
     private IPreferenceStore store;
 
     /**
@@ -36,7 +37,6 @@ public class DSLDefinitionImpl implements DSLDefinition {
 	this.contributorSymbolicName = contributorSymbolicName;
 	this.dslName = dslName;
 	this.languageKey = languageKey;
-	this.keyValueMap = new HashMap<DSLKey<?>, Object>();
     }
 
     @Override
@@ -124,13 +124,21 @@ public class DSLDefinitionImpl implements DSLDefinition {
     }
 
     @Override
-    public void setData(DSLKey<?> key, Object value) {
-	this.keyValueMap.put(key, value);
-    }
-
-    @Override
-    public Object getData(DSLKey<?> key) {
-	return this.keyValueMap.get(key);
+    public Class<? extends DSL> loadClass() {
+	try {
+	    Bundle bundle = Platform.getBundle(getContributorSymbolicName());
+	    Class<?> loadClass = bundle.loadClass(getClassPath());
+	    /*
+	     * The cast must be successful or else the DSL language is erroneous
+	     * and an exception appropriate
+	     */
+	    @SuppressWarnings("unchecked")
+	    Class<? extends DSL> dslClass = (Class<? extends DSL>) loadClass;
+	    return dslClass;
+	} catch (ClassNotFoundException e) {
+	    throw new TigerseyeRuntimeException("DSLDefinition "
+		    + this.toString() + " is not loadable", e);
+	}
     }
 
 }
