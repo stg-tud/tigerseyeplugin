@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: de.tud.stg.tigerseye.eclipse.core;singleton:=true
 Bundle-Version: 0.0.1
-Bundle-Activator: de.tud.stg.tigerseye.eclipse.core.internal.TigerseyeCoreActivator
+Bundle-Activator: de.tud.stg.tigerseye.eclipse.core.TigerseyeCoreActivator
 Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,

@@ -311,8 +311,9 @@ public class NewPopartClassWizardPage extends NewClassWizardPage {
 	codeGenerator.addCode(" * Declared keywords:");
 
 	// Read all public declared fields from external class
-	Field[] declaredFields = new KeyWordExtractor()
-		.getDeclaredLiteralKeywords(dsl.loadClass());
+	KeyWordExtractor keyWordExtractor = new KeyWordExtractor(dsl.loadClass());
+	Field[] declaredFields = keyWordExtractor
+		.getDeclaredLiteralKeywords();
 	if (declaredFields != null) {
 	    for (Field publicDeclaredField : declaredFields) {
 
@@ -326,8 +327,7 @@ public class NewPopartClassWizardPage extends NewClassWizardPage {
 	}
 
 	// Read all public declared methods from external class
-	Method[] declaredMethods = new KeyWordExtractor().getMethodKeywords(dsl
-		.loadClass());
+	Method[] declaredMethods = keyWordExtractor.getMethodKeywords();
 	if (declaredMethods != null) {
 	    for (Method publicDeclaredMethod : declaredMethods) {
 

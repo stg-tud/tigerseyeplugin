@@ -12,7 +12,6 @@ import org.osgi.framework.Bundle;
 
 import de.tud.stg.popart.builder.transformers.Transformation;
 import de.tud.stg.tigerseye.eclipse.core.internal.LanguageProviderImpl;
-import de.tud.stg.tigerseye.eclipse.core.internal.TigerseyeCoreActivator;
 
 /**
  * Provides access to this plug-ins preference store and bundle. Additionally it

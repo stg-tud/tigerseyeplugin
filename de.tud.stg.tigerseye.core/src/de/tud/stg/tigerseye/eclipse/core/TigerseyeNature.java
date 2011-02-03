@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tud.stg.popart.builder.eclipse.TigerseyeClasspathContainer;
-import de.tud.stg.tigerseye.eclipse.core.internal.TigerseyeCoreActivator;
 
 //FIXME renaming, refactoring, tests
 public class TigerseyeNature implements IProjectNature {

@@ -23,12 +23,6 @@
       </page>
    </extension>
    <extension
-         point="org.eclipse.core.runtime.preferences">
-      <initializer
-            class="de.tud.stg.tigerseye.ui.preferences.TigerseyeUIPreferenceInitializer">
-      </initializer>
-   </extension>
-   <extension
          point="org.eclipse.ui.newWizards">
       <category
             id="de.tud.stg.popart.eclipse"

@@ -619,8 +619,10 @@ public class TigerseyeDSLsPreferencesPage extends PreferencePage implements
         declaredKeywordsTable.removeAll();
     
         // Read all public declared Fields from external class
-	Field[] publicDeclaredFields = new KeyWordExtractor()
-		.getDeclaredLiteralKeywords(language.loadClass());
+	KeyWordExtractor keyWordExtractor = new KeyWordExtractor(
+		language.loadClass());
+	Field[] publicDeclaredFields = keyWordExtractor
+		.getDeclaredLiteralKeywords();
             for (Field declaredField : publicDeclaredFields) {
         	TableItem tableItem = null;
     
@@ -633,8 +635,8 @@ public class TigerseyeDSLsPreferencesPage extends PreferencePage implements
     
         }
     
-	Method[] publicDeclaredMethods = new KeyWordExtractor()
-		.getMethodKeywords(language.loadClass());
+	Method[] publicDeclaredMethods = keyWordExtractor
+		.getMethodKeywords();
     
         // Read all getter setter from external class
         Set<String> fieldAccessors = new HashSet<String>();
