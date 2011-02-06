@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: SimpleSQLDSL
-Bundle-SymbolicName: SimpleSQLDSL;singleton:=true
+Bundle-SymbolicName: de.tud.stg.tigerseye.examples.SimpleSQLDSL;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.codehaus.groovy,

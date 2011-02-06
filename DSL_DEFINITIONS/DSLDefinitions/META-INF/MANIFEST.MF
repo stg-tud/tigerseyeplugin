@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: DSLDefinitions Plug-in
-Bundle-SymbolicName: DSLDefinitions;singleton:=true
+Bundle-SymbolicName: de.tud.stg.tigerseye.examples.DSLDefinitions;singleton:=true
 Bundle-Version: 1.0.0
 Export-Package: de.tud.stg.popart.builder.test.dsls
 Require-Bundle: de.tud.stg.tigerseye,
