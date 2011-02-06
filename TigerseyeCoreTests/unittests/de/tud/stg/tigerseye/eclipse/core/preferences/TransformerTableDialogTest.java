@@ -103,7 +103,7 @@ public class TransformerTableDialogTest{
 		return newList;
 	}	
 	
-	@Ignore("Needs manual intervention")
+	@Ignore("Needs manual intervention, consider introducing tools such as SWTBOT as a workaround")
 	@Test
 	public void shouldShowCheckedTableOfElements() throws Exception {
 		CheckedItem el = ci(nullId, "name", false);
@@ -149,9 +149,9 @@ public class TransformerTableDialogTest{
 		}
 	}
 	
-	private static final TransformationType nullId = new id();
+	private static final TransformationType nullId = new dummyType();
 	
-	private static class id implements TransformationType{
+	private static class dummyType implements TransformationType{
 
 		@Override
 		public String getIdentifer() {
@@ -160,7 +160,6 @@ public class TransformerTableDialogTest{
 
 		@Override
 		public FileType getTransformationCategory() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 		

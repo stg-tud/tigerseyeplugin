@@ -26,6 +26,11 @@ import org.mockito.Mockito;
  
 //JBoss, Home of Professional Open Source.
  
+/**
+ * An adjusted version of the code snippet taken from 
+ * <a href='http://blog.srvme.de/2010/12/10/mock-eclipse-ifile/'>this blog entry</a>.
+ *
+ */
 public final class EclipseMock {
  
     private final IWorkspace workspace;

@@ -40,9 +40,11 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.PrettyGroovyCodePr
 
 public class TestUtils {
 
-	private static final File inputDir = new File("test");
+	private static final String srcRootFolder = "transformationtests";
 
-	private static final String generatedFilesFolder = "test/de/tud/stg/popart/builder/test/generated/";
+	private static final File inputDir = new File(srcRootFolder);
+
+	private static final String generatedFilesFolder = srcRootFolder + "/de/tud/stg/popart/builder/test/generated/";
 
 	static {
 		//Setting logger since logger is not initialized in test run configuration
