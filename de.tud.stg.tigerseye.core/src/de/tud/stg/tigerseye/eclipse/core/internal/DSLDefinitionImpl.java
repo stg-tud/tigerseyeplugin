@@ -6,6 +6,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.osgi.framework.Bundle;
 
+import de.tud.stg.popart.builder.transformers.FileType;
 import de.tud.stg.popart.dslsupport.DSL;
 import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.DSLKey;
@@ -139,6 +140,16 @@ public class DSLDefinitionImpl implements DSLDefinition {
 	    throw new TigerseyeRuntimeException("DSLDefinition "
 		    + this.toString() + " is not loadable", e);
 	}
+    }
+
+    @Override
+    public String getIdentifer() {
+	return getLanguageKey();
+    }
+
+    @Override
+    public FileType getTransformationCategory() {
+	return FileType.DSL;
     }
 
 }

@@ -16,6 +16,8 @@ public class TigerseyePreferenceConstants {
 
     public static final String _CONTRIBUTING_PLUGIN = "_contributingPlugin";
 
+    public static final String _TRANSFORMATION = "_transformation";
+
     public static final String TIGERSEYE_OUTPUT_FOLDER_PATH = "de.tud.stg.tigerseye.keyword.outputfolder.path";
 
     public static final String DEFAULT_LANGUAGE_ACTIVE_KEY = "de.tud.stg.tigerseye.languageisactive.default";

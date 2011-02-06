@@ -36,7 +36,7 @@ public class AddTigerseyeNatureAction implements IObjectActionDelegate {
 		    selection);
 	    return;
 	}
-	TigerseyeRuntime.addTigersEyeRuntimeConfiguration(targetProject);
+	TigerseyeRuntime.addTigerseyeNatures(targetProject);
     }
 
     private @CheckForNull

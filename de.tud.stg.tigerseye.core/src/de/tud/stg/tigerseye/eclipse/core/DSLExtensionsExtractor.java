@@ -1,5 +1,7 @@
 package de.tud.stg.tigerseye.eclipse.core;
 
+import java.io.File;
+
 import javax.annotation.Nonnull;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -31,6 +33,7 @@ public class DSLExtensionsExtractor {
      *         an empty array.
      */
     public String[] getExtensionsForSrcResource(String resourceSrcName) {
+	resourceSrcName = new File(resourceSrcName).getName();
 	String[] split = resourceSrcName.split("\\.");
 	if (split.length < 3) {
 	    logger.warn("name: " + resourceSrcName

@@ -43,7 +43,7 @@ import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.KeyWordExtractor;
 import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
-import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeCoreActivator;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeImage;
 
 /**
@@ -83,7 +83,7 @@ public class NewPopartClassWizardPage extends NewClassWizardPage {
 
     @Override
     public Image getImage() {
-	return TigerseyeCore.getImage(TigerseyeImage.FileTypeTigerseye64)
+	return TigerseyeCoreActivator.getIcon(TigerseyeImage.FileTypeTigerseye64)
 		.createImage();
     }
 

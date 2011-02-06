@@ -3,6 +3,8 @@ package de.tud.stg.tigerseye.eclipse.core;
 import javax.annotation.Nonnull;
 
 import de.tud.stg.popart.builder.core.annotations.DSL;
+import de.tud.stg.popart.builder.transformers.FileType;
+import de.tud.stg.popart.builder.transformers.TransformationType;
 
 /**
  * General interface to handle registered DSLs between plug-in components <br>
@@ -20,7 +22,7 @@ import de.tud.stg.popart.builder.core.annotations.DSL;
  * 
  */
 @Nonnull
-public interface DSLDefinition {
+public interface DSLDefinition extends TransformationType {
 
     /**
      * DSL with no behavior or state.
@@ -166,6 +168,16 @@ public interface DSLDefinition {
 	@Override
 	public Class<? extends de.tud.stg.popart.dslsupport.DSL> loadClass() {
 	    return de.tud.stg.popart.dslsupport.DSL.class;
+	}
+
+	@Override
+	public String getIdentifer() {
+	    return "";
+	}
+
+	@Override
+	public FileType getTransformationCategory() {
+	    return null;
 	}
     }
 

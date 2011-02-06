@@ -2,6 +2,7 @@ package de.tud.stg.tigerseye.eclipse.core;
 
 import java.util.List;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 @Nonnull
@@ -25,13 +26,11 @@ public interface ILanguageProvider {
      *            the DSL file extension
      * @return {@code DSLDefinition} associated with the extension or
      *         <code>null</code> if none is active or none can be found.
-     * @throws DSLNotFoundException
-     *             if no DSL for {@code extension} can be found
      * @throws TigerseyeRuntimeException
      *             if more than one DSL is active for {@code extension}, which
      *             is an illegal and should be an unreachable state.
      */
-    public DSLDefinition getActiveDSLForExtension(String extension)
-	    throws DSLNotFoundException;
+    public @CheckForNull
+    DSLDefinition getActiveDSLForExtension(String extension);
 
 }

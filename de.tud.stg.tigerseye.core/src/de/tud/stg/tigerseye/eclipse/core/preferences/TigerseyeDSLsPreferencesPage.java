@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.DSLKey;
+import de.tud.stg.tigerseye.eclipse.core.ILanguageProvider;
 import de.tud.stg.tigerseye.eclipse.core.KeyWordExtractor;
 import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
 import de.tud.stg.tigerseye.eclipse.core.PreferenceDSL;
@@ -49,9 +50,9 @@ import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeRuntime;
 
 /**
- * TigerseyeDSLsPreferencesPage is the DSL languages configuration page. It provides
- * the configuration of registered DSLs. Such as defining which file extension
- * has to be interpreted as what DSL. <br>
+ * TigerseyeDSLsPreferencesPage is the DSL languages configuration page. It
+ * provides the configuration of registered DSLs. Such as defining which file
+ * extension has to be interpreted as what DSL. <br>
  * Additionally, if supported by the DSL, its keywords are listed.
  * 
  * @author Yevgen Fanshil
@@ -86,10 +87,17 @@ public class TigerseyeDSLsPreferencesPage extends PreferencePage implements
 
     private PrefDSL currentlyEditedDSL;
 
+    private ILanguageProvider languageProvider;
+
     @Override
     public void init(IWorkbench workbench) {
 	this.setPreferenceStore(TigerseyeCore.getPreferences());
 	setDescription("Languages Preference Page");
+	this.languageProvider = TigerseyeCore.getLanguageProvider();
+    }
+
+    public ILanguageProvider getLanguageProvider() {
+	return languageProvider;
     }
 
     @Override
@@ -101,12 +109,8 @@ public class TigerseyeDSLsPreferencesPage extends PreferencePage implements
 	innerLayout.numColumns = 1;
 	preferencePageComposite.setLayout(innerLayout);
 
-	Group languageConfigurationGroup = new Group(preferencePageComposite,
-		SWT.NONE);
-	languageConfigurationGroup.setText("Language Configuration");
-	languageConfigurationGroup.setLayoutData(new GridData(SWT.FILL,
-		SWT.FILL, true, false));
-	languageConfigurationGroup.setLayout(new GridLayout());
+	Group languageConfigurationGroup = createHorizontalGrabbingGroup(
+		preferencePageComposite, "Language Configuration");
 
 	Composite popartTableComposite = new Composite(
 		languageConfigurationGroup, SWT.NONE);
@@ -151,14 +155,32 @@ public class TigerseyeDSLsPreferencesPage extends PreferencePage implements
 		{setAllCheckBoxState(false);}});
 	//@formatter:on
 
-	declaredKeywordsTable = getConfiguredTable(languageConfigurationGroup,
+	Group keywordsGroup = createHorizontalGrabbingGroup(
+		preferencePageComposite, "Declared Keywords For Selected DSL");
+
+	declaredKeywordsTable = getConfiguredTable(keywordsGroup,
 		SWT.DEFAULT, 70);
-	initColumns();
+	makeCols(declaredKeywordsTable, new String[] { "Name", "Return",
+		"Parameters" });
+
 	initializeTableContent();
 	initOnTableRowSelect();
 	enableDependingSwtElements(false);
 	updateValidState();
 	return preferencePageComposite;
+    }
+
+    private Group createHorizontalGrabbingGroup(
+Composite parent,
+	    String groupTitle) {
+	Group languageConfigurationGroup = new Group(parent,
+		SWT.NONE);
+	languageConfigurationGroup.setText(groupTitle);
+	languageConfigurationGroup.setLayoutData(new GridData(SWT.FILL,
+		SWT.FILL, true, false));
+	languageConfigurationGroup.setLayout(new GridLayout());
+	languageConfigurationGroup.setFont(parent.getFont());
+	return languageConfigurationGroup;
     }
 
     private Table getConfiguredTable(Composite popartTableComposite,
@@ -190,140 +212,125 @@ public class TigerseyeDSLsPreferencesPage extends PreferencePage implements
     }
 
     private void initializeTableContent() {
-	List<DSLDefinition> dslDefinitions = TigerseyeCore
-		.getLanguageProvider().getDSLDefinitions();
-        languagesTable.removeAll();
-        dslList.clear();
-        for (DSLDefinition dslDefinition : dslDefinitions) {
-            PrefDSL propDSL = new PrefDSL(dslDefinition, getPreferenceStore());
-            dslList.add(propDSL);
-        }
-        rebuildTableItems();
+	String[] scols = { "Name", "Active", ".*.dsl", "Interpreter Class" };
+	TableColumn[] makeCols = makeCols(languagesTable, scols);
+	languagesTable.removeAll();
+	dslList.clear();
+	for (DSLDefinition dslDefinition : getLanguageProvider()
+		.getDSLDefinitions()) {
+	    PrefDSL propDSL = new PrefDSL(dslDefinition, getPreferenceStore());
+	    dslList.add(propDSL);
+	}
+	rebuildTableItems(getDslList());
+	packCols(makeCols);
     }
 
-    private void initColumns() {
+    private List<PrefDSL> getDslList() {
+	return dslList;
+    }
 
-	final TableColumn nameCol = new TableColumn(languagesTable, swtStyle);
-	nameCol.setWidth(100);
-	nameCol.setText("Name");
+    private void packCols(TableColumn[] makeCols) {
+	for (TableColumn tableColumn : makeCols) {
+	    tableColumn.pack();
+	}
+    }
 
-	final TableColumn isActiveCol = new TableColumn(languagesTable,
-		swtStyle);
-	isActiveCol.setWidth(50);
-	isActiveCol.setText("Active");
-
-	final TableColumn dslExtensionNameCol = new TableColumn(languagesTable,
-		swtStyle);
-	dslExtensionNameCol.setWidth(100);
-	dslExtensionNameCol.setText(".*.dsl");
-
-	final TableColumn interpreterClassCol = new TableColumn(languagesTable,
-		swtStyle);
-	interpreterClassCol.setWidth(100);
-	interpreterClassCol.setText("Interpreter Class");
-
-	final TableColumn newKeywordTableColumn = new TableColumn(
-		declaredKeywordsTable, swtStyle);
-	newKeywordTableColumn.setWidth(100);
-	newKeywordTableColumn.setText("Name");
-
-	final TableColumn newKeqwordTableColumn_1 = new TableColumn(
-		declaredKeywordsTable, swtStyle);
-	newKeqwordTableColumn_1.setWidth(65);
-	newKeqwordTableColumn_1.setText("Return");
-
-	final TableColumn newKeywordTableColumn_2 = new TableColumn(
-		declaredKeywordsTable, swtStyle);
-	newKeywordTableColumn_2.setWidth(221);
-	newKeywordTableColumn_2.setText("Parameters");
-
+    private TableColumn[] makeCols(Table table, String[] scols) {
+	TableColumn[] newCols = new TableColumn[scols.length];
+	for (int i = 0; i < scols.length; i++) {
+	    TableColumn column = new TableColumn(table, swtStyle);
+	    column.setText(scols[i]);
+	    newCols[i] = column;
+	}
+	return newCols;
     }
 
     private void initializeExtensionTextItem(int column, final PrefDSL propDSL,
-            TableItem item) {
-        TableEditor tableEditor;
-        tableEditor = new TableEditor(languagesTable);
-        final Text extension = new Text(languagesTable, SWT.LEAD);
-        extension.setText(propDSL.getExtension());
-        extension.addFocusListener(new FocusAdapter() {
-        @Override
-        public void focusLost(FocusEvent e) {
-            finishEditingExtension(propDSL);
-        }
-        });
-        extension.addMouseListener(new MouseAdapter() {
-        @Override
-        public void mouseDown(MouseEvent e) {
-            /*
-             * won't work in FocusListener#focusGained(), since a
-             * mouseDown is Directly followed, which implicitly performs
-             * a Text#clearSelection() before #mouseDown(..) is called.
-             */
-            extension.selectAll();
-        }
-        });
-        tableEditor.setEditor(extension, item, column);
-        tableEditor.grabHorizontal = true;
-        extensionTextMap.put(propDSL, extension);
-        extension.setVisible(false);
+	    TableItem item) {
+	TableEditor tableEditor;
+	tableEditor = new TableEditor(languagesTable);
+	final Text extension = new Text(languagesTable, SWT.LEAD);
+	extension.setText(propDSL.getExtension());
+	extension.addFocusListener(new FocusAdapter() {
+	    @Override
+	    public void focusLost(FocusEvent e) {
+		finishEditingExtension(propDSL);
+	    }
+	});
+	extension.addMouseListener(new MouseAdapter() {
+	    @Override
+	    public void mouseDown(MouseEvent e) {
+		/*
+		 * won't work in FocusListener#focusGained(), since a mouseDown
+		 * is Directly followed, which implicitly performs a
+		 * Text#clearSelection() before #mouseDown(..) is called.
+		 */
+		extension.selectAll();
+	    }
+	});
+	tableEditor.setEditor(extension, item, column);
+	tableEditor.grabHorizontal = true;
+	extensionTextMap.put(propDSL, extension);
+	extension.setVisible(false);
     }
 
     private void initializeCheckBoxControl(int column, final PrefDSL propDSL,
-            TableItem item) {
-        TableEditor tableEditor = new TableEditor(languagesTable);
-        final Button button = new Button(languagesTable, SWT.CHECK);
-        button.setSelection(propDSL.isActive());
-        button.pack();
-        button.addSelectionListener(new SelectionAdapter() {
-        @Override
-        public void widgetSelected(SelectionEvent e) {
-            propDSL.setIsActive(button.getSelection());
-            updateValidState();
-        }
-        });
-        tableEditor.setEditor(button, item, column);
-        tableEditor.minimumWidth = 20;
-        checkBoxMap.put(propDSL, button);
+	    TableItem item) {
+	TableEditor tableEditor = new TableEditor(languagesTable);
+	final Button button = new Button(languagesTable, SWT.CHECK);
+	button.setSelection(propDSL.isActive());
+	button.pack();
+	button.addSelectionListener(new SelectionAdapter() {
+	    @Override
+	    public void widgetSelected(SelectionEvent e) {
+		propDSL.setIsActive(button.getSelection());
+		updateValidState();
+	    }
+	});
+	tableEditor.setEditor(button, item, column);
+	tableEditor.minimumWidth = 20;
+	checkBoxMap.put(propDSL, button);
     }
 
     /**
      * Defines the actions taken when on the language table a row is selected.
      */
     private void initOnTableRowSelect() {
-        languagesTable.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(final SelectionEvent e) {
-        	enableDependingSwtElements(true);
-        	declaredKeywordsTable.removeAll();
-        	if (languagesTable.getSelectionIndex() >= 0) {
-        	    TableItem selectedItem = languagesTable.getSelection()[0];
-        	    PrefDSL popartLang = (PrefDSL) selectedItem.getData();
-        	    setDeclaredMethodsList(popartLang.getDsl());
-        	}
-            }
-        });
+	languagesTable.addSelectionListener(new SelectionAdapter() {
+	    @Override
+	    public void widgetSelected(final SelectionEvent e) {
+		enableDependingSwtElements(true);
+		declaredKeywordsTable.removeAll();
+		if (languagesTable.getSelectionIndex() >= 0) {
+		    TableItem selectedItem = languagesTable.getSelection()[0];
+		    PrefDSL popartLang = (PrefDSL) selectedItem.getData();
+		    setDeclaredMethodsList(popartLang.getDsl());
+		    packCols(declaredKeywordsTable.getColumns());
+		}
+	    }
+	});
     }
 
     private void setAllCheckBoxState(boolean isActive) {
-        Set<Entry<PrefDSL, Button>> values = checkBoxMap.entrySet();
-        for (Entry<PrefDSL, Button> entry : values) {
-            entry.getKey().setIsActive(isActive);
-            entry.getValue().setSelection(isActive);
+	Set<Entry<PrefDSL, Button>> values = checkBoxMap.entrySet();
+	for (Entry<PrefDSL, Button> entry : values) {
+	    entry.getKey().setIsActive(isActive);
+	    entry.getValue().setSelection(isActive);
 	}
 	updateValidState();
     }
 
     private void editDSL() {
-        TableItem[] selection = languagesTable.getSelection();
-        if ((selection == null) || (selection.length != 1)) {
-            this.enableDependingSwtElements(false);
-            return;
-        }
-        TableItem tableItem = selection[0];
-        PrefDSL dsl = (PrefDSL) tableItem.getData();
-        Text text = this.extensionTextMap.get(dsl);
-        text.setVisible(true);
-        this.currentlyEditedDSL = dsl;
+	TableItem[] selection = languagesTable.getSelection();
+	if ((selection == null) || (selection.length != 1)) {
+	    this.enableDependingSwtElements(false);
+	    return;
+	}
+	TableItem tableItem = selection[0];
+	PrefDSL dsl = (PrefDSL) tableItem.getData();
+	Text text = this.extensionTextMap.get(dsl);
+	text.setVisible(true);
+	this.currentlyEditedDSL = dsl;
     }
 
     private void refreshTableItem(PrefDSL dsl) {
@@ -333,8 +340,7 @@ public class TigerseyeDSLsPreferencesPage extends PreferencePage implements
 	languagesTable.redraw();
     }
 
-    private void rebuildTableItems() {
-	List<PrefDSL> list = dslList;
+    private void rebuildTableItems(List<PrefDSL> list) {
 	languagesTable.removeAll();
 	for (int i = 0; i < list.size(); i++) {
 	    PrefDSL coreDSL = list.get(i);
@@ -424,7 +430,7 @@ public class TigerseyeDSLsPreferencesPage extends PreferencePage implements
     @Override
     protected void performApply() {
 	this.performOk();
-	this.rebuildTableItems();
+	this.rebuildTableItems(getDslList());
 	super.performApply();
     }
 
@@ -443,26 +449,26 @@ public class TigerseyeDSLsPreferencesPage extends PreferencePage implements
     }
 
     private ArrayList<String> getListedProperties()
-            throws BackingStoreException {
-        ArrayList<String> all = new ArrayList<String>();
-        IEclipsePreferences[] preferenceNodes = ((ScopedPreferenceStore) getPreferenceStore())
-        	.getPreferenceNodes(true);
-        for (IEclipsePreferences iEclipsePreferences : preferenceNodes) {
-            all.add("Next types: " + iEclipsePreferences);
-            String[] keys = iEclipsePreferences.keys();
-            ArrayList<String> lines = new ArrayList<String>();
-            for (String string : keys) {
-        	StringBuilder line = new StringBuilder();
-        	line.append("key ")
-        		.append(string)
-        		.append("\tvalue ")
-        		.append(iEclipsePreferences.get(string, "NoValueFound"));
-        	lines.add(line.toString());
-            }
-            Collections.sort(lines);
-            all.addAll(lines);
-        }
-        return all;
+	    throws BackingStoreException {
+	ArrayList<String> all = new ArrayList<String>();
+	IEclipsePreferences[] preferenceNodes = ((ScopedPreferenceStore) getPreferenceStore())
+		.getPreferenceNodes(true);
+	for (IEclipsePreferences iEclipsePreferences : preferenceNodes) {
+	    all.add("Next types: " + iEclipsePreferences);
+	    String[] keys = iEclipsePreferences.keys();
+	    ArrayList<String> lines = new ArrayList<String>();
+	    for (String string : keys) {
+		StringBuilder line = new StringBuilder();
+		line.append("key ")
+			.append(string)
+			.append("\tvalue ")
+			.append(iEclipsePreferences.get(string, "NoValueFound"));
+		lines.add(line.toString());
+	    }
+	    Collections.sort(lines);
+	    all.addAll(lines);
+	}
+	return all;
     }
 
     private void storeDSL(PrefDSL dsl) {
@@ -478,7 +484,7 @@ public class TigerseyeDSLsPreferencesPage extends PreferencePage implements
 
     @Override
     protected void performDefaults() {
-	List<PrefDSL> dsls = this.dslList;
+	List<PrefDSL> dsls = getDslList();
 	for (PrefDSL dsl : dsls) {
 	    DSLDefinition dslDefinition = dsl.getDsl();
 	    String defExt = DSLKey.EXTENSION.getDefault(dslDefinition,
@@ -489,7 +495,7 @@ public class TigerseyeDSLsPreferencesPage extends PreferencePage implements
 		    dslDefinition, getPreferenceStore());
 	    dsl.setIsActive(activeKey);
 	}
-	rebuildTableItems();
+	rebuildTableItems(dsls);
 	super.performDefaults();
     }
 
@@ -509,16 +515,16 @@ public class TigerseyeDSLsPreferencesPage extends PreferencePage implements
     }
 
     private boolean existsSecondActiveDSLOfSameExtension(String setExtension,
-            PrefDSL[] prefDSLs, int beginningIndex) {
-        for (int j = beginningIndex; j < prefDSLs.length; j++) {
-            PrefDSL dsl = prefDSLs[j];
-            if (dsl.isActive()) {
-        	boolean equals = setExtension.equals(dsl.getExtension());
-        	if (equals)
-        	    return true;
-            }
-        }
-        return false;
+	    PrefDSL[] prefDSLs, int beginningIndex) {
+	for (int j = beginningIndex; j < prefDSLs.length; j++) {
+	    PrefDSL dsl = prefDSLs[j];
+	    if (dsl.isActive()) {
+		boolean equals = setExtension.equals(dsl.getExtension());
+		if (equals)
+		    return true;
+	    }
+	}
+	return false;
     }
 
     private void setInvalidState(String msg) {
@@ -527,80 +533,80 @@ public class TigerseyeDSLsPreferencesPage extends PreferencePage implements
     }
 
     private void setValidState() {
-        setValid(true);
-        setErrorMessage(null);
+	setValid(true);
+	setErrorMessage(null);
     }
 
     static class PrefDSL extends PreferenceDSL {
-    
-        public int rowIndex;
-        private String extension;
-        private Boolean isActive;
-    
-        public PrefDSL(DSLDefinition dsl, IPreferenceStore store) {
-            super(dsl, store);
-            this.rowIndex = Integer.MIN_VALUE;
-        }
-    
-        public void setRowIndex(int i) {
-            this.rowIndex = i;
-        }
-    
-        public int getRowIndex() {
-            return rowIndex;
-        }
-    
-        @Override
-        public void store() {
-            getDsl().setValue(DSLKey.LANGUAGE_ACTIVE, isActive);
-            getDsl().setValue(DSLKey.EXTENSION, extension);
-            super.store();
-        }
-    
-        public String getExtension() {
-            if (extension == null) {
-        	try {
-        	    extension = getExtensionFromStore();
-        	} catch (NoLegalPropertyFound e) {
-        	    extension = "";
-        	}
-            }
-            return extension;
-        }
-    
-        public String getExtensionFromStore() throws NoLegalPropertyFound {
-            return getDsl().getValue(DSLKey.EXTENSION);
-        }
-    
-        public void setExtension(String extension) {
-            setNeedsStoring();
-            this.extension = extension;
-        }
-    
-        public Boolean getIsActiveFromStore() throws NoLegalPropertyFound {
-            return getDsl().getValue(DSLKey.LANGUAGE_ACTIVE);
-        }
-    
-        public Boolean isActive() {
-            if (isActive == null) {
-        	try {
-        	    isActive = getIsActiveFromStore();
-        	} catch (NoLegalPropertyFound e) {
-        	    isActive = false;
-        	}
-            }
-            return isActive;
-        }
-    
-        public void setIsActive(boolean isActive) {
-            setNeedsStoring();
-            this.isActive = isActive;
-        }
-    
-        @Override
-        public String toString() {
-            return super.toString() + " ;ext: " + extension;
-        }
+
+	public int rowIndex;
+	private String extension;
+	private Boolean isActive;
+
+	public PrefDSL(DSLDefinition dsl, IPreferenceStore store) {
+	    super(dsl, store);
+	    this.rowIndex = Integer.MIN_VALUE;
+	}
+
+	public void setRowIndex(int i) {
+	    this.rowIndex = i;
+	}
+
+	public int getRowIndex() {
+	    return rowIndex;
+	}
+
+	@Override
+	public void store() {
+	    getDsl().setValue(DSLKey.LANGUAGE_ACTIVE, isActive);
+	    getDsl().setValue(DSLKey.EXTENSION, extension);
+	    super.store();
+	}
+
+	public String getExtension() {
+	    if (extension == null) {
+		try {
+		    extension = getExtensionFromStore();
+		} catch (NoLegalPropertyFound e) {
+		    extension = "";
+		}
+	    }
+	    return extension;
+	}
+
+	public String getExtensionFromStore() throws NoLegalPropertyFound {
+	    return getDsl().getValue(DSLKey.EXTENSION);
+	}
+
+	public void setExtension(String extension) {
+	    setNeedsStoring();
+	    this.extension = extension;
+	}
+
+	public Boolean getIsActiveFromStore() throws NoLegalPropertyFound {
+	    return getDsl().getValue(DSLKey.LANGUAGE_ACTIVE);
+	}
+
+	public Boolean isActive() {
+	    if (isActive == null) {
+		try {
+		    isActive = getIsActiveFromStore();
+		} catch (NoLegalPropertyFound e) {
+		    isActive = false;
+		}
+	    }
+	    return isActive;
+	}
+
+	public void setIsActive(boolean isActive) {
+	    setNeedsStoring();
+	    this.isActive = isActive;
+	}
+
+	@Override
+	public String toString() {
+	    return super.toString() + " ;ext: " + extension;
+	}
     }
 
     /**
@@ -615,102 +621,101 @@ public class TigerseyeDSLsPreferencesPage extends PreferencePage implements
      *            fill the table with keywords of this language
      */
     private void setDeclaredMethodsList(DSLDefinition language) {
-    
-        declaredKeywordsTable.removeAll();
-    
-        // Read all public declared Fields from external class
+
+	declaredKeywordsTable.removeAll();
+
+	// Read all public declared Fields from external class
 	KeyWordExtractor keyWordExtractor = new KeyWordExtractor(
 		language.loadClass());
 	Field[] publicDeclaredFields = keyWordExtractor
 		.getDeclaredLiteralKeywords();
-            for (Field declaredField : publicDeclaredFields) {
-        	TableItem tableItem = null;
-    
-        	// Add new keyword to table
-        	tableItem = new TableItem(declaredKeywordsTable, SWT.BORDER);
-    
-        	tableItem.setText(0, declaredField.getName());
-        	tableItem.setText(1, declaredField.getType().getSimpleName());
-        	tableItem.setText(2, "(native literal)");
-    
-        }
-    
-	Method[] publicDeclaredMethods = keyWordExtractor
-		.getMethodKeywords();
-    
-        // Read all getter setter from external class
-        Set<String> fieldAccessors = new HashSet<String>();
-        Set<String> fieldAccessorTypes = new HashSet<String>();
-        if (publicDeclaredMethods != null) {
-    
-            for (Method declaredMethod : publicDeclaredMethods) {
-    
-        	// replace the Java coding conventions prefix from the keyword
-        	// name
-        	if (declaredMethod.getName().startsWith("get")) {
-        	    fieldAccessors.add(declaredMethod.getName().substring(3));
-        	    fieldAccessorTypes.add(declaredMethod.getReturnType()
-        		    .getName());
-        	}
-        	if (declaredMethod.getName().startsWith("set")) {
-        	    fieldAccessors.add(declaredMethod.getName().substring(3));
-        	    fieldAccessorTypes.add(declaredMethod.getReturnType()
-        		    .getName());
-        	}
-        	if (declaredMethod.getName().startsWith("is")) {
-        	    if ((declaredMethod.getReturnType().isPrimitive() && (declaredMethod
-        		    .getReturnType() == boolean.class))
-        		    || (declaredMethod.getReturnType() == Boolean.class)) {
-        		fieldAccessors.add(declaredMethod.getName()
-        			.substring(2));
-        		fieldAccessorTypes.add(declaredMethod.getReturnType()
-        			.getName());
-        	    }
-        	}
-            }
-    
-            Iterator<String> it = fieldAccessors.iterator();
-            Iterator<String> itTypes = fieldAccessorTypes.iterator();
-            while (it.hasNext() && itTypes.hasNext()) {
-        	String item = it.next();
-        	String itemType = itTypes.next();
-    
-        	TableItem tableItem = null;
-    
-        	// Add new keyword to table
-        	tableItem = new TableItem(declaredKeywordsTable, SWT.BORDER);
-    
-        	tableItem.setText(0, item);
-        	tableItem.setText(1, itemType);
-        	tableItem.setText(2, "(literal defined by accessor)");
-            }
-        }
-    
-        // Read all public declared methods from external class
-        if (publicDeclaredMethods != null) {
-            for (Method declaredMethod : publicDeclaredMethods) {
-        	TableItem tableItem = null;
-    
-        	// Add new keyword to table
-        	tableItem = new TableItem(declaredKeywordsTable, SWT.BORDER);
-    
-        	tableItem.setText(0, declaredMethod.getName());
-        	tableItem.setText(1, declaredMethod.getReturnType()
-        		.getSimpleName());
-    
-        	StringBuilder parameters = new StringBuilder();
-        	for (int i = 0; i < declaredMethod.getParameterTypes().length; i++) {
-        	    if (i > 0) {
-        		parameters = parameters.append(", ");
-        	    }
-        	    parameters = parameters.append(declaredMethod
-        		    .getParameterTypes()[i].getSimpleName().toString());
-        	}
-    
-        	tableItem.setText(2, parameters.toString());
-            }
-        }
-    
+	for (Field declaredField : publicDeclaredFields) {
+	    TableItem tableItem = null;
+
+	    // Add new keyword to table
+	    tableItem = new TableItem(declaredKeywordsTable, SWT.BORDER);
+
+	    tableItem.setText(0, declaredField.getName());
+	    tableItem.setText(1, declaredField.getType().getSimpleName());
+	    tableItem.setText(2, "(native literal)");
+
+	}
+
+	Method[] publicDeclaredMethods = keyWordExtractor.getMethodKeywords();
+
+	// Read all getter setter from external class
+	Set<String> fieldAccessors = new HashSet<String>();
+	Set<String> fieldAccessorTypes = new HashSet<String>();
+	if (publicDeclaredMethods != null) {
+
+	    for (Method declaredMethod : publicDeclaredMethods) {
+
+		// replace the Java coding conventions prefix from the keyword
+		// name
+		if (declaredMethod.getName().startsWith("get")) {
+		    fieldAccessors.add(declaredMethod.getName().substring(3));
+		    fieldAccessorTypes.add(declaredMethod.getReturnType()
+			    .getName());
+		}
+		if (declaredMethod.getName().startsWith("set")) {
+		    fieldAccessors.add(declaredMethod.getName().substring(3));
+		    fieldAccessorTypes.add(declaredMethod.getReturnType()
+			    .getName());
+		}
+		if (declaredMethod.getName().startsWith("is")) {
+		    if ((declaredMethod.getReturnType().isPrimitive() && (declaredMethod
+			    .getReturnType() == boolean.class))
+			    || (declaredMethod.getReturnType() == Boolean.class)) {
+			fieldAccessors.add(declaredMethod.getName()
+				.substring(2));
+			fieldAccessorTypes.add(declaredMethod.getReturnType()
+				.getName());
+		    }
+		}
+	    }
+
+	    Iterator<String> it = fieldAccessors.iterator();
+	    Iterator<String> itTypes = fieldAccessorTypes.iterator();
+	    while (it.hasNext() && itTypes.hasNext()) {
+		String item = it.next();
+		String itemType = itTypes.next();
+
+		TableItem tableItem = null;
+
+		// Add new keyword to table
+		tableItem = new TableItem(declaredKeywordsTable, SWT.BORDER);
+
+		tableItem.setText(0, item);
+		tableItem.setText(1, itemType);
+		tableItem.setText(2, "(literal defined by accessor)");
+	    }
+	}
+
+	// Read all public declared methods from external class
+	if (publicDeclaredMethods != null) {
+	    for (Method declaredMethod : publicDeclaredMethods) {
+		TableItem tableItem = null;
+
+		// Add new keyword to table
+		tableItem = new TableItem(declaredKeywordsTable, SWT.BORDER);
+
+		tableItem.setText(0, declaredMethod.getName());
+		tableItem.setText(1, declaredMethod.getReturnType()
+			.getSimpleName());
+
+		StringBuilder parameters = new StringBuilder();
+		for (int i = 0; i < declaredMethod.getParameterTypes().length; i++) {
+		    if (i > 0) {
+			parameters = parameters.append(", ");
+		    }
+		    parameters = parameters.append(declaredMethod
+			    .getParameterTypes()[i].getSimpleName().toString());
+		}
+
+		tableItem.setText(2, parameters.toString());
+	    }
+	}
+
     }
 
 }

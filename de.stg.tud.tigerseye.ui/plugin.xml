@@ -110,13 +110,46 @@
                menubarPath="org.eclipse.ui.projectConfigure/additions">
          </action>
          <visibility>
-            <not>
+            <and>
+               <not>
+                  <objectState
+                        name="nature"
+                        value="de.tud.stg.tigerseye.eclipse.core.tigerseyeNature">
+                  </objectState></not>
                <objectState
                      name="nature"
-                     value="de.tud.stg.tigerseye.eclipse.core.tigerseyeNature">
+                     value="org.eclipse.jdt.core.javanature">
                </objectState>
-            </not>
+            </and>
          </visibility>
+      </objectContribution>
+      <objectContribution
+            adaptable="true"
+            id="de.tud.stg.tigerseye.eclipse.tigerseyecontribution"
+            objectClass="org.eclipse.core.resources.IProject">
+         <menu
+               icon="icons/plane16.png"
+               id="de.tud.stg.tigerseye.eclipse.tigerseyemenu"
+               label="Tigerseye"
+               path="additions">
+         </menu>
+         <visibility>
+            <objectState
+                  name="nature"
+                  value="de.tud.stg.tigerseye.eclipse.core.tigerseyeNature">
+            </objectState>
+         </visibility>
+      </objectContribution>
+      <objectContribution
+            adaptable="true"
+            id="de.tud.stg.tigerseye.ui.deconfigure"
+            objectClass="org.eclipse.core.resources.IProject">
+         <action
+               class="de.tud.stg.tigerseye.ui.actions.RemoveTigerseyeNatureAction"
+               id="de.tud.stg.tigerseye.ui.action.removenature"
+               label="Remove Tigerseye nature"
+               menubarPath="de.tud.stg.tigerseye.eclipse.tigerseyemenu/nature">
+         </action>
       </objectContribution>
    </extension>
    <extension

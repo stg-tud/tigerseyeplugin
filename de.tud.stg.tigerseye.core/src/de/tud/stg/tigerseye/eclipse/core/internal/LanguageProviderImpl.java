@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,8 +28,13 @@ public class LanguageProviderImpl implements ILanguageProvider {
 
     private final IPreferenceStore store;
 
-    public LanguageProviderImpl(IPreferenceStore store) {
+    private final IConfigurationElement[] confEls;
+
+    public LanguageProviderImpl(IPreferenceStore store,
+	    IConfigurationElement[] iConfigurationElements) {
 	this.store = store;
+	this.confEls = iConfigurationElements;
+
     }
 
     private IPreferenceStore getStore() {
@@ -44,13 +48,11 @@ public class LanguageProviderImpl implements ILanguageProvider {
     }
 
     private ArrayList<DSLDefinition> getPluginConfiguredDSLLanguages() {
-	IConfigurationElement[] confElements = Platform.getExtensionRegistry()
-		.getConfigurationElementsFor(
-			"de.tud.stg.tigerseye.dslDefinitions");
+	;
 
 	ArrayList<DSLDefinition> dslDefinitions = new ArrayList<DSLDefinition>(
-		confElements.length);
-	for (IConfigurationElement confEl : confElements) {
+		confEls.length);
+	for (IConfigurationElement confEl : confEls) {
 	    String dslNameAttribute = confEl.getAttribute("name");
 	    String dslClassAttribute = confEl.getAttribute("class");
 	    String dslContributorPlugin = confEl.getContributor().getName();

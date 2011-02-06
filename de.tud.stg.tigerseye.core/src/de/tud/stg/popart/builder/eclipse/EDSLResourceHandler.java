@@ -1,23 +1,13 @@
 package de.tud.stg.popart.builder.eclipse;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
-
 import de.tud.stg.popart.builder.core.aterm.CodePrinter;
-import de.tud.stg.popart.builder.transformers.AnnotationExtractor;
-import de.tud.stg.popart.builder.transformers.Context;
-import de.tud.stg.popart.dslsupport.DSL;
+import de.tud.stg.popart.builder.transformers.FileType;
 
 public class EDSLResourceHandler extends DSLResourceHandler {
 
 
-	public EDSLResourceHandler(String fileExtension, String fileNameEnding, CodePrinter prettyPrinter) {
-		super(fileExtension, fileNameEnding, prettyPrinter);
+    public EDSLResourceHandler(FileType fileType, CodePrinter prettyPrinter) {
+	super(fileType, prettyPrinter);
 	}
 
 //	@Override

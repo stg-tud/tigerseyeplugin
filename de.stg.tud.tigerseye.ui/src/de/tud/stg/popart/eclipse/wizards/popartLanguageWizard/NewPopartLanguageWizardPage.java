@@ -22,7 +22,7 @@ import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartKeyword;
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.IPopartKeywordCodeGenerator;
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.PopartKeywordCodeGeneratorFactory;
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.PopartLanguageModel;
-import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeCoreActivator;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeImage;
 import de.tud.stg.tigerseye.ui.TigerseyeUIActivator;
 
@@ -68,7 +68,7 @@ public class NewPopartLanguageWizardPage extends NewClassWizardPage {
 
     @Override
     public Image getImage() {
-	return TigerseyeCore.getImage(TigerseyeImage.FileTypeTigerseye64)
+	return TigerseyeCoreActivator.getIcon(TigerseyeImage.FileTypeTigerseye64)
 		.createImage();
     }
 

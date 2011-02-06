@@ -49,7 +49,12 @@ private static final Logger logger = LoggerFactory.getLogger(BootStrapTransforma
 
 			while (matcher2.find()) {
 				String dslExtension = matcher2.group();
-				dsls.add(context.dslClasses.get(dslExtension));
+				Class<? extends DSL> e = context.dslClasses.get(dslExtension);
+		if (e != null)
+				dsls.add(e);
+		else {
+		    logger.debug("no class found for " + dslExtension);
+		}
 			}
 
 			if (dsls.isEmpty()) {

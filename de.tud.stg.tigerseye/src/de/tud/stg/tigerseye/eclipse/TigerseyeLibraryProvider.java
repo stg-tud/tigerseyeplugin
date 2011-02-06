@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang.UnhandledException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Plugin;
 
@@ -15,6 +14,8 @@ import org.eclipse.core.runtime.Plugin;
 public class TigerseyeLibraryProvider extends Plugin {
 
 	public static final String PLUGIN_ID = "de.tud.stg.tigerseye";
+	private static final String[] minimalConfiguration = {"edslNature.jar",
+		"popartAnnotations.jar", "popart.jar"};
 
 	private static TigerseyeLibraryProvider plugin;
 
@@ -38,9 +39,13 @@ public class TigerseyeLibraryProvider extends Plugin {
 		if (!runtimeFolder.exists())
 			throw new IllegalStateException(
 					"Expected Tigerseye runtime folder does not exist." + runtimeJarsFolder);
+		checkMinimalConfiguration(runtimeFolder);
+		return runtimeFolder;
+	}
+
+	private static void checkMinimalConfiguration(File runtimeFolder) {
 		List<String> runtimeJars = new LinkedList<String>();
-		Collections.addAll(runtimeJars, "edslNature.jar",
-				"popartAnnotations.jar", "popart.jar");
+		Collections.addAll(runtimeJars, minimalConfiguration);
 		String[] listFiles = runtimeFolder.list();
 		List<String> runtimeFolderActualContent = Arrays.asList(listFiles);
 		boolean containsAll = runtimeFolderActualContent
@@ -48,7 +53,6 @@ public class TigerseyeLibraryProvider extends Plugin {
 		if (!containsAll)
 			throw new IllegalStateException("Expected to find " + runtimeJars
 					+ " but found " + runtimeFolderActualContent);
-		return runtimeFolder;
 	}
 
 }

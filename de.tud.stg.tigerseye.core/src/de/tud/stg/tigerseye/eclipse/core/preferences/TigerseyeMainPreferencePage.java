@@ -78,23 +78,25 @@ public class TigerseyeMainPreferencePage extends FieldEditorPreferencePage
 	Path oldSrc = new Path(originalOutputFolder);
 	Path newSrc = new Path(newDir);
 	for (IProject proj : projects) {
-	    try {
-		if (proj.isOpen()) {
-		    if (proj.hasNature(TigerseyeNature.TIGERSEYE_NATURE_ID)) {
-			IJavaProject jp = JavaCore.create(proj);
-			TigerseyeRuntime.removeSourceFolder(jp,
-				proj.getFolder(oldSrc));
-			TigerseyeRuntime.setSourceFolder(proj,
-				proj.getFolder(newSrc));
-		    }
-		}
-	    } catch (CoreException e) {
-		logger.warn(
-			"Failed to set new output source folder path. Old was: {} new would be {}",
-			originalOutputFolder, newDir);
-	    }
+	    unsetOldSetNewSourceFolder(oldSrc, newSrc, proj);
 	}
 	return true;
+    }
+
+    private void unsetOldSetNewSourceFolder(Path oldSrc, Path newSrc,
+	    IProject proj) {
+	try {
+	    if (proj.isOpen()
+		    && proj.hasNature(TigerseyeNature.TIGERSEYE_NATURE_ID)) {
+		IJavaProject jp = JavaCore.create(proj);
+		TigerseyeRuntime.removeSourceFolder(jp, proj.getFolder(oldSrc));
+		TigerseyeRuntime.setSourceFolder(jp, proj.getFolder(newSrc));
+	    }
+	} catch (CoreException e) {
+	    logger.warn(
+		    "Failed to set new output source folder path. Old was: {} new would have be {}",
+		    new Object[] { oldSrc, newSrc }, e);
+	}
     }
 
     /**

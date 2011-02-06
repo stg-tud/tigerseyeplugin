@@ -16,6 +16,8 @@ public abstract class ResourceVisitor implements IResourceDeltaVisitor {
 	@Override
 	public boolean visit(IResourceDelta delta) {
 
+	// FIXME add default functionality when resource is added or removed
+
 		try {
 			if (this.isInteresstedIn(delta.getResource())) {
 				this.newResourceHandler().handleResource(delta.getResource());

@@ -1,5 +1,7 @@
 package de.tud.stg.tigerseye.eclipse.core;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,7 +65,7 @@ public class TigerseyeRuntime {
 	}
     }
 
-    static boolean isTigerseyeNature(IProject iProject) {
+    public static boolean isTigerseyeNature(IProject iProject) {
 	try {
 	    return iProject
 		    .isNatureEnabled(TigerseyeNature.TIGERSEYE_NATURE_ID);
@@ -80,7 +82,7 @@ public class TigerseyeRuntime {
      */
     public static void addTigersEyeRuntimeConfiguration(IProject project) {
 	logger.debug("Adding tigerseye configuration for project {} ", project);
-	setNecessaryNatures(project);
+	addTigerseyeNatures(project);
 	initializeNecessaryClasspathContainer(project);
 	setSourceFolder(project);
 	addBuilder(project);
@@ -108,13 +110,14 @@ public class TigerseyeRuntime {
     }
 
     public static void setSourceFolder(IProject project) {
+	IJavaProject jp = JavaCore.create(project);
 	IFolder outPutFolder = project.getFolder(TigerseyeRuntime
 		.getOutputDirectoryPath());
-	setSourceFolder(project, outPutFolder);
+	setSourceFolder(jp, outPutFolder);
     }
 
-    // Change parameter to JavaProject
-    public static void setSourceFolder(IProject project, IFolder outPutFolder) {
+    public static void setSourceFolder(IJavaProject project,
+	    IFolder outPutFolder) {
 	try {
 	    if (!outPutFolder.exists()) {
 		outPutFolder.create(IResource.DERIVED, true,
@@ -122,7 +125,7 @@ public class TigerseyeRuntime {
 	    }
 	    IClasspathEntry entry = JavaCore.newSourceEntry(outPutFolder
 		    .getFullPath());
-	    addClassPathEntry(JavaCore.create(project), entry);
+	    addClassPathEntry(project, entry);
 	} catch (CoreException e) {
 	    throw new TigerseyeRuntimeException("Failed to set source folder "
 		    + outPutFolder);
@@ -194,7 +197,7 @@ public class TigerseyeRuntime {
 	}
     }
 
-    public static void setNecessaryNatures(IProject project) {
+    public static void addTigerseyeNatures(IProject project) {
 	try {
 	    final IProjectDescription description = project.getDescription();
 	    List<String> natureIds = new LinkedList<String>();
@@ -226,6 +229,17 @@ public class TigerseyeRuntime {
 	    logger.error("Failed to set necessary natures", e);
 	    throw new TigerseyeRuntimeException(e);
 	}
+    }
+
+    public static void removeTigerseyeNature(IProject project)
+	    throws CoreException {
+	IProjectDescription description = project.getDescription();
+	String[] natureIds = description.getNatureIds();
+	List<String> asList = new ArrayList<String>(Arrays.asList(natureIds));
+	asList.remove(TigerseyeNature.TIGERSEYE_NATURE_ID);
+	String[] noTigerseye = asList.toArray(new String[0]);
+	description.setNatureIds(noTigerseye);
+	project.setDescription(description, new NullProgressMonitor());
     }
 
 }

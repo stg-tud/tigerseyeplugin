@@ -20,6 +20,10 @@ public class DSLNotFoundException extends Exception {
 	super();
     }
 
+    public DSLNotFoundException(NoLegalPropertyFound e) {
+	super(e);
+    }
+
     public DSLNotFoundException setDSL(String extension) {
 	this.extension = extension;
 	return this;

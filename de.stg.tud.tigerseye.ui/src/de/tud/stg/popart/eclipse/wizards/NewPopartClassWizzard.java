@@ -55,7 +55,7 @@ public class NewPopartClassWizzard extends NewElementWizard {
 	    MessageDialog
 		    .openInformation(getShell(), "No active DSL",
 			    "At least one dsl must have been activated in order to create a new one.");
-	    addPage(null);
+	    this.dispose();
 	    return;
 	}
 	fPage = new NewPopartClassWizardPage(activeDSLs);

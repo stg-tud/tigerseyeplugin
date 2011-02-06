@@ -24,7 +24,6 @@ import de.tud.stg.parlex.utils.ArraySet;
 import de.tud.stg.popart.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.DSLExtensionsExtractor;
-import de.tud.stg.tigerseye.eclipse.core.DSLNotFoundException;
 import de.tud.stg.tigerseye.eclipse.core.ILanguageProvider;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 import de.tud.stg.tigerseye.ui.editors.TigerseyeGroovyEditorHighlightingExtender.DSLWordRule;
@@ -106,12 +105,10 @@ public class TigerseyeEditor extends GroovyEditor {
 	ILanguageProvider languageProvider = TigerseyeCore
 		.getLanguageProvider();
 	for (String extension : extensionsForSrcResource) {
-	    try {
-		DSLDefinition dslForExtension = languageProvider
-			.getActiveDSLForExtension(extension);
+	    DSLDefinition dslForExtension = languageProvider
+		    .getActiveDSLForExtension(extension);
+	    if (dslForExtension != null) {
 		activeDSLSet.add(dslForExtension);
-	    } catch (DSLNotFoundException e) {
-		logger.warn("No active dsl for {}", e.getDSLExtension());
 	    }
 	}
 	this.fileType = FileType.getTypeForSrcResource(file.getName());

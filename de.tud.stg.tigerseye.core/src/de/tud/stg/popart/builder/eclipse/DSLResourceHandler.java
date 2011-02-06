@@ -3,11 +3,14 @@ package de.tud.stg.popart.builder.eclipse;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 import jjtraveler.VisitFailure;
 
@@ -16,9 +19,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,49 +37,73 @@ import de.tud.stg.popart.builder.transformers.AnnotationExtractor;
 import de.tud.stg.popart.builder.transformers.Context;
 import de.tud.stg.popart.builder.transformers.FileType;
 import de.tud.stg.popart.builder.transformers.TextualTransformation;
-import de.tud.stg.popart.dslsupport.DSL;
+import de.tud.stg.popart.builder.transformers.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
+import de.tud.stg.tigerseye.eclipse.core.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.DSLNotFoundException;
 import de.tud.stg.tigerseye.eclipse.core.ILanguageProvider;
+import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
 import de.tud.stg.tigerseye.eclipse.core.OutputPathHandler;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
-import de.tud.stg.tigerseye.eclipse.core.internal.LanguageProviderImpl;
 
 public class DSLResourceHandler implements ResourceHandler {
 	private static final Logger logger = LoggerFactory
 			.getLogger(DSLResourceHandler.class);
 
-	private final String outputFileNameEnding;
-	private final String srcFileNameEnding;
 
-	private final CodePrinter prettyPrinter;
-    private final IProgressMonitor nullMonitor = new NullProgressMonitor();
+    private final CodePrinter prettyPrinter;
 
-	public DSLResourceHandler(String fileExtension, String fileNameEnding,
-			CodePrinter prettyPrinter) {
-		outputFileNameEnding = fileExtension;
-		srcFileNameEnding = fileNameEnding;
-		this.prettyPrinter = prettyPrinter;
-	}
+    private final FileType fileType;
+
+    private ILanguageProvider languageProvider;
+
+    private TransformerConfigurationProvider transformerProvider;
+
+    private OutputPathHandler outputPathHandler;
+
+    public DSLResourceHandler(FileType fileType, CodePrinter prettyPrinter) {
+
+	this.fileType = fileType;
+	this.prettyPrinter = prettyPrinter;
+	init();
+    }
+
+    private void init() {
+	this.languageProvider = TigerseyeCore.getLanguageProvider();
+	this.transformerProvider = new TransformerConfigurationProvider();
+	this.outputPathHandler = new OutputPathHandler();
+    }
+
+    protected ILanguageProvider getLanguageProvider() {
+	return languageProvider;
+    }
+
+    protected TransformerConfigurationProvider getTransformerProvider() {
+	return transformerProvider;
+    }
+
+    protected OutputPathHandler getOutputPathHandler() {
+	return outputPathHandler;
+    }
 
     @Override
-    public void handleResource(IResource orgresource) {
-	logger.debug("handling resource {}", orgresource);
-	if (!(orgresource instanceof IFile)) {
+    public void handleResource(IResource resource) {
+	logger.debug("handling resource {}", resource);
+	if (!(resource instanceof IFile)) {
 	    logger.debug("Skipping resource {}, since not of type IFile",
-		    orgresource);
+		    resource);
 	    return;
 	}
-	IFile srcFile = (IFile) orgresource;
+	IFile srcFile = (IFile) resource;
 	FileType filetype = FileType.getTypeForSrcResource(srcFile.getName());
 	if (filetype == null) {
 	    logger.error("No filetype could be determined for {}",
 		    srcFile.getName());
 	    return;
 	}
-	IFile outputFile = new OutputPathHandler().getOutputFile(srcFile);
+	IFile outputFile = getOutputPathHandler().getOutputFile(srcFile);
 	if (outputFile == null) {
-	    logger.error("Can not determine output file for {}", orgresource);
+	    logger.error("Can not determine output file for {}", srcFile);
 	    return;
 	}
 	StringBuffer resourceContent = this.readResource(srcFile);
@@ -118,10 +142,6 @@ public class DSLResourceHandler implements ResourceHandler {
 	return out;
     }
 
-	protected String getFileExtension() {
-		return outputFileNameEnding;
-	}
-
 	protected GrammarBuilder buildNeccessaryGrammar(Context context) {
 		GrammarBuilder gb = new GrammarBuilder();
 		IGrammar<String> grammar = gb.buildGrammar(context.getDSLClasses());
@@ -142,12 +162,13 @@ public class DSLResourceHandler implements ResourceHandler {
      * @return
      * @throws DSLNotFoundException
      */
-	protected Context determineInvolvedDSLs(IResource resource,
+    protected Context determineInvolvedDSLs(IFile resource,
 			StringBuffer input) throws DSLNotFoundException {
 		Context context = new Context(resource.getName());
+	ILanguageProvider languageProvider = getLanguageProvider();
 
 		int fileExtensionIndex = resource.getName().lastIndexOf(
-				srcFileNameEnding);
+		fileType.srcFileEnding);
 		if (fileExtensionIndex < 1) {
 			throw new DSLNotFoundException(
 					"No dsl extension could be determined for " + resource);
@@ -162,9 +183,20 @@ public class DSLResourceHandler implements ResourceHandler {
 			for (int i = 1; i < str.length; i++) {
 				String dslName = str[i];
 
-				this.addDSLToContext(dslName, context);
+		DSLDefinition activeDSLForExtension = languageProvider
+			.getActiveDSLForExtension(dslName);
+		if (activeDSLForExtension != null) {
+		    try {
+			this.addDSLToContext(activeDSLForExtension, context);
+		    } catch (NoLegalPropertyFound e) {
+			throw new DSLNotFoundException(e);
+		    }
+		}
 			}
 		} else {
+
+	    // Java EDSL context, can be used to determine DSLs in Java file
+	    // context
 			AnnotationExtractor<EDSL> extractor = new AnnotationExtractor<EDSL>(
 					EDSL.class);
 			extractor.setInput(input.toString());
@@ -177,7 +209,15 @@ public class DSLResourceHandler implements ResourceHandler {
 			}
 
 			for (String dslName : annotation.value()) {
-				this.addDSLToContext(dslName, context);
+		DSLDefinition clazz = languageProvider
+			.getActiveDSLForExtension(dslName);
+		if (clazz != null) {
+		    try {
+			this.addDSLToContext(clazz, context);
+		    } catch (NoLegalPropertyFound e) {
+			throw new DSLNotFoundException(e);
+		    }
+		}
 			}
 		}
 
@@ -189,55 +229,14 @@ public class DSLResourceHandler implements ResourceHandler {
 		return context;
 	}
 
-	private void addDSLToContext(String dslName, Context context)
-			throws DSLNotFoundException {
-		logger.debug("looking for dsl of extension: " + dslName);
-		Class<? extends DSL> clazz = this.getDslClass(dslName);
+    private void addDSLToContext(@Nonnull DSLDefinition clazz, Context context)
+	    throws NoLegalPropertyFound {
 
-		if (clazz != null) {
-			context.addDSL(dslName, clazz);
-			logger.debug("added dsl '{}' to context", dslName);
-		} else {
-			DSLNotFoundException e = new DSLNotFoundException();
-			e.setDSL(dslName);
-			throw e;
-		}
+	context.addDSL(clazz);
+	logger.debug("added dsl '{}' to context", clazz.getValue(DSLKey.EXTENSION));
+
 	}
 
-    protected Class<? extends DSL> getDslClass(String dslName)
-	    throws DSLNotFoundException {
-			String className;
-			String symbolicName;
-			
-
-			ILanguageProvider iLanguageProvider = new LanguageProviderImpl(TigerseyeCore.getPreferences());
-
-	    DSLDefinition dslDef = iLanguageProvider
-						.getActiveDSLForExtension(dslName);
-
-				className = dslDef.getClassPath();
-				symbolicName = dslDef.getContributorSymbolicName();
-				logger.debug(
-						"Found configuration for dsl \"{}\" with className \"{}\" and symbolicName \"{}\"",
-						new Object[] { dslName, className, symbolicName });
-
-			try {
-				Class<?> loadedDSL = Platform.getBundle(symbolicName)
-						.loadClass(className);
-				@SuppressWarnings("unchecked")
-				Class<? extends DSL> dsl = (Class<? extends DSL>) loadedDSL;
-				return dsl;
-			} catch (ClassNotFoundException e) {
-				logger.warn("class not found in bundle " + symbolicName
-						+ " for name " + className, e);
-	    return null;
-			} catch (ClassCastException e) {
-				logger.error(
-						"class {} was not of type {}. Cannot process dsl {}",
-						new Object[] { className, DSL.class.getName(), dslName });
-	    return null;
-			}
-	}
 
     protected ByteArrayOutputStream performPrettyPrinting(ATerm term) {
 
@@ -254,30 +253,36 @@ public class DSLResourceHandler implements ResourceHandler {
 	}
 
     private StringBuffer performTextualTransformations(
-	    StringBuffer origInput, Context context) {
-	StringBuffer transformedInput = new StringBuffer(origInput);
+	    StringBuffer originalInput, Context context) {
+	StringBuffer transformedInput = new StringBuffer(originalInput);
 	logger.trace("starting textual transformations");
-	DSLBuilderHelper plugin = new DSLBuilderHelper();
-	Collection<TextualTransformation> textualTransformers = plugin
-		.getConfiguredTextualTransformers(context.getFiletype(),
-			context.getDSLExtensions());
-	logger.trace("Found textual transformers: {}",
-		textualTransformers.toArray());
-	for (TextualTransformation t : textualTransformers) {
+	ArrayList<TransformationType> idents = new ArrayList<TransformationType>(
+		context.getDsls());
+	idents.add(context.getFiletype());
+	Collection<TextualTransformation> configuredTextualTransformers = getTransformerProvider()
+		.getConfiguredTextualTransformers(
+			idents.toArray(new TransformationType[0]));
+
+	for (TextualTransformation t : configuredTextualTransformers) {
 	    transformedInput = t.transform(context, transformedInput);
 	}
 	return transformedInput;
     }
 
-	protected ATerm performASTTransformations(ATerm aterm, Context context) {
-		logger.trace("starting ast transformations");
-	for (ASTTransformation t : new DSLBuilderHelper()
-				.getConfiguredASTTransformers(context.getFiletype(),
-						context.getDSLExtensions())) {
-			aterm = t.transform(context, aterm);
-		}
-		return aterm;
+    private ATerm performASTTransformations(ATerm aterm, Context context) {
+	logger.trace("starting ast transformations");
+	ArrayList<TransformationType> idents = new ArrayList<TransformationType>(
+		context.getDsls());
+	idents.add(context.getFiletype());
+	Set<ASTTransformation> configuredTextualTransformers = getTransformerProvider()
+		.getConfiguredASTTransformers(
+			idents.toArray(new TransformationType[0]));
+
+	for (ASTTransformation t : configuredTextualTransformers) {
+	    aterm = t.transform(context, aterm);
 	}
+	return aterm;
+    }
 
 	protected ATerm parseResource(StringBuffer input, Context context) {
 		KeywordSensitiveLexer ksl = new KeywordSensitiveLexer(
@@ -314,27 +319,26 @@ public class DSLResourceHandler implements ResourceHandler {
     }
 
     private void writeResourceContent(IFile file, ByteArrayOutputStream content) {
-	ByteArrayInputStream bais = new ByteArrayInputStream(content.toByteArray());
+	ByteArrayInputStream bais = new ByteArrayInputStream(
+		content.toByteArray());
 	try {
 	    if (!file.exists()) {
 		IFolder fileParentFolder = file.getProject().getFolder(
 			file.getProjectRelativePath().removeLastSegments(1));
 		createFolders(fileParentFolder);
-		file.create(bais, IResource.FORCE | IResource.DERIVED,
-			nullMonitor);
+		file.create(bais, IResource.FORCE | IResource.DERIVED, null);
 	    } else {
 		/*
 		 * IResource.DERIVED is ignored in case of setContents
 		 */
-		file.setContents(bais, IResource.FORCE, nullMonitor);
+		file.setContents(bais, IResource.FORCE, null);
 	    }
 	} catch (CoreException e) {
 	    logger.error("Failed to write to {}", file.getFullPath(), e);
 	}
     }
 
-    private void createFolders(IFolder folder)
-	    throws CoreException {
+    private void createFolders(IFolder folder) throws CoreException {
 
 	if (!folder.exists()) {
 	    IFolder parentFolder = folder.getProject().getFolder(
@@ -342,7 +346,8 @@ public class DSLResourceHandler implements ResourceHandler {
 	    if (!parentFolder.exists()) {
 		createFolders(parentFolder);
 	    }
-	    folder.create(false, true, nullMonitor);
+	    folder.create(false, true, null);
 	}
     }
 }
+

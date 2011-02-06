@@ -34,7 +34,7 @@ import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.view.LengthValidat
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.view.LiteralKeywordView;
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.view.OperationKeywordView;
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.view.StructuredElementKeywordView;
-import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeCoreActivator;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeImage;
 /**
  * Second Page in PopartLanguageDefinition
@@ -77,7 +77,7 @@ private static final Logger logger = LoggerFactory.getLogger(NewPopartLanguageKe
 	
     @Override
     public Image getImage() {
-	return TigerseyeCore.getImage(TigerseyeImage.FileTypeTigerseye64)
+	return TigerseyeCoreActivator.getIcon(TigerseyeImage.FileTypeTigerseye64)
 		.createImage();
     }
 
