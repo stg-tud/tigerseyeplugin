@@ -1,15 +1,14 @@
 package de.tud.stg.popart.builder.eclipse;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.junit.Before;
@@ -71,7 +70,6 @@ public class OutputPathHandlerTest {
 	    final File expectedOutputPath) {
 	
 	Path originialPath = new Path(originalSrcRelPath.getPath());	
-	FileType filetype = FileType.getTypeForSrcResource(originalSrcRelPath.toString());
 	IPath fileOutputPath = new OutputPathHandler(OUTPUT_DIRECTORY).getSrcRelativeOutputPath(originialPath);
 	File generatedOutputFile = fileOutputPath.toFile();
 	logger.debug("for path {} was generated {} ", originialPath, fileOutputPath);
@@ -80,12 +78,6 @@ public class OutputPathHandlerTest {
     }
     
     private static IPath actualOutputPath = null;
-    
-    private IProject getProjectgetFileMock(IPath pathOfReturnedFile){
-    	IProject mock = mock(IProject.class);
-    	when(mock.getFile(any(IPath.class))).thenReturn(getFileMock(pathOfReturnedFile, mock));
-    	return mock;
-    }
     
     private IFile getFileMock(IPath path, IProject project){
     	IFile resource = mock(IFile.class);
@@ -187,10 +179,10 @@ public class OutputPathHandlerTest {
 		assertCorrectOutputforSourceName(outputName, null);
 	}
     
-    @Test(expected=IllegalArgumentException.class)
+    @Test
 	public void testGetSrcNameForOutputNameIllegalusedslformat() throws Exception {		    
     	String outputName = "myjavafile$_sql_set_cond_foreach.dsl.groovy";	    	
-		assertCorrectOutputforSourceName( outputName, "");
+		assertCorrectOutputforSourceName( outputName, null);
 	}
     
     @Ignore("Not sure if this should be treated as illegal format")

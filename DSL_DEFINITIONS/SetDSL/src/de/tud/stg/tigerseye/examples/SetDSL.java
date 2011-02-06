@@ -1,4 +1,4 @@
-package de.lroos.set2;
+package de.tud.stg.tigerseye.examples;
 
 
 import groovy.lang.Closure;

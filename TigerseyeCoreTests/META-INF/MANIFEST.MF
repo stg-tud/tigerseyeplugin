@@ -7,3 +7,7 @@ Fragment-Host: de.tud.stg.tigerseye.eclipse.core;bundle-version="0.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.junit4;bundle-version="4.8.1",
  org.apache.log4j;bundle-version="1.2.16"
+Bundle-ClassPath: libs/mockito-all-1.8.5.jar,
+ libs/powermock-mockito-1.4.6-full.jar,
+ libs/stateMachineDSL.jar,
+ .
