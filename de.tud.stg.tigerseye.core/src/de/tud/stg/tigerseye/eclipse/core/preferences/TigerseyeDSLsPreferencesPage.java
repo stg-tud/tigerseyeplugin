@@ -45,9 +45,8 @@ import de.tud.stg.tigerseye.eclipse.core.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.ILanguageProvider;
 import de.tud.stg.tigerseye.eclipse.core.KeyWordExtractor;
 import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
-import de.tud.stg.tigerseye.eclipse.core.PreferenceDSL;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
-import de.tud.stg.tigerseye.eclipse.core.TigerseyeRuntime;
+import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntime;
 
 /**
  * TigerseyeDSLsPreferencesPage is the DSL languages configuration page. It

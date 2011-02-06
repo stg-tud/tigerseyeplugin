@@ -31,7 +31,7 @@ import de.tud.stg.parlex.core.groupcategories.WaterCategory;
 import de.tud.stg.popart.builder.core.annotations.DSL;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod;
 import de.tud.stg.popart.builder.core.typeHandling.HandlingDispatcher;
-import de.tud.stg.popart.builder.transformers.ast.UnicodeLookupTable;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast.UnicodeLookupTable;
 import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartLiteralKeyword;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeyword;

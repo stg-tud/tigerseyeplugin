@@ -1,21 +1,13 @@
-package de.tud.stg.popart.builder.eclipse;
+package de.tud.stg.tigerseye.eclipse.core.builder.transformers;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.tud.stg.popart.builder.transformers.ASTTransformation;
-import de.tud.stg.popart.builder.transformers.FileType;
 import de.tud.stg.popart.builder.transformers.TextualTransformation;
 import de.tud.stg.popart.builder.transformers.Transformation;
 import de.tud.stg.popart.builder.transformers.TransformationType;
@@ -31,46 +23,21 @@ import de.tud.stg.tigerseye.eclipse.core.TransformationHandler;
  */
 public class TransformerConfigurationProvider {
 
-    private static final Logger logger = LoggerFactory
-	    .getLogger(TransformerConfigurationProvider.class);
-
-    private List<TransformationHandler> configuredTransformations = Collections
-	    .emptyList();;
+    private Collection<TransformationHandler> configuredTransformations = Collections
+	    .emptySet();;
 
     public TransformerConfigurationProvider() {
-	setConfiguredTransformations();
+	init();
     }
 
-    private void setConfiguredTransformations() {
+    private void init() {
 	this.configuredTransformations = TigerseyeCore
 		.getTransformationProvider().getConfiguredTransformations();
     }
 
-    private List<TransformationHandler> getTransformations() {
+    private Collection<TransformationHandler> getTransformations() {
 	return this.configuredTransformations;
     }
-
-    @Deprecated
-    public Map<FileType, Collection<TransformationHandler>> getAvailableTransformers() {
-
-	Map<FileType, Collection<TransformationHandler>> map = new HashMap<FileType, Collection<TransformationHandler>>();
-
-	for (FileType filetype : FileType.values()) {
-	    List<TransformationHandler> list = new LinkedList<TransformationHandler>();
-
-	    for (TransformationHandler t : getTransformations()) {
-		Set<FileType> supportedFileExtensions = t.getTransformation()
-			.getSupportedFileTypes();
-		if (supportedFileExtensions.contains(filetype)) {
-		    list.add(t);
-		}
-	    }
-
-	    map.put(filetype, list);
-	}
-	return map;
-    }
-
 
 
     public Set<TextualTransformation> getConfiguredTextualTransformers(
@@ -91,7 +58,7 @@ public class TransformerConfigurationProvider {
 	    TransformationFilter<T> filter, TransformationType... identiables) {
 	Set<T> ts = new LinkedHashSet<T>();
 	for (TransformationType i : identiables) {
-	    List<TransformationHandler> transformations = getTransformations();
+	    Collection<TransformationHandler> transformations = getTransformations();
 	    for (TransformationHandler h : transformations) {
 		if (h.isActiveFor(i)) {
 		    Transformation t = h.getTransformation();

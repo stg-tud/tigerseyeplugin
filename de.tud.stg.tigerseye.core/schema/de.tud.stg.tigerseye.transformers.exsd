@@ -64,7 +64,7 @@ The generated code can usually be executed by Groovy or Java Builders.
                   
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":de.tud.stg.popart.builder.transformers.ASTTransformer"/>
+                  <meta.attribute kind="java" basedOn=":de.tud.stg.tigerseye.eclipse.core.builder.transformers.ASTTransformer"/>
                </appinfo>
             </annotation>
          </attribute>

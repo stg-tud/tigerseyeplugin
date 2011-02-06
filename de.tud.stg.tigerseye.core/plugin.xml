@@ -33,7 +33,7 @@
    <extension
          point="org.eclipse.jdt.core.classpathContainerInitializer">
       <classpathContainerInitializer
-            class="de.tud.stg.popart.builder.eclipse.TigerseyeClassPathContainerInitializer"
+            class="de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeClassPathContainerInitializer"
             id="TIGERSEYE_SUPPORT">
       </classpathContainerInitializer>
    </extension>
@@ -53,7 +53,7 @@
          point="org.eclipse.core.resources.natures">
       <runtime>
          <run
-               class="de.tud.stg.tigerseye.eclipse.core.TigerseyeNature">
+               class="de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeNature">
          </run>
       </runtime>
       <builder
@@ -76,7 +76,7 @@
       <builder
             hasNature="true">
          <run
-               class="de.tud.stg.popart.builder.eclipse.Builder">
+               class="de.tud.stg.tigerseye.eclipse.core.builder.Builder">
             <parameter
                   name="optimize"
                   value="true">
@@ -92,27 +92,27 @@
          point="de.tud.stg.tigerseye.transformers">
       <transformers>
          <transformer
-               class="de.tud.stg.popart.builder.transformers.textual.KeywordTranslationTransformation"
+               class="de.tud.stg.tigerseye.eclipse.core.builder.transformers.textual.KeywordTranslationTransformation"
                name="TranslationTransformer">
          </transformer>
          <transformer
-               class="de.tud.stg.popart.builder.transformers.textual.BootStrapTransformation"
+               class="de.tud.stg.tigerseye.eclipse.core.builder.transformers.textual.BootStrapTransformation"
                name="BootStrap">
          </transformer>
          <transformer
-               class="de.tud.stg.popart.builder.transformers.textual.PackageImporter"
+               class="de.tud.stg.tigerseye.eclipse.core.builder.transformers.textual.PackageImporter"
                name="PackageImporter">
          </transformer>
          <transformer
-               class="de.tud.stg.popart.builder.transformers.ast.KeywordChainingTransformation"
+               class="de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast.KeywordChainingTransformation"
                name="KeywordChaining">
          </transformer>
          <transformer
-               class="de.tud.stg.popart.builder.transformers.ast.ClosureResultTransformation"
+               class="de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast.ClosureResultTransformation"
                name="ClosureResult">
          </transformer>
          <transformer
-               class="de.tud.stg.popart.builder.transformers.ast.InvokationDispatcherTransformation"
+               class="de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast.InvokationDispatcherTransformation"
                name="InvokationDispatcher">
          </transformer>
       </transformers>

@@ -12,7 +12,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.tigerseye.eclipse.core.TigerseyeRuntime;
+import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntime;
 
 public class RemoveTigerseyeNatureAction implements IObjectActionDelegate {
 

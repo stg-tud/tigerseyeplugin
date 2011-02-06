@@ -1,6 +1,7 @@
 package de.tud.stg.tigerseye.eclipse.core.preferences;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang.UnhandledException;
@@ -36,7 +37,7 @@ public class TransformationsPreferencePage extends PreferencePage implements
     private static final FileType[] resourceFileTypes = TigerseyePreferenceInitializer.RESOURCE_FILE_TYPES;
     private static final Logger logger = LoggerFactory
 	    .getLogger(TransformationsPreferencePage.class);
-    private List<TransformationHandler> configuredTransformations;
+    private Collection<TransformationHandler> configuredTransformations;
     private Table languagesTable;
     private ILanguageProvider languageProvider;
     private Table resourcesTable;
@@ -58,7 +59,7 @@ public class TransformationsPreferencePage extends PreferencePage implements
 	return languageProvider;
     }
 
-    public List<TransformationHandler> getConfiguredTransformations() {
+    public Collection<TransformationHandler> getConfiguredTransformations() {
 	return configuredTransformations;
     }
 

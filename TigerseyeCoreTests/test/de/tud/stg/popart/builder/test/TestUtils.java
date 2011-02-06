@@ -34,9 +34,9 @@ import de.tud.stg.popart.builder.core.UnicodeLookupTable;
 import de.tud.stg.popart.builder.core.aterm.ATermBuilder;
 import de.tud.stg.popart.builder.core.aterm.PrettyGroovyCodePrinter;
 import de.tud.stg.popart.builder.transformers.Context;
-import de.tud.stg.popart.builder.transformers.ast.InvokationDispatcherTransformation;
-import de.tud.stg.popart.builder.transformers.ast.KeywordChainingTransformation;
 import de.tud.stg.popart.dslsupport.DSL;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast.InvokationDispatcherTransformation;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast.KeywordChainingTransformation;
 
 public class TestUtils {
 

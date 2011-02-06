@@ -73,6 +73,7 @@ public class KeyWordsExtractorTest {
 		URL[] logoCP = { new File(LogoDslroot, "bin").toURI().toURL(),//
 				new File(LogoDslroot, "javalogo.jar").toURI().toURL() };
 		Class<?> logoDSL = new URLClassLoader(logoCP)
+		/*references a class which is not and should not be on the classpath*/
 				.loadClass("de.tud.stg.popart.builder.test.logo.LogoDSL");
 		return logoDSL;
 	}

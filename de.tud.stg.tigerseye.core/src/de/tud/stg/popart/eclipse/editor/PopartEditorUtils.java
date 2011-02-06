@@ -8,7 +8,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import org.apache.commons.io.IOUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -21,8 +20,8 @@ import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 
 /**
- * TODO this is not a special editor utility should be moved to some language
- * processing class or into a new one.
+ * TODO this class is no longer used but could be used again? If you know that
+ * that is no longer the case please delete this class.
  * 
  * PopartEditorUtils defines useful methods such as reading a file, getting
  * values from store and some others methods, that are used more time over the
@@ -111,7 +110,7 @@ public class PopartEditorUtils {
      * 
      * @return a list of all stored Popart extensions.
      */
-    public static List<String> getPopartLanguageExtensionsFromStore() {
+    private static List<String> getPopartLanguageExtensionsFromStore() {
 	List<String> extensions = new ArrayList<String>();
 	List<DSLDefinition> dslDefinitions = TigerseyeCore
 		.getLanguageProvider().getDSLDefinitions();

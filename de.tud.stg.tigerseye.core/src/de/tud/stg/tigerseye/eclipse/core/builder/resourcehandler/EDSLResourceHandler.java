@@ -1,4 +1,4 @@
-package de.tud.stg.popart.builder.eclipse;
+package de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler;
 
 import de.tud.stg.popart.builder.core.aterm.CodePrinter;
 import de.tud.stg.popart.builder.transformers.FileType;

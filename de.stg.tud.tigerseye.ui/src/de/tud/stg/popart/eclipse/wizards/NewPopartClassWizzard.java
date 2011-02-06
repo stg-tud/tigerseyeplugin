@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
-import de.tud.stg.tigerseye.eclipse.core.TigerseyeRuntime;
+import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntime;
 
 /**
  * NewPopartClassWizzard is used to provide responsibility that makes it

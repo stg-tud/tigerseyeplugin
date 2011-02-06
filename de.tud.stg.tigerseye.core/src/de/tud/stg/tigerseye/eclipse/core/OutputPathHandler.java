@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tud.stg.popart.builder.transformers.FileType;
+import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntime;
 
 /**
  * Central unit to perform the filename translation between Tigerseye source

@@ -11,7 +11,7 @@ public class FileTypeTest {
 	public void testDSLName() throws Exception {
 		FileType type = FileType
 				.getTypeForSrcResource("/src/some/package/SimpleSet.set.dsl");
-		FileType expected = FileType.POPART;
+		FileType expected = FileType.TIGERSEYE;
 		assertEquals(expected, type);
 	}
 
@@ -35,7 +35,7 @@ public class FileTypeTest {
 	public void testOutputDSLName() throws Exception {
 		FileType type = FileType
 				.getTypeForOutputResource("/src/some/package/SimpleSet$anythingesle_dsl.groovy");
-		FileType expected = FileType.POPART;
+		FileType expected = FileType.TIGERSEYE;
 		assertEquals(expected, type);
 	}
 

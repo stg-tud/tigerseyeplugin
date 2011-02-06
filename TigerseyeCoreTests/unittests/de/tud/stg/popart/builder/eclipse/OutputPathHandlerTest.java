@@ -24,7 +24,7 @@ import de.tud.stg.popart.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.OutputPathHandler;
 
 public class OutputPathHandlerTest {
-    private static final String OUTPUT_DIRECTORY = "src-popart";
+    private static final String OUTPUT_DIRECTORY = "src-testoutput";
 
     static {
 	TestUtilities.initLogger();
@@ -89,7 +89,7 @@ public class OutputPathHandlerTest {
     @Test
     public void testOutputFile() throws Exception {
 	//setup
-	File origin = new File("/src/only/src/matters.sql."+FileType.POPART.srcFileEnding);
+	File origin = new File("/src/only/src/matters.sql."+FileType.TIGERSEYE.srcFileEnding);
 		
 	final IProject project = mock(IProject.class);
 	when(project.getFile(any(IPath.class))).thenAnswer(new Answer<IFile>() {

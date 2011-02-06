@@ -46,7 +46,7 @@ public class DSLExtensionsExtractor {
 	    return new String[0];
 	}
 	    String[] resultString = new String[0];
-	if (FileType.POPART.equals(typeForSrcResource)) {
+	if (FileType.TIGERSEYE.equals(typeForSrcResource)) {
 	    resultString = (String[]) ArrayUtils.subarray(split, 1,
 		    split.length - 1);
 	}

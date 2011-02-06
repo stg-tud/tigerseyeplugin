@@ -30,8 +30,6 @@ Export-Package:
  de.tud.stg.popart.builder.core.typeHandling,
  de.tud.stg.popart.builder.eclipse,
  de.tud.stg.popart.builder.transformers,
- de.tud.stg.popart.builder.transformers.ast,
- de.tud.stg.popart.builder.transformers.textual,
  de.tud.stg.popart.builder.utils,
  de.tud.stg.popart.dslsupport,
  de.tud.stg.popart.eclipse.core.debug,
@@ -39,4 +37,10 @@ Export-Package:
  de.tud.stg.popart.eclipse.core.debug.model.keywords,
  de.tud.stg.popart.eclipse.editor,
  de.tud.stg.tigerseye.eclipse.core,
- de.tud.stg.tigerseye.eclipse.core.launching
+ de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler,
+ de.tud.stg.tigerseye.eclipse.core.builder.transformers,
+ de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast,
+ de.tud.stg.tigerseye.eclipse.core.builder.transformers.textual,
+ de.tud.stg.tigerseye.eclipse.core.launching,
+ de.tud.stg.tigerseye.eclipse.core.preferences,
+ de.tud.stg.tigerseye.eclipse.core.runtime

@@ -1,4 +1,4 @@
-package de.tud.stg.popart.builder.eclipse;
+package de.tud.stg.tigerseye.eclipse.core.runtime;
 
 import java.io.File;
 import java.io.FileInputStream;

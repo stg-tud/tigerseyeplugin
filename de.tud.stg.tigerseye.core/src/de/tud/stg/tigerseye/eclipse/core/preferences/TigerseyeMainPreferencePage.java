@@ -22,8 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
-import de.tud.stg.tigerseye.eclipse.core.TigerseyeNature;
-import de.tud.stg.tigerseye.eclipse.core.TigerseyeRuntime;
+import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeNature;
+import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntime;
 
 /**
  * Preference page root for all pages of the Tigerseye Plug-in. Provides core

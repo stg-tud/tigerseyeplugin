@@ -1,6 +1,8 @@
-package de.tud.stg.tigerseye.eclipse.core;
+package de.tud.stg.tigerseye.eclipse.core.preferences;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+
+import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
 
 
 

@@ -31,7 +31,8 @@ import de.tud.stg.popart.builder.test.dsls.WordMachine;
 import de.tud.stg.popart.builder.test.statemachine.fsm.EventProducer;
 import de.tud.stg.popart.builder.test.statemachine.fsm.StateMachine;
 import de.tud.stg.popart.builder.transformers.Context;
-import de.tud.stg.popart.builder.transformers.ast.KeywordChainingTransformation;
+import de.tud.stg.popart.builder.utils.DSLInvoker;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast.KeywordChainingTransformation;
 
 public class TestWordMachine {
 private static final Logger logger = LoggerFactory.getLogger(TestWordMachine.class);
@@ -93,7 +94,7 @@ private static final Logger logger = LoggerFactory.getLogger(TestWordMachine.cla
 
 		PrintWriter printWriter = new PrintWriter(out);
 
-		String header = "import de.tud.stg.popart.builder.utils.DSLInvoker;\n"
+		String header = "import " + DSLInvoker.class.getCanonicalName() + ";\n"// de.tud.stg.popart.builder.utils.DSLInvoker;\n"
 				+ "import de.tud.stg.popart.builder.test.statemachine.fsm.*;\n"
 				+ "import de.tud.stg.popart.builder.test.statemachine.*;\n"
 				+ "import de.tud.stg.popart.builder.test.dsls.WordMachine;\n"

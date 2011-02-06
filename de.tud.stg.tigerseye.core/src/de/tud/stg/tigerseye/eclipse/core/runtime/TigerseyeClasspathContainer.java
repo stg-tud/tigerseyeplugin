@@ -1,4 +1,4 @@
-package de.tud.stg.popart.builder.eclipse;
+package de.tud.stg.tigerseye.eclipse.core.runtime;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -15,7 +15,6 @@ import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.JavaCore;
 
 import de.tud.stg.tigerseye.eclipse.TigerseyeLibraryProvider;
-import de.tud.stg.tigerseye.eclipse.core.TigerseyeRuntimeException;
 
 public class TigerseyeClasspathContainer implements IClasspathContainer {
 

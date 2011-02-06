@@ -11,8 +11,8 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.INewWizard;
 
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.PopartLanguageModel;
-import de.tud.stg.tigerseye.eclipse.core.TigerseyeNature;
-import de.tud.stg.tigerseye.eclipse.core.TigerseyeRuntime;
+import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeNature;
+import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntime;
 
 /**
  * Wizard for creating language definitions

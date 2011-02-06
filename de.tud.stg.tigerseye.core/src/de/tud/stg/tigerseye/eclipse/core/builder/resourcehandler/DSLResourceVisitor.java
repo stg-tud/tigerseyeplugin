@@ -1,14 +1,14 @@
-package de.tud.stg.popart.builder.eclipse;
+package de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler;
 
 import org.eclipse.core.resources.IResource;
 
 import de.tud.stg.popart.builder.core.aterm.PrettyGroovyCodePrinter;
 import de.tud.stg.popart.builder.transformers.FileType;
 
-public class PopartResourceVisitor extends ResourceVisitor {
+public class DSLResourceVisitor extends ResourceVisitor {
 
 
-    private static final FileType fileType = FileType.POPART;
+    private static final FileType fileType = FileType.TIGERSEYE;
 
 	@Override
 	public DSLResourceHandler newResourceHandler() {
@@ -16,7 +16,7 @@ public class PopartResourceVisitor extends ResourceVisitor {
 	}
 
 	@Override
-	protected boolean isInteresstedIn(IResource resource) {
+    public boolean isInteresstedIn(IResource resource) {
 	return resource.getName().endsWith(fileType.srcFileEnding)
 		&& !resource.getName().endsWith(FileType.JAVA.srcFileEnding)
 		&& !resource.getName().endsWith(FileType.GROOVY.srcFileEnding);

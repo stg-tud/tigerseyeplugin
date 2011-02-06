@@ -21,7 +21,7 @@ import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 public class TigerseyePreferenceInitializer extends
 	AbstractPreferenceInitializer {
 
-    public static final FileType[] RESOURCE_FILE_TYPES = { JAVA, GROOVY, POPART };
+    public static final FileType[] RESOURCE_FILE_TYPES = { JAVA, GROOVY, TIGERSEYE };
     public static final FileType[] DSL_FILETYPES = { DSL };
     public static final String DEFAULT_OUTPUT_DIRECTORY_NAME = "src-tigerseye";
     public static final boolean DEFAULT_LANGUAGE_ACTIVE_VALUE = false;

@@ -26,8 +26,8 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
-import de.tud.stg.tigerseye.eclipse.core.PreferenceDSL;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.preferences.PreferenceDSL;
 
 public class TigerseyeUIPreferencePage extends PreferencePage
 	implements
@@ -58,7 +58,7 @@ public class TigerseyeUIPreferencePage extends PreferencePage
 
 	BooleanFieldEditor enableKeywordColoring = new BooleanFieldEditor(
 		TigerseyeUIPreferenceConstants.TIGERSEYE_EDITOR_HIGHLIGHT_KEYWORDS_ENABLED,
-		"Enable Popart keyword coloring", page);
+		"Enable Tigerseye keyword coloring", page);
 	addField(enableKeywordColoring);
 
 	createDSLColorTable(page);

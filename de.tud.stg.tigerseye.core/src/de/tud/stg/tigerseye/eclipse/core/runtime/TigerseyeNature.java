@@ -1,4 +1,4 @@
-package de.tud.stg.tigerseye.eclipse.core;
+package de.tud.stg.tigerseye.eclipse.core.runtime;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -9,7 +9,7 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 
-import de.tud.stg.popart.builder.eclipse.TigerseyeClasspathContainer;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeCoreActivator;
 
 //FIXME renaming, refactoring, tests
 public class TigerseyeNature implements IProjectNature {

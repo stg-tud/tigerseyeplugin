@@ -8,8 +8,8 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 import de.tud.stg.popart.builder.transformers.Transformation;
 import de.tud.stg.tigerseye.eclipse.core.ITransformationProvider;
-import de.tud.stg.tigerseye.eclipse.core.TigerseyeRuntimeException;
 import de.tud.stg.tigerseye.eclipse.core.TransformationHandler;
+import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntimeException;
 
 
 public class TransformationProviderImpl implements ITransformationProvider {

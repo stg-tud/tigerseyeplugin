@@ -1,4 +1,4 @@
-package de.tud.stg.popart.builder.eclipse;
+package de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler;
 
 import org.eclipse.core.resources.IResource;
 
@@ -15,7 +15,7 @@ public class GroovyResourceVisitor extends ResourceVisitor {
 	}
 
 	@Override
-	protected boolean isInteresstedIn(IResource resource) {
+    public boolean isInteresstedIn(IResource resource) {
 	return resource.getName().endsWith(fileType.srcFileEnding);
 	}
 }

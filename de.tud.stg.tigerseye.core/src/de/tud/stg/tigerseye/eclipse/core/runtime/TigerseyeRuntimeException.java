@@ -1,4 +1,4 @@
-package de.tud.stg.tigerseye.eclipse.core;
+package de.tud.stg.tigerseye.eclipse.core.runtime;
 
 /**
  * Can be used in situations that are not recoverable.

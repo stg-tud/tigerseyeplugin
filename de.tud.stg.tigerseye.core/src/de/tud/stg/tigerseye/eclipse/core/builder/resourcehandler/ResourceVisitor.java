@@ -1,13 +1,14 @@
 /**
  *
  */
-package de.tud.stg.popart.builder.eclipse;
+package de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 public abstract class ResourceVisitor implements IResourceDeltaVisitor {
 
@@ -29,7 +30,7 @@ public abstract class ResourceVisitor implements IResourceDeltaVisitor {
 		return false;
 	}
 
-	protected abstract boolean isInteresstedIn(IResource resource);
+    public abstract boolean isInteresstedIn(IResource resource);
 
-	protected abstract ResourceHandler newResourceHandler();
+	public abstract ResourceHandler newResourceHandler();
 }
