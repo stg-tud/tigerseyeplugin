@@ -51,7 +51,7 @@ public class TigerseyeCoreActivator extends AbstractUIPlugin {
      * @param imageName
      * @return predefined icon from the default image store.
      */
-    public static ImageDescriptor getIcon(TigerseyeImage imageName) {
+    public static ImageDescriptor getTigerseyeImage(TigerseyeImage imageName) {
         String imagePath = "/icons/" + imageName.imageName;
         return getImageDescriptor(imagePath);
     }

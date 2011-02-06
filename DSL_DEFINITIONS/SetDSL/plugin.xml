@@ -4,7 +4,7 @@
    <extension
          point="de.tud.stg.tigerseye.dslDefinitions">
       <language
-            class="de.tud.stg.tigerseye.examples.SetDSL"
+            class="de.tud.stg.tigerseye.examples.setdsl.SetDSL"
             extension="set"
             name="Set DSL Single">
       </language>

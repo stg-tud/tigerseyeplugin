@@ -20,9 +20,9 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler.DSLResourceVisitor;
 import de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler.GroovyResourceVisitor;
 import de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler.JavaResourceVisitor;
-import de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler.DSLResourceVisitor;
 import de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler.ResourceHandler;
 import de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler.ResourceVisitor;
 import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntime;
@@ -35,7 +35,8 @@ public class Builder extends IncrementalProjectBuilder {
 	    new GroovyResourceVisitor(), new JavaResourceVisitor() };
 
     @Override
-    protected IProject[] build(int kind, Map args, IProgressMonitor monitor) {
+    protected IProject[] build(int kind,
+	    @SuppressWarnings("rawtypes") Map args, IProgressMonitor monitor) {
 	if (monitor == null) {
 	    monitor = new NullProgressMonitor();
 	}

@@ -2,9 +2,8 @@ package de.tud.stg.tigerseye.eclipse.core;
 
 import javax.annotation.Nonnull;
 
-import de.tud.stg.popart.builder.core.annotations.DSL;
-import de.tud.stg.popart.builder.transformers.FileType;
-import de.tud.stg.popart.builder.transformers.TransformationType;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationType;
 
 /**
  * General interface to handle registered DSLs between plug-in components <br>
@@ -38,8 +37,9 @@ public interface DSLDefinition extends TransformationType {
     public abstract boolean isActive();
 
     /**
-     * The class path of the class implementing the {@link DSL} interface, which
-     * represents the evaluation class of this DSL.
+     * The class path of the class implementing the
+     * {@link de.tud.stg.popart.dslsupport.DSL} interface, which represents the
+     * evaluation class of this DSL.
      * 
      * @return
      */

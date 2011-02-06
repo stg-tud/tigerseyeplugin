@@ -10,11 +10,11 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.popart.builder.transformers.Context;
-import de.tud.stg.popart.builder.transformers.FileType;
-import de.tud.stg.popart.builder.transformers.TextualTransformation;
 import de.tud.stg.popart.dslsupport.DSL;
 import de.tud.stg.popart.dslsupport.InterpreterCombiner;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TextualTransformation;
 
 public class BootStrapTransformation implements TextualTransformation {
 private static final Logger logger = LoggerFactory.getLogger(BootStrapTransformation.class);

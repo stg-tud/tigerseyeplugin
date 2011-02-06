@@ -18,7 +18,7 @@ import org.eclipse.jdt.launching.JavaLaunchDelegate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.popart.builder.transformers.FileType;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 
 /**
  * {@link TigerseyeLaunchDelegate} launches the transformed DSL files. It

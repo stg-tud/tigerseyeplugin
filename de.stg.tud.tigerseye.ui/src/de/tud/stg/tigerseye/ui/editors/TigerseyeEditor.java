@@ -21,11 +21,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tud.stg.parlex.utils.ArraySet;
-import de.tud.stg.popart.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
-import de.tud.stg.tigerseye.eclipse.core.DSLExtensionsExtractor;
 import de.tud.stg.tigerseye.eclipse.core.ILanguageProvider;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
+import de.tud.stg.tigerseye.eclipse.core.utils.DSLExtensionsExtractor;
 import de.tud.stg.tigerseye.ui.editors.TigerseyeGroovyEditorHighlightingExtender.DSLWordRule;
 
 public class TigerseyeEditor extends GroovyEditor {

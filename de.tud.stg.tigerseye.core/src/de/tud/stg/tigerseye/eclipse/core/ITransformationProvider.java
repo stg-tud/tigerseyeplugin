@@ -2,7 +2,7 @@ package de.tud.stg.tigerseye.eclipse.core;
 
 import java.util.Collection;
 
-import de.tud.stg.popart.builder.transformers.Transformation;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Transformation;
 
 /**
  * Provides access to registered transformations

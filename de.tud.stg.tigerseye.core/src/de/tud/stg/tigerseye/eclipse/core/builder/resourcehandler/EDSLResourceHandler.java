@@ -1,7 +1,7 @@
 package de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler;
 
-import de.tud.stg.popart.builder.core.aterm.CodePrinter;
-import de.tud.stg.popart.builder.transformers.FileType;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.CodePrinter;
 
 public class EDSLResourceHandler extends DSLResourceHandler {
 

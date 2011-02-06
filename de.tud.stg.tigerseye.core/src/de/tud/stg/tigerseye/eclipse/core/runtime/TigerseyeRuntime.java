@@ -174,7 +174,7 @@ public class TigerseyeRuntime {
      * 
      * @param project
      */
-    public static void addTigerseyeDSLUsingConfiguration(IProject project) {
+    public static void addTigerseyeLanguageDesignConfiguration(IProject project) {
 	addTigersEyeRuntimeConfiguration(project);
     }
 

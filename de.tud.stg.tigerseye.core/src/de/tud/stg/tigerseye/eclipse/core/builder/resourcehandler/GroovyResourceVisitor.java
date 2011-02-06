@@ -2,8 +2,8 @@ package de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler;
 
 import org.eclipse.core.resources.IResource;
 
-import de.tud.stg.popart.builder.core.aterm.PrettyGroovyCodePrinter;
-import de.tud.stg.popart.builder.transformers.FileType;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.PrettyGroovyCodePrinter;
 
 public class GroovyResourceVisitor extends ResourceVisitor {
 

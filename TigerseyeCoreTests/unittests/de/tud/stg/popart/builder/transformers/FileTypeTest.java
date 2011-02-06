@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
+
 
 public class FileTypeTest {
 

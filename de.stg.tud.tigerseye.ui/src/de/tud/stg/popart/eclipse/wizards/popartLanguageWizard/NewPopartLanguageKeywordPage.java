@@ -77,7 +77,7 @@ private static final Logger logger = LoggerFactory.getLogger(NewPopartLanguageKe
 	
     @Override
     public Image getImage() {
-	return TigerseyeCoreActivator.getIcon(TigerseyeImage.FileTypeTigerseye64)
+	return TigerseyeCoreActivator.getTigerseyeImage(TigerseyeImage.FileTypeTigerseye64)
 		.createImage();
     }
 

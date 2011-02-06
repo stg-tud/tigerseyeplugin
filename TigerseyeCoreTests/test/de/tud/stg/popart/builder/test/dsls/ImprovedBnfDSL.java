@@ -9,9 +9,9 @@ import de.tud.stg.parlex.core.Category;
 import de.tud.stg.parlex.core.Grammar;
 import de.tud.stg.popart.builder.core.annotations.DSL;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod;
-import de.tud.stg.popart.builder.core.typeHandling.TypeHandler;
 import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeyword;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.TypeHandler;
 
 /**
  * {@link ImprovedBnfDSL} is a DSL with support for conditional statements in an alternative if-then-else syntax

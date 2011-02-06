@@ -21,6 +21,7 @@ import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntime;
 
 /**
+ * 
  * NewPopartClassWizzard is used to provide responsibility that makes it
  * possible to add Popart classes.
  * 
@@ -79,7 +80,7 @@ public class NewPopartClassWizzard extends NewElementWizard {
 
 		    openResource(file);
 
-		    TigerseyeRuntime.addTigerseyeDSLUsingConfiguration(fPage
+		    TigerseyeRuntime.addTigerseyeLanguageDesignConfiguration(fPage
 			    .getProject().getProject());
 
 		} catch (CoreException e) {
@@ -89,7 +90,6 @@ public class NewPopartClassWizzard extends NewElementWizard {
 	});
 
     }
-
     @Override
     public IJavaElement getCreatedElement() {
 	return fPage.getCreatedType();

@@ -1,6 +1,6 @@
 package de.tud.stg.tigerseye.eclipse.core.preferences;
 
-import static de.tud.stg.popart.builder.transformers.FileType.*;
+import static de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType.*;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,9 +9,9 @@ import java.util.Map;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 
-import de.tud.stg.popart.builder.transformers.FileType;
-import de.tud.stg.popart.builder.transformers.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationType;
 
 /**
  * TigerseyePreferenceInitializer initializes default preference values for

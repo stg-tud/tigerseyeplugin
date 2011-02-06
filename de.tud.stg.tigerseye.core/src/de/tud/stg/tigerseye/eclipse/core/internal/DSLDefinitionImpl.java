@@ -6,11 +6,11 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.osgi.framework.Bundle;
 
-import de.tud.stg.popart.builder.transformers.FileType;
 import de.tud.stg.popart.dslsupport.DSL;
 import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntimeException;
 
 public class DSLDefinitionImpl implements DSLDefinition {

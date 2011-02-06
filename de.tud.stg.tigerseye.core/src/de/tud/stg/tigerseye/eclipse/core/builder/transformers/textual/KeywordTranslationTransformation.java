@@ -18,10 +18,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tud.stg.parlex.parser.earley.Pair;
-import de.tud.stg.popart.builder.transformers.AnnotationExtractor;
-import de.tud.stg.popart.builder.transformers.Context;
-import de.tud.stg.popart.builder.transformers.FileType;
-import de.tud.stg.popart.builder.transformers.TextualTransformation;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.AnnotationExtractor;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TextualTransformation;
 
 public class KeywordTranslationTransformation implements TextualTransformation {
 private static final Logger logger = LoggerFactory.getLogger(KeywordTranslationTransformation.class);

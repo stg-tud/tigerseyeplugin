@@ -7,10 +7,6 @@ import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
-import de.tud.stg.popart.builder.transformers.ASTTransformation;
-import de.tud.stg.popart.builder.transformers.TextualTransformation;
-import de.tud.stg.popart.builder.transformers.Transformation;
-import de.tud.stg.popart.builder.transformers.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 import de.tud.stg.tigerseye.eclipse.core.TransformationHandler;
 

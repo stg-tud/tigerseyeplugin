@@ -3,8 +3,8 @@ package de.tud.stg.tigerseye.eclipse.core.builder.transformers.textual;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.tud.stg.popart.builder.transformers.FileType;
-import de.tud.stg.popart.builder.transformers.Transformation;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Transformation;
 
 /**
  * Utility class for {@link Transformation} implementing classes.

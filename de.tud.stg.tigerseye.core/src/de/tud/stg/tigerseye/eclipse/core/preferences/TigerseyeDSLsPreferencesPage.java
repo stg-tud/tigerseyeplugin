@@ -43,10 +43,10 @@ import org.slf4j.LoggerFactory;
 import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.ILanguageProvider;
-import de.tud.stg.tigerseye.eclipse.core.KeyWordExtractor;
 import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntime;
+import de.tud.stg.tigerseye.eclipse.core.utils.KeyWordExtractor;
 
 /**
  * TigerseyeDSLsPreferencesPage is the DSL languages configuration page. It

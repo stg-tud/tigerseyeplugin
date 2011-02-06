@@ -29,14 +29,14 @@ import de.tud.stg.parlex.lexer.KeywordSensitiveLexer;
 import de.tud.stg.parlex.lexer.KeywordSeperator;
 import de.tud.stg.parlex.parser.earley.Chart;
 import de.tud.stg.parlex.parser.earley.EarleyParser;
-import de.tud.stg.popart.builder.core.GrammarBuilder;
-import de.tud.stg.popart.builder.core.UnicodeLookupTable;
-import de.tud.stg.popart.builder.core.aterm.ATermBuilder;
-import de.tud.stg.popart.builder.core.aterm.PrettyGroovyCodePrinter;
-import de.tud.stg.popart.builder.transformers.Context;
 import de.tud.stg.popart.dslsupport.DSL;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast.InvokationDispatcherTransformation;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast.KeywordChainingTransformation;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.UnicodeLookupTable;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.ATermBuilder;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.PrettyGroovyCodePrinter;
 
 public class TestUtils {
 

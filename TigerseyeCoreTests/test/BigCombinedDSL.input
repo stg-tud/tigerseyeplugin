@@ -2,7 +2,7 @@ package de.tud.stg.popart.builder.test.generated;
 
 import de.tud.stg.popart.builder.utils.DSLInvoker;
 import de.tud.stg.popart.builder.test.dsls.MapDSL.Entry;
-import de.tud.stg.popart.builder.core.JavaSpecificGrammar;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.JavaSpecificGrammar;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
@@ -30,7 +30,7 @@ import de.tud.stg.parlex.core.groupcategories.StringCategory;
 import de.tud.stg.parlex.core.groupcategories.WaterCategory;
 import de.tud.stg.popart.builder.core.annotations.DSL;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod;
-import de.tud.stg.popart.builder.core.typeHandling.HandlingDispatcher;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.HandlingDispatcher;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast.UnicodeLookupTable;
 import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartLiteralKeyword;

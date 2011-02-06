@@ -68,7 +68,7 @@ public class NewPopartLanguageWizardPage extends NewClassWizardPage {
 
     @Override
     public Image getImage() {
-	return TigerseyeCoreActivator.getIcon(TigerseyeImage.FileTypeTigerseye64)
+	return TigerseyeCoreActivator.getTigerseyeImage(TigerseyeImage.FileTypeTigerseye64)
 		.createImage();
     }
 

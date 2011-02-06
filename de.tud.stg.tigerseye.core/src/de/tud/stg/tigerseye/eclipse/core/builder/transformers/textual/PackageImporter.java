@@ -5,10 +5,10 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.tud.stg.popart.builder.transformers.Context;
-import de.tud.stg.popart.builder.transformers.FileType;
-import de.tud.stg.popart.builder.transformers.TextualTransformation;
 import de.tud.stg.popart.builder.utils.DSLInvoker;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TextualTransformation;
 
 public class PackageImporter implements TextualTransformation {
 

@@ -14,12 +14,12 @@ import aterm.ATermList;
 import aterm.Visitable;
 import aterm.pure.PureFactory;
 import aterm.pure.SingletonFactory;
-import de.tud.stg.popart.builder.core.GrammarBuilder.MethodOptions;
-import de.tud.stg.popart.builder.core.aterm.RecursiveVisitor;
-import de.tud.stg.popart.builder.transformers.ASTTransformation;
-import de.tud.stg.popart.builder.transformers.Context;
-import de.tud.stg.popart.builder.transformers.FileType;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ASTTransformation;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.textual.TransformationUtils;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.MethodOptions;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.RecursiveVisitor;
 
 /**
  * {@link ClosureResultTransformation} scans the AST for method calls to a DSL

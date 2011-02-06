@@ -3,7 +3,7 @@ package de.tud.stg.tigerseye.eclipse.core;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
 
-import de.tud.stg.popart.builder.transformers.Transformation;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Transformation;
 import de.tud.stg.tigerseye.eclipse.core.internal.LanguageProviderImpl;
 import de.tud.stg.tigerseye.eclipse.core.internal.TransformationProviderImpl;
 

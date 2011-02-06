@@ -18,11 +18,11 @@ import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.popart.builder.transformers.ASTTransformation;
-import de.tud.stg.popart.builder.transformers.FileType;
-import de.tud.stg.popart.builder.transformers.TextualTransformation;
-import de.tud.stg.popart.builder.transformers.Transformation;
 import de.tud.stg.tigerseye.eclipse.core.TransformationHandler;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ASTTransformation;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TextualTransformation;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Transformation;
 
 public class TransformationsTableDialog extends TableDialog {
 

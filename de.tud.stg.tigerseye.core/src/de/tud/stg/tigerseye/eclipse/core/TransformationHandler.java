@@ -4,9 +4,9 @@ import javax.annotation.Nonnull;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 
-import de.tud.stg.popart.builder.transformers.FileType;
-import de.tud.stg.popart.builder.transformers.Transformation;
-import de.tud.stg.popart.builder.transformers.TransformationType;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Transformation;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyePreferenceInitializer;
 
 /**

@@ -43,11 +43,11 @@ import org.eclipse.ui.dialogs.ListDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.popart.builder.transformers.FileType;
-import de.tud.stg.tigerseye.eclipse.core.OutputPathHandler;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCoreActivator;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeImage;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.launching.ITigerseyeLaunchConfigurationConstants;
+import de.tud.stg.tigerseye.eclipse.core.utils.OutputPathHandler;
 
 /**
  * The Tigerseye launch configuration tab in the Launch Configurations Dialog
@@ -281,7 +281,7 @@ public class TigerseyeMainLaunchConfigurationTab extends SharedJavaMainTab
 		    FileType fileType = FileType.getTypeForOutputResource(file
 			    .getName());
 		    if (fileType != null)
-			return TigerseyeCoreActivator.getIcon(
+			return TigerseyeCoreActivator.getTigerseyeImage(
 				TigerseyeImage.FileTypeTigerseye).createImage();
 
 		}

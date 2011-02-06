@@ -6,9 +6,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jface.preference.IPreferenceStore;
 
-import de.tud.stg.popart.builder.transformers.Transformation;
 import de.tud.stg.tigerseye.eclipse.core.ITransformationProvider;
 import de.tud.stg.tigerseye.eclipse.core.TransformationHandler;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Transformation;
 import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntimeException;
 
 
