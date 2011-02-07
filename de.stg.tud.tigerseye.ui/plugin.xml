@@ -150,6 +150,12 @@
                label="Remove Tigerseye nature"
                menubarPath="de.tud.stg.tigerseye.eclipse.tigerseyemenu/nature">
          </action>
+         <visibility>
+            <objectState
+                  name="nature"
+                  value="de.tud.stg.tigerseye.eclipse.core.tigerseyeNature">
+            </objectState>
+         </visibility>
       </objectContribution>
    </extension>
    <extension

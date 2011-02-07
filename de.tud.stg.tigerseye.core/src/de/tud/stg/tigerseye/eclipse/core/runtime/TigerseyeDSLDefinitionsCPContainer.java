@@ -45,6 +45,7 @@ public class TigerseyeDSLDefinitionsCPContainer implements IClasspathContainer {
     private final List<IClasspathEntry> cpEntries = new ArrayList<IClasspathEntry>();
 
     public TigerseyeDSLDefinitionsCPContainer(IProject project) {
+	logger.trace("Adding DSL specific classpath for {}", project.getName());
 	reset();
     }
 
