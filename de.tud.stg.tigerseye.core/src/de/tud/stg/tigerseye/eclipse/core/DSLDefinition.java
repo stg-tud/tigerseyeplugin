@@ -4,6 +4,7 @@ import javax.annotation.Nonnull;
 
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationType;
+import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntimeException;
 
 /**
  * General interface to handle registered DSLs between plug-in components <br>
@@ -64,6 +65,11 @@ public interface DSLDefinition extends TransformationType {
      * described by {@link #getContributorSymbolicName()}.
      * 
      * @return the loaded Class of this {@code DSLDefinition}
+     * @throws TigerseyeRuntimeException
+     *             if class can not be loaded, which will encapsulate a
+     *             {@link ClassNotFoundException}. This will usually be
+     *             prevented because the existence of the class should have been
+     *             checked during initialization.
      */
     public abstract Class<? extends de.tud.stg.popart.dslsupport.DSL> loadClass();
 

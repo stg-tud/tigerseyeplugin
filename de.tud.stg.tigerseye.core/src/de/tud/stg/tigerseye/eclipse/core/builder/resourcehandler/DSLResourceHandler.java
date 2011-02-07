@@ -211,11 +211,11 @@ public class DSLResourceHandler implements ResourceHandler {
 			}
 
 			for (String dslName : annotation.value()) {
-		DSLDefinition clazz = languageProvider
+		DSLDefinition activeDSL = languageProvider
 			.getActiveDSLForExtension(dslName);
-		if (clazz != null) {
+		if (activeDSL != null) {
 		    try {
-			this.addDSLToContext(clazz, context);
+			this.addDSLToContext(activeDSL, context);
 		    } catch (NoLegalPropertyFound e) {
 			throw new DSLNotFoundException(e);
 		    }

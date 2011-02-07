@@ -59,7 +59,8 @@ private static final Logger logger = LoggerFactory.getLogger(BootStrapTransforma
 			}
 
 			if (dsls.isEmpty()) {
-			    	logger.error("No dsls found");
+		logger.error("Searched for {} but no dsls found",
+			context.getDsls());
 				return input;
 			}
 			logger.trace("found dsls: {}", Arrays.toString(dsls.toArray()));

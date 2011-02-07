@@ -16,7 +16,11 @@ import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
@@ -25,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeCoreActivator;
 import de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyePreferenceConstants;
 
 public class TigerseyeRuntime {
@@ -46,10 +51,28 @@ public class TigerseyeRuntime {
     public static void updateTigerseyeClassPaths() {
 	IProject[] projects = ResourcesPlugin.getWorkspace().getRoot()
 		.getProjects();
-	for (IProject iProject : projects) {
+	for (final IProject iProject : projects) {
 	    if (isTigerseyeNature(iProject)) {
-		IJavaProject jp = JavaCore.create(iProject);
-		updateTigerseyeCPContainerofProject(jp);
+		final IJavaProject jp = JavaCore.create(iProject);
+		Job job = new Job("Update project '" + iProject.getName() + "'") {
+		    @Override
+		    protected IStatus run(IProgressMonitor monitor) {
+			try {
+			    updateTigerseyeCPContainerofProject(jp);
+			} catch (Exception e) {
+			    return new Status(IStatus.ERROR,
+				    TigerseyeCoreActivator.PLUGIN_ID,
+				    "Failed to update classpath for project"
+					    + iProject.getName(), e);
+			}
+			return new Status(IStatus.OK,
+				TigerseyeCoreActivator.PLUGIN_ID,
+				"Successfully updated classpath for project"
+					+ iProject.getName());
+		    }
+
+		};
+		job.schedule();
 	    }
 	}
     }

@@ -41,6 +41,7 @@ public class Builder extends IncrementalProjectBuilder {
 	    monitor = new NullProgressMonitor();
 	}
 	try {
+	    monitor.beginTask("Tigerseye Build", 100);
 	    if (kind == IncrementalProjectBuilder.CLEAN_BUILD) {
 		IJavaProject jp = JavaCore.create(getProject());
 		IPackageFragmentRoot[] packageFragmentRoots;
@@ -86,7 +87,9 @@ public class Builder extends IncrementalProjectBuilder {
 
 	    }
 	} catch (JavaModelException e) {
-
+	    logger.error("unexpected: ", e);
+	} finally {
+	    monitor.done();
 	}
 	return null;
     }
@@ -96,9 +99,11 @@ public class Builder extends IncrementalProjectBuilder {
     }
 
     private void fullBuild(IProgressMonitor monitor) {
-
+	if (monitor == null)
+	    monitor = new NullProgressMonitor();
 	logger.info("starting full build");
 	try {
+	    monitor.beginTask("Building", 100);
 	    IProject project = this.getProject();
 	    IResourceDelta delta = this.getDelta(project);
 
@@ -106,8 +111,12 @@ public class Builder extends IncrementalProjectBuilder {
 
 	    if (delta != null) {
 		for (ResourceVisitor visitor : visitors) {
+		    monitor.subTask("Delta:" + delta.getResource()
+			    + " with Visitor:"
+			    + visitor.getClass().getSimpleName());
 		    logger.info("Starting build with visitor {}", visitor);
 		    delta.accept(visitor);
+		    monitor.worked(1);
 		}
 	    } else {
 
@@ -125,12 +134,17 @@ public class Builder extends IncrementalProjectBuilder {
 			for (Object object : nonJavaResources) {
 			    IResource resource = (IResource) object;
 			    for (ResourceVisitor visitor : visitors) {
+				monitor.subTask("For Resource:" + object
+					+ " with Visitor:"
+					+ visitor.getClass().getSimpleName());
 				if (visitor.isInteresstedIn(resource)) {
 				    ResourceHandler newResourceHandler = visitor
 					    .newResourceHandler();
 				    newResourceHandler.handleResource(resource);
 				}
+				monitor.worked(1);
 			    }
+			    monitor.worked(1);
 			}
 		    }
 		}
@@ -138,6 +152,8 @@ public class Builder extends IncrementalProjectBuilder {
 	    }
 	} catch (CoreException e) {
 	    logger.warn("Build failed", e);
+	} finally {
+	    monitor.done();
 	}
     }
 }
