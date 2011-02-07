@@ -72,13 +72,22 @@ public class TigerseyeEditor extends GroovyEditor {
 		RuleBasedScanner.class, "fRules", codeSanner);
 
 	List<IRule> tigerseyeRules = new ArrayList<IRule>();
-	List<IRule> otherWordRules = new ArrayList<IRule>();
+	List<IRule> otherWordRules = new ArrayList<IRule>(); // assumes that
+							     // other rules are
+							     // Groovy rules
 	List<IRule> otherRules = new ArrayList<IRule>();
 
 	for (IRule rule : rules) {
 	    if (rule instanceof DSLWordRule) {
 		DSLDefinition dsl = ((DSLWordRule) rule).getDsl();
-		if (FileType.JAVA.equals(this.fileType)
+		/*
+		 * TODO: (*) Currently, we do not know what DSLs are selected
+		 * for a Java file, thus we cannot do context specific selection
+		 * of highlighted keyword (for only selected DSL keywords). As a
+		 * work around, in Java files, we highlight keywords pf all
+		 * active DSLs
+		 */
+		if (FileType.JAVA.equals(this.fileType) // TODO: (*)
 			|| this.activeDSLs.contains(dsl))
 		    tigerseyeRules.add(rule);
 	    } else if (rule instanceof WordRule) {

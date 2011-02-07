@@ -102,7 +102,8 @@ public class TigerseyeGroovyEditorHighlightingExtender implements
 	    keywords.add(field.getName());
 	}
 
-	return keywords;
+	return keywords; // TODO all chained keywords to list (such as
+			 // selectFormWhere --> select, from, where)
     }
 
     private List<DSLDefinition> getActiveDSLs() {
