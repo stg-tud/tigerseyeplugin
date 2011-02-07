@@ -3,6 +3,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -120,7 +121,7 @@ private static final Logger logger = LoggerFactory.getLogger(KeywordTranslationT
 
 	@Override
 	public Set<String> getAssurances() {
-		return null;
+	return Collections.emptySet();
 	}
 
 	@Override
@@ -130,7 +131,7 @@ private static final Logger logger = LoggerFactory.getLogger(KeywordTranslationT
 
 	@Override
 	public Set<String> getRequirements() {
-		return null;
+	return Collections.emptySet();
 	}
 
 	@Override
