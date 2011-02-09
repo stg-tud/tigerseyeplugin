@@ -35,7 +35,13 @@ public abstract class DSLUIKey extends DSLKey<Object> {
 	@Override
 	public RGB getValue(DSLDefinition dsl, IPreferenceStore store)
 		throws NoLegalPropertyFound {
-	    RGB rgb = PreferenceConverter.getColor(store, key(dsl));
+	    String key = key(dsl);
+	    boolean contains = store.contains(key);
+	    if (!contains)
+		throw new NoLegalPropertyFound("No value for " + key
+			+ " found.");
+
+	    RGB rgb = PreferenceConverter.getColor(store, key);
 	    return rgb;
 	}
 
@@ -47,7 +53,7 @@ public abstract class DSLUIKey extends DSLKey<Object> {
 
 	@Override
 	public RGB getDefault(DSLDefinition dsl, IPreferenceStore store) {
-	    return PreferenceConverter.getDefaultColor(store, key(dsl));
+	    return getDefaultColor(store);
 	}
 
     }

@@ -8,7 +8,7 @@ import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 
 public class TigerseyeUIPreferenceInitializer {
 
-    private static final RGB DEFAULT_RGB_VALUE = new RGB(30, 70, 30);
+    private static final RGB DEFAULT_RGB_VALUE = new RGB(0, 0, 255);
 
     public void initialize() {
 	IPreferenceStore store = TigerseyeCore.getPreferences();

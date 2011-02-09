@@ -35,9 +35,9 @@ public class TigerseyeUIActivator extends AbstractUIPlugin {
 	super.start(context);
 	plugin = this;
 	/*
-	 * can not use the preference initializer since he will be only invoked
-	 * once for every preference store, but I share the TigerseyeCore
-	 * preference store
+	 * can not use the preference initializer extension since he will be
+	 * only invoked once for every preference store, but I reuse the
+	 * TigerseyeCore preference store
 	 */
 	new TigerseyeUIPreferenceInitializer().initialize();
     }
