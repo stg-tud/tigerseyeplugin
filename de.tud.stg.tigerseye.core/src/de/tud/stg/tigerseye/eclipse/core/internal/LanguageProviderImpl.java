@@ -84,9 +84,9 @@ public class LanguageProviderImpl implements ILanguageProvider {
 	    loadClass.newInstance();
 	} catch (Exception e) {
 	    logger.warn(
-		    "Could not access registered DSL  {} with class {} of plug-in {}. It will be ignored. Check your configuration. Is the correct DSL class name given? Is the plug-in accessible?",
+		    "Could not access registered DSL {} with class {} of plug-in {}. It will be ignored. Check your configuration. Is the correct DSL class name given? Is the plug-in accessible?",
 		    new Object[] { dsl.getDslName(), dsl.getClassPath(),
-			    dsl.getContributorSymbolicName() }, e);
+			    dsl.getContributorSymbolicName(), e });
 	    return null;
 	}
 	URL entry = Platform.getBundle(dsl.getContributorSymbolicName())
