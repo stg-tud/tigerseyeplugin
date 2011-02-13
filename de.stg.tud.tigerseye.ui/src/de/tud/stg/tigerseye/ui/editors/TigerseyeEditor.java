@@ -32,18 +32,6 @@ public class TigerseyeEditor extends GroovyEditor {
 
     private static final Logger logger = LoggerFactory
 	    .getLogger(TigerseyeEditor.class);
-    // private ColorManager colorManager;
-    //
-    // public TigerseyeEditor() {
-    // super();
-    // colorManager = new ColorManager();
-    // setSourceViewerConfiguration(new XMLConfiguration(colorManager));
-    // setDocumentProvider(new XMLDocumentProvider());
-    // }
-    // public void dispose() {
-    // colorManager.dispose();
-    // super.dispose();
-    // }
 
     private Set<DSLDefinition> activeDSLs;
     private FileType fileType;
@@ -63,42 +51,42 @@ public class TigerseyeEditor extends GroovyEditor {
     private void prioritizeTigerseyeRules() {
 	GroovyConfiguration groovyConfiguration = getGroovyConfiguration();
 
-	GroovyTagScanner codeSanner = (GroovyTagScanner) ReflectionUtils
+	GroovyTagScanner scanner = (GroovyTagScanner) ReflectionUtils
 		.getPrivateField(JavaSourceViewerConfiguration.class,
 			"fCodeScanner", groovyConfiguration);
-	GroovyTagScanner scanner = codeSanner;
 
-	IRule[] rules = (IRule[]) ReflectionUtils.getPrivateField(
-		RuleBasedScanner.class, "fRules", codeSanner);
+	IRule[] installedRules = (IRule[]) ReflectionUtils.getPrivateField(
+		RuleBasedScanner.class, "fRules", ReflectionUtils
+			.getPrivateField(JavaSourceViewerConfiguration.class,
+				"fCodeScanner", groovyConfiguration));
 
-	List<IRule> tigerseyeRules = new ArrayList<IRule>();
-	List<IRule> otherWordRules = new ArrayList<IRule>(); // assumes that
-							     // other rules are
-							     // Groovy rules
+	List<IRule> activeTigerseyeRules = new ArrayList<IRule>();
+	List<IRule> groovyWordRules = new ArrayList<IRule>();
 	List<IRule> otherRules = new ArrayList<IRule>();
 
-	for (IRule rule : rules) {
+	for (IRule rule : installedRules) {
 	    if (rule instanceof DSLWordRule) {
 		DSLDefinition dsl = ((DSLWordRule) rule).getDsl();
 		/*
 		 * TODO: (*) Currently, we do not know what DSLs are selected
 		 * for a Java file, thus we cannot do context specific selection
 		 * of highlighted keyword (for only selected DSL keywords). As a
-		 * work around, in Java files, we highlight keywords pf all
+		 * work around, in Java files, we highlight keywords of all
 		 * active DSLs
 		 */
 		if (FileType.JAVA.equals(this.fileType) // TODO: (*)
 			|| this.activeDSLs.contains(dsl))
-		    tigerseyeRules.add(rule);
+		    activeTigerseyeRules.add(rule);
 	    } else if (rule instanceof WordRule) {
-		otherWordRules.add(rule);
+		groovyWordRules.add(rule);
 	    } else
 		otherRules.add(rule);
 	}
-	if (tigerseyeRules.size() > 0) {
+	if (activeTigerseyeRules.size() > 0) {
 	    List<IRule> mergedRules = new ArrayList<IRule>(otherRules);
-	    mergedRules.addAll(tigerseyeRules);
-	    mergedRules.addAll(otherWordRules);
+	    // put tigerseye Rules _before_ groovy rules.
+	    mergedRules.addAll(activeTigerseyeRules);
+	    mergedRules.addAll(groovyWordRules);
 	    IRule[] filteredSortedRules = mergedRules.toArray(new IRule[0]);
 	    scanner.setRules(filteredSortedRules);
 	}
