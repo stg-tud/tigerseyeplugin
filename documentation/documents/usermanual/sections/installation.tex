@@ -1,0 +1,31 @@
+
+
+  \section{Installation for Development}
+	
+	The \tiger plug-in itself consists of multiple separate plug-ins and has further dependencies to other plug-ins and libraries. It uses classes and extensions from the Groovy Plug-in and  Eclpse's JDT plug-ins, makes some use of different \texttt{apache.commons} libraries and uses further libraries to process code. It's core dependency is the used preprocessor \texttt{parlex}. Listing \ref{lst:dependencies} shows the necessary plug-ins and the required version if any.
+	
+	
+	\begin{table}
+	\centering
+	  \begin{tabular}{|l|l|p{.4\textwidth}|}
+		\hline
+		Plug-in name & Version & Description\\ \hline	
+		de.tud.stg.tigerseye.eclipse.core & \versionnum & Core functionality.\\
+		de.tud.stg.tigerseye.eclipse.ui& \versionnum & User Interface functionality.\\
+		de.tud.stg.tigerseye & \versionnum & (Re)Exports commonly used libraries and plug-ins.\\
+		Groovy Eclipse Feature & 2.1.1 & Groovy Eclipse Plug-ins with version that is known to be compatible.\\
+		org.apache.commons.collections & - & Apache utility classes for collections.\\
+		org.apache.commons.io & - & Apache IO utility classes.\\
+		org.apache.commons.lang& - & Apache general language utility classes.\\
+		org.apache.log4j & [1.2 - 1.3) & Employed logging framework.\\
+		parlex & - & Preprocessor, performing the transformations. \\
+		slf4j-log4j12 & - & Employed logging facade with log4j binding.\\
+		\hline
+	  \end{tabular}
+	  \caption{Necessary Plug-ins}\label{lst:dependencies}\label{lst:dependencies}
+	\end{table}
+	
+
+	Once all the necessary plug-ins have been installed the \tiger plug-in can be started using the predefined \texttt{Tigerseye\_IDE} launch, which is located in the core plug-in. 
+	It is possible that depending on the used operating system this launch configuration has to be adjusted. Alternatively one can start a new Eclipse Plug-in configuration with all available plug-ins active.
+	
