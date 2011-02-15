@@ -81,7 +81,8 @@ public class LanguageProviderImpl implements ILanguageProvider {
 	try {
 	    // Check existence
 	    Class<? extends DSL> loadClass = dsl.loadClass();
-	    loadClass.newInstance();
+	    loadClass.newInstance(); // TODO: Error Message if the constructor
+				     // has non-empty args
 	} catch (Exception e) {
 	    logger.warn(
 		    "Could not access registered DSL {} with class {} of plug-in {}. It will be ignored. Check your configuration. Is the correct DSL class name given? Is the plug-in accessible?",
