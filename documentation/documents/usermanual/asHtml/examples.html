@@ -1,0 +1,459 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+    <head>
+        <meta name="generator" content="HTML Tidy, see www.w3.org">
+        <title>examples</title>
+        <meta name="description" content="examples">
+        <meta name="keywords" content="examples">
+        <meta name="resource-type" content="document">
+        <meta name="distribution" content="global">
+        <meta http-equiv="Content-Style-Type" content="text/css">
+    </head>
+    <body>
+        <h1><a name="SECTION00010000000000000000"></a><a name= "sec:examples"></a>
+            <br>
+            Examples
+        </h1>
+        This section showcases typical use cases for the Tigerseye 
+        IDE. 
+        <p>
+        </p>
+        <h2><a name="SECTION00011000000000000000">Creating a new
+                Language Definition</a></h2>
+        <p>
+            The usage of the <span class="textit">New Tigerseye
+                Language Definition</span>
+            wizard will be explained by 
+            creating a <span class="textit">Trivalent-DSL</span>. A 
+            Trivalent logic DSL adds an 
+            <tt>
+                unknown (U)
+            </tt>
+            value to 
+            the boolean values 
+            <tt>
+                true (T)
+            </tt>
+            and 
+            <tt>
+                false (F)
+            </tt>
+            , so 
+            <tt>
+                T&amp;U
+            </tt>
+            is U and 
+            <tt>
+                T|U
+            </tt>
+            is T and so
+            on.
+        </p>
+        <p>
+        </p>
+        <ul>
+            <li>
+                First create a new Java Project. This Project will
+                contain the Trivalent language created by the wizard.
+                In this example a project called
+                <tt>
+                    de.tud.stg.tigerseye.examples.trivalent
+                </tt>
+                will
+                be created.
+            </li>
+            <li>
+                Right Click on the Project and choose <span class= "textit">New &gt; Other</span>.
+            </li>
+            <li>
+                Choose <span class="textit">Tigerseye Language
+                    Definition</span>
+                in the <span class= "textit">Tigerseye</span>
+                folder 
+                <div align="CENTER">
+                    <a name="fig:new_tiger_lang"></a>
+                    <a name="46"></a>
+                    <table>
+                        <caption align="BOTTOM">
+                            <strong>Figure:</strong>
+                            Choosing the New Tigerseye Language Wizard
+                        </caption>
+                        <tr>
+                            <td>
+                                <img alt="" src= "../pics/new_tigesreye_language.png">
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </li>
+            <li>
+                Each language definition consists of a Groovy class 
+                that defines all operations, literals and structured  
+                elements of the DSL. Type 
+                <tt>
+                    TrivalentDSL
+                </tt>
+                as the
+                class name,
+                <tt>
+                    de.tud.stg.tigerseye.examples.trivalent
+                </tt>
+                as the 
+                package and select <span class="textit">Next</span>
+                <div align="CENTER">
+                    <a name="fig:example_newlang_newlangclass"></a>
+                    <a name="46"></a>
+                    <table>
+                        <caption align="BOTTOM">
+                            <strong>Figure:</strong>
+                            New TrivalentDSL
+                            Language Defintion
+                        </caption>
+                        <tr>
+                            <td>
+                                <img alt="" src= "../pics/example_newlang_newlangclass.png">
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </li>
+            <li>
+                Now add three new literals: 
+                <tt>
+                    T
+                </tt>
+                (true),
+                <tt>
+                    F
+                </tt>
+                (false) and 
+                <tt>
+                    U
+                </tt>
+                (unknown). They are 
+                all of type Trivalent 
+                <div align="CENTER">
+                    <a name="fig:example_newlang_literalsadded"></a>
+                    <a name="51"></a>
+                    <table>
+                        <caption align="BOTTOM">
+                            <strong>Figure:</strong>
+                            TrivalentDSL Language
+                            Definition with Literals added
+                        </caption>
+                        <tr>
+                            <td>
+                                <img alt="" src= "../pics/example_newlang_literalsadded.png">
+                            </td>
+                        </tr>
+                    </table>
+                </div>finishing the wizard these three classes and the
+                supertype Trivalent will be created. Notice that T, F
+                and U extend Trivalent.
+            </li>
+            <li>
+                The only operation will be an enhanced println 
+                which takes a String and a Trivalent expression and  
+                prints both, e.g. 
+                <tt>
+                    puts("T|U: ",T|U)
+                </tt>
+                will 
+                produce 
+                <tt>
+                    T|U: T
+                </tt>
+                . The return type should be
+                <tt>
+                    void
+                </tt>
+                so we just let the 
+                <tt>
+                    Return type:
+                </tt>
+                field empty. For each operation you can choose if 
+                setting a breakpoint on a line containing this keyword  
+                should be possible. 
+                <div align="CENTER">
+                    <a name="fig:example_newlang_operationadded"></a>
+                    <a name="109"></a>
+                    <table>
+                        <caption align="BOTTOM">
+                            <strong>Figure:</strong>
+                            TrivalentDSL Language 
+                            Definition Operation 
+                            <tt>
+                                puts
+                            </tt>
+                            added
+                        </caption>
+                        <tr>
+                            <td>
+                                <img alt="" src= "../pics/example_newlang_operationadded.png">
+                            </td>
+                        </tr>
+                    </table>
+                </div>Also you can define all parameters and their types.
+            </li>
+            <li>
+                Now add a repeat-statement. The following will 
+                simply print 
+                <tt>
+                    T: T
+                </tt>
+                ten times to stdout.<pre>
+     
+repeat(10) {
+  puts("T:",T);
+}
+</pre>
+                The return type will be 
+                <tt>
+                    void
+                </tt>
+                and there is 
+                one parameter named 
+                <tt>
+                    n
+                </tt>
+                . Select
+                <tt>
+                    explicit parameters.
+                </tt>
+                <div align="CENTER">
+                    <a name= "fig:example_newlang_structuredelementadded"></a>
+                    <a name="110"></a>
+                    <table>
+                        <caption align="BOTTOM">
+                            <strong>Figure:</strong>
+                            TrivalentDSL Language 
+                            Definition Structured Element 
+                            <tt>
+                                repeat
+                            </tt>
+                            added
+                        </caption>
+                        <tr>
+                            <td>
+                                <img alt="" src= "../pics/example_newlang_structuredelementadded.png">
+                            </td>
+                        </tr>
+                    </table>
+                </div>Again, you can choose if it should be possible to
+                set a breakpoint on a line containing this keyword.
+            </li>
+            <li>
+                After you select 
+                <tt>
+                    Finish
+                </tt>
+                a dialog will pop 
+                up asking you if you want to add the runtime libraries.
+                <div align="CENTER">
+                    <a name="fig:example_newlang_addruntime"></a>
+                    <a name= "66"></a>
+                    <table>
+                        <caption align="BOTTOM">
+                            <strong>Figure:</strong>
+                            Question Dialog to add
+                            Runtime Libraries
+                        </caption>
+                        <tr>
+                            <td>
+                                <img alt="" src= "../pics/example_newlang_addruntime.png">
+                            </td>
+                        </tr>
+                    </table>
+                </div>Usually you should say yes, since language definitions
+                have dependencies to the runtime libraries.
+            </li>
+            <li>
+                The final result is shown in the next figure.
+                <div align="CENTER">
+                    <a name="fig:example_newlang_generatedcode"></a>
+                    <a name="71"></a>
+                    <table>
+                        <caption align="BOTTOM">
+                            <strong>Figure:</strong>
+                            TrivalentDSL Generated
+                            Classes and Code
+                        </caption>
+                        <tr>
+                            <td>
+                                <img alt="" src= "../pics/example_newlang_generatedcode.png">
+                            </td>
+                        </tr>
+                    </table>
+                </div>For the new type 
+                <tt>
+                    Trivalent
+                </tt>
+                as well as for the 
+                literals 
+                <tt>
+                    T,U and F
+                </tt>
+                a separate Groovy class is
+                created. The language configuration is defined in the
+                <tt>
+                    TrivalentDSL
+                </tt>
+                class.
+            </li>
+        </ul>
+        <p>
+        </p>
+        <p>
+        </p>
+        <p>
+        </p>
+        <p>
+        </p>
+        <p>
+        </p>
+        <p>
+        </p>
+        <p>
+        </p>
+        <h2><a name="SECTION00012000000000000000">Deployment of a
+                Language</a></h2>
+        <p>
+            To deploy a new language s.t., the user converts his
+            designed language to a plug-in project. This plug-in
+            project will declare its dependencies to two plug-ins:
+        </p>
+        <ul>
+            <li>
+                <tt>
+                    de.tud.stg.tigerseye
+                </tt>
+            </li>
+            <li>
+                <tt>
+                    de.tud.stg.tigerseye.eclipse.core
+                </tt>
+            </li>
+        </ul>
+        The 
+        <tt>
+            de.tud.stg.tigerseye
+        </tt>
+        plug-in provides the
+        dependent on libraries and the
+        <tt>
+            de.tud.stg.tigerseye.eclipse.core
+        </tt>
+        plug-in the 
+        extension which declares that this plug-in project actually  
+        provides a new language. 
+        <p>
+            The following steps have to be performed:
+        </p>
+        <ol>
+            <li>
+                Convert the language definition project to a 
+                plug-in project. 
+                <div align="CENTER">
+                    <a name="fig:example_deploy_converttoplugin"></a>
+                    <a name="96"></a>
+                    <table>
+                        <caption align="BOTTOM">
+                            <strong>Figure:</strong>
+                            Add Plug-in Project
+                            Nature
+                        </caption>
+                        <tr>
+                            <td>
+                                <img alt="" src= "../pics/example_deploy_converttoplugin.png">
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </li>
+            <li>
+                In the 
+                <tt>
+                    MANIFEST.MF
+                </tt>
+                file add the dependencies to the two Tigerseye plug-ins. 
+                <div align="CENTER">
+                    <a name="fig:example_deploy_addplugindependencies"></a>
+                    <a name="101"></a>
+                    <table>
+                        <caption align="BOTTOM">
+                            <strong>Figure:</strong>
+                            Add Plug-in
+                            Depedencies to
+                        </caption>
+                        <tr>
+                            <td>
+                                <img alt="" src= "../pics/example_deploy_addplugindependencies.png">
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </li>
+            <li>
+                Now open the 
+                <tt>
+                    plugin.xml
+                </tt>
+                and go the
+                <tt>
+                    Extensions
+                </tt>
+                tab. Add the
+                <tt>
+                    de.tud.stg.tigerseye.dslDefinitions
+                </tt>
+                extension 
+                point. On the extension point select 
+                <tt>
+                    New &gt;
+                    language
+                </tt>
+                . There you can define the language class
+                to be used. In this example this would be
+                <tt>
+                    de.tud.stg.tigerseye.examples.trivalent.Trivalent
+                </tt>
+                . Additionally you should define a user friendly name 
+                of your new language, e.g. <span class= "textit">Trivalent DSL</span>. Optionally you can 
+                define the default extension identifying your language,  
+                such as 
+                <tt>
+                    tri
+                </tt>
+                . The following figure shows the example configuration.
+                <div align="CENTER">
+                    <a name="fig:example_deploy_extensionpoint"></a>
+                    <a name="111"></a>
+                    <table>
+                        <caption align="BOTTOM">
+                            <strong>Figure:</strong>
+                            <tt>
+                                dslDefinitions
+                            </tt>
+                            Extension Point
+                            Configuration
+                        </caption>
+                        <tr>
+                            <td>
+                                <img alt="" src= "../pics/example_deploy_extensionpoint.png">
+                            </td>
+                        </tr>
+                    </table>
+                </div>The extension can also be
+                configured using the preference pages.
+            </li>
+            <li>
+                Currently only the deployment for development is
+                supported. Language can either be copied or linked
+                inside the eclipse instance in which the plug-in is
+                developed. The next time the Eclipse instance is
+                started the language will be visible in the preference
+                pages and can be used.
+            </li>
+        </ol>
+    </body>
+</html>
