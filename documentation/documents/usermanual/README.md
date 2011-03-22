@@ -8,14 +8,14 @@
 Two scripts are available.
 
 `gendoc.sh`
-:   executes the markdown processor `pandoc` and generate html of latex output.
+:   executes the markdown processor `pandoc` and generates HTML or latex output.
     Optionally the output will be written to an output file. Usage is as follows:
     
         ./gendoc html|latex [outputfile]
         
 `updpdf.sh`
 :   Is a shortcut script that executes `gendoc` with the latex parameter and a specified output file.
-    It then executes pdflatex on the generated tex file and produces a PDF.
+    It then executes pdflatex on the generated `tex` file and produces a PDF.
     It will put all generated files into the subdirectory `build`. Usage:
     
         ./updpdf
@@ -31,8 +31,8 @@ a TU Design styled PDF with `pandoc`.
 ## Used Markdown processor
 
 Instead of the default markdown script I use `pandoc` with its markdown extensions.
-It is more sophisticated and unlike the original markdown philosophy its
-only target is not HTML but many other output formats such as `Latex`.
+It is more sophisticated and unlike the original markdown philosophy it is not only targeted
+to generate HTML but many other output formats such as `Latex`.
 
 ## Installation
 *   `pandoc` has to be installed and accessible via command line.
@@ -62,4 +62,4 @@ only target is not HTML but many other output formats such as `Latex`.
     Instead the picture can be put directly behind the text it belongs to with 
     a backslash character at the end of the text that comes before the picture.
     This will lead to the simple use of the `\includegraphics` macro
-    while the picture will still start in the next line.
+    while the picture will still start in a new line.

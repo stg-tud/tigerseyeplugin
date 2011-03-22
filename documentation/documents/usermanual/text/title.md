@@ -9,3 +9,5 @@
 \newcommand{\versionnum}{\texttt{0.0.1}}
 \newcommand{\popart}{Popart}
 \newcommand{\parlex}{\textit{Parlex}}
+
+<!--don't forget to end the file with a new line-->
