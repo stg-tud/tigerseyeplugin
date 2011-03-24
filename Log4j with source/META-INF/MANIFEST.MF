@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Log4j_with_source
+Bundle-Name: org.apache.log4j
 Bundle-SymbolicName: org.apache.log4j
 Bundle-Version: 1.2.16
 Bundle-Vendor: Apache Software Foundation
