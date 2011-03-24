@@ -124,16 +124,40 @@ public class TigerseyeDSLDefinitionsCPContainer implements IClasspathContainer {
 		cpDirFiles.add(defaultBinName);
 	}
 	int rootCPIndex = hasStringBeginningWith(cpDirFiles, projectRootDir);
-	if (rootCPIndex >= 0 && hasStdBin) {
+	boolean hasRootCP = rootCPIndex >= 0;
+	if (hasRootCP && hasStdBin) {
 	    cpDirFiles.remove(rootCPIndex);
+	    hasRootCP = false;
 	}
 
 	for (String string : cpDirFiles) {
 	    File cpFolderFile = new File(bundleFile, string);
-	    addFileAsCPEntryIfExistant(cpFolderFile);
+	    // TODO refactor this is just a quick and dirty workaround
+	    if (!string.startsWith(projectRootDir) && hasRootCP
+		    && cpFolderFile.isDirectory()) {
+		logger.info(
+			"not adding {} to avoid nesting conflicts since root directory is also on classpath",
+			string);
+	    } else {
+		addFileAsCPEntryIfExistant(cpFolderFile);
+	    }
 	}
     }
 
+    /**
+     * Returns error code depending on whether {@code beginningWith} is
+     * contained in {@code cpDirFiles} List.
+     * 
+     * @param cpDirFiles
+     * @param beginningWith
+     * @return <ul>
+     *         <li>{@code -1} if no string beginning with {@code beginningWith}
+     *         is contained
+     *         <li>a integer greater or equal {@code 0} if {@code beginningWith}
+     *         is contained. The integer represents the entry that starts with
+     *         the {@code beginningWith} string.
+     *         </ul>
+     */
     private int hasStringBeginningWith(List<String> cpDirFiles,
 	    String beginningWith) {
 	for (int i = 0; i < cpDirFiles.size(); i++) {
