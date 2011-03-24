@@ -58,11 +58,11 @@ private static final Logger logger = LoggerFactory.getLogger(BootStrapTransforma
 		}
 			}
 
-			if (dsls.isEmpty()) {
-		logger.error("Searched for {} but no dsls found",
+	    if (dsls.isEmpty()) {
+		logger.warn("Searched for {} but no dsls found",
 			context.getDsls());
-				return input;
-			}
+		return input;
+	    }
 			logger.trace("found dsls: {}", Arrays.toString(dsls.toArray()));
 
 			StringBuilder sb = new StringBuilder("$1");

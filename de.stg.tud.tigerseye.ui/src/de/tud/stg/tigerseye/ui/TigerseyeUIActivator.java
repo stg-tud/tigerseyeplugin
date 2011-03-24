@@ -4,6 +4,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeImage;
 import de.tud.stg.tigerseye.ui.preferences.TigerseyeUIPreferenceInitializer;
 
 /**
@@ -12,7 +13,7 @@ import de.tud.stg.tigerseye.ui.preferences.TigerseyeUIPreferenceInitializer;
 public class TigerseyeUIActivator extends AbstractUIPlugin {
 
     // The plug-in ID
-    public static final String PLUGIN_ID = "de.tud.stg.tigerseye.ui"; //$NON-NLS-1$
+    public static final String PLUGIN_ID = "de.tud.stg.tigerseye.eclipse.ui"; //$NON-NLS-1$
 
     // The shared instance
     private static TigerseyeUIActivator plugin;
@@ -74,5 +75,14 @@ public class TigerseyeUIActivator extends AbstractUIPlugin {
      */
     public static ImageDescriptor getImageDescriptor(String path) {
 	return imageDescriptorFromPlugin(PLUGIN_ID, path);
+    }
+
+    /**
+     * @param imageName
+     * @return predefined icon from the default image store.
+     */
+    public static ImageDescriptor getTigerseyeImage(TigerseyeImage imageName) {
+	String imagePath = "/icons/" + imageName.imageName;
+	return getImageDescriptor(imagePath);
     }
 }

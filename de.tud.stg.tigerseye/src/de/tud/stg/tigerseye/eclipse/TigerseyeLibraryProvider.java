@@ -10,12 +10,12 @@ import java.util.List;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Plugin;
 
-//FIXME refactoring tests
+//FIXME refactoring and tests
 public class TigerseyeLibraryProvider extends Plugin {
 
 	public static final String PLUGIN_ID = "de.tud.stg.tigerseye";
-	private static final String[] minimalConfiguration = {"edslNature.jar",
-		"popartAnnotations.jar", "popart.jar"};
+	private static final String[] minimalConfiguration = { "edslNature.jar",
+			"popartAnnotations.jar", "popart.jar" };
 
 	private static TigerseyeLibraryProvider plugin;
 
@@ -28,17 +28,19 @@ public class TigerseyeLibraryProvider extends Plugin {
 	}
 
 	/**
-	 * @return the folder containing the minimal dependencies for a project with Tigerseye nature.
+	 * @return the folder containing the minimal dependencies for a project with
+	 *         Tigerseye nature.
 	 * @throws IOException
 	 */
 	public static File getTigerseyeRuntimeLibraryFolder() throws IOException {
 		String runtimeJarsFolder = "runtimeJars";
 		File bundleFolder;
-			bundleFolder = FileLocator.getBundleFile(getDefault().getBundle());
+		bundleFolder = FileLocator.getBundleFile(getDefault().getBundle());
 		File runtimeFolder = new File(bundleFolder, runtimeJarsFolder);
 		if (!runtimeFolder.exists())
 			throw new IllegalStateException(
-					"Expected Tigerseye runtime folder does not exist." + runtimeJarsFolder);
+					"Expected Tigerseye runtime folder does not exist."
+							+ runtimeJarsFolder);
 		checkMinimalConfiguration(runtimeFolder);
 		return runtimeFolder;
 	}

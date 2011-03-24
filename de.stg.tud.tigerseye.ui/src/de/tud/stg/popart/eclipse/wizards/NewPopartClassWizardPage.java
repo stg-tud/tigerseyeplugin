@@ -28,6 +28,7 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -42,9 +43,9 @@ import org.slf4j.LoggerFactory;
 import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
-import de.tud.stg.tigerseye.eclipse.core.TigerseyeCoreActivator;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeImage;
 import de.tud.stg.tigerseye.eclipse.core.utils.KeyWordExtractor;
+import de.tud.stg.tigerseye.ui.TigerseyeUIActivator;
 
 /**
  * NewPopartClassWizardPage is a wizard page for creating Popart classes.
@@ -83,8 +84,9 @@ public class NewPopartClassWizardPage extends NewClassWizardPage {
 
     @Override
     public Image getImage() {
-	return TigerseyeCoreActivator.getTigerseyeImage(TigerseyeImage.FileTypeTigerseye64)
-		.createImage();
+	ImageDescriptor tigerseyeImage = TigerseyeUIActivator.getTigerseyeImage(
+		TigerseyeImage.FileTypeTigerseye64);
+	return tigerseyeImage.createImage();
     }
 
     public Map<String, DSLDefinition> getDsls() {
