@@ -26,7 +26,6 @@ Import-Package: org.eclipse.jdt.internal.debug.core.breakpoints,
 Export-Package: 
  de.tud.stg.popart.builder.core.annotations,
  de.tud.stg.popart.builder.eclipse,
- de.tud.stg.popart.builder.transformers,
  de.tud.stg.popart.builder.utils,
  de.tud.stg.popart.dslsupport,
  de.tud.stg.popart.eclipse.core.debug,

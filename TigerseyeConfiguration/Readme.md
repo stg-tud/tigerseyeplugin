@@ -24,18 +24,24 @@ project set.
 
 The folder `projectSets` contains multiple `.psf` files. These files can be used
 to import a pre-configured set of projects from a repository location. The project sets' names
-should be self-explanatory. The following are currently defined:
+should be self-explanatory. The following `.psf` files are currently defined:
 
-`Example_DSLs.psf`
+*Example_DSLs*
 :   contains a set of DSL language definitions projects. These come in handy when testing the
     ability of the Tigerseye IDE.
     
-`Tigerseye_IDE_Dependencies.psf`
+*Tigerseye_IDE_Dependencies*
 :   the plug-ins that form the plug-in and their dependencies.
     The plug-ins are imported into two different working sets.
 
-`Documentation.psf`
+*Documentation*
 :   All projects that contain documentation for the Tigerseye IDE
+
+*Tigerseye_Tests*
+:   Projects to test the implemented Tigerseye functionality.
+
+*Deployment*
+:   Projects for deployment of the Tigerseye Plug-in.
 
 ## Log4j configuration
 
