@@ -42,21 +42,19 @@ tools. It is than necessary to add the `de.tud.stg.tigerseye` and the
 plug-in provides the `dslLanguages` extension point. This point has to
 be extended by declaring what the language class of the exported
 language is. Optionally a user friendly name and a default file
-extension can be defined. Additionally the package containing all the
-classes that need to be accessible at runtime must be exported.
+extension can be defined.
 
 Since the language definition will typically be a Groovy file the
 default behavior when exporting a plug-in has to be adjusted. Rather
-then a specific source folder which would be compiled the created
-binaries have to be put on the classpath of the exported language and an
-according in the Manifest file made. For example if the output folder is
+then a specific source folder which would be compiled the during development created
+binaries have to be included so that they are available on the classpath
+of the exported language. For example if the output folder for the `class` files is
 `bin` it has to be put into the `build.properties` file under the
 `build.includes` property and the entry `bin` has to be added to the
-`MANIFEST.MF` file as `Bundle-Classpath` entry.
+`MANIFEST.MF` file as `Bundle-Classpath` entry (the default classpath is the root of the create jar file).
 
 Alternatively the binary folder can be specified as source folder, in
-which case the `MANIFEST.MF` does not have to be modified, assuming the
-correct packages are declared *exported*.
+which case the `MANIFEST.MF` does not have to be modified.
 The resulting `build.properties` file could result in something like this:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~ {.properties}
@@ -68,6 +66,6 @@ bin.includes = META-INF/,\
 output.. = bin/
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Additionally the current $\tiger$ version assumes that languages can be found
+Additionally the current $\tiger$ implementation (Version 0.0.1) assumes that languages can be found
 in an accessible folder. So the exported language has to be unpacked into
 the `plugins` folder of the target Eclipse installation.

@@ -3,19 +3,22 @@
 PARTS=("title.md" "introduction.md" "installation.md" "examples.md" "features.md")
 SRCDIR="text"
 
+#Pass additional custom key value pairs. Attention: whitespace is not allowed inside a value
+#Uncomment following line to activate additional code
+	#KEYVALS=("listoffigures=''" "listoftables=''")
+
+#Passed Parameters
 TOFORMAT="html"
 STANDALONE="-s"
 TOC="--toc"
 PARSERAW="-R"
 NORMALIZE="--normalize"
 LATEXTEMPLATE="tmpl/usermanualPandocTemplate.tmpl"
-#SCRIPTPATH=`dirname $0`
-#Pass additional custom key value pairs. Attention: whitespace is not allowed inside a value
-#Uncomment following line to activate additional code
-	#KEYVALS=("listoffigures=''" "listoftables=''")
 
-#echo "scriptlocation is $SCRIPTPATH"
-#echo "PWD is `pwd`"
+
+#change working directory
+SCRIPTLOC=`dirname $0`
+cd $SCRIPTLOC
 
 #Add format variable for output format
 if [ -z $1 ]; then
@@ -46,7 +49,6 @@ for target in ${PARTS[@]}; do
 	INPUTTARGETS="$INPUTTARGETS $SRCDIR/$target"
 done
 
-#cd $SCRIPTPATH
 #Combine configuration
 CMD="pandoc -f markdown -t $TOFORMAT $VARIABLES $USETEMPLATE $STANDALONE $TOC $PARSERAW $NORMALIZE $INPUTTARGETS $TOTARGET"
 

@@ -1,5 +1,14 @@
 #!/bin/bash
 
-./gendoc.sh latex build/tmp.textmp
-cd build
+BUILDDIR="build"
+
+SCRIPTLOC=`dirname $0`
+cd $SCRIPTLOC
+
+if [ ! -d $BUILDDIR ]; then
+	mkdir $BUILDDIR	
+fi
+
+./gendoc.sh latex $BUILDDIR/tmp.textmp
+cd $BUILDDIR
 pdflatex tmp.textmp
