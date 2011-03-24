@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><templates><template autoinsert="true" context="java" deleted="false" description="wraps word selection into Arrays.asList statement" enabled="true" name="aslist">${:import(java.util.Arrays)}
+Arrays.asList(${word_selection})</template></templates>

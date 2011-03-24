@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><templates><template autoinsert="true" context="java" deleted="false" description="template for typical if debug enabled statement when using logging frameworks" enabled="true" name="ifdebug">if(${logger}.isDebugEnabled()){
+	 ${logger:field(org.apache.jog4j.Logger,org.slf4j.Logger)}.${severity:link(trace,debug,info,warn,error)}(${word_selection}${cursor});
+}</template></templates>
