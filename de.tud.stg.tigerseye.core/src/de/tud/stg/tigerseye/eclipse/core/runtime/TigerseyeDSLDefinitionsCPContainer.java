@@ -86,8 +86,11 @@ public class TigerseyeDSLDefinitionsCPContainer implements IClasspathContainer {
 	} catch (Exception e) {
 	    IOUtils.closeQuietly(fileInputStream);
 	}
-	List<String> cpDirFiles = getResourceNamesForProperty(properties,
-		"output..");
+	List<String> cpDirFiles = new ArrayList<String>();
+	/*
+	 * usually says nothing about classpath
+	 */
+	// getResourceNamesForProperty(properties, "output..");
 	List<String> includes = getResourceNamesForProperty(properties,
 		"bin.includes");
 
@@ -106,6 +109,11 @@ public class TigerseyeDSLDefinitionsCPContainer implements IClasspathContainer {
 
     private void addClassFolders(List<String> cpDirFiles, File bundleFile) {
 	/*
+	 * TODO refactor: should consider includes+projectroot as default cp and
+	 * the Manifest cp additionally to access during development allow bin
+	 * folder
+	 */
+	/*
 	 * If class output folder exists it can not be nested inside a project
 	 * root folder which as well is declared as class folder. Such a
 	 * combination will cause unresolved class path problems. I assume that
@@ -116,12 +124,15 @@ public class TigerseyeDSLDefinitionsCPContainer implements IClasspathContainer {
 	if (metaInfIndex >= 0) {
 	    cpDirFiles.remove(metaInfIndex);
 	}
-	int stdBinIndex = hasStringBeginningWith(cpDirFiles, defaultBinName);
-	boolean hasStdBin = stdBinIndex >= 0;
-	if (!hasStdBin) {
-	    hasStdBin = containsBinFolder(bundleFile);
-	    if (hasStdBin)
+	// int stdBinIndex = hasStringBeginningWith(cpDirFiles, defaultBinName);
+	// boolean hasStdBin = stdBinIndex >= 0;
+	// if (!hasStdBin) {
+	boolean hasStdBin = containsBinFolder(bundleFile);
+	if (hasStdBin) {
 		cpDirFiles.add(defaultBinName);
+	// }
+	} else {
+	    cpDirFiles.add(projectRootDir);
 	}
 	int rootCPIndex = hasStringBeginningWith(cpDirFiles, projectRootDir);
 	boolean hasRootCP = rootCPIndex >= 0;
@@ -129,6 +140,7 @@ public class TigerseyeDSLDefinitionsCPContainer implements IClasspathContainer {
 	    cpDirFiles.remove(rootCPIndex);
 	    hasRootCP = false;
 	}
+
 
 	for (String string : cpDirFiles) {
 	    File cpFolderFile = new File(bundleFile, string);
