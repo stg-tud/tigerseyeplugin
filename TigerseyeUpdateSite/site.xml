@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/TigerseyeFeature_0.0.1.2.jar" id="TigerseyeFeature" version="0.0.1.2">
+      <category name="de.tud.stg.tigerseye.feature.mandatory"/>
+   </feature>
+   <category-def name="de.tud.stg.tigerseye.feature.mandatory" label="Tigerseye Mandatory">
+      <description>
+         Necessary plug-ins to run Tigerseye
+      </description>
+   </category-def>
+</site>
