@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="TigerseyeFeature"
+      id="de.tud.stg.tigerseye.feature.tigerseyeide"
       label="TigerseyeFeature"
       version="0.0.1.2"
       provider-name="TUD">
