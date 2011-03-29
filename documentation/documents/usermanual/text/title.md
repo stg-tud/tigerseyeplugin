@@ -2,7 +2,7 @@
   Version 0.0.1
 % Leo Roos
   <leo_roos@rbg.informatik.tu-darmstadt.de>
-%$Date::              $
+%$Date::                              $
 
 <!--latex style macros, can be referenced using the macro inside two dollarsigns. e.g. $\tiger$-->
 
