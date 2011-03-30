@@ -11,7 +11,7 @@ Two scripts are available.
 :   executes the markdown processor `pandoc` and generates HTML or latex output.
     Optionally the output will be written to an output file. Usage is as follows:
     
-        ./gendoc html|latex [outputfile]
+        ./gendoc (html|latex) [outputfile]
         
 `updpdf.sh`
 :   Is a shortcut script that executes `gendoc` with the latex parameter and a specified output file.

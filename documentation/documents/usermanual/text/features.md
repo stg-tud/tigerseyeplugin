@@ -87,10 +87,8 @@ A new language can be created using the *Tigerseye Language Wizard*. The
 Wizard can be accessed via `File > New > Other`\
 ![Choosing the New Tigerseye Language
 Wizard](../pics/new_tigesreye_language.png "Choosing the New Tigerseye Language Wizard")\
-
-The next figure shows the first page of the Wizard.\
-![Tigerseye
-Language Definition Wizard Page
+ The next figure shows the first page of the Wizard.\
+![Tigerseye Language Definition Wizard Page
 1](../pics/tigerseye_language_definition_page1.png "Tigerseye Language Definition Wizard Page 1")
 
 There the name of the main language class can be defined. As shown the
@@ -100,19 +98,21 @@ class. The next figure shows the actual language definition page.\
 ![Tigerseye Language Definition Wizard Page
 2](../pics/tigerseye_language_definition_page2.png "Tigerseye Language Definition Wizard Page 2")
 
-On the language definition page the different literals, operations and structured elements can be
-added. In Section [Examples](#examples) the usage of the wizard is
-showcased.
+On the language definition page the different literals, operations and
+structured elements can be added. In Section [Examples](#examples) the
+usage of the wizard is showcased.
 
-## New Class Wizard
+## New Tigerseye Class Wizard
 
-The new Class Wizard enables easy creation of new DSL classes.\
+The *New Tigerseye Class* Wizard enables easy creation of new DSL
+classes.\
 ![New Tigerseye Class
 Wizard](../pics/new_tigerseye_class_wizard.png "New Tigerseye Class Wizard")
 
-It is basically an adjusted version of the new Java Class Wizard.
-Additionally to being able to define the typical class properties a DSL
-can be chosen which one wishes to use in the class.
+It is basically a version of the *Groovy Class* Wizard. Not all modifiable
+areas have influence on the generated code. The useful fields
+for generation are `Source folder`, `Package`, `Name` and
+the DSL extension.
 
 ## Launch Tigerseye DSL
 
@@ -127,9 +127,9 @@ Dialog.\
 ![Launch via the Run Configurations
 Dialog](../pics/launch_run_configurations_dialog.png "Launch via the Run Configurations Dialog")
 
-In the Run Configurations Dialog a new launch can be configured or a previous launch adjusted. On
-the `Tigerseye` tab the project from which a DSL will be launched as well
-as the DSL file to launch can be chosen. When using the launch shortcut
-the Groovy default launch configuration is assumed,  which will set
-additional classpath properties. Later these can be modified using this
-dialog.
+In the Run Configurations Dialog a new launch can be configured or a
+previous launch adjusted. On the `Tigerseye` tab the project from which
+a DSL will be launched as well as the DSL file to launch can be chosen.
+When using the launch shortcut the Groovy default launch configuration
+is assumed, which will set additional classpath properties. Later these
+can be modified using this dialog.

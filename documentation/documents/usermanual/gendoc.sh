@@ -5,7 +5,7 @@ SRCDIR="text"
 
 #Pass additional custom key value pairs. Attention: whitespace is not allowed inside a value
 #Uncomment following line to activate additional code
-	#KEYVALS=("listoffigures=''" "listoftables=''")
+KEYVALS=( "listoftables=''") #"listoffigures=''"
 
 #Passed Parameters
 TOFORMAT="html"

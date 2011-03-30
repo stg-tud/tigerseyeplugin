@@ -86,7 +86,7 @@ public class TigerseyeDSLDefinitionsCPContainer implements IClasspathContainer {
 	} catch (Exception e) {
 	    IOUtils.closeQuietly(fileInputStream);
 	}
-	List<String> cpDirFiles = new ArrayList<String>();
+	List<String> dirFiles = new ArrayList<String>();
 	/*
 	 * usually says nothing about classpath
 	 */
@@ -100,18 +100,23 @@ public class TigerseyeDSLDefinitionsCPContainer implements IClasspathContainer {
 	    if (isJarFile(cpFile)) {
 		jars.add(cpFile);
 	    } else if (cpFile.isDirectory()) {
-		cpDirFiles.add(string);
+		dirFiles.add(string);
 	    }
 	}
-	addJarsAsCPEntry(jars);
-	addClassFolders(cpDirFiles, bundleFile);
+	for (File jar : jars) {
+	    addFileAsCPEntryIfExistant(jar);
+	}
+	List<File> classFolders = getClassFolders(dirFiles, bundleFile);
+	for (File cpFolderFile : classFolders) {
+	    addFileAsCPEntryIfExistant(cpFolderFile);
+	}
     }
 
-    private void addClassFolders(List<String> cpDirFiles, File bundleFile) {
+    private List<File> getClassFolders(List<String> cpDirFiles, File bundleFile) {
 	/*
 	 * TODO refactor: should consider includes+projectroot as default cp and
-	 * the Manifest cp additionally to access during development allow bin
-	 * folder
+	 * the Manifest classpath. Additionally to provide access during
+	 * development allow bin folder.
 	 */
 	/*
 	 * If class output folder exists it can not be nested inside a project
@@ -141,19 +146,20 @@ public class TigerseyeDSLDefinitionsCPContainer implements IClasspathContainer {
 	    hasRootCP = false;
 	}
 
-
+	List<File> classFolder = new ArrayList<File>();
 	for (String string : cpDirFiles) {
 	    File cpFolderFile = new File(bundleFile, string);
 	    // TODO refactor this is just a quick and dirty workaround
 	    if (!string.startsWith(projectRootDir) && hasRootCP
 		    && cpFolderFile.isDirectory()) {
-		logger.info(
+		logger.trace(
 			"not adding {} to avoid nesting conflicts since root directory is also on classpath",
 			string);
 	    } else {
-		addFileAsCPEntryIfExistant(cpFolderFile);
+		classFolder.add(cpFolderFile);
 	    }
 	}
+	return classFolder;
     }
 
     /**

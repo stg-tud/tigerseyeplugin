@@ -67,7 +67,8 @@ pop up asking you if you want to add the $\tiger$ runtime libraries.\
 Libraries](../pics/example_newlang_addruntime.png)
 
 Usually you should say yes, since language definitions have dependencies
-to the runtime libraries. The next figure shows the generated classes and project structure.\
+to the runtime libraries. The next figure shows the generated classes
+and project structure.\
 ![TrivalentDSL Generated Classes and
 Code](../pics/example_newlang_generatedcode.png)
 
@@ -101,19 +102,21 @@ new language. The following steps have to be performed:
 3.  Now open the plugin.xml and go the Extensions tab. Add the
     `de.tud.stg.tigerseye.dslDefinitions` extension point. On the
     extension point select `New > language`. There you can define the
-    language class to be used. In this example 
-    `de.tud.stg.tigerseye.examples.trivalent.Trivalent` is used. Additionally you
-    should define a user friendly name of your new language, e.g.
-    *Trivalent DSL*. Optionally you can define the default extension
-    identifying your language, such as `tri`. The following figure shows
-    the configuration.\
+    language class to be used. In this example
+    `de.tud.stg.tigerseye.examples.trivalent.Trivalent` is used.
+    Additionally you should define a user friendly name of your new
+    language, e.g. *Trivalent DSL*. Optionally you can define the
+    default extension identifying your language, such as `tri`. The
+    following figure shows the configuration.\
      ![dslDefinitions Extension Point
     Configuration](../pics/example_deploy_extensionpoint.png) The
-    `extension` field can later also be configured via the preference pages.
+    `extension` field can later also be configured via the preference
+    pages.
 
-4.  Currently only the deployment for development is supported. A language
-    can either be copied or linked inside the eclipse instance in which
-    the plug-in is developed. The next time the Eclipse instance is
-    started the language will be visible in the preference pages and can
-    be used.
+4.  Currently only the deployment for development is supported. A
+    language can either be copied or linked inside the eclipse instance
+    in which the plug-in is developed. The next time the Eclipse
+    instance is started the language will be visible in the preference
+    pages and can be used.
+
 
