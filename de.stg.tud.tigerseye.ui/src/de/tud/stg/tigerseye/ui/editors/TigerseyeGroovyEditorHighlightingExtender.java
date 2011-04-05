@@ -7,10 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import org.codehaus.groovy.eclipse.editor.GroovyTagScanner;
 import org.codehaus.groovy.eclipse.editor.highlighting.IHighlightingExtender;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.rules.IRule;
+import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.rules.WordRule;
@@ -47,7 +49,7 @@ public class TigerseyeGroovyEditorHighlightingExtender implements
 			    boolean isColorForThisLang = colorKey
 				    .equals(property);
 			    if (isColorForThisLang) {
-				tokenMap.get(dsl).setData(getNewTokenData(dsl));
+				tokenMap.get(dsl).setData(getTextAttributeFor(dsl));
 			    }
 			}
 		    }
@@ -56,14 +58,15 @@ public class TigerseyeGroovyEditorHighlightingExtender implements
 
     @Override
     public List<String> getAdditionalGroovyKeywords() {
+	/* No additional keywords to color like Groovy keywords. */
 	return null;
     }
 
     @Override
     public List<String> getAdditionalGJDKKeywords() {
+	/* No additional keywords to color like Groovy JDK keywords. */
 	return null;
     }
-
 
     @Override
     public List<IRule> getAdditionalRules() {
@@ -73,20 +76,20 @@ public class TigerseyeGroovyEditorHighlightingExtender implements
 	    return additionalRules;
 
 	for (DSLDefinition dsl : getActiveDSLs()) {
-		Token token = getTokenFor(dsl);
-		WordRule keywordsRule = new DSLWordRule(
-			new TigerWordDetector(), dsl);
+	    Token token = getTokenFor(dsl);
+	    WordRule keywordsRule = new DSLWordRule(new TigerWordDetector(),
+		    dsl);
 	    for (String keyWord : getMethodKeyWordsForDSL(dsl)) {
 		keywordsRule.addWord(keyWord, token);
-		}
-		tokenMap.put(dsl, token);
-		additionalRules.add(keywordsRule);
+	    }
+	    tokenMap.put(dsl, token);
+	    additionalRules.add(keywordsRule);
 	}
 	return additionalRules;
     }
 
     // FIXME refactor keywordextractor: so that it takes class in constructor
-    // and provides differnt methods working on that class
+    // and provides different methods working on that class
     private List<String> getMethodKeyWordsForDSL(DSLDefinition dsl) {
 	List<String> keywords = new ArrayList<String>();
 	KeyWordExtractor keyWordExtractor = new KeyWordExtractor(
@@ -119,10 +122,10 @@ public class TigerseyeGroovyEditorHighlightingExtender implements
     }
 
     private Token getTokenFor(DSLDefinition dsl) {
-	return new Token(getNewTokenData(dsl));
+	return new Token(getTextAttributeFor(dsl));
     }
 
-    private TextAttribute getNewTokenData(DSLDefinition dsl) {
+    private TextAttribute getTextAttributeFor(DSLDefinition dsl) {
 	RGB value;
 	try {
 	    value = dsl.getValue(DSLUIKey.COLOR);
@@ -133,7 +136,10 @@ public class TigerseyeGroovyEditorHighlightingExtender implements
     }
 
     /**
-     * Marker extension for identification purposes
+     * Marker extension for identification purposes via {@code instanceof}.
+     * Since {@link GroovyTagScanner} uses
+     * {@link org.eclipse.jdt.internal.ui.text.CombinedWordRule} this class can
+     * be used as container to access the defined words and tokens.
      * 
      * @author Leo Roos
      * 
@@ -141,14 +147,29 @@ public class TigerseyeGroovyEditorHighlightingExtender implements
     public class DSLWordRule extends WordRule {
 
 	private final DSLDefinition dsl;
+	private final HashMap<String, IToken> wordConfiguration;
 
 	public DSLWordRule(IWordDetector detector, DSLDefinition dsl) {
 	    super(detector);
 	    this.dsl = dsl;
+	    this.wordConfiguration = new HashMap<String, IToken>();
 	}
 
 	public DSLDefinition getDsl() {
 	    return dsl;
+	}
+
+	@Override
+	public void addWord(String word, IToken token) {
+	    super.addWord(word, token);
+	    this.wordConfiguration.put(word, token);
+	}
+
+	/**
+	 * @return the a Map of words and their associated tokens.
+	 */
+	public HashMap<String, IToken> getWordConfiguration() {
+	    return wordConfiguration;
 	}
 
     }

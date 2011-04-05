@@ -3,17 +3,22 @@ package de.tud.stg.tigerseye.ui.editors;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
+
+import javax.annotation.CheckForNull;
 
 import org.codehaus.groovy.eclipse.core.util.ReflectionUtils;
 import org.codehaus.groovy.eclipse.editor.GroovyConfiguration;
 import org.codehaus.groovy.eclipse.editor.GroovyEditor;
 import org.codehaus.groovy.eclipse.editor.GroovyTagScanner;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.jdt.internal.ui.text.CombinedWordRule;
+import org.eclipse.jdt.internal.ui.text.CombinedWordRule.WordMatcher;
 import org.eclipse.jdt.ui.text.JavaSourceViewerConfiguration;
 import org.eclipse.jface.text.rules.IRule;
+import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
-import org.eclipse.jface.text.rules.WordRule;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
@@ -60,43 +65,71 @@ public class TigerseyeEditor extends GroovyEditor {
 			.getPrivateField(JavaSourceViewerConfiguration.class,
 				"fCodeScanner", groovyConfiguration));
 
-	List<IRule> activeTigerseyeRules = new ArrayList<IRule>();
-	List<IRule> groovyWordRules = new ArrayList<IRule>();
+	List<DSLWordRule> activeTigerseyeRules = new ArrayList<DSLWordRule>();
 	List<IRule> otherRules = new ArrayList<IRule>();
 
 	for (IRule rule : installedRules) {
 	    if (rule instanceof DSLWordRule) {
-		DSLDefinition dsl = ((DSLWordRule) rule).getDsl();
-		/*
-		 * TODO: (*) Currently, we do not know what DSLs are selected
-		 * for a Java file, thus we cannot do context specific selection
-		 * of highlighted keyword (for only selected DSL keywords). As a
-		 * work around, in Java files, we highlight keywords of all
-		 * active DSLs
-		 */
+		DSLWordRule dslWordRule = (DSLWordRule) rule;
+		DSLDefinition dsl = dslWordRule.getDsl();
 		if (FileType.JAVA.equals(this.fileType) // TODO: (*)
 			|| this.activeDSLs.contains(dsl))
-		    activeTigerseyeRules.add(rule);
-	    } else if (rule instanceof WordRule) {
-		groovyWordRules.add(rule);
+		    /*
+		     * TODO: (*) Currently, we do not know what DSLs are
+		     * selected for a Java file, thus we cannot do context
+		     * specific selection of highlighted keyword (for only
+		     * selected DSL keywords). As a work around, in Java files,
+		     * we highlight keywords of all active DSLs
+		     */
+		    activeTigerseyeRules.add(dslWordRule);
 	    } else
 		otherRules.add(rule);
 	}
+
 	if (activeTigerseyeRules.size() > 0) {
-	    List<IRule> mergedRules = new ArrayList<IRule>(otherRules);
-	    // put tigerseye Rules _before_ groovy rules.
-	    mergedRules.addAll(activeTigerseyeRules);
-	    mergedRules.addAll(groovyWordRules);
-	    IRule[] filteredSortedRules = mergedRules.toArray(new IRule[0]);
-	    scanner.setRules(filteredSortedRules);
+	    CombinedWordRule combinedWordRule = getCombinedWordRule(otherRules);
+	    if (combinedWordRule != null) {
+		for (DSLWordRule dslRule : activeTigerseyeRules) {
+		    WordMatcher dslMatcher = new CombinedWordRule.WordMatcher();
+		    Set<Entry<String, IToken>> wordConfiguration = dslRule
+			    .getWordConfiguration().entrySet();
+		    for (Entry<String, IToken> entry : wordConfiguration) {
+			dslMatcher.addWord(entry.getKey(), entry.getValue());
+		    }
+		    combinedWordRule.addWordMatcher(dslMatcher);
+		}
+		scanner.setRules(otherRules.toArray(new IRule[0]));
+	    } else { // Old Implementation should be delete-able
+		logger.error("An older unexpected implementation has been used. Instead of adding to the common word rules additional coloring Rules  will be used and those by Tigerseye prioritized.");
+		List<IRule> mergedRules = new ArrayList<IRule>();
+		// put tigerseye Rules _before_ groovy rules.
+		mergedRules.addAll(activeTigerseyeRules);
+		mergedRules.addAll(otherRules);
+		IRule[] filteredSortedRules = mergedRules.toArray(new IRule[0]);
+		scanner.setRules(filteredSortedRules);
+	    }
 	}
+    }
+
+    /**
+     * @param otherRules
+     * @return first found object of type {@link CombinedWordRule} or
+     *         <code>null</code>.
+     */
+    private @CheckForNull
+    CombinedWordRule getCombinedWordRule(List<IRule> otherRules) {
+	for (IRule iRule : otherRules) {
+	    if (iRule instanceof CombinedWordRule)
+		return (CombinedWordRule) iRule;
+	}
+	return null;
     }
 
     private void setInvolvedDSLs() {
 	IFile file = (IFile) getAdapter(IFile.class);
 	String[] extensionsForSrcResource = new DSLExtensionsExtractor()
 		.getExtensionsForSrcResource(file.getName());
-	logger.info("Found extensions {} ",
+	logger.info("For file {} extracted extensions {} ", file.getName(),
 		Arrays.toString(extensionsForSrcResource));
 	Set<DSLDefinition> activeDSLSet = new ArraySet<DSLDefinition>();
 	ILanguageProvider languageProvider = TigerseyeCore

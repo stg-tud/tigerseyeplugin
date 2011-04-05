@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: LogoDSL Plug-in
 Bundle-SymbolicName: de.tud.stg.tigerseye.examples.LogoDSL;singleton:=true
-Bundle-Version: 1.0.0
+Bundle-Version: 0.0.1
 Export-Package: de.tud.stg.popart.builder.test.logo,
  org.javalogo
 Bundle-ActivationPolicy: lazy

@@ -7,14 +7,14 @@ import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationType
 import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntimeException;
 
 /**
- * General interface to handle registered DSLs between plug-in components <br>
+ * General interface to handle registered DSLs between plug-in components. <br>
  * Only unmodifiable values which every DSL definition has are directly
  * accessible <br>
  * Further DSL attributes can be retrieved using the {@link #getValue(DSLKey)}
- * method and set using the {@link #setValue(DSLKey, Object)}. This method
+ * method and set using the {@link #setValue(DSLKey, Object)}. This class
  * provides a preference store key which can be used to directly accessing the
- * preference store for requested attribute through {@link #getKeyFor(DSLKey)}.
- * But the use of the specialized getValue and setValue methods is recommended.<br>
+ * preference store for requested attributes through {@link #getKeyFor(DSLKey)}.
+ * But the use of the getValue and setValue methods is recommended.<br>
  * 
  * @see {@link DSLKey}
  * 
@@ -30,7 +30,7 @@ public interface DSLDefinition extends TransformationType {
     public static final DSLDefinition NULL_DSL = new NULLDSL();
 
     /**
-     * Whether the language is set as active by the User.
+     * Whether the language has been set to active.
      * 
      * @return <code>true</code> if language is active <code>false</code>
      *         otherwise.
