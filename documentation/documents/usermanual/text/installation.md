@@ -69,22 +69,28 @@ be extended by declaring what the language class of the exported
 language is. Optionally a user friendly name and a default file
 extension can be defined.
 
-Since the language definition will typically be a Groovy file the
-default behavior when exporting a plug-in has to be adjusted. Rather
-then a specific source folder, which would be compiled during the export
+Since the language definition will typically be a Groovy file, of which the PDE Builder
+is not aware of, the
+default behavior when exporting a plug-in has to be adjusted.
+Two different approaches can be taken.
+
+### Using class Files Compiled in the Workspace 
+
+Instead of
+a specific source folder, which would be compiled during an export
 using the PDE Export Wizard, the binaries created during the development
 have to be included, so that they are available on the classpath of the
-exported language. This can be done in different ways. Two schemes are
-as follows.
+exported language. This can be done in different ways:
 
--   If the output folder for the `class` files is `bin` it can be put
-    into the `build.properties` file under the `build.includes` property
+-   Assuming that the output folder for the `class` files is `bin`,  the `bin`
+    folder can be added
+    to the `build.properties` file as value for the `build.includes` property
     and the entry `bin` has to be added to the `MANIFEST.MF` file as
     `Bundle-Classpath` entry (the default classpath is the root of the
-    create jar file).
+    created jar file).
 -   Alternatively the binary folder can be specified as source folder,
     in which case the `MANIFEST.MF` does not have to be modified. The
-    resulting `build.properties` file will result in something like
+    resulting `build.properties` file will look something like
     this:
 
         source.. = src/,\
@@ -94,7 +100,42 @@ as follows.
                        plugin.xml
         output.. = bin/
 
-Additionally the current $\tiger$ implementation (Version 0.0.1) assumes
+### Using Groovy-specific Build Properties
+
+When the Groovy plug-in is installed, additional properties for the
+`build.properties` file can be used to tell the PDE to include Groovy
+files during an export. Simply add the following three lines to your build.properties file:
+
+    sourceFileExtensions=*.java, *.groovy
+    compilerAdapter=org.codehaus.groovy.eclipse.ant.GroovyCompilerAdapter
+    compilerAdapter.useLog=true
+
+The resulting build.properties file will look similar to this:
+
+    source.. = src/
+    bin.includes = META-INF/,\
+                   .,\
+                   plugin.xml,\
+                   src/
+    output.. = bin/
+    sourceFileExtensions=*.java, *.groovy
+    compilerAdapter=org.codehaus.groovy.eclipse.ant.GroovyCompilerAdapter
+    compilerAdapter.useLog=true
+
+The additional entries will cause a compilation of Java *and* Groovy files.
+The `src` entry for the bin.includes property makes the source files accessible
+during runtime.
+For general information about valid values for the `build.properties` file check out
+the Eclipse Help following the path `Plug-in Development Environment Guide > Reference > Build Configuration`.
+For more information about the Groovy build properties have a look
+at [Andrew Eisenberg's Blog][andrewsblog].
+ 
+
+[andrewsblog]: http://contraptionsforprogramming.blogspot.com/2010/08/groovy-pde-redux.html
+
+### Additional Remarks
+
+Currently the $\tiger$ implementation (Version 0.0.1) assumes
 that languages can be found in an accessible folder. So the exported
 language has to be unpacked into the `plugins` folder of the target
-Eclipse installation.
+Eclipse installation before it is usable.

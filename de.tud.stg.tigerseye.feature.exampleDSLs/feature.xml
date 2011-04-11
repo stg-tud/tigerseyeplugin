@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="de.tud.stg.tigerseye.feature.exampleDSLs"
-      label="Example_DSLs"
-      version="0.0.1"
+      label="Tigerseye Example DSLs"
+      version="0.0.1.5"
       provider-name="TUD">
 
    <description url="http://www.example.com/description">
@@ -18,8 +18,8 @@
    </license>
 
    <requires>
-      <import plugin="de.tud.stg.tigerseye"/>
-      <import plugin="de.tud.stg.tigerseye.eclipse.core"/>
+      <import plugin="de.tud.stg.tigerseye" version="0.0.1" match="greaterOrEqual"/>
+      <import plugin="de.tud.stg.tigerseye.eclipse.core" version="0.0.1" match="greaterOrEqual"/>
       <import plugin="org.codehaus.groovy"/>
       <import feature="de.tud.stg.tigerseye.feature.tigerseyeide" version="0.0.1.2"/>
    </requires>
@@ -28,24 +28,24 @@
          id="de.tud.stg.tigerseye.examples.DSLDefinitions"
          download-size="0"
          install-size="0"
-         version="0.0.1"/>
+         version="0.0.0"/>
 
    <plugin
          id="de.tud.stg.tigerseye.examples.LogoDSL"
          download-size="0"
          install-size="0"
-         version="0.0.1"/>
+         version="0.0.0"/>
 
    <plugin
          id="de.tud.stg.tigerseye.examples.SetDSL"
          download-size="0"
          install-size="0"
-         version="0.0.1"/>
+         version="0.0.0"/>
 
    <plugin
          id="de.tud.stg.tigerseye.examples.SimpleSQLDSL"
          download-size="0"
          install-size="0"
-         version="0.0.1"/>
+         version="0.0.0"/>
 
 </feature>

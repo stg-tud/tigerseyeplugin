@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/de.tud.stg.tigerseye.feature.exampleDSLs_0.0.1.jar" id="de.tud.stg.tigerseye.feature.exampleDSLs" version="0.0.1">
-      <category name="de.tud.stg.tigerseye.category.exampledsls"/>
-   </feature>
    <feature url="features/de.tud.stg.tigerseye.feature.tigerseyeide_0.0.1.2.jar" id="de.tud.stg.tigerseye.feature.tigerseyeide" version="0.0.1.2">
       <category name="de.tud.stg.tigerseye.category.mandatory"/>
+   </feature>
+   <feature url="features/de.tud.stg.tigerseye.feature.exampleDSLs_0.0.1.5.jar" id="de.tud.stg.tigerseye.feature.exampleDSLs" version="0.0.1.5">
+      <category name="de.tud.stg.tigerseye.category.exampledsls"/>
    </feature>
    <category-def name="de.tud.stg.tigerseye.category.mandatory" label="Tigerseye Mandatory">
       <description>

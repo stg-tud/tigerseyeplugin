@@ -42,74 +42,77 @@
       <import plugin="org.apache.log4j" version="1.2.0" match="equivalent"/>
       <import plugin="org.eclipse.osgi"/>
       <import feature="org.codehaus.groovy.eclipse.feature" version="2.1.1.xx-20101215-2100-e36"/>
-      <import plugin="slf4j.log4j12"/>
+      <import plugin="parlex" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="org.apache.commons.lang" version="2.4.0" match="greaterOrEqual"/>
+      <import plugin="org.apache.commons.io" version="1.4.0" match="greaterOrEqual"/>
+      <import plugin="de.tud.stg.tigerseye" version="0.0.1" match="greaterOrEqual"/>
    </requires>
 
    <plugin
          id="de.tud.stg.tigerseye"
          download-size="0"
          install-size="0"
-         version="0.0.1"/>
+         version="0.0.0"/>
 
    <plugin
          id="de.tud.stg.tigerseye.eclipse.core"
          download-size="0"
          install-size="0"
-         version="0.0.1"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="de.tud.stg.tigerseye.eclipse.ui"
          download-size="0"
          install-size="0"
-         version="0.0.1"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="parlex"
          download-size="0"
          install-size="0"
-         version="1.0.0"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="slf4j.log4j12"
          download-size="0"
          install-size="0"
-         version="1.6.1"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.apache.commons.io"
          download-size="0"
          install-size="0"
-         version="1.4.0"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.apache.commons.lang"
          download-size="0"
          install-size="0"
-         version="2.4.0"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="Log4jPDEAppender"
          download-size="0"
          install-size="0"
-         version="0.1.0"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.apache.log4j"
          download-size="0"
          install-size="0"
-         version="1.2.16"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.apache.commons.collections"
          download-size="0"
          install-size="0"
-         version="3.2.1"/>
+         version="0.0.0"/>
 
 </feature>
