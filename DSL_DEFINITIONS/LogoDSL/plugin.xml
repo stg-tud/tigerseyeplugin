@@ -4,7 +4,7 @@
    <extension
          point="de.tud.stg.tigerseye.dslDefinitions">
       <language
-            class="de.tud.stg.popart.builder.test.logo.LogoDSL"
+            class="de.tud.stg.tigerseye.examples.logo.LogoDSL"
             extension="logo"
             name="Logo DSL">
       </language>

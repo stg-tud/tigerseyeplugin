@@ -1,4 +1,4 @@
-package de.tud.stg.popart.builder.test.logo;
+package de.tud.stg.tigerseye.examples.logo;
 
 import de.tud.stg.popart.dslsupport.*;
 import org.javalogo.*;
