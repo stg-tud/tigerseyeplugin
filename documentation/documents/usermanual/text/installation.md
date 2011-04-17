@@ -116,18 +116,15 @@ The resulting build.properties file will look similar to this:
     bin.includes = META-INF/,\
                    .,\
                    plugin.xml,\
-                   src/
     output.. = bin/
     sourceFileExtensions=*.java, *.groovy
     compilerAdapter=org.codehaus.groovy.eclipse.ant.GroovyCompilerAdapter
     compilerAdapter.useLog=true
 
 The additional entries will cause a compilation of Java *and* Groovy files.
-The `src` entry for the bin.includes property makes the source files accessible
-during runtime.
 For general information about valid values for the `build.properties` file check out
-the Eclipse Help following the path `Plug-in Development Environment Guide > Reference > Build Configuration`.
-For more information about the Groovy build properties have a look
+the Eclipse Help following the path `Plug-in Development Environment Guide > Reference > Build Configuration > Feature and Plug-in Build configuration`.
+For more information about the Groovy specific build properties have a look
 at [Andrew Eisenberg's Blog][andrewsblog].
  
 

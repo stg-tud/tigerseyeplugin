@@ -2,7 +2,7 @@
 <feature
       id="de.tud.stg.tigerseye.feature.exampleDSLs"
       label="Tigerseye Example DSLs"
-      version="0.0.1.5"
+      version="0.0.1.qualifier"
       provider-name="TUD">
 
    <description url="http://www.example.com/description">

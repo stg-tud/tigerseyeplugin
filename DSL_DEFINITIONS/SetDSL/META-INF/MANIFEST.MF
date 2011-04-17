@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: SetDSL
 Bundle-SymbolicName: de.tud.stg.tigerseye.examples.SetDSL;singleton:=true
-Bundle-Version: 0.0.2.4
+Bundle-Version: 0.0.2.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.codehaus.groovy,
  de.tud.stg.tigerseye,
