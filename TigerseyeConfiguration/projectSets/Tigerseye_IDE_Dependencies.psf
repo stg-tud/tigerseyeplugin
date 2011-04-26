@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <psf version="2.0">
-<provider id="org.tigris.subversion.subclipse.core.svnnature">
-<project reference="0.9.3,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/de.tud.stg.tigerseye,de.tud.stg.tigerseye"/>
-<project reference="0.9.3,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/de.tud.stg.tigerseye.core,de.tud.stg.tigerseye.eclipse.core"/>
-<project reference="0.9.3,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/de.stg.tud.tigerseye.ui,de.tud.stg.tigerseye.ui"/>
-<project reference="0.9.3,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/Log4j%20with%20source,Log4j with source"/>
-<project reference="0.9.3,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/Log4jPDEAppender,Log4jPDEAppender"/>
-<project reference="0.9.3,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/org.apache.commons.collections,org.apache.commons.collections"/>
-<project reference="0.9.3,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/org.apache.commons.io,org.apache.commons.io"/>
-<project reference="0.9.3,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/org.apache.commons.lang,org.apache.commons.lang"/>
-<project reference="0.9.3,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/parlex,parlex"/>
-<project reference="0.9.3,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/slf4j-log4j12,slf4j-log4j12"/>
+<provider id="org.eclipse.team.svn.core.svnnature">
+<project reference="1.0.1,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/de.tud.stg.tigerseye,de.tud.stg.tigerseye,302941e2e56f00101448e2e1320c10f5;https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/;https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/;branches;tags;trunk;true;cc4a8bc3-49ff-40c0-b9b6-f760b69cc066;https://cage.st.informatik.tu-darmstadt.de/dsl/svn;;false;;;0"/>
+<project reference="1.0.1,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/de.tud.stg.tigerseye.core,de.tud.stg.tigerseye.eclipse.core,302941e2e56f00101448e2e1320c10f5;https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/;https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/;branches;tags;trunk;true;cc4a8bc3-49ff-40c0-b9b6-f760b69cc066;https://cage.st.informatik.tu-darmstadt.de/dsl/svn;;false;;;0"/>
+<project reference="1.0.1,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/de.stg.tud.tigerseye.ui,de.tud.stg.tigerseye.ui,302941e2e56f00101448e2e1320c10f5;https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/;https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/;branches;tags;trunk;true;cc4a8bc3-49ff-40c0-b9b6-f760b69cc066;https://cage.st.informatik.tu-darmstadt.de/dsl/svn;;false;;;0"/>
+<project reference="1.0.1,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/org.apache.log4j,Log4j with source,302941e2e56f00101448e2e1320c10f5;https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/;https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/;branches;tags;trunk;true;cc4a8bc3-49ff-40c0-b9b6-f760b69cc066;https://cage.st.informatik.tu-darmstadt.de/dsl/svn;;false;;;0"/>
+<project reference="1.0.1,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/Log4jPDEAppender,Log4jPDEAppender,302941e2e56f00101448e2e1320c10f5;https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/;https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/;branches;tags;trunk;true;cc4a8bc3-49ff-40c0-b9b6-f760b69cc066;https://cage.st.informatik.tu-darmstadt.de/dsl/svn;;false;;;0"/>
+<project reference="1.0.1,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/org.apache.commons.collections,org.apache.commons.collections,302941e2e56f00101448e2e1320c10f5;https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/;https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/;branches;tags;trunk;true;cc4a8bc3-49ff-40c0-b9b6-f760b69cc066;https://cage.st.informatik.tu-darmstadt.de/dsl/svn;;false;;;0"/>
+<project reference="1.0.1,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/org.apache.commons.io,org.apache.commons.io,302941e2e56f00101448e2e1320c10f5;https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/;https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/;branches;tags;trunk;true;cc4a8bc3-49ff-40c0-b9b6-f760b69cc066;https://cage.st.informatik.tu-darmstadt.de/dsl/svn;;false;;;0"/>
+<project reference="1.0.1,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/org.apache.commons.lang,org.apache.commons.lang,302941e2e56f00101448e2e1320c10f5;https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/;https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/;branches;tags;trunk;true;cc4a8bc3-49ff-40c0-b9b6-f760b69cc066;https://cage.st.informatik.tu-darmstadt.de/dsl/svn;;false;;;0"/>
+<project reference="1.0.1,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/parlex,parlex,60db29f0df6f001019b98917c7dbf5ee;https://cage.st.informatik.tu-darmstadt.de/dsl/svn/parlex;https://cage.st.informatik.tu-darmstadt.de/dsl/svn/parlex;;;;false;cc4a8bc3-49ff-40c0-b9b6-f760b69cc066;https://cage.st.informatik.tu-darmstadt.de/dsl/svn;;false;;;0"/>
+<project reference="1.0.1,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/slf4j-log4j12,slf4j-log4j12,302941e2e56f00101448e2e1320c10f5;https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/;https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/;branches;tags;trunk;true;cc4a8bc3-49ff-40c0-b9b6-f760b69cc066;https://cage.st.informatik.tu-darmstadt.de/dsl/svn;;false;;;0"/>
 </provider>
 <workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1295896409709_9" label="tigerseye" name="tigerseye">
 <item elementID="=de.tud.stg.tigerseye" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
@@ -21,9 +21,9 @@
 <item elementID="=parlex" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.apache.commons.collections" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.apache.commons.lang" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=Log4j with source" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=slf4j-log4j12" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=Log4jPDEAppender" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.apache.commons.io" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/Log4j with source" type="4"/>
 </workingSets>
 </psf>
