@@ -2,7 +2,7 @@
 <feature
       id="de.tud.stg.tigerseye.feature.tigerseyeide"
       label="TigerseyeFeature"
-      version="0.0.1.2"
+      version="0.0.1.qualifier"
       provider-name="TUD">
 
    <description url="http://www.stg.tu-darmstadt.de/research/popart_project/index.en.jsp">
@@ -24,10 +24,13 @@
       <import plugin="org.eclipse.core.resources" version="3.6.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.debug.core" version="3.6.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jdt" version="3.6.1" match="greaterOrEqual"/>
+      <import plugin="org.apache.commons.lang" version="2.4.0" match="greaterOrEqual"/>
       <import plugin="org.apache.commons.collections" version="3.2.1" match="greaterOrEqual"/>
+      <import plugin="org.apache.commons.io" version="1.4.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jdt.debug"/>
       <import plugin="org.eclipse.jdt.groovy.core" version="2.1.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jdt.core" version="3.6.1" match="greaterOrEqual"/>
+      <import plugin="de.tud.stg.tigerseye" version="0.0.1" match="greaterOrEqual"/>
       <import plugin="org.eclipse.debug.ui" version="3.4.2" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jdt.launching" version="3.5.100" match="greaterOrEqual"/>
       <import plugin="org.codehaus.groovy.eclipse.ui"/>
@@ -38,14 +41,11 @@
       <import plugin="org.eclipse.jdt.ui"/>
       <import plugin="org.eclipse.debug.ui" version="3.6.1" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jdt.debug.ui" version="3.5.0" match="greaterOrEqual"/>
-      <import plugin="org.junit" version="4.8.1" match="greaterOrEqual"/>
       <import plugin="org.apache.log4j" version="1.2.0" match="equivalent"/>
       <import plugin="org.eclipse.osgi"/>
+      <import plugin="org.junit" version="4.8.1" match="greaterOrEqual"/>
       <import feature="org.codehaus.groovy.eclipse.feature" version="2.1.1.xx-20101215-2100-e36"/>
-      <import plugin="parlex" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="org.apache.commons.lang" version="2.4.0" match="greaterOrEqual"/>
-      <import plugin="org.apache.commons.io" version="1.4.0" match="greaterOrEqual"/>
-      <import plugin="de.tud.stg.tigerseye" version="0.0.1" match="greaterOrEqual"/>
+      <import plugin="de.tud.stg.parlex" version="1.0.0" match="greaterOrEqual"/>
    </requires>
 
    <plugin
@@ -63,13 +63,6 @@
 
    <plugin
          id="de.tud.stg.tigerseye.eclipse.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="parlex"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -96,13 +89,6 @@
          unpack="false"/>
 
    <plugin
-         id="Log4jPDEAppender"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.apache.log4j"
          download-size="0"
          install-size="0"
@@ -114,5 +100,19 @@
          download-size="0"
          install-size="0"
          version="0.0.0"/>
+
+   <plugin
+         id="de.tud.stg.eclipse.log4jpdeappender"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="de.tud.stg.parlex"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
 </feature>
