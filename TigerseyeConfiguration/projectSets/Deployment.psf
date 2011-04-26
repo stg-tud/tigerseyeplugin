@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <psf version="2.0">
-<provider id="org.tigris.subversion.subclipse.core.svnnature">
-<project reference="0.9.3,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/TigerseyeFeature,TigerseyeFeature"/>
-<project reference="0.9.3,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/TigerseyeUpdateSite,TigerseyeUpdateSite"/>
+<provider id="org.eclipse.team.svn.core.svnnature">
+<project reference="1.0.1,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/de.tud.stg.tigerseye.feature.exampleDSLs,de.tud.stg.tigerseye.feature.exampleDSLs,302941e2e56f00101448e2e1320c10f5;https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/;https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/;branches;tags;trunk;true;cc4a8bc3-49ff-40c0-b9b6-f760b69cc066;https://cage.st.informatik.tu-darmstadt.de/dsl/svn;;false;;;0"/>
+<project reference="1.0.1,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/de.tud.stg.tigerseye.feature.tigerseyeide,de.tud.stg.tigerseye.feature.tigerseyeide,302941e2e56f00101448e2e1320c10f5;https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/;https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/;branches;tags;trunk;true;cc4a8bc3-49ff-40c0-b9b6-f760b69cc066;https://cage.st.informatik.tu-darmstadt.de/dsl/svn;;false;;;0"/>
+<project reference="1.0.1,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/TigerseyeUpdateSite,TigerseyeUpdateSite,101067470c700010138cd5110c947ae0;https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/TigerseyeUpdateSite;https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/TigerseyeUpdateSite;;;;false;cc4a8bc3-49ff-40c0-b9b6-f760b69cc066;https://cage.st.informatik.tu-darmstadt.de/dsl/svn;;false;;;0"/>
 </provider>
 <workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1303214331356_6" label="deployment" name="deployment">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/de.tud.stg.tigerseye.feature.exampleDSLs" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/TigerseyeUpdateSite" type="4"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/TigerseyeFeature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/de.tud.stg.tigerseye.feature.tigerseyeide" type="4"/>
 </workingSets>
 </psf>
