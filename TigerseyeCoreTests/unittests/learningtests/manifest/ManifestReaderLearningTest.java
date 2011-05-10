@@ -4,11 +4,26 @@ import static org.junit.Assert.*;
 
 import static org.hamcrest.CoreMatchers.*;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Pack200;
+import java.util.jar.Pack200.Packer;
+import java.util.jar.Pack200.Unpacker;
+import java.util.zip.ZipEntry;
 
 import javax.annotation.CheckForNull;
 
@@ -25,7 +40,7 @@ import org.mockito.Mockito;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 
-public class ManifestReader {
+public class ManifestReaderLearningTest {
 
 	
 	private Manifest manifest;
@@ -43,7 +58,7 @@ public class ManifestReader {
 	}
 	
 	private InputStream getManifest(AManifest aman){
-		return ManifestReader.class.getResourceAsStream("resources/"+aman.name);
+		return ManifestReaderLearningTest.class.getResourceAsStream("resources/"+aman.name);
 	}
 	
 	@Before
@@ -86,9 +101,18 @@ public class ManifestReader {
 		assertNotNull(value);
 		ManifestElement[] elements = manifest.getElements(Constants.BUNDLE_CLASSPATH);
 		assertTrue(elements.length == 2);
+		List<String> results = new ArrayList<String>();
 		for (ManifestElement mel : elements) {
-			System.out.println("manifestel " + mel + " \totherinfo:" + ToStringBuilder.reflectionToString(mel));
+			printME(mel);
+			results.add(mel.getValue());
 		}
+		
+		assertTrue(results.contains("."));
+		assertTrue(results.contains("lib/javalogo.jar"));
+	}
+
+	private void printME(ManifestElement mel) {
+		System.out.println(ToStringBuilder.reflectionToString(mel));
 	}
 	
 	
@@ -101,7 +125,7 @@ public class ManifestReader {
 		}
 		
 		/**
-		 * @see org.eclipse.osgi.launch.Equinox
+		 * @see org.eclipse.osgi.launch.Equinox#getValue(Map headers, String key)
 		 */
 		public @CheckForNull String getValue(String key) {
 			if(headers == null)
@@ -141,5 +165,54 @@ public class ManifestReader {
 			return elements;
 		}
 	}
+	
+	@Test
+	public void testjar() throws Exception {
+		
+		URI somejar = ManifestReaderLearningTest.class.getResource("mockito-all-1.8.5.jar").toURI();
+		JarFile jarFile = new JarFile(new File(somejar));
+		Enumeration<JarEntry> entries = jarFile.entries();
+//		while (entries.hasMoreElements()) {
+//			JarEntry jarEntry = (JarEntry) entries.nextElement();			
+//			System.out.println(jarEntry);
+//		}
+		
+//		String manifest = "META-INF/MANIFEST.MF";
+//		printentry(jarFile, manifest);
+		
+		Enumeration<URL> systemResources = ClassLoader.getSystemClassLoader().getResources("*");
+		while (systemResources.hasMoreElements()) {
+			URL url = (URL) systemResources.nextElement();
+			System.out.println(url);
+			
+		}
+	}
+
+	private void printentry(JarFile jarFile, String manifest)
+			throws IOException {
+		JarEntry entry = (JarEntry) jarFile.getEntry(manifest);
+		InputStream inputStream = jarFile.getInputStream(entry);
+		String string = IOUtils.toString(inputStream);
+		System.out.println(string);
+	}
+
+//	private String unpack(File jararch) {
+//	  
+//	    try {	        
+//	        FileOutputStream fostream = new FileOutputStream("/tmp/test.jar");
+//	        JarOutputStream jostream = new JarOutputStream(fostream);
+//	        Unpacker unpacker = Pack200.newUnpacker();
+//	        // Call the unpacker
+//	        unpacker.unpack(jararch, jostream);
+//	        // Must explicitly close the output.
+//	        
+//	        jostream.
+//	        
+//	        jostream.close();
+//	    } catch (IOException ioe) {
+//	        ioe.printStackTrace();
+//	    }
+//
+//	}
 	
 }

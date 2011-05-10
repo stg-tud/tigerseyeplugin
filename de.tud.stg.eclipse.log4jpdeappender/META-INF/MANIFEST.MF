@@ -9,4 +9,3 @@ Import-Package: org.apache.log4j,
  org.eclipse.core.runtime,
  org.osgi.framework
 Eclipse-RegisterBuddy: org.apache.log4j
-Bundle-ActivationPolicy: lazy

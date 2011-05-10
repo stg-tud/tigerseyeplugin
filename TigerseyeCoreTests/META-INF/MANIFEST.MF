@@ -10,4 +10,6 @@ Require-Bundle: org.junit4;bundle-version="4.8.1",
 Bundle-ClassPath: libs/mockito-all-1.8.5.jar,
  libs/powermock-mockito-1.4.6-full.jar,
  libs/stateMachineDSL.jar,
- .
+ .,
+ libs/hamcrest-all-1.1.jar
+

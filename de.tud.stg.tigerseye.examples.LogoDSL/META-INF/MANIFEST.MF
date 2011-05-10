@@ -3,11 +3,9 @@ Bundle-ManifestVersion: 2
 Bundle-Name: LogoDSL Plug-in
 Bundle-SymbolicName: de.tud.stg.tigerseye.examples.LogoDSL;singleton:=true
 Bundle-Version: 0.0.3.qualifier
-Export-Package: de.tud.stg.tigerseye.examples.logo,
- org.javalogo
-Bundle-ActivationPolicy: lazy
+Export-Package: de.tud.stg.tigerseye.examples.logo;uses:="groovy.lang,de.tud.stg.popart.dslsupport",
+ org.javalogo;uses:="javax.swing"
 Require-Bundle: de.tud.stg.tigerseye,
  de.tud.stg.tigerseye.eclipse.core
-Bundle-ClassPath: .,
- lib/javalogo.jar
-Import-Package: de.tud.stg.popart.dslsupport
+Bundle-ClassPath: lib/javalogo.jar,
+ .

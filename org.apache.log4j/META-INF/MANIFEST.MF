@@ -9,3 +9,4 @@ Export-Package: org.apache.log4j,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: log4j-1.2.16.jar
 Eclipse-BuddyPolicy: registered
+Bundle-ActivationPolicy: lazy

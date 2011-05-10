@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,6 +55,9 @@ public class TigerseyeDSLDefinitionsCPContainer implements IClasspathContainer {
 		.getLanguageProvider().getDSLDefinitions();
 	Set<String> iteratedContributor = new HashSet<String>();
 	for (DSLDefinition dslDefinition : dslDefinitions) {
+	    /*
+	     * don't add same DSL from different contributors twice
+	     */
 	    if (dslDefinition.isActive()
 		    && !iteratedContributor.contains(dslDefinition
 			    .getContributorSymbolicName())) {
@@ -63,8 +67,6 @@ public class TigerseyeDSLDefinitionsCPContainer implements IClasspathContainer {
 		    logger.error("Failed to add dsl  {} to classpath",
 			    dslDefinition, e);
 		}
-		iteratedContributor.add(dslDefinition
-			.getContributorSymbolicName());
 	    }
 	}
 
@@ -77,15 +79,36 @@ public class TigerseyeDSLDefinitionsCPContainer implements IClasspathContainer {
 		.getContributorSymbolicName();
 	Bundle bundle = Platform.getBundle(contributorSymbolicName);
 	File bundleFile = FileLocator.getBundleFile(bundle);
+
+	List<File> cpEntriesToAdd = null;
 	File buildProps = new File(bundleFile, "build.properties");
+	if (buildProps.exists()) {
+	    cpEntriesToAdd = getClasspathEntriesForBundleProperties(bundleFile,
+		    buildProps);
+	} else {
+	    DSLClasspathResolver resolver = new DSLClasspathResolver();
+	    File[] resolveCPEntriesForBundle = resolver
+		    .resolveCPEntriesForBundle(bundle);
+	    cpEntriesToAdd = Arrays.asList(resolveCPEntriesForBundle);
+	}
+
+	for (File cpEntry : cpEntriesToAdd) {
+	    addFileAsCPEntryIfExistant(cpEntry);
+	}
+    }
+
+    private List<File> getClasspathEntriesForBundleProperties(File bundleFile,
+	    File buildProps) {
 	Properties properties = new Properties();
 	FileInputStream fileInputStream = null;
 	try {
 	    fileInputStream = new FileInputStream(buildProps);
 	    properties.load(fileInputStream);
 	} catch (Exception e) {
+	    logger.trace("failed to get inputstream for {}", buildProps, e);
 	    IOUtils.closeQuietly(fileInputStream);
 	}
+
 	List<String> dirFiles = new ArrayList<String>();
 	/*
 	 * usually says nothing about classpath
@@ -103,13 +126,11 @@ public class TigerseyeDSLDefinitionsCPContainer implements IClasspathContainer {
 		dirFiles.add(string);
 	    }
 	}
-	for (File jar : jars) {
-	    addFileAsCPEntryIfExistant(jar);
-	}
+	List<File> resultCPEntries = new ArrayList<File>();
+	resultCPEntries.addAll(jars);
 	List<File> classFolders = getClassFolders(dirFiles, bundleFile);
-	for (File cpFolderFile : classFolders) {
-	    addFileAsCPEntryIfExistant(cpFolderFile);
-	}
+	resultCPEntries.addAll(classFolders);
+	return resultCPEntries;
     }
 
     private List<File> getClassFolders(List<String> cpDirFiles, File bundleFile) {
@@ -134,8 +155,8 @@ public class TigerseyeDSLDefinitionsCPContainer implements IClasspathContainer {
 	// if (!hasStdBin) {
 	boolean hasStdBin = containsBinFolder(bundleFile);
 	if (hasStdBin) {
-		cpDirFiles.add(defaultBinName);
-	// }
+	    cpDirFiles.add(defaultBinName);
+	    // }
 	} else {
 	    cpDirFiles.add(projectRootDir);
 	}

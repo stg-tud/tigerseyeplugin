@@ -31,12 +31,6 @@
          version="0.0.0"/>
 
    <plugin
-         id="de.tud.stg.tigerseye.examples.LogoDSL"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
          id="de.tud.stg.tigerseye.examples.SetDSL"
          download-size="0"
          install-size="0"
@@ -44,6 +38,12 @@
 
    <plugin
          id="de.tud.stg.tigerseye.examples.SimpleSQLDSL"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="de.tud.stg.tigerseye.examples.LogoDSL"
          download-size="0"
          install-size="0"
          version="0.0.0"/>

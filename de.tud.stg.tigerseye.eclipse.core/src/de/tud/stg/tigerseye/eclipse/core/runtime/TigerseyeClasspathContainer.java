@@ -54,7 +54,7 @@ public class TigerseyeClasspathContainer implements IClasspathContainer {
 	 * FIXME the TigerseyeDSLDefinitionsCPContainer should be added as
 	 * separate container, since it is possible, e.g. when designing
 	 * languages that one only needs the runtime support. Found no working
-	 * solution Hitherto, therefore I just add DSL definition libraries to
+	 * solution hitherto, therefore I just add DSL definition libraries to
 	 * the main runtime Tigerseye class path container.
 	 */
 	IClasspathEntry[] classpathEntries = new TigerseyeDSLDefinitionsCPContainer(project).getClasspathEntries();
