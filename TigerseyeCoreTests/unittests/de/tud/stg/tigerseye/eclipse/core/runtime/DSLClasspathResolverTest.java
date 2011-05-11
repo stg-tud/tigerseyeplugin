@@ -1,7 +1,7 @@
 package de.tud.stg.tigerseye.eclipse.core.runtime;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.Matchers.endsWith;
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -10,7 +10,7 @@ import static org.junit.matchers.JUnitMatchers.hasItems;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
-import java.net.URI;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
@@ -31,6 +31,8 @@ import org.mockito.MockitoAnnotations;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 
+import utilities.TestUtilities;
+
 public class DSLClasspathResolverTest {
 
 	@Mock(answer = Answers.RETURNS_SMART_NULLS)
@@ -39,25 +41,6 @@ public class DSLClasspathResolverTest {
 	private FileLocatorWrapper fileLocator;
 
 	private DSLClasspathResolver resolver;
-
-	enum Resources {
-		defaultbundleclasspath("projectwithdefaultbundleclasspath"), //
-		somebundleclasspath("projectwithspecialbundleclasspath"), //
-		unknownformatfile("filewithunknownformat.undf"), //
-		jarfile("jartestbundle.jar");
-
-		public final String NAME;
-
-		private Resources(String name) {
-			this.NAME = name;
-		}
-
-		public File getFile() throws URISyntaxException {
-			URI resource = DSLClasspathResolverTest.class.getResource(
-					"resources/" + NAME).toURI();
-			return new File(resource);
-		}
-	}
 
 	@Before
 	public void setUp() throws Exception {
@@ -80,6 +63,7 @@ public class DSLClasspathResolverTest {
 		// tbh.getBundleData().getManifest().get(Constants.REGISTERED_POLICY));
 		// System.out.println(allContributions);
 
+		@SuppressWarnings("unchecked")
 		Dictionary<String, String> headers = (Dictionary<String, String>) tb
 				.getHeaders();
 		String tigerCP = headers.get(Constants.BUNDLE_CLASSPATH);
@@ -120,7 +104,7 @@ public class DSLClasspathResolverTest {
 		testData.put(Constants.BUNDLE_CLASSPATH, cpEntries);
 		when(bundleMock.getHeaders()).thenReturn(testData);
 		Resources res = Resources.somebundleclasspath;
-		mockResolverFor(res);
+		mockResolverForBundleResource(res);
 		
 		File[] actualEntries = executeResolveWithBundleMock();
 		
@@ -130,19 +114,16 @@ public class DSLClasspathResolverTest {
 
 	private File[] getExpectedFilesFor(String cpEntries, Resources res)
 			throws URISyntaxException {
-		String[] expected = cpEntries.split(",");
-		File[] expectedFiles = new File[expected.length];
-		for (int i = 0 ; i < expected.length; i ++) {
-			expectedFiles[i] = new File(res.getFile(), expected[i]);
-		}
-		return expectedFiles;
+		File resFile = res.getFile();
+		String[] expected = cpEntries.split(",");		
+		return TestUtilities.getFilesRelativeToRoot(resFile, expected);
 	}
 
 	private File[] executeResolveWithBundleMock() {
 		return resolver.resolveCPEntriesForBundle(bundleMock);
 	}
 
-	private void mockResolverFor(Resources resource) throws Exception {
+	private void mockResolverForBundleResource(Resources resource) throws Exception {
 		when(fileLocator.getBundleFile(Mockito.any(Bundle.class))).thenReturn(
 				resource.getFile());
 		resolver = new DSLClasspathResolver(fileLocator);
@@ -155,7 +136,7 @@ public class DSLClasspathResolverTest {
 				new Hashtable<String, String>());
 
 		Resources res = Resources.defaultbundleclasspath;
-		mockResolverFor(res);
+		mockResolverForBundleResource(res);
 		File[] actualEntries = executeResolveWithBundleMock();
 
 		assertThat(Arrays.asList(actualEntries), hasItems(getExpectedFilesFor(".", res)));
@@ -165,20 +146,30 @@ public class DSLClasspathResolverTest {
 	@Test
 	public void testGetFileLocationIfJar() throws Exception {
 		Resources jarfile = Resources.jarfile;
-		mockResolverFor(jarfile);
+		mockResolverForBundleResource(jarfile);
 
 		File[] resolveCPEntriesForBundle = executeResolveWithBundleMock();
 		assertEquals("expected only jar file to be a classpath entry", 1,
 				resolveCPEntriesForBundle.length);
 		assertThat(resolveCPEntriesForBundle[0], equalTo(jarfile.getFile()));
 	}
-
+	
 	@Test
 	public void testGetFileLocationForUnknownResource() throws Exception {
-		mockResolverFor(Resources.unknownformatfile);
+		mockResolverForBundleResource(Resources.unknownformatfile);
 
 		File[] resolveCPEntriesForBundle = executeResolveWithBundleMock();
 		assertNull(resolveCPEntriesForBundle);
+	}
+	
+	@Test
+	public void testBundleNotAccessible() throws Exception {
+		when(fileLocator.getBundleFile(Mockito.any(Bundle.class))).thenThrow(new IOException());
+		resolver = new DSLClasspathResolver(fileLocator);		
+		
+		File[] executeResolveWithBundleMock = executeResolveWithBundleMock();
+		
+		assertNull("exepected result to be null since file could not be returned",executeResolveWithBundleMock);
 	}
 
 	private void printVerbose(Object location) {

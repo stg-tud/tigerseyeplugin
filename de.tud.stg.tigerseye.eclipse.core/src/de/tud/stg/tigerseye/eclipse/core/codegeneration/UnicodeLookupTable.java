@@ -1,7 +1,4 @@
 package de.tud.stg.tigerseye.eclipse.core.codegeneration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -10,6 +7,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.tud.stg.tigerseye.eclipse.TigerseyeLibraryProvider;
 
@@ -38,9 +38,16 @@ private static final Logger logger = LoggerFactory.getLogger(UnicodeLookupTable.
 				s.useDelimiter("\n");
 
 				while (s.hasNextLine()) {
-					String[] line = new String[7];
 
-					line = s.next().split(";");
+		    /*
+		     * TODO it seems that s.next.split(";") should return a 7
+		     * element array. Instead of an assertion after the split
+		     * call line is initialized with an seven element array
+		     * which is overwritten with the following assignment.
+		     */
+		    // String[] line = new String[7];
+
+					String[] line = s.next().split(";");
 
 					try {
 						int i = Integer.decode("0x" + line[0]);
@@ -84,12 +91,12 @@ private static final Logger logger = LoggerFactory.getLogger(UnicodeLookupTable.
 		UnicodeLookupTable uclt = null;
 		try {
 			uclt = new UnicodeLookupTable(new FileInputStream("MathClassEx-11.txt"));
+	    logger.info(uclt.transform('\"'));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			logger.warn("Generated log statement",e);
 		}
 
-		logger.info(uclt.transform('\"'));
 	}
 
 	public static UnicodeLookupTable getDefaultInstance() {

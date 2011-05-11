@@ -1,7 +1,4 @@
 package de.tud.stg.tigerseye.eclipse.core.codegeneration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
@@ -14,12 +11,14 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.tud.stg.parlex.core.Category;
 import de.tud.stg.parlex.core.Grammar;
@@ -127,6 +126,9 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 			if (annotation != null) {
 				// check for additionals rules
 				Class<? extends TypeHandler>[] typeRules = annotation.typeRules();
+
+		// TODO check cyclic Dependency between Grammar and
+		// HandlingDispatcher
 				this.typeHandler.addAdditionalTypeRules(typeRules);
 
 				// check for host language rules

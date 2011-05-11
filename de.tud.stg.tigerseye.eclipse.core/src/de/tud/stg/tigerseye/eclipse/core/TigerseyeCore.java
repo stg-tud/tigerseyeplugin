@@ -3,13 +3,14 @@ package de.tud.stg.tigerseye.eclipse.core;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
 
-import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Transformation;
 import de.tud.stg.tigerseye.eclipse.core.internal.LanguageProviderImpl;
 import de.tud.stg.tigerseye.eclipse.core.internal.TransformationProviderImpl;
 
 /**
  * Provides access to this plug-ins preference store. Additionally it provides
- * access to registered {@link DSLDefinition}s and {@link Transformation}s.
+ * access to registered {@link DSLDefinition}s and
+ * {@link de.tud.stg.tigerseye.eclipse.core.builder.transformers.Transformation}
+ * s.
  * 
  * @author Leo Roos
  * 
@@ -40,7 +41,8 @@ public class TigerseyeCore {
      * provider.
      * 
      * @return {@link ITransformationProvider} for currently configured
-     *         {@link Transformation}s
+     *         {@link de.tud.stg.tigerseye.eclipse.core.builder.transformers.Transformation}
+     *         s
      */
     public static ITransformationProvider getTransformationProvider() {
 	return new TransformationProviderImpl(getPreferences(), Platform

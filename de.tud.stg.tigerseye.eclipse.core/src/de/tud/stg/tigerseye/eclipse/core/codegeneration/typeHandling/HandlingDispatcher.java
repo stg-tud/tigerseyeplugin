@@ -1,12 +1,8 @@
 package de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import groovy.lang.Closure;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -15,8 +11,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.tud.stg.parlex.core.Category;
-import de.tud.stg.parlex.core.Grammar;
 import de.tud.stg.parlex.core.ICategory;
 import de.tud.stg.parlex.core.IGrammar;
 import de.tud.stg.parlex.core.IRule;
@@ -27,6 +25,7 @@ public class HandlingDispatcher {
 private static final Logger logger = LoggerFactory.getLogger(HandlingDispatcher.class);
 
 
+// TODO check cyclic Dependency between Grammar and HandlingDispatcher
 	private final IGrammar<String> grammar;
 	private final Map<Class<?>, ClassTypeHandler> classHandlers = new HashMap<Class<?>, ClassTypeHandler>();
 
@@ -47,7 +46,7 @@ private static final Logger logger = LoggerFactory.getLogger(HandlingDispatcher.
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
 	public HandlingDispatcher(){
 		this(new IGrammar<String>(){
 
@@ -132,12 +131,13 @@ private static final Logger logger = LoggerFactory.getLogger(HandlingDispatcher.
 	}
 
 	private ICategory<String> handleGenericArrayType(Type type, Map<String, String> parameterOptions) {
-		GenericArrayType gat = (GenericArrayType) type;
+	// GenericArrayType gat = (GenericArrayType) type;
 
 		Type componentType = ((GenericArrayType) type).getGenericComponentType();
 
 		if (componentType instanceof TypeVariable<?>) {
-			TypeVariable<?> t = (TypeVariable<?>) componentType;
+	    // TODO why is t not used
+	    // TypeVariable<?> t = (TypeVariable<?>) componentType;
 			return this.handleClass(Object[].class, parameterOptions);
 		} else if (componentType instanceof ParameterizedType) {
 			ParameterizedType parameterizedType = (ParameterizedType) componentType;
@@ -182,12 +182,14 @@ private static final Logger logger = LoggerFactory.getLogger(HandlingDispatcher.
 	}
 
 	private ICategory<String> handleObjectArray(Class<?> clazz, Map<String, String> parameterOptions) {
-		ICategory<String> objects = this.getObjectHierarchy(this.grammar, clazz);
+		ICategory<String> objects = HandlingDispatcherHelper.getObjectHierarchy(this.grammar, clazz);
 
 		Class<?> componentType = clazz.getComponentType();
 		ICategory<String> componentCategory = this.handle(componentType, parameterOptions);
 
-		ICategory<String> object = this.getObjectHierarchy(this.grammar, clazz.getComponentType());
+	// TODO why is object variable not used
+	// ICategory<String> object = this.getObjectHierarchy(this.grammar,
+	// clazz.getComponentType());
 
 		//FIXME GrammarBuilder has obviously some methods used by different classes independently, he should be decomposed in independent modules 
 		GrammarBuilder gb = new GrammarBuilder();
@@ -214,71 +216,13 @@ private static final Logger logger = LoggerFactory.getLogger(HandlingDispatcher.
 	}
 
 	private ICategory<String> handleObject(Class<?> clazz) {
-		ICategory<String> object = getObjectHierarchy(this.grammar, clazz);
+		ICategory<String> object = HandlingDispatcherHelper.getObjectHierarchy(this.grammar, clazz);
 
 		return object;
 	}
 
-	ICategory<String> getExplicitObjectHierarchy(IGrammar<String> grammar, Class<?> clazz) {
-		if (clazz == null) {
-			return null;
-		}
 
-		Category nodeCategory = new Category(clazz.getSimpleName(), false);
-
-		grammar.addCategories(nodeCategory);
-
-		if (clazz == Object.class) {
-			return nodeCategory;
-		}
-
-		ICategory<String> superCategory = getExplicitObjectHierarchy(grammar, clazz.getSuperclass());
-		if (superCategory != null) {
-			grammar.addRule(new Rule(superCategory, nodeCategory));
-		}
-
-		for (Class<?> c : clazz.getInterfaces()) {
-			ICategory<String> interfaceCategory = getObjectHierarchy(grammar, c);
-			if (interfaceCategory != null) {
-				grammar.addRule(new Rule(interfaceCategory, nodeCategory));
-			}
-		}
-
-		return nodeCategory;
-	}
-
-	 ICategory<String> getObjectHierarchy(IGrammar<String> grammar, Class<?> clazz) {
-		// if (clazz == null) {
-		// return null;
-		// }
-		//
-		// Category nodeCategory = new Category(clazz.getSimpleName(), false);
-		//
-		// grammar.addCategories(nodeCategory);
-		//
-		// if (clazz == Object.class) {
-		// return nodeCategory;
-		// }
-		//
-		// ICategory<String> superCategory = getObjectHierarchy(grammar, clazz.getSuperclass());
-		// if (superCategory != null) {
-		// grammar.addRule(new Rule(superCategory, nodeCategory));
-		// }
-		//
-		// for (Class<?> c : clazz.getInterfaces()) {
-		// ICategory<String> interfaceCategory = getObjectHierarchy(grammar, c);
-		// if (interfaceCategory != null) {
-		// grammar.addRule(new Rule(interfaceCategory, nodeCategory));
-		// }
-		// }
-		Category objectCategory = new Category("Object", false);
-		Category nodeCategory = new Category(clazz.getSimpleName(), false);
-		grammar.addRule(new Rule(objectCategory, nodeCategory));
-
-		return nodeCategory;
-	}
-
-	public void handleDefaults(Map<String, String> methodOptions) {
+    public void handleDefaults(Map<String, String> methodOptions) {
 		for (Entry<Class<?>, ClassTypeHandler> e : classHandlers.entrySet()) {
 			e.getValue().handle(this.grammar, e.getKey(), methodOptions);
 		}

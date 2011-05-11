@@ -3,7 +3,6 @@ package de.tud.stg.popart.builder.utils;
 import groovy.lang.Closure;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -92,11 +91,4 @@ public class DSLInvoker {
 		return list;
 	}
 
-	public static void main(String[] args) {
-		List<Integer>[] asArray = asArray(new ArrayList<Integer>(), new ArrayList<Integer>(), new ArrayList<Integer>());
-
-		List<ArrayList<Integer>> asList = Arrays.asList(new ArrayList<Integer>(), new ArrayList<Integer>(),
-				new ArrayList<Integer>());
-
-	}
 }

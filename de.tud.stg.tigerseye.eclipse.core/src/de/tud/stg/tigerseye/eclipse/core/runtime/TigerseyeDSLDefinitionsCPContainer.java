@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,7 +14,6 @@ import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
@@ -78,19 +78,24 @@ public class TigerseyeDSLDefinitionsCPContainer implements IClasspathContainer {
 	String contributorSymbolicName = dslDefinition
 		.getContributorSymbolicName();
 	Bundle bundle = Platform.getBundle(contributorSymbolicName);
-	File bundleFile = FileLocator.getBundleFile(bundle);
+	// File bundleFile = new FileLocatorWrapper().getBundleFile(bundle);
 
 	List<File> cpEntriesToAdd = null;
-	File buildProps = new File(bundleFile, "build.properties");
-	if (buildProps.exists()) {
-	    cpEntriesToAdd = getClasspathEntriesForBundleProperties(bundleFile,
-		    buildProps);
-	} else {
+	// File buildProps = new File(bundleFile, "build.properties");
+	// if (buildProps.exists()) {
+	// cpEntriesToAdd = getClasspathEntriesForBundleProperties(bundleFile,
+	// buildProps);
+	// } else {
+	// if (true)
+	// throw new Error("unexpected");
 	    DSLClasspathResolver resolver = new DSLClasspathResolver();
 	    File[] resolveCPEntriesForBundle = resolver
 		    .resolveCPEntriesForBundle(bundle);
-	    cpEntriesToAdd = Arrays.asList(resolveCPEntriesForBundle);
-	}
+	    if (resolveCPEntriesForBundle == null)
+		cpEntriesToAdd = Collections.emptyList();
+	    else
+		cpEntriesToAdd = Arrays.asList(resolveCPEntriesForBundle);
+	// }
 
 	for (File cpEntry : cpEntriesToAdd) {
 	    addFileAsCPEntryIfExistant(cpEntry);

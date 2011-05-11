@@ -11,7 +11,7 @@ public class BooleanHandler implements ClassTypeHandler {
 
 	@Override
 	public ICategory<String> handle(IGrammar<String> grammar, Class<?> clazz, Map<String, String> parameterOptions) {
-		ICategory<String> booleanCategory = new HandlingDispatcher().getObjectHierarchy(grammar, Boolean.class);
+		ICategory<String> booleanCategory = HandlingDispatcherHelper.getObjectHierarchy(grammar, Boolean.class);
 
 		Category trueCategory = new Category("true", true);
 		Category falseCategory = new Category("false", true);

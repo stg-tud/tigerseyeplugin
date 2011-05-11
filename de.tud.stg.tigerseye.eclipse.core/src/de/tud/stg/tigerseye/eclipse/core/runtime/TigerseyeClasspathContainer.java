@@ -18,6 +18,7 @@ import de.tud.stg.tigerseye.eclipse.TigerseyeLibraryProvider;
 
 public class TigerseyeClasspathContainer implements IClasspathContainer {
 
+
     private final Set<IClasspathEntry> cpEntries = new HashSet<IClasspathEntry>();
 
     private final IProject project;

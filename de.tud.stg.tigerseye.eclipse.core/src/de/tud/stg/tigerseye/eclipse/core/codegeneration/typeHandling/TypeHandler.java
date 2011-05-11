@@ -19,7 +19,7 @@ public abstract class TypeHandler implements ClassTypeHandler {
 	}
 
 	public void setGrammar(IGrammar<String> grammar) {
-		this.category = new HandlingDispatcher().getExplicitObjectHierarchy(grammar, this.getMainType());
+		this.category = HandlingDispatcherHelper.getExplicitObjectHierarchy(grammar, this.getMainType());
 	}
 
 	@Override
