@@ -4,6 +4,7 @@ import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartKeyword;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartLiteralKeyword;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeyword;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartStructuredElementKeyword;
+import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.generators.IPopartKeywordCodeGenerator;
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.generators.PopartLiteralKeywordCodeGenerator;
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.generators.PopartOperationKeywordCodeGenerator;
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.generators.PopartStructuredElementKeywordCodeGenerator;

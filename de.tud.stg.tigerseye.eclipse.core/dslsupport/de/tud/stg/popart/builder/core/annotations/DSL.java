@@ -6,14 +6,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.HostLanguageGrammar;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.JavaSpecificGrammar;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.HostLanguageGrammar;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.JavaSpecificGrammar;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.TypeHandler;
 
 /**
- * An Annotation to configure a DSL. Elements that have {@code [unassigned]} as their default values are defined in {@link
- * GrammarBuilder}
+ * An Annotation to configure a DSL. Elements that have {@code [unassigned]} as
+ * their default values are defined in
+ * {@link de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder}
  */
 @Inherited
 @Target({ ElementType.TYPE, ElementType.METHOD, ElementType.PARAMETER })

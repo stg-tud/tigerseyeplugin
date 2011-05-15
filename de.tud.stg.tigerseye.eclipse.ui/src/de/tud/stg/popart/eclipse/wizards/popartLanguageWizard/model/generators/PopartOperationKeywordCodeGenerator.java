@@ -9,7 +9,6 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeyword;
-import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.IPopartKeywordCodeGenerator;
 
 /**
  * A code generator for PopartOperationKeywords.
@@ -34,7 +33,7 @@ public class PopartOperationKeywordCodeGenerator implements IPopartKeywordCodeGe
 	}
 
 	/**
-	 * @see de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.IPopartKeywordCodeGenerator
+	 * @see de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.generators.IPopartKeywordCodeGenerator
 	 */
 	public void create(IJavaProject project, IPackageFragment packagefragment,
 			IPackageFragmentRoot root, ArtifactCodeGenerator codeGenerator) {

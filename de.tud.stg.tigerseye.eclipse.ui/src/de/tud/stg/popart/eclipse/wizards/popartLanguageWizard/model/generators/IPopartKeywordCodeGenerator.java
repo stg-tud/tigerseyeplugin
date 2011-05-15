@@ -1,4 +1,4 @@
-package de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model;
+package de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.generators;
 
 import legacy.org.codehaus.groovy.eclipse.ui.ArtifactCodeGenerator;
 

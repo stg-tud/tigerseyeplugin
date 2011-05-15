@@ -1,4 +1,4 @@
-package de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling;
+package de.tud.stg.tigerseye.eclipse.core.codegeneration;
 import groovy.lang.Closure;
 
 import java.lang.reflect.Array;
@@ -19,7 +19,15 @@ import de.tud.stg.parlex.core.ICategory;
 import de.tud.stg.parlex.core.IGrammar;
 import de.tud.stg.parlex.core.IRule;
 import de.tud.stg.parlex.core.Rule;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.BooleanHandler;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ClassHandler;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ClassTypeHandler;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ClosureHandler;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.NumberHandler;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.StringHandler;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.TypeHandler;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.GrammarBuilderHelper;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.HandlingDispatcherHelper;
 
 public class HandlingDispatcher {
 private static final Logger logger = LoggerFactory.getLogger(HandlingDispatcher.class);
@@ -196,13 +204,13 @@ private static final Logger logger = LoggerFactory.getLogger(HandlingDispatcher.
 		
 		Rule r1 = null;
 		if (parameterOptions.get("arrayDelimiter").matches("\\s+")) {
-			r1 = new Rule(objects, objects, gb.getWhitespaceCategory(this.grammar, false), objects);
+			r1 = new Rule(objects, objects, GrammarBuilderHelper.getWhitespaceCategory(this.grammar, false), objects);
 		} else if (parameterOptions.get("arrayDelimiter").isEmpty()) {
 			r1 = new Rule(objects, objects, objects);
 		} else {
 			Category ad = new Category(parameterOptions.get("arrayDelimiter"), true);
 			this.grammar.addCategory(ad);
-			ICategory<String> WS = gb.getWhitespaceCategory(this.grammar, true);
+			ICategory<String> WS = GrammarBuilderHelper.getWhitespaceCategory(this.grammar, true);
 			r1 = new Rule(objects, objects, WS, ad, WS, objects);
 		}
 

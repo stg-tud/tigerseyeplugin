@@ -19,9 +19,9 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.Image;
 
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartKeyword;
-import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.IPopartKeywordCodeGenerator;
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.PopartKeywordCodeGeneratorFactory;
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.PopartLanguageModel;
+import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.generators.IPopartKeywordCodeGenerator;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCoreActivator;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeImage;
 import de.tud.stg.tigerseye.ui.TigerseyeUIActivator;

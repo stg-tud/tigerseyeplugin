@@ -9,13 +9,9 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 
-import de.tud.stg.tigerseye.eclipse.core.TigerseyeCoreActivator;
 
 //FIXME renaming, refactoring, tests
 public class TigerseyeNature implements IProjectNature {
-
-    public static final String TIGERSEYE_NATURE_ID = TigerseyeCoreActivator.PLUGIN_ID
-	    + ".tigerseyeNature";
 
     private IProject project;
 

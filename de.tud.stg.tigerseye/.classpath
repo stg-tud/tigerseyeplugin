@@ -5,9 +5,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="lib" path="libs/aterm-java.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jjtraveler.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/shared-objects.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jsr305.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/popart.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/popartAnnotations.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/shared-objects.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

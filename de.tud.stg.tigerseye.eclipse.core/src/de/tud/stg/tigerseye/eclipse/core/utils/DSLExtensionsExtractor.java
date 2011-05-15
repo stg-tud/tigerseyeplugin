@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileTypeHelper;
 
 /**
  * Extracts all extensions declaring a corresponding {@link DSLDefinition} for
@@ -41,7 +42,7 @@ public class DSLExtensionsExtractor {
 		    + " is not a valid dsl file name.");
 	    return new String[0];
 	}
-	FileType typeForSrcResource = FileType
+	FileType typeForSrcResource = FileTypeHelper
 		.getTypeForSrcResource(resourceSrcName);
 	if (typeForSrcResource == null) {
 	    return new String[0];

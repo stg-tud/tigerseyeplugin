@@ -2,7 +2,6 @@ package de.tud.stg.tigerseye.eclipse.core;
 
 import javax.annotation.Nonnull;
 
-import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntimeException;
 
@@ -181,10 +180,6 @@ public interface DSLDefinition extends TransformationType {
 	    return "";
 	}
 
-	@Override
-	public FileType getTransformationCategory() {
-	    return null;
-	}
     }
 
 }

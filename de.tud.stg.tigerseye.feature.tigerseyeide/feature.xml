@@ -27,6 +27,7 @@
       <import plugin="org.apache.commons.lang" version="2.4.0" match="greaterOrEqual"/>
       <import plugin="org.apache.commons.collections" version="3.2.1" match="greaterOrEqual"/>
       <import plugin="org.apache.commons.io" version="1.4.0" match="greaterOrEqual"/>
+      <import plugin="de.tud.stg.parlex" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jdt.debug"/>
       <import plugin="org.eclipse.jdt.groovy.core" version="2.1.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jdt.core" version="3.6.1" match="greaterOrEqual"/>
@@ -45,7 +46,9 @@
       <import plugin="org.eclipse.osgi"/>
       <import plugin="org.junit" version="4.8.1" match="greaterOrEqual"/>
       <import feature="org.codehaus.groovy.eclipse.feature" version="2.1.1.xx-20101215-2100-e36"/>
-      <import plugin="de.tud.stg.parlex" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="de.tud.stg.tigerseye.eclipse.dslsupport" version="0.0.1" match="greaterOrEqual"/>
+      <import plugin="org.codehaus.groovy" version="1.7.8" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.runtime" version="3.6.0" match="greaterOrEqual"/>
    </requires>
 
    <plugin
@@ -114,5 +117,11 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+
+   <plugin
+         id="de.tud.stg.tigerseye.eclipse.dslsupport"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
 
 </feature>

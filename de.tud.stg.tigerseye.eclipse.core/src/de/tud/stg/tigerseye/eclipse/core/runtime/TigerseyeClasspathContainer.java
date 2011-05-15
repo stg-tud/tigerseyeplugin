@@ -1,7 +1,6 @@
 package de.tud.stg.tigerseye.eclipse.core.runtime;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
@@ -33,19 +32,23 @@ public class TigerseyeClasspathContainer implements IClasspathContainer {
 
     public void reset() {
 	cpEntries.clear();
-	File allRuntimeJars;
+	// File allRuntimeJars;
+	File[] runtimeJars;
 	try {
-	    allRuntimeJars = TigerseyeLibraryProvider
-		    .getTigerseyeRuntimeLibraryFolder();
+//	    allRuntimeJars = TigerseyeLibraryProvider
+//		    .getTigerseyeRuntimeLibraryFolder();
+	    runtimeJars = TigerseyeLibraryProvider
+	    .getTigerseyeRuntimeLibraries();
+	    
 	} catch (IOException e) {
 	    throw new TigerseyeRuntimeException(e);
 	}
-	File[] runtimeJars = allRuntimeJars.listFiles(new FilenameFilter() {
-	    @Override
-	    public boolean accept(File parentFile, String fileName) {
-		return fileName.endsWith(".jar");
-	    }
-	});
+	// File[] runtimeJars = allRuntimeJars.listFiles(new FilenameFilter() {
+	// @Override
+	// public boolean accept(File parentFile, String fileName) {
+	// return fileName.endsWith(".jar");
+	// }
+	// });
 	for (File jar : runtimeJars) {
 	    Path path = new Path(jar.getAbsolutePath());
 	    IClasspathEntry entry2 = JavaCore.newLibraryEntry(path, null, null);

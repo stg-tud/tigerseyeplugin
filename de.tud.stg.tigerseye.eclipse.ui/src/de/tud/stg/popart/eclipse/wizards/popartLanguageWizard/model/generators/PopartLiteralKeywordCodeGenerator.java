@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartLiteralKeyword;
-import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.IPopartKeywordCodeGenerator;
 
 /**
  * A code generator for PopartLiteralKeywords.
@@ -40,7 +39,7 @@ public class PopartLiteralKeywordCodeGenerator implements IPopartKeywordCodeGene
 	}
 
 	/**
-	 * @see de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.IPopartKeywordCodeGenerator
+	 * @see de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.generators.IPopartKeywordCodeGenerator
 	 */
 	@Override
 	public void create(IJavaProject project, IPackageFragment packagefragment,

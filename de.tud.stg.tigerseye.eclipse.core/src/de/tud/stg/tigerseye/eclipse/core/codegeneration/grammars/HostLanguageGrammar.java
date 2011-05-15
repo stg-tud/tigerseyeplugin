@@ -1,4 +1,4 @@
-package de.tud.stg.tigerseye.eclipse.core.codegeneration;
+package de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars;
 
 import de.tud.stg.parlex.core.IGrammar;
 

@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCoreActivator;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeImage;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileTypeHelper;
 import de.tud.stg.tigerseye.eclipse.core.launching.ITigerseyeLaunchConfigurationConstants;
 import de.tud.stg.tigerseye.eclipse.core.utils.OutputPathHandler;
 
@@ -278,7 +279,7 @@ public class TigerseyeMainLaunchConfigurationTab extends SharedJavaMainTab
 		IResource r = ((IType) element).getResource();
 		if (r instanceof IFile) {
 		    IFile file = (IFile) r;
-		    FileType fileType = FileType.getTypeForOutputResource(file
+		    FileType fileType = FileTypeHelper.getTypeForOutputResource(file
 			    .getName());
 		    if (fileType != null)
 			return TigerseyeCoreActivator.getTigerseyeImage(

@@ -40,6 +40,7 @@ import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ASTTransformation;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.AnnotationExtractor;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileTypeHelper;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TextualTransformation;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformerConfigurationProvider;
@@ -97,7 +98,7 @@ public class DSLResourceHandler implements ResourceHandler {
 	    return;
 	}
 	IFile srcFile = (IFile) resource;
-	FileType filetype = FileType.getTypeForSrcResource(srcFile.getName());
+	FileType filetype = FileTypeHelper.getTypeForSrcResource(srcFile.getName());
 	if (filetype == null) {
 	    logger.error("No filetype could be determined for {}",
 		    srcFile.getName());

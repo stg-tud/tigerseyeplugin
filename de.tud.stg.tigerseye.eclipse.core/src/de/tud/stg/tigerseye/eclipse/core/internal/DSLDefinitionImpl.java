@@ -10,7 +10,6 @@ import de.tud.stg.popart.dslsupport.DSL;
 import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
-import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntimeException;
 
 public class DSLDefinitionImpl implements DSLDefinition {
@@ -145,11 +144,6 @@ public class DSLDefinitionImpl implements DSLDefinition {
     @Override
     public String getIdentifer() {
 	return getLanguageKey();
-    }
-
-    @Override
-    public FileType getTransformationCategory() {
-	return FileType.DSL;
     }
 
 }

@@ -4,7 +4,6 @@ import javax.annotation.Nonnull;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 
-import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Transformation;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyePreferenceInitializer;
@@ -57,8 +56,7 @@ public class TransformationHandler {
     }
 
     public boolean supports(TransformationType type) {
-	return getTransformation().getSupportedFileTypes().contains(
-		type.getTransformationCategory());
+	return getTransformation().getSupportedFileTypes().contains(type);
     }
 
     /**
@@ -90,11 +88,9 @@ public class TransformationHandler {
 	String preferenceKeyFor = getPreferenceKeyFor(identifiable);
 	if (!getStore().contains(preferenceKeyFor)) {
 	    getStore()
-.setDefault(preferenceKeyFor,
-		    getDefaultFor(identifiable.getTransformationCategory()));
+		    .setDefault(preferenceKeyFor, getDefaultFor(identifiable));
 	}
-	boolean active = getStore().getBoolean(
-		preferenceKeyFor);
+	boolean active = getStore().getBoolean(preferenceKeyFor);
 	return active;
     }
 
@@ -104,9 +100,9 @@ public class TransformationHandler {
      * @param identifiable
      * @return
      */
-    public static boolean getDefaultFor(FileType identifiable) {
+    public static boolean getDefaultFor(TransformationType identifiable) {
 	Boolean defBool = TigerseyePreferenceInitializer.DEFAULT_TRANSFORMATION_ACTIVATION
-		.get(identifiable);		
+		.get(identifiable);
 	return defBool == null ? false : defBool;
     }
 
@@ -120,7 +116,6 @@ public class TransformationHandler {
     public void setActiveStateFor(TransformationType identifiable, boolean value) {
 	getStore().setValue(getPreferenceKeyFor(identifiable), value);
     }
-
 
     private IPreferenceStore getStore() {
 	if (store == null)

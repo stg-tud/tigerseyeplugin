@@ -1,4 +1,4 @@
-package de.tud.stg.tigerseye.eclipse.core.codegeneration;
+package de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars;
 
 import de.tud.stg.parlex.core.Category;
 import de.tud.stg.parlex.core.ICategory;
@@ -6,6 +6,7 @@ import de.tud.stg.parlex.core.IGrammar;
 import de.tud.stg.parlex.core.IRule;
 import de.tud.stg.parlex.core.Rule;
 import de.tud.stg.parlex.core.groupcategories.StringCategory;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.GrammarBuilderHelper;
 
 /**
  * {@link JavaSpecificGrammar} is a host language specific grammar and setups some basic rules for interaction with
@@ -18,9 +19,8 @@ public class JavaSpecificGrammar implements HostLanguageGrammar {
 
 	@Override
 	public void applySpecificGrammar(IGrammar<String> grammar) {
-		GrammarBuilder gb = new GrammarBuilder();
-		ICategory<String> optionalWS = gb.getWhitespaceCategory(grammar, true);
-		ICategory<String> WS = gb.getWhitespaceCategory(grammar, false);
+		ICategory<String> optionalWS = GrammarBuilderHelper.getWhitespaceCategory(grammar, true);
+		ICategory<String> WS = GrammarBuilderHelper.getWhitespaceCategory(grammar, false);
 
 		Category pType = new Category("PTYPE", false);
 		Category rType = new Category("RTYPE", false);
@@ -78,8 +78,8 @@ public class JavaSpecificGrammar implements HostLanguageGrammar {
 		Category statement = new Category("STATEMENT", false);
 		Category statements = new Category("STATEMENTS", false);
 
-		Rule groupStatement = new Rule(statement, new Category("{", true), gb.getWhitespaceCategory(
-				grammar, true), statements, gb.getWhitespaceCategory(grammar, true),
+		Rule groupStatement = new Rule(statement, new Category("{", true), GrammarBuilderHelper.getWhitespaceCategory(
+				grammar, true), statements, GrammarBuilderHelper.getWhitespaceCategory(grammar, true),
 				new Category("}", true));
 
 		// Rule emptyGroupStatement = new Rule(statement, new Category("{", true), optionalWS, new Category("}", true));

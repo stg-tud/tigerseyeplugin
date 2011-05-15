@@ -1,4 +1,4 @@
-package de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling;
+package de.tud.stg.tigerseye.eclipse.core.codegeneration.utils;
 
 import de.tud.stg.parlex.core.Category;
 import de.tud.stg.parlex.core.ICategory;
@@ -14,7 +14,7 @@ import de.tud.stg.parlex.core.Rule;
  */
 public class HandlingDispatcherHelper {
 
-    static ICategory<String> getExplicitObjectHierarchy(
+    public static ICategory<String> getExplicitObjectHierarchy(
             IGrammar<String> grammar, Class<?> clazz) {
         	if (clazz == null) {
         		return null;
@@ -43,7 +43,8 @@ public class HandlingDispatcherHelper {
         	return nodeCategory;
         }
 
-    static ICategory<String> getObjectHierarchy(IGrammar<String> grammar,
+    public static ICategory<String> getObjectHierarchy(
+	    IGrammar<String> grammar,
         Class<?> clazz) {
     	// if (clazz == null) {
     	// return null;

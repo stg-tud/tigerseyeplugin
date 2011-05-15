@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import utilities.TestUtilities;
-import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.preferences.TableDialog.CheckedItem;
 
@@ -158,10 +157,5 @@ public class TransformerTableDialogTest{
 			return "String";
 		}
 
-		@Override
-		public FileType getTransformationCategory() {
-			return null;
-		}
-		
 	}
 }

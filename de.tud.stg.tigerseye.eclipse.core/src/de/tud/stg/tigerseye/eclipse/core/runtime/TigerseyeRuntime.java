@@ -90,7 +90,7 @@ public class TigerseyeRuntime {
     public static boolean isTigerseyeNature(IProject iProject) {
 	try {
 	    return iProject
-		    .isNatureEnabled(TigerseyeNature.TIGERSEYE_NATURE_ID);
+		    .isNatureEnabled(TigerseyeRuntimeConstants.TIGERSEYE_NATURE_ID);
 	} catch (CoreException e) {
 	    return false;
 	}
@@ -223,12 +223,12 @@ public class TigerseyeRuntime {
 	try {
 	    final IProjectDescription description = project.getDescription();
 	    List<String> natureIds = new LinkedList<String>();
-	    if (natureIds.contains(TigerseyeNature.TIGERSEYE_NATURE_ID))
+	    if (natureIds.contains(TigerseyeRuntimeConstants.TIGERSEYE_NATURE_ID))
 		return;
 
 	    Collections.addAll(natureIds, description.getNatureIds());
 	    String[] necessaryNatures = new String[] { //
-	    TigerseyeNature.TIGERSEYE_NATURE_ID,//
+	    TigerseyeRuntimeConstants.TIGERSEYE_NATURE_ID,//
 		    GroovyNature.GROOVY_NATURE,//
 	    /*
 	     * If the Java nature has not already been initialized, simply
@@ -258,7 +258,7 @@ public class TigerseyeRuntime {
 	IProjectDescription description = project.getDescription();
 	String[] natureIds = description.getNatureIds();
 	List<String> asList = new ArrayList<String>(Arrays.asList(natureIds));
-	asList.remove(TigerseyeNature.TIGERSEYE_NATURE_ID);
+	asList.remove(TigerseyeRuntimeConstants.TIGERSEYE_NATURE_ID);
 	String[] noTigerseye = asList.toArray(new String[0]);
 	description.setNatureIds(noTigerseye);
 	project.setDescription(description, new NullProgressMonitor());

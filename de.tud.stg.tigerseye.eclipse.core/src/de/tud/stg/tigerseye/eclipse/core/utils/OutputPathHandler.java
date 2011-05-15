@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileTypeHelper;
 import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntime;
 
 /**
@@ -82,7 +83,7 @@ public class OutputPathHandler {
      */
     public @CheckForNull
     String getOutputNameForSourceName(String srcResourceFileName) {
-	FileType filetype = FileType.getTypeForSrcResource(srcResourceFileName);
+	FileType filetype = FileTypeHelper.getTypeForSrcResource(srcResourceFileName);
 	if (filetype == null)
 	    return null;
 
@@ -141,7 +142,7 @@ public class OutputPathHandler {
      */
     public @CheckForNull
     String getSourceNameForOutputName(String outputName) {
-	FileType actualType = FileType.getTypeForOutputResource(outputName);
+	FileType actualType = FileTypeHelper.getTypeForOutputResource(outputName);
 	if (actualType == null) {
 	    logger.warn("Failed to determine filetype for " + outputName);
 	    return null;

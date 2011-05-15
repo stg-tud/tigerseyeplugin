@@ -11,8 +11,8 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.INewWizard;
 
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.PopartLanguageModel;
-import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeNature;
 import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntime;
+import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntimeConstants;
 
 /**
  * Wizard for creating language definitions
@@ -71,7 +71,7 @@ public class NewPopartLanguageWizzard extends NewClassWizard implements INewWiza
 	boolean hasNature = false;
 	try {
 	    hasNature = javaProject.getProject().hasNature(
-		    TigerseyeNature.TIGERSEYE_NATURE_ID);
+		    TigerseyeRuntimeConstants.TIGERSEYE_NATURE_ID);
 	} catch (CoreException e) {
 	}
 	if (!hasNature) {

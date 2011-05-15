@@ -8,6 +8,7 @@ import de.tud.stg.parlex.core.IGrammar;
 import de.tud.stg.parlex.core.Rule;
 import de.tud.stg.parlex.core.groupcategories.CustomCategory;
 import de.tud.stg.parlex.core.groupcategories.StringCategory;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.HandlingDispatcherHelper;
 
 public abstract class TypeHandler implements ClassTypeHandler {
 

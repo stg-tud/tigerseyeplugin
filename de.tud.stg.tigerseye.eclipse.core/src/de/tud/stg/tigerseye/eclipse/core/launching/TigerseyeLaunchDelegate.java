@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileTypeHelper;
 
 /**
  * {@link TigerseyeLaunchDelegate} launches the transformed DSL files. It
@@ -54,7 +55,7 @@ public class TigerseyeLaunchDelegate extends JavaLaunchDelegate implements
 	 */
 	FileType type = null;
 	if (resource != null && resource.exists()) {
-	    type = FileType.getTypeForOutputResource(resource
+	    type = FileTypeHelper.getTypeForOutputResource(resource
 		.getFullPath().toString());
 	}
 	/*

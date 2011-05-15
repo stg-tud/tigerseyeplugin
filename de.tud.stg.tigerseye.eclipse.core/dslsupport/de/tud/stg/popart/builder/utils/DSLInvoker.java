@@ -75,7 +75,14 @@ public class DSLInvoker {
 			dsls.add(getDSL(clazz));
 		}
 
-		InterpreterCombiner ic = new InterpreterCombiner(dsls, new HashMap());
+	/*
+	 * FIXME(Leo Roos): Must use the @deprecated method until the runtime
+	 * jars, which also package a version of an InterpreterCombiner, are
+	 * generated from the same source this class accesses during
+	 * development.
+	 */
+	InterpreterCombiner ic = new InterpreterCombiner(dsls,
+		new HashMap<String, Object>());
 		return ic.eval(c);
 	}
 
