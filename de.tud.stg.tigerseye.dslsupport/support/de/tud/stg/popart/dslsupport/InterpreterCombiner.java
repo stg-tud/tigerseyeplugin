@@ -9,8 +9,10 @@ import groovy.lang.Closure;
 import groovy.lang.MissingMethodException;
 import groovy.lang.MissingPropertyException;
 
-import java.util.Set;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.codehaus.groovy.runtime.InvokerHelper;
 
@@ -72,6 +74,27 @@ public class InterpreterCombiner extends Interpreter implements DSL {
 		this.context = context;
 		setCombinerAsBodyDelegateOfAllInterpreters();
 	} 
+
+	/**
+	 * This is a constructor to make this specific class compliant with legacy code.
+	 * 
+	 * @param dsls DSLs to combine
+	 * @param context 
+	 * 
+	 * @deprecated use {@link #InterpreterCombiner(Set, Map)} instead.
+	 */
+	@Deprecated
+	public InterpreterCombiner(List<DSL> dsls, Map<String, Object> context) {
+		this(listToSet(dsls), context);
+	}
+
+	private static HashSet<DSL> listToSet(List<DSL> dsls) {
+		HashSet<DSL> dslSet = new HashSet<DSL>();
+		for (DSL dsl : dsls) {
+			dslSet.add(dsl);
+		}
+		return dslSet;
+	}
 
 	public Object eval(Closure dslClosure) {
 		dslClosure.setResolveStrategy(Closure.DELEGATE_FIRST); //Closure.DELEGATE_FIRST enables writing into properties defined by DSLs and prevent the creation of a local variable

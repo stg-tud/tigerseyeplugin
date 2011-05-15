@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Dslsupport
+Bundle-SymbolicName: de.tud.stg.tigerseye.eclipse.dslsupport
+Bundle-Version: 0.0.1.qualifier
+Bundle-Vendor: TUD
+Require-Bundle: org.codehaus.groovy;bundle-version="1.7.8",
+ org.eclipse.core.runtime;bundle-version="3.6.0"
+Export-Package: de.tud.stg.popart.dslsupport,
+ de.tud.stg.tigerseye.eclipse.dslsupport;x-friends:="de.tud.stg.tigerseye"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Activator: de.tud.stg.tigerseye.eclipse.dslsupport.TigerseyeSupportActivator
+Bundle-ClassPath: .,
+ lib/tigerseye-support.jar
+Bundle-ActivationPolicy: lazy
