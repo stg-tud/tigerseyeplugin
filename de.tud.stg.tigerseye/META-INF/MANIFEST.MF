@@ -14,7 +14,6 @@ Require-Bundle: org.eclipse.ui,
  org.apache.commons.lang;bundle-version="2.4.0";visibility:=reexport,
  org.apache.commons.collections;bundle-version="3.2.1";visibility:=reexport,
  org.apache.commons.io;bundle-version="1.4.0";visibility:=reexport,
- de.tud.stg.parlex;bundle-version="1.0.0";visibility:=reexport,
  de.tud.stg.tigerseye.eclipse.dslsupport;bundle-version="0.0.1";visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
