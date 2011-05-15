@@ -1,10 +1,11 @@
-package de.tud.stg.tigerseye.examples.conditionaldsl;
+package de.tud.stg.tigerseye.examples.dsldefinitions.conditionaldsl;
 
 import groovy.lang.Closure;
 
 import java.util.HashMap;
-import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
 import de.tud.stg.popart.builder.core.annotations.DSL;
+import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
+
 import de.tud.stg.popart.builder.core.annotations.DSLMethod;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartLiteralKeyword;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeyword;
@@ -31,7 +32,7 @@ public class ConditionalDSL implements de.tud.stg.popart.dslsupport.DSL {
 			thenBlock.call();
 		} else {
 			elseBlock.call();
-		}
+		}  
 
 		return check;
 	}

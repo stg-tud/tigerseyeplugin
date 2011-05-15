@@ -1,4 +1,4 @@
-package de.tud.stg.tigerseye.examples.mapdsl;
+package de.tud.stg.tigerseye.examples.dsldefinitions.mapdsl;
 
 import groovy.lang.Closure;
 

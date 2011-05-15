@@ -1,4 +1,4 @@
-package de.tud.stg.tigerseye.examples.mathdsl;
+package de.tud.stg.tigerseye.examples.dsldefinitions.mathdsl;
 
 import groovy.lang.Closure;
 

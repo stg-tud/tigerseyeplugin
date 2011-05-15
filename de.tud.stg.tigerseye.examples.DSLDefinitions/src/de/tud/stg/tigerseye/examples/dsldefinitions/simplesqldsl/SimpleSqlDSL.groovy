@@ -1,22 +1,21 @@
-package de.tud.stg.tigerseye.examples.statefuldsl;
+package de.tud.stg.tigerseye.examples.dsldefinitions.simplesqldsl;
 
 import groovy.lang.Closure;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import de.tud.stg.popart.builder.core.annotations.DSL;
+import de.tud.stg.popart.builder.core.annotations.DSLMethod;
 import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeyword;
 
 /**
- * {@link StatefulDSL} is a small DSL showing the possibility of setting and retrieving variables.
+ * {@link SimpleSqlDSL} is a small DSL modelling a very simple subset of SQL operations
  * 
  * @author Kamil Erhard
  * 
  */
-@DSL
-public class StatefulDSL implements de.tud.stg.popart.dslsupport.DSL {
+public class SimpleSqlDSL implements de.tud.stg.popart.dslsupport.DSL {
 
 	public Object eval(HashMap map, Closure cl) {
 		cl.setDelegate(this);
@@ -24,16 +23,15 @@ public class StatefulDSL implements de.tud.stg.popart.dslsupport.DSL {
 		return cl.call();
 	}
 
-	private Map<String, Object> variables = new HashMap<String, Object>();
-
+	@DSLMethod(prettyName = "SELECT__p0__FROM__p1")
 	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
-	public void set__p0_equals_p1(String key, Object value) {
-		this.variables.put(key, value);
+	public void selectFrom(String[] columns, String[] tables) {
+		
 	}
 
+	@DSLMethod(prettyName = "SELECT__p0__FROM__p1__WHERE__p2")
 	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
-	public Object get__p0(String key) {
-		return this.variables.get(key);
+	public void selectFromWhere(String[] columns, String[] tables, @DSL(arrayDelimiter = "AND") String[] checks) {
+		
 	}
-
 }

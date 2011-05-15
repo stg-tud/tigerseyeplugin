@@ -1,4 +1,4 @@
-package de.tud.stg.tigerseye.examples.foreachsyntaxdsl;
+package de.tud.stg.tigerseye.examples.dsldefinitions.foreachsyntaxdsl;
 
 import groovy.lang.Closure;
 
