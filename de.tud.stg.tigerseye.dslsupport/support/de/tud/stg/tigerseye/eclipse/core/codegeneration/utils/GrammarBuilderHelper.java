@@ -5,11 +5,11 @@ import de.tud.stg.parlex.core.ICategory;
 import de.tud.stg.parlex.core.IGrammar;
 import de.tud.stg.parlex.core.Rule;
 import de.tud.stg.parlex.core.groupcategories.StringCategory;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder;
 
 /**
- * A class containing extracted methods from {@link GrammarBuilder} which seems
- * to be utility methods and not class specific
+ * A class containing extracted methods from
+ * {@link de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder} which
+ * seems to be utility methods and not class specific
  * 
  * @author Leo Roos
  * 

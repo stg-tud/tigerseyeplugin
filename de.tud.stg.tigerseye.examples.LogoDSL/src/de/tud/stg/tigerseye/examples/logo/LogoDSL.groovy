@@ -7,7 +7,7 @@ import java.awt.Color;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeyword;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartLiteralKeyword;import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
 /**
- * This class implements the logo toy language.
+ * This class implements the Logo toy language.
  */
 public class LogoDSL extends Interpreter implements ILogoDSL {
 	 
@@ -102,12 +102,4 @@ public class LogoDSL extends Interpreter implements ILogoDSL {
 	@PopartType(clazz=PopartOperationKeyword.class,breakpointPossible=0)
 	public void lt(int n) { left(n); }
 	
-	public static void main(String[] args) {
-		new LogoDSL().eval(name:'Test') {
-			
-			forward 90
-			right 90
-			forward 90
-		}
-	}
 }

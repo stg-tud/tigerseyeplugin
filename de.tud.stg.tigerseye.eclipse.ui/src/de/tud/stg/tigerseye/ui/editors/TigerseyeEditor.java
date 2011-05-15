@@ -2,6 +2,7 @@ package de.tud.stg.tigerseye.ui.editors;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -25,7 +26,6 @@ import org.eclipse.ui.PartInitException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.parlex.utils.ArraySet;
 import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.ILanguageProvider;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
@@ -132,7 +132,7 @@ public class TigerseyeEditor extends GroovyEditor {
 		.getExtensionsForSrcResource(file.getName());
 	logger.info("For file {} extracted extensions {} ", file.getName(),
 		Arrays.toString(extensionsForSrcResource));
-	Set<DSLDefinition> activeDSLSet = new ArraySet<DSLDefinition>();
+	Set<DSLDefinition> activeDSLSet = new HashSet<DSLDefinition>();
 	ILanguageProvider languageProvider = TigerseyeCore
 		.getLanguageProvider();
 	for (String extension : extensionsForSrcResource) {

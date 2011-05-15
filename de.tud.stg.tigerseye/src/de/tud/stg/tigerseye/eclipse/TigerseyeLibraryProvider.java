@@ -17,8 +17,9 @@ import de.tud.stg.tigerseye.eclipse.dslsupport.TigerseyeSupportActivator;
 public class TigerseyeLibraryProvider extends Plugin {
 
 	public static final String PLUGIN_ID = "de.tud.stg.tigerseye";
-	private static final String[] minimalConfiguration = { "edslNature.jar",
-			"popartAnnotations.jar", /*"popart.jar"*/ };
+	//FIXME(Leo Roos): remove when tested
+	private static final String[] minimalConfiguration = {/* "edslNature.jar",
+			"popartAnnotations.jar",*/ /*"popart.jar"*/ };
 
 	private static TigerseyeLibraryProvider plugin;
 

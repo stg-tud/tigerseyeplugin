@@ -26,7 +26,7 @@ public class TigerseyeSupportActivator extends Plugin {
 	 * @return the jar-file containing classes necessary to execute and develop
 	 *         a Tigerseye DSL.
 	 * @throws IOException
-	 *             when expected support can not be found or problem occured while trying to resolve its location.
+	 *             when expected support can not be found or problem occurred while trying to resolve its location.
 	 */
 	public File getRuntimeSupportJar() throws IOException {
 		File bundleFolder;
