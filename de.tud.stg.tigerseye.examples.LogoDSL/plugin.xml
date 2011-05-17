@@ -6,7 +6,27 @@
       <language
             class="de.tud.stg.tigerseye.examples.logo.LogoDSL"
             extension="logo"
-            name="Logo DSL">
+            name="Logo DSL With Debug Annotations">
+      </language>
+      <language
+            class="de.tud.stg.tigerseye.examples.logo.SimpleLogo"
+            extension="simplelogo"
+            name="Simple Logo">
+      </language>
+      <language
+            class="de.tud.stg.tigerseye.examples.logo.UCBLogo"
+            extension="ucblogo"
+            name="UCB Logo">
+      </language>
+      <language
+            class="de.tud.stg.tigerseye.examples.logo.FunctionalLogo"
+            extension="funclogo"
+            name="Functional Logo">
+      </language>
+      <language
+            class="de.tud.stg.tigerseye.examples.logo.ConciseLogo"
+            extension="conciselogo"
+            name="Concise Logo">
       </language>
    </extension>
 </plugin>
