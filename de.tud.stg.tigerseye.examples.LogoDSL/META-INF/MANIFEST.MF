@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: LogoDSL Plug-in
 Bundle-SymbolicName: de.tud.stg.tigerseye.examples.LogoDSL;singleton:=true
 Bundle-Version: 0.0.3.qualifier
-Require-Bundle: de.tud.stg.tigerseye,
+Require-Bundle: de.tud.stg.tigerseye.eclipse,
  de.tud.stg.tigerseye.eclipse.core
 Bundle-ClassPath: lib/javalogo.jar,
  .
