@@ -18,10 +18,9 @@
    </license>
 
    <requires>
-      <import plugin="de.tud.stg.tigerseye" version="0.0.1" match="greaterOrEqual"/>
       <import plugin="de.tud.stg.tigerseye.eclipse.core" version="0.0.1" match="greaterOrEqual"/>
-      <import plugin="org.codehaus.groovy"/>
       <import feature="de.tud.stg.tigerseye.feature.tigerseyeide" version="0.0.1.2"/>
+      <import plugin="de.tud.stg.tigerseye.eclipse" version="0.0.1" match="greaterOrEqual"/>
    </requires>
 
    <plugin
@@ -50,5 +49,12 @@
          download-size="0"
          install-size="0"
          version="0.0.0"/>
+
+   <plugin
+         id="de.tud.stg.tigerseye.examples.statemachine"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
 </feature>

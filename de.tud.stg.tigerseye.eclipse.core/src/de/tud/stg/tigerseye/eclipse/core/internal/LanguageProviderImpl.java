@@ -81,7 +81,10 @@ public class LanguageProviderImpl implements ILanguageProvider {
 	try {
 	    // Check existence
 	    Class<? extends DSL> loadClass = dsl.loadClass();
-	    loadClass.newInstance(); // TODO: Error Message if the constructor
+	    // Cannot do the next check since that would also execute possible
+	    // logic within the constructor
+	    // loadClass.newInstance(); // TODO: Error Message if the
+	    // constructor
 				     // has non-empty args
 	} catch (Exception e) {
 	    logger.warn(

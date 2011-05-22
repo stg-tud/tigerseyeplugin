@@ -37,18 +37,18 @@ public class TigerseyeLibraryProvider extends Plugin {
 	 * @throws IOException if a problem occurred while resolving the locations of the runtime libraries. 
 	 */
 	public static File[] getTigerseyeRuntimeLibraries() throws IOException {
-		String runtimeJarsFolder = "runtimeJars";
-		File bundleFolder = FileLocator.getBundleFile(getDefault().getBundle());
-		File runtimeFolder = new File(bundleFolder, runtimeJarsFolder);
-		if (!runtimeFolder.exists())
-			throw new IllegalStateException(
-					"Expected Tigerseye runtime folder does not exist."
-							+ runtimeJarsFolder);
-		checkMinimalConfiguration(runtimeFolder);
+//		String runtimeJarsFolder = "runtimeJars";
+//		File bundleFolder = FileLocator.getBundleFile(getDefault().getBundle());
+//		File runtimeFolder = new File(bundleFolder, runtimeJarsFolder);
+//		if (!runtimeFolder.exists())
+//			throw new IllegalStateException(
+//					"Expected Tigerseye runtime folder does not exist."
+//							+ runtimeJarsFolder);
+//		checkMinimalConfiguration(runtimeFolder);
 		List<File> result = new ArrayList<File>();
-		for (String fileName : minimalConfiguration) {
-			result.add(new File(runtimeFolder, fileName));
-		}
+//		for (String fileName : minimalConfiguration) {
+//			result.add(new File(runtimeFolder, fileName));
+//		}
 		File runtimeSupportJar = TigerseyeSupportActivator.getDefault().getRuntimeSupportJar();
 		result.add(runtimeSupportJar);
 		return result.toArray(new File[0]);

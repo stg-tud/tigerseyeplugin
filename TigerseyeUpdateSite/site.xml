@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/de.tud.stg.tigerseye.feature.tigerseyeide_0.0.1.201105152128.jar" id="de.tud.stg.tigerseye.feature.tigerseyeide" version="0.0.1.201105152128">
+   <feature url="features/de.tud.stg.tigerseye.feature.tigerseyeide_0.0.1.201105221223.jar" id="de.tud.stg.tigerseye.feature.tigerseyeide" version="0.0.1.201105221223">
       <category name="de.tud.stg.tigerseye.category.mandatory"/>
    </feature>
-   <feature url="features/de.tud.stg.tigerseye.feature.exampleDSLs_0.0.1.201105152128.jar" id="de.tud.stg.tigerseye.feature.exampleDSLs" version="0.0.1.201105152128">
+   <feature url="features/de.tud.stg.tigerseye.feature.exampleDSLs_0.0.1.201105221223.jar" id="de.tud.stg.tigerseye.feature.exampleDSLs" version="0.0.1.201105221223">
       <category name="de.tud.stg.tigerseye.category.exampledsls"/>
    </feature>
    <category-def name="de.tud.stg.tigerseye.category.mandatory" label="Tigerseye Mandatory">
