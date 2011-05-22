@@ -18,17 +18,10 @@
    </license>
 
    <requires>
+      <import plugin="de.tud.stg.tigerseye.eclipse" version="0.0.1" match="greaterOrEqual"/>
       <import plugin="de.tud.stg.tigerseye.eclipse.core" version="0.0.1" match="greaterOrEqual"/>
       <import feature="de.tud.stg.tigerseye.feature.tigerseyeide" version="0.0.1.2"/>
-      <import plugin="de.tud.stg.tigerseye.eclipse" version="0.0.1" match="greaterOrEqual"/>
    </requires>
-
-   <plugin
-         id="de.tud.stg.tigerseye.examples.DSLDefinitions"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
 
    <plugin
          id="de.tud.stg.tigerseye.examples.SetDSL"
@@ -52,6 +45,20 @@
 
    <plugin
          id="de.tud.stg.tigerseye.examples.statemachine"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="de.tud.stg.tigerseye.examples.MapDSL"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="de.tud.stg.tigerseye.examples.StatefulDSL"
          download-size="0"
          install-size="0"
          version="0.0.0"

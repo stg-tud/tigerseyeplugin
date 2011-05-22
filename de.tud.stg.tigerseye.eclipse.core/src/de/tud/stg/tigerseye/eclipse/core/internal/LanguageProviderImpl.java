@@ -60,7 +60,10 @@ public class LanguageProviderImpl implements ILanguageProvider {
 	    if (dsl != null) {
 		fillOptionalValues(confEl, dsl);
 		dslDefinitions.add(dsl);
-	    }
+	    } else
+		logger.warn(
+			"Could not create DSL for dslDefiniton Extension of contributor: {}",
+			confEl.getContributor());
 	}
 	return dslDefinitions;
     }
@@ -68,6 +71,8 @@ public class LanguageProviderImpl implements ILanguageProvider {
     private @CheckForNull
     DSLDefinitionImpl createDSLDefinition(IConfigurationElement confEl) {
 	String dslNameAttribute = confEl.getAttribute("name");
+	if (dslNameAttribute == null)
+	    dslNameAttribute = "";
 	String dslClassAttribute = confEl.getAttribute("class");
 	String dslContributorPlugin = confEl.getContributor().getName();
 	String languageKey = dslContributorPlugin + dslClassAttribute;

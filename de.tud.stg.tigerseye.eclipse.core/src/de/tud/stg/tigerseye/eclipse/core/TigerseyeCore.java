@@ -17,6 +17,8 @@ import de.tud.stg.tigerseye.eclipse.core.internal.TransformationProviderImpl;
  */
 public class TigerseyeCore {
 
+    private static final String DSLDEFINITIONS_EXTENSION_POINT_ID = "de.tud.stg.tigerseye.dslDefinitions";
+
     public static IPreferenceStore getPreferences() {
 	return TigerseyeCoreActivator.getDefault().getPreferenceStore();
     }
@@ -31,7 +33,7 @@ public class TigerseyeCore {
     public static ILanguageProvider getLanguageProvider() {
 	return new LanguageProviderImpl(TigerseyeCore.getPreferences(),
 		Platform.getExtensionRegistry().getConfigurationElementsFor(
-			"de.tud.stg.tigerseye.dslDefinitions"));
+			DSLDEFINITIONS_EXTENSION_POINT_ID));
     }
 
     /**
