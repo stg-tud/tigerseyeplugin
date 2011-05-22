@@ -116,6 +116,7 @@ public class JDTClasspathResolverTest {
 		// /home/leo/wss/runtime-New_configuration/DSLDefinitions/
 	}
 	
+	@Ignore("JUnit Plug-in test")
 	@Test
 	public void testResolveClasspathAsPluginTest() throws Exception {
 		Bundle bundle = Platform.getBundle("de.tud.stg.tigerseye.examples.DSLDefinitions");
@@ -125,6 +126,8 @@ public class JDTClasspathResolverTest {
 		}
 	}
 
+
+	@Ignore("TODO")
 	@Test
 	public void testResolveClasspath() throws Exception {
 		File someJavaProjectRoot = GlobalResourceCollection.DSLDefinitionsDevelopmentProjectRoot
@@ -145,6 +148,7 @@ public class JDTClasspathResolverTest {
 
 	}
 
+	@Ignore("TODO")
 	@Test
 	public void testResolveClasspathForWrongFormattedProject() throws Exception {
 		GlobalResourceCollection.LogoDSLClasspath.getFile();
