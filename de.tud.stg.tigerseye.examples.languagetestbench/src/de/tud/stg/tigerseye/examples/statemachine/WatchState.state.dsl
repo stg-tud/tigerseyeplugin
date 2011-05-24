@@ -46,7 +46,7 @@ state(name:'WatchState'){
 	
 	setDEBUG(true)
 	
-	fsm(name:"watch",actionBinding:"What?") {
+	fsm(name:"watch",actionBinding:aBinding) {
 		state(name:"reseted",type:"start") {
 		  entry "resetTimer";
 		  transitions {

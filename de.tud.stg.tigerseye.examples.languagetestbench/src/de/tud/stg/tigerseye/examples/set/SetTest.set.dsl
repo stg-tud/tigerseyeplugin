@@ -23,17 +23,23 @@ set(name:'SetTest'){
 	 * when a second operation uses another special character it is not always translated correctly. 
 	 */  
 
+	
 	/*
-	Set a = { "2"} ⋃ { "6", "8", "2"} 
-	Set ares = { "2", "6", "8"}
-	 */
-	 
 	Set b = { "2"} ⋂ { "6", "8", "2"}
 	Set bres = { "2" }
+	*/
+	
+	Set a = { "2"} ⋃ { "6", "8", "2"}; 
+	Set ares = { "2", "6", "8"};
+	
+	
+
+
+	
 	
 	
 //	println a
-	println b 
+//	println b
 //	println (a.equals(b)) 
 	println (b.equals(bres))	
 }

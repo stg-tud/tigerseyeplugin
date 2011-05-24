@@ -61,8 +61,17 @@ public class KeyWordExtractor {
     }
 
     private List<Method> getValidMethods() {
-	List<Method> declaredMethods = Arrays.asList(getDSLClazz()
-		.getDeclaredMethods());
+	// Returns all local declarations
+	// List<Method> declaredMethods = Arrays.asList(getDSLClazz()
+	// .getDeclaredMethods());
+	// Returns all public declarations in the hierarchy
+	List<Method> declaredMethods = Collections.emptyList();
+	// try {
+	Method[] methods = getDSLClazz().getDeclaredMethods();// FIXME check if
+							      // declaredMethods
+							      // only methods()
+	    declaredMethods = Arrays.asList(methods);
+
 	List<Method> sortedValidMems = extractValidModifiersSorted(declaredMethods);
 	List<Method> finalMems = removeGroovyObjectMethods(sortedValidMems);
 	return finalMems;

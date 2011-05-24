@@ -645,7 +645,14 @@ Composite parent,
 	// Read all getter setter from external class
 	Set<String> fieldAccessors = new HashSet<String>();
 	Set<String> fieldAccessorTypes = new HashSet<String>();
-	if (publicDeclaredMethods != null) {
+
+	if (publicDeclaredMethods.length == 0) {
+	    TableItem tableItem = new TableItem(declaredKeywordsTable,
+		    SWT.BORDER);
+
+	    tableItem.setText(0, "NoMethodsRetrieved");
+	    tableItem.setText(1, "");
+	}
 
 	    for (Method declaredMethod : publicDeclaredMethods) {
 
@@ -688,10 +695,8 @@ Composite parent,
 		tableItem.setText(1, itemType);
 		tableItem.setText(2, "(literal defined by accessor)");
 	    }
-	}
 
 	// Read all public declared methods from external class
-	if (publicDeclaredMethods != null) {
 	    for (Method declaredMethod : publicDeclaredMethods) {
 		TableItem tableItem = null;
 
@@ -713,7 +718,6 @@ Composite parent,
 
 		tableItem.setText(2, parameters.toString());
 	    }
-	}
 
     }
 

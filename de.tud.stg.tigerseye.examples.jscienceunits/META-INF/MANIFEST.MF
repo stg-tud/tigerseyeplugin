@@ -1,5 +1,11 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Dzoneunits
-Bundle-SymbolicName: de.tud.stg.tigerseye.examples.jscienceunits
+Bundle-SymbolicName: de.tud.stg.tigerseye.examples.jscienceunits;singleton:=true
 Bundle-Version: 1.0.0.qualifier
+Require-Bundle: de.tud.stg.tigerseye.eclipse;bundle-version="0.0.1",
+ de.tud.stg.tigerseye.eclipse.core;bundle-version="0.0.1",
+ org.junit;bundle-version="4.8.1"
+Eclipse-RegisterBuddy: de.tud.stg.tigerseye.eclipse.core
+Bundle-ClassPath: lib/jscience.jar,
+ .

@@ -330,7 +330,6 @@ public class NewPopartClassWizardPage extends NewClassWizardPage {
 
 	// Read all public declared methods from external class
 	Method[] declaredMethods = keyWordExtractor.getMethodKeywords();
-	if (declaredMethods != null) {
 	    for (Method publicDeclaredMethod : declaredMethods) {
 
 		String printedLine = publicDeclaredMethod.getName();
@@ -352,7 +351,6 @@ public class NewPopartClassWizardPage extends NewClassWizardPage {
 
 		codeGenerator.addCode(" *  " + printedLine);
 
-	    }
 	}
 	codeGenerator.addCode(" */").addLineBreak();
     }

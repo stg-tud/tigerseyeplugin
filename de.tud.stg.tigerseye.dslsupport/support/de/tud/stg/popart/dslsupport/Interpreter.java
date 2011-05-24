@@ -11,8 +11,8 @@ import groovy.lang.MetaClass;
 
 /**
  * The Interpreter must be a GroovyObject so its missingMethod implementations
- * etc. will be invoked. So we inherit {@link GroovyObjectSupport}, which makes
- * provides the default implementations for GroovyObjects in Java.
+ * etc. will be invoked. So we inherit {@link GroovyObjectSupport}, which 
+ * is the default implementations for GroovyObjects in Java.
  */
 public class Interpreter extends GroovyObjectSupport implements DSL {
     protected Object bodyDelegate = this; 

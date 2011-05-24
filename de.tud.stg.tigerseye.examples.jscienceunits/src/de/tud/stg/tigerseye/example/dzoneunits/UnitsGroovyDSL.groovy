@@ -21,6 +21,7 @@ class UnitsGroovyDSL {
 		Amount.metaClass.div = { Amount factor -> delegate.divide(factor) }
 		Amount.metaClass.power = { Number factor -> delegate.pow(factor) }
 		Amount.metaClass.negative = { -> delegate.opposite() }
+		Amount.metaClass.show = { -> delegate.getEstimatedValue().toString() }
 	
 		// define to() method for unit conversion
 		Amount.metaClass.to = { Amount amount -> delegate.to(amount.unit) }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <psf version="2.0">
 <provider id="org.tigris.subversion.subclipse.core.svnnature">
+<project reference="0.9.3,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/de.tud.stg.tigerseye.examples.jscienceunits,de.tud.stg.tigerseye.examples.jscienceunits"/>
 <project reference="0.9.3,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/de.tud.stg.tigerseye.examples.LogoDSL,de.tud.stg.tigerseye.examples.LogoDSL"/>
 <project reference="0.9.3,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/de.tud.stg.tigerseye.examples.MapDSL,de.tud.stg.tigerseye.examples.MapDSL"/>
 <project reference="0.9.3,https://cage.st.informatik.tu-darmstadt.de/dsl/svn/tigerseye-plugin/de.tud.stg.tigerseye.examples.SetDSL,de.tud.stg.tigerseye.examples.SetDSL"/>
@@ -11,9 +12,10 @@
 <workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1295896375765_7" label="dsls" name="dsls">
 <item elementID="=de.tud.stg.tigerseye.examples.SetDSL" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=de.tud.stg.tigerseye.examples.LogoDSL" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=de.tud.stg.tigerseye.examples.statemachine" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=de.tud.stg.tigerseye.examples.MapDSL" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=de.tud.stg.tigerseye.examples.SimpleSQLDSL" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=de.tud.stg.tigerseye.examples.StatefulDSL" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=de.tud.stg.tigerseye.examples.MapDSL" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=de.tud.stg.tigerseye.examples.statemachine" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=de.tud.stg.tigerseye.examples.jscienceunits" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 </workingSets>
 </psf>

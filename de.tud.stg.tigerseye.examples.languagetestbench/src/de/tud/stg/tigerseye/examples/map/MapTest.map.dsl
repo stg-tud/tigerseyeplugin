@@ -14,7 +14,6 @@ package de.tud.stg.tigerseye.examples.map
 
 map(name:'MapTest'){
 	
-	// How to use the special writing style
 	
 	def b1 = buildEntry("firstName", "David")
 	
@@ -23,6 +22,12 @@ map(name:'MapTest'){
 	println b1
 	
 	def m = buildMap(String.class, String.class, b1, b2)
+	
+	// Check if it works with 1.7.
+	
+	/*
+	def m2 = [Integer,String: 1="hans",2="peter"]
+	*/
 	
 	println m
 	

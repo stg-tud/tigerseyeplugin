@@ -39,7 +39,7 @@ public class Runner {
 		aBinding.setVariable("myActionBinding", aMap);
 		aBinding.setVariable("fsm", new Closure(null) {
 			public Object doCall(Map<String,Object> params, Closure definition) {
-				StateMachineDSL dsl = new StateMachineDSL();				
+				StateMachineDSL dsl = new StateMachineDSL();
 				return dsl.fsm((HashMap<String,Object>)params,definition);
 			}
 		});
