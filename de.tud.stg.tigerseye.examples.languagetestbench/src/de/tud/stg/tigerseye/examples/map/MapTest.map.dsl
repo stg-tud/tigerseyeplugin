@@ -10,25 +10,27 @@ package de.tud.stg.tigerseye.examples.map
  */
 
 
+//needs manual import of dependency that will be necessary after transformation
+import de.tud.stg.tigerseye.examples.mapdsl.Entry
 
 
-map(name:'MapTest'){
+
+map(name:'MapTest'){	
 	
+	def hanspeter = [Integer,String: 1="hans",2="peter"]	
 	
-	def b1 = buildEntry("firstName", "David")
+	println hanspeter
 	
-	def b2 = buildEntry("lastName" , "Wheeler")
+	def doubleint = [Double , Integer : 0=0,1=1,2=2,3=3, 4=4,5=5,6=6,7=7,8=8,9=9,10=10]
+	println doubleint
+ 
+	def hans = [String, Object : "name"="Hans", "lastname"="Häuser", "age"=21 , "married"=false]	
+	println "hans ist $hans"
 	
-	println b1
+	def peter = [String, Object : "name"= "Peter", "lastname"="Bauer", "age"=45, "married"=true]	
+	println "peter ist $peter"
 	
-	def m = buildMap(String.class, String.class, b1, b2)
-	
-	// Check if it works with 1.7.
-	
-	/*
-	def m2 = [Integer,String: 1="hans",2="peter"]
-	*/
-	
-	println m
+	hans.putAll(peter) 
+	assert hans.equals(peter)
 	
 }
