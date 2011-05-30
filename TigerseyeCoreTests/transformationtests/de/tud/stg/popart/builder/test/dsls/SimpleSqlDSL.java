@@ -17,7 +17,7 @@ import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeywor
  * @author Kamil Erhard
  * 
  */
-
+@DSL(whitespaceEscape=" ")
 public class SimpleSqlDSL implements de.tud.stg.popart.dslsupport.DSL {
 private static final Logger logger = LoggerFactory.getLogger(SimpleSqlDSL.class);
 

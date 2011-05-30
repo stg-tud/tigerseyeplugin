@@ -5,18 +5,7 @@ import java.io.PrintWriter;
 import java.util.List;
 
 import jjtraveler.VisitFailure;
-import aterm.AFun;
-import aterm.ATerm;
-import aterm.ATermAppl;
-import aterm.ATermBlob;
-import aterm.ATermFactory;
-import aterm.ATermInt;
-import aterm.ATermList;
-import aterm.ATermLong;
-import aterm.ATermPlaceholder;
-import aterm.ATermReal;
-import aterm.Visitable;
-import aterm.Visitor;
+import aterm.*;
 import aterm.pure.SingletonFactory;
 
 public class PrettyGroovyCodePrinter implements Visitor, CodePrinter {
@@ -28,9 +17,9 @@ public class PrettyGroovyCodePrinter implements Visitor, CodePrinter {
 	public PrettyGroovyCodePrinter() {
 	}
 
+	@Override
 	public void write(OutputStream out) {
 		PrintWriter printWriter = new PrintWriter(out);
-
 		printWriter.write(this.sb.toString());
 		printWriter.flush();
 		this.sb = new StringBuilder();

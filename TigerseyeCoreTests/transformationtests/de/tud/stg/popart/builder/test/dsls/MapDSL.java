@@ -66,4 +66,5 @@ public class MapDSL implements de.tud.stg.popart.dslsupport.DSL {
 		}
 		return map;
 	}
+
 }

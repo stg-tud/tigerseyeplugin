@@ -200,7 +200,8 @@ private static final Logger logger = LoggerFactory.getLogger(HandlingDispatcher.
 	// clazz.getComponentType());
 
 		//FIXME GrammarBuilder has obviously some methods used by different classes independently, he should be decomposed in independent modules 
-		GrammarBuilder gb = new GrammarBuilder();
+
+	// GrammarBuilder gb = new GrammarBuilder();
 		
 		Rule r1 = null;
 		if (parameterOptions.get("arrayDelimiter").matches("\\s+")) {

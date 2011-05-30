@@ -1,4 +1,4 @@
-package de.tud.stg.popart.builder.test;
+package de.tud.stg.tigerseye.test;
 
 import java.io.InputStream;
 

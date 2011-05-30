@@ -146,6 +146,7 @@ public class DSLResourceHandler implements ResourceHandler {
     }
 
 	protected GrammarBuilder buildNeccessaryGrammar(Context context) {
+	// FIXME(Leo Roos) last access to deprecated grammar builder constructor
 		GrammarBuilder gb = new GrammarBuilder();
 		IGrammar<String> grammar = gb.buildGrammar(context.getDSLClasses());
 

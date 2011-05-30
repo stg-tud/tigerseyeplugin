@@ -61,13 +61,24 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 
 	private Rule startRule;
 
-	private static UnicodeLookupTable unicodeLookupTable = UnicodeLookupTable.getDefaultInstance();
+    private final UnicodeLookupTable unicodeLookupTable;
 
 	public final HashMap<String, MethodOptions> methodAliases = new HashMap<String, MethodOptions>();
 	private final Set<String> keywords = new LinkedHashSet<String>();
 
+    /**
+     * This Constructor sets a default Unicode lookup table, expecting to be run
+     * in a plug-in environment
+     * 
+     * @deprecated use {@link #GrammarBuilder(UnicodeLookupTable)} when possible
+     */
+	@Deprecated
 	public GrammarBuilder() {
+	this(UnicodeLookupTable.getDefaultInstance());
+	}
 
+    public GrammarBuilder(UnicodeLookupTable ult) {
+	this.unicodeLookupTable = ult;
 		this.grammar = new Grammar();
 		this.typeHandler = new HandlingDispatcher(this.grammar);
 
@@ -362,7 +373,7 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 					}
 				} else {
 
-					Character c = GrammarBuilder.unicodeLookupTable.transform(keyword);
+		    Character c = unicodeLookupTable.transform(keyword);
 
 					if (c != null) {
 						keyword = c.toString();

@@ -1,3 +1,0 @@
-getStart()
-
-state 12

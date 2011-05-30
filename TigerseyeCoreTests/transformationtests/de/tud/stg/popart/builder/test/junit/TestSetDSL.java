@@ -1,6 +1,6 @@
 package de.tud.stg.popart.builder.test.junit;
 
-import static de.tud.stg.popart.builder.test.TestUtils.test;
+import static de.tud.stg.tigerseye.test.TestUtils.test;
 
 import org.junit.Test;
 

@@ -1,12 +1,13 @@
 package de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import jjtraveler.VisitFailure;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import aterm.ATerm;
 import aterm.ATermFactory;
 import aterm.ATermList;
@@ -27,29 +28,35 @@ private static final Logger logger = LoggerFactory.getLogger(ATermBuilder.class)
 
 	private static ATermFactory fac = SingletonFactory.getInstance();
 	private ATerm term;
-	private final boolean DEBUG = false;
+
+    private final IAbstractNode head;
 
 	public ATermBuilder(IAbstractNode head) {
-		this.term = this.buildATerm(head);
-
-		if (this.DEBUG)
-			logger.info("built ATerm: " + this.term);
-		try {
-			this.term = (ATerm) this.term.accept(new ATermSimplifier());
-			if (this.DEBUG)
-				logger.info("simplified ATerm: " + this.term);
-		} catch (VisitFailure e) {
-			logger.warn("Generated log statement",e);
-		}
+	this.head = head;
 	}
 
-	public ATerm getATerm() {
-		return this.term;
+    /**
+     * Builds and returns the term for the initialized head value.
+     * 
+     * @return
+     * */
+    public ATerm getATerm() {
+	this.term = this.buildATerm(head);
+
+	logger.debug("built ATerm: {}", this.term);
+	try {
+	    this.term = (ATerm) this.term.accept(new ATermSimplifier());
+
+	    logger.debug("simplified ATerm: {}", this.term);
+	} catch (VisitFailure e) {
+	    logger.warn("Generated log statement", e);
 	}
+	return this.term;
+    }
 
 	int index = 0;
 
-	public ATerm buildATerm(IAbstractNode node) {
+    private ATerm buildATerm(IAbstractNode node) {
 		int oldIndex = this.index;
 		this.index = 0;
 

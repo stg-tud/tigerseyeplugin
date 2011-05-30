@@ -21,8 +21,6 @@ import de.tud.stg.parlex.ast.IAbstractNode;
 import de.tud.stg.parlex.core.IGrammar;
 import de.tud.stg.parlex.parser.earley.Chart;
 import de.tud.stg.parlex.parser.earley.EarleyParser;
-import de.tud.stg.popart.builder.test.GroovyScript;
-import de.tud.stg.popart.builder.test.TestUtils;
 import de.tud.stg.popart.builder.test.dsls.WordMachine;
 import de.tud.stg.popart.builder.test.statemachine.fsm.EventProducer;
 import de.tud.stg.popart.builder.test.statemachine.fsm.StateMachine;
@@ -33,6 +31,8 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.UnicodeLookupTable;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.ATermBuilder;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.PrettyGroovyCodePrinter;
+import de.tud.stg.tigerseye.test.GroovyScript;
+import de.tud.stg.tigerseye.test.TestUtils;
 
 public class TestWordMachine {
 private static final Logger logger = LoggerFactory.getLogger(TestWordMachine.class);
