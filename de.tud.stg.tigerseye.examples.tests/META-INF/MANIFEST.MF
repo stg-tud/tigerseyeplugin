@@ -10,11 +10,12 @@ Require-Bundle: de.tud.stg.tigerseye.examples.LogoDSL;bundle-version="0.0.3",
  de.tud.stg.tigerseye.examples.SetDSL;bundle-version="0.0.2",
  de.tud.stg.tigerseye.examples.SimpleSQLDSL;bundle-version="0.0.2",
  de.tud.stg.tigerseye.examples.StatefulDSL;bundle-version="0.0.1",
- de.tud.stg.tigerseye.examples.jscienceunits;bundle-version="1.0.0",
  de.tud.stg.tigerseye.examples.statemachine;bundle-version="0.0.1",
  de.tud.stg.parlex;bundle-version="1.0.0",
  de.tud.stg.tigerseye.eclipse;bundle-version="0.0.1",
  de.tud.stg.tigerseye.eclipse.core;bundle-version="0.0.1",
  de.tud.stg.tigerseye.eclipse.dslsupport;bundle-version="0.0.1",
- de.tud.stg.tigerseye.eclipse.ui;bundle-version="0.0.1"
+ de.tud.stg.tigerseye.eclipse.ui;bundle-version="0.0.1",
+ de.tud.stg.tigerseye.examples.unitsdsl;bundle-version="0.0.1",
+ org.junit;bundle-version="4.8.1"
 Import-Package: org.junit

@@ -3,6 +3,7 @@ package de.tud.stg.tigerseye.example.dzoneunits
 import javax.measure.unit.Unit;
 import org.jscience.physics.amount.Amount;
 
+import de.tud.stg.popart.builder.core.annotations.DSL;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod;
 import de.tud.stg.popart.dslsupport.Interpreter
 import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
@@ -12,7 +13,8 @@ import de.tud.stg.tigerseye.eclipse.core.builder.transformers.AnnotationExtracto
 class UnitsDSL extends Interpreter{
 
 	static{
-		UnitsGroovyDSL.enableUnits()
+		//useful in order to avoid defining arithmetic operations for the language as well
+		GroovyDefinitionForUnitsDSL.enableUnits()
 	}
 
 	public Object eval(HashMap map, Closure cl) {

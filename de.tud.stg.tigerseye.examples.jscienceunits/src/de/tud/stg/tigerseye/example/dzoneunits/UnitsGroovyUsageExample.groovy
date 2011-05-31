@@ -1,10 +1,10 @@
-import de.tud.stg.tigerseye.example.dzoneunits.UnitsGroovyDSL
+import de.tud.stg.tigerseye.example.dzoneunits.GroovyDefinitionForUnitsDSL
 import org.jscience.physics.amount.Amount
 import javax.measure.quantity.Velocity
 import javax.measure.unit.Unit
 import de.tud.stg.tigerseye.example.dzoneunits.UnitBinding
 
-UnitsGroovyDSL.enableUnits()
+GroovyDefinitionForUnitsDSL.enableUnits()
 // use the script binding for retrieving unit references
 binding = new UnitBinding()
 

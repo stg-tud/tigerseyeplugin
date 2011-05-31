@@ -1,9 +1,12 @@
 package de.tud.stg.tigerseye.eclipse.core;
 
+import java.util.Set;
+
 import javax.annotation.Nonnull;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Transformation;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyePreferenceInitializer;
@@ -56,7 +59,21 @@ public class TransformationHandler {
     }
 
     public boolean supports(TransformationType type) {
-	return getTransformation().getSupportedFileTypes().contains(type);
+	Set<FileType> supportedFileTypes = getTransformation()
+		.getSupportedFileTypes();
+	/*
+	 * FIXME: consider refactoring for FileType split into physical
+	 * representation (file extension) an conceptual (a DSL Language
+	 * provider); When is the type neither Filetype nor DSLDefinitionImpl
+	 */
+	if (type instanceof DSLDefinition)
+	    return supportedFileTypes.contains(FileType.DSL);
+	//
+	if (type instanceof FileType)
+	    return supportedFileTypes.contains(type);
+
+	throw new IllegalArgumentException(
+		"An object of not anticipated kind has been passed: " + type);
     }
 
     /**

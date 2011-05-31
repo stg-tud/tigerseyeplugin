@@ -1,7 +1,4 @@
 package de.tud.stg.popart.builder.test.dsls;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import groovy.lang.Closure;
 
 import java.util.HashMap;
@@ -19,7 +16,6 @@ import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeywor
  */
 @DSL(whitespaceEscape=" ")
 public class SimpleSqlDSL implements de.tud.stg.popart.dslsupport.DSL {
-private static final Logger logger = LoggerFactory.getLogger(SimpleSqlDSL.class);
 
 
 	public Object eval(HashMap map, Closure cl) {
@@ -31,12 +27,12 @@ private static final Logger logger = LoggerFactory.getLogger(SimpleSqlDSL.class)
 	@DSLMethod(prettyName = "SELECT__p0__FROM__p1")
 	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
 	public void selectFrom(String[] columns, String[] tables) {
-		logger.info("sending QUERY");
+		System.out.println("sending QUERY");
 	}
 
 	@DSLMethod(prettyName = "SELECT__p0__FROM__p1__WHERE__p2")
 	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
 	public void selectFromWhere(String[] columns, String[] tables, @DSL(arrayDelimiter = "AND") String[] checks) {
-		logger.info("sending QUERY");
+		System.out.println("sending QUERY");
 	}
 }

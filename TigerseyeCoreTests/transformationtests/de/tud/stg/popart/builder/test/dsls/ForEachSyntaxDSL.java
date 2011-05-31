@@ -12,7 +12,8 @@ import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeyword;
 
 /**
- * {@link ForEachSyntaxDSL} is a DSL with support for an forEach statement (without using the built in java one)
+ * {@link ForEachSyntaxDSL} is a DSL with support for a forEach statement
+ * (without using the built in java one)
  * 
  * @author Kamil Erhard
  * 

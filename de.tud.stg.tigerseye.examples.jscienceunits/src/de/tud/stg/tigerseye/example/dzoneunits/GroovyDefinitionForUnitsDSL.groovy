@@ -3,7 +3,7 @@ package de.tud.stg.tigerseye.example.dzoneunits
 import javax.measure.unit.*
 import org.jscience.physics.amount.*
 
-class UnitsGroovyDSL {
+class GroovyDefinitionForUnitsDSL {
 	
 	public static void enableUnits(){
 		// Allow ExpandoMetaClass to traverse class hierarchies

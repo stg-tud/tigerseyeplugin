@@ -11,4 +11,9 @@ public class TestMathDSL {
 	public void testMathDSL() {
 		test("MathDSL", MathDSL.class);
 	}
+	
+	@Test
+	public void testMathDSLSimple() {
+		test("MathDSLSimple", MathDSL.class);
+	}
 }

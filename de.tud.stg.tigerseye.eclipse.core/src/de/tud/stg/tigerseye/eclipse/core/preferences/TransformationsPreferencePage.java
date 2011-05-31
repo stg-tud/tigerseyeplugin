@@ -248,7 +248,8 @@ public class TransformationsPreferencePage extends PreferencePage implements
 
     private void saveItemsFor(List<CheckedItem> changedItems,
 	    TransformationType toBeAssociatedTo) {
-	logger.trace("About to save items {}" + changedItems);
+	logger.trace("About to save items {} for {}", new Object[] {
+		changedItems, toBeAssociatedTo });
 	for (CheckedItem checkedItem : changedItems) {
 	    TransformationHandler transformationHandler = (TransformationHandler) checkedItem.data;
 	    if (transformationHandler == null)

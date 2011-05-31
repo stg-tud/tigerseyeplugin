@@ -51,6 +51,12 @@ public class TestDSLTransformation {
 	public String performTransformation(InputStream inputStream,
 			Class<? extends DSL>[] classes ) throws IOException, VisitFailure,
 			FileNotFoundException {
+		String sb = IOUtils.getStringFromReader(new InputStreamReader(inputStream));
+		
+		return performTransformation(sb,classes);
+	}
+
+	public String performTransformation(String sb, Class<? extends DSL>[] classes) throws VisitFailure {
 		GrammarBuilder gb = new GrammarBuilder(ult);
 		IGrammar<String> grammar = gb.buildGrammar(classes);
 
@@ -59,7 +65,6 @@ public class TestDSLTransformation {
 		ILexer lexer = new KeywordSensitiveLexer(new KeywordSeperator());
 		EarleyParser earleyParser = new EarleyParser(lexer, grammar);
 		
-		String sb = IOUtils.getStringFromReader(new InputStreamReader(inputStream));
 //		logger.info("= Parsing input stream = {}", inputStream);			
 
 		Chart chart = (Chart) earleyParser.parse(sb.trim());

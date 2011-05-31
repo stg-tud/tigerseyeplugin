@@ -15,7 +15,6 @@ import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeywor
  * @author Kamil Erhard
  * 
  */
-@DSL
 public class StatefulDSL implements de.tud.stg.popart.dslsupport.DSL {
 
 	public Object eval(HashMap map, Closure cl) {
@@ -26,7 +25,6 @@ public class StatefulDSL implements de.tud.stg.popart.dslsupport.DSL {
 
 	Map<String, Object> variables = new HashMap<String, Object>();
 
-	// @DSLAlias(prettyName = "SELECT_p0_FROM_p1")
 	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
 	public void set_p0_equals_p1(String key, Object value) {
 		this.variables.put(key, value);

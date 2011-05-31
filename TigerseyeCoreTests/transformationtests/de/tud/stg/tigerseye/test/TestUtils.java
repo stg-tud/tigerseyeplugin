@@ -1,10 +1,7 @@
 package de.tud.stg.tigerseye.test;
 
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -15,7 +12,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import jjtraveler.VisitFailure;
@@ -23,15 +19,12 @@ import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tud.stg.popart.dslsupport.DSL;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.UnicodeLookupTable;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.PrettyGroovyCodePrinter;
 
 public class TestUtils {
 	
@@ -47,7 +40,8 @@ public class TestUtils {
 
 	public static OutputStream out = System.out;
 
-	public static void test(String file, Class<? extends DSL>... classes) {
+	@SuppressWarnings("unchecked")
+	public static void test(String file, @SuppressWarnings("rawtypes") Class ... classes) {
 		test(true, file, classes);
 	}
 
@@ -110,7 +104,7 @@ public class TestUtils {
 		Assert.assertEquals(output, expected);
 	}
 	
-	public static void equalsLinewiseIgnoringWhitespace(String stringa, String stringb){
+	private static void equalsLinewiseIgnoringWhitespace(String stringa, String stringb){
 		List<String> linesa = toComparableList(stringa);
 		List<String> linesb = toComparableList(stringb);
 		
@@ -158,7 +152,6 @@ public class TestUtils {
 		try {
 			String output  = FileUtils.readFileToString(getGeneratedFile(file));
 			String expected = FileUtils.readFileToString(getExpectedFile(file));
-//			equalsIgnoringWhitspace(expected, output);
 			equalsIgnoringWhitspace(expected, output);
 		} catch (IOException e) {
 			throw new UnhandledException(e);
