@@ -31,15 +31,8 @@ set(name:'SetTest'){
 	
 	Set a = { "2"} ⋃ { "6", "8", "2"}; 
 	Set ares = { "2", "6", "8"};
-	
-	
+		
+	println a
+	println ares
 
-
-	
-	
-	
-//	println a
-//	println b
-//	println (a.equals(b)) 
-	println (b.equals(bres))	
 }
