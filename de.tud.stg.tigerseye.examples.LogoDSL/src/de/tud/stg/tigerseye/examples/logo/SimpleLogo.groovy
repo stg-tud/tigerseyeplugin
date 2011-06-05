@@ -57,12 +57,12 @@ public class SimpleLogo extends Interpreter
 	public void turtle(HashMap params, Closure choreography) {
 	  if (DEBUG) println("Abstraction operator: turtle");
 		
-	  String name = params.name;
+	  String name = params["name"];
 	  if (name == null) {
 		  name = "Noname";
 	  }
 		
-	  int color = params.color;
+	  Integer color = params["color"];
 	  if (color == null) {
 		  color = Color.BLACK.value;
 	  }
