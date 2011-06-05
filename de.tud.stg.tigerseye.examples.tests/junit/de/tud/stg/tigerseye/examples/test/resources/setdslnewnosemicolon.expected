@@ -1,0 +1,7 @@
+Set ares = asSet(
+multiElementedList(
+"2",
+multiElementedList(
+"6",
+singleElementedList(
+"8"))))

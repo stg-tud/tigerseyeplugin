@@ -1,19 +1,22 @@
 package de.tud.stg.tigerseye.eclipse.core.builder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
-import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
@@ -35,6 +38,63 @@ public class Builder extends IncrementalProjectBuilder {
 	    new GroovyResourceVisitor(), new JavaResourceVisitor() };
 
     @Override
+    protected void clean(IProgressMonitor monitor) throws CoreException {
+	if (monitor == null)
+	    monitor = new NullProgressMonitor();
+	try {
+	    int totalWork = 1000;
+	    int cleanwork = totalWork / 10;
+	    int fullBuildWork = totalWork - cleanwork;
+
+	    monitor.beginTask("Cleaning " + getProject(), totalWork);
+	    String outputDirectoryPath = TigerseyeRuntime
+		    .getOutputDirectoryPath();
+	    logger.trace("cleaning output directory {} for  {}",
+		    outputDirectoryPath, getProject());
+
+	    IJavaProject jp = JavaCore.create(getProject());
+	    IPackageFragmentRoot[] packageFragmentRoots;
+	    packageFragmentRoots = jp.getPackageFragmentRoots();
+	    for (IPackageFragmentRoot packRoot : packageFragmentRoots) {
+		if (!(packRoot.getKind() == IPackageFragmentRoot.K_SOURCE))
+		    continue;
+
+		if (isTigerseyeOutputSourceDirectory(packRoot)) {
+		    IPath projectRelativePath = packRoot.getResource().getProjectRelativePath();
+		    IFolder outputsrcfolder = getProject().getFolder(
+			    projectRelativePath);
+		    int includeAll = IContainer.INCLUDE_HIDDEN
+			    | IContainer.INCLUDE_PHANTOMS
+			    | IContainer.INCLUDE_TEAM_PRIVATE_MEMBERS;
+		    IResource[] members = outputsrcfolder.members(includeAll);
+		    int onedeletework = (int) ((float) cleanwork / members.length);
+		    for (IResource resource : members) {
+			if (monitor.isCanceled())
+			    return;
+			resource.delete(false, new SubProgressMonitor(monitor,
+				onedeletework));
+		    }
+		}
+
+	    }
+	    this.fullBuild(new SubProgressMonitor(monitor, fullBuildWork));
+	} finally {
+	    monitor.done();
+	}
+
+    }
+
+    private boolean isTigerseyeOutputSourceDirectory(IJavaElement packRoot) {
+	IFolder tigerseyeoutputfolder = getProject().getFolder(
+		TigerseyeRuntime.getOutputDirectoryPath());
+	IPath projectRelativePath = tigerseyeoutputfolder.getFullPath();
+	IPath packRootPath = packRoot.getPath();
+	boolean isTigerseyeOutputSourceDirectory = packRootPath
+		.equals(projectRelativePath);
+	return isTigerseyeOutputSourceDirectory;
+    }
+
+    @Override
     protected IProject[] build(int kind,
 	    @SuppressWarnings("rawtypes") Map args, IProgressMonitor monitor) {
 	if (monitor == null) {
@@ -43,36 +103,9 @@ public class Builder extends IncrementalProjectBuilder {
 	try {
 	    monitor.beginTask("Tigerseye Build", 100);
 	    if (kind == IncrementalProjectBuilder.CLEAN_BUILD) {
-		IJavaProject jp = JavaCore.create(getProject());
-		IPackageFragmentRoot[] packageFragmentRoots;
-		packageFragmentRoots = jp.getPackageFragmentRoots();
-		for (IPackageFragmentRoot packRoot : packageFragmentRoots) {
-		    if (!(packRoot.getKind() == IPackageFragmentRoot.K_SOURCE))
-			continue;
-		    String path = packRoot.getPath().toString();
-		    if (path.endsWith(TigerseyeRuntime.getOutputDirectoryPath())) {
-			IJavaElement[] resource = packRoot.getChildren();
-			for (IJavaElement iJavaElement : resource) {
 
-			    if (iJavaElement instanceof IPackageFragment) {
-				ICompilationUnit[] compilationUnits = ((IPackageFragment) iJavaElement)
-					.getCompilationUnits();
-				for (ICompilationUnit iCompilationUnit : compilationUnits) {
-				    try {
-					iCompilationUnit.delete(false,
-						new SubProgressMonitor(monitor,
-							1));
-				    } catch (JavaModelException e) {
-					logger.warn(
-						"Could not delete {} during full build",
-						iCompilationUnit);
-				    }
-				}
-			    }
-			}
-		    }
-		    this.fullBuild(monitor);
-		}
+		this.fullBuild(monitor);
+
 	    } else
 
 	    if (kind == IncrementalProjectBuilder.FULL_BUILD) {
@@ -86,8 +119,6 @@ public class Builder extends IncrementalProjectBuilder {
 		}
 
 	    }
-	} catch (JavaModelException e) {
-	    logger.error("unexpected: ", e);
 	} finally {
 	    monitor.done();
 	}
@@ -103,7 +134,8 @@ public class Builder extends IncrementalProjectBuilder {
 	    monitor = new NullProgressMonitor();
 	logger.info("starting full build");
 	try {
-	    monitor.beginTask("Building", 100);
+	    int totalWork = 10000;
+	    monitor.beginTask("Building", totalWork);
 	    IProject project = this.getProject();
 	    IResourceDelta delta = this.getDelta(project);
 
@@ -116,37 +148,30 @@ public class Builder extends IncrementalProjectBuilder {
 			    + visitor.getClass().getSimpleName());
 		    logger.info("Starting build with visitor {}", visitor);
 		    delta.accept(visitor);
-		    monitor.worked(1);
+		    monitor.worked(totalWork / visitors.length);
 		}
 	    } else {
 
 		IPackageFragmentRoot[] packageFragmentRoots = jp
 			.getPackageFragmentRoots();
+
+		List<IPackageFragmentRoot> sourcesToBuild = new ArrayList<IPackageFragmentRoot>();
+
 		for (IPackageFragmentRoot packRoot : packageFragmentRoots) {
-		    String path = packRoot.getPath().toString();
 
 		    if (!(packRoot.getKind() == IPackageFragmentRoot.K_SOURCE))
 			continue;
 
-		    if (!path.endsWith(TigerseyeRuntime.getOutputDirectoryPath())) {
-			Object[] nonJavaResources = packRoot
-				.getNonJavaResources();
-			for (Object object : nonJavaResources) {
-			    IResource resource = (IResource) object;
-			    for (ResourceVisitor visitor : visitors) {
-				monitor.subTask("For Resource:" + object
-					+ " with Visitor:"
-					+ visitor.getClass().getSimpleName());
-				if (visitor.isInteresstedIn(resource)) {
-				    ResourceHandler newResourceHandler = visitor
-					    .newResourceHandler();
-				    newResourceHandler.handleResource(resource);
-				}
-				monitor.worked(1);
-			    }
-			    monitor.worked(1);
-			}
+		    if (!isTigerseyeOutputSourceDirectory(packRoot)) {
+			sourcesToBuild.add(packRoot);
 		    }
+
+		}
+
+		int sourceDirWorked = totalWork / sourcesToBuild.size();
+		for (IPackageFragmentRoot sourceDirRoot : sourcesToBuild) {
+		    buildResourcesInSourceDirectory(new SubProgressMonitor(
+			    monitor, sourceDirWorked), sourceDirRoot);
 		}
 
 	    }
@@ -155,5 +180,34 @@ public class Builder extends IncrementalProjectBuilder {
 	} finally {
 	    monitor.done();
 	}
+    }
+
+    private void buildResourcesInSourceDirectory(IProgressMonitor monitor,
+	    IPackageFragmentRoot packRoot) throws JavaModelException {
+	try {
+	    Object[] nonJavaResources = packRoot.getNonJavaResources();
+	    float totalWork = 1000;
+	    monitor.beginTask(
+		    "Building source directory " + packRoot.getElementName(),
+		    (int) totalWork);
+	    int oneResourceWork = (int) (totalWork / nonJavaResources.length);
+	    for (Object object : nonJavaResources) {
+		IResource resource = (IResource) object;
+		for (ResourceVisitor visitor : visitors) {
+		    if (visitor.isInteresstedIn(resource)) {
+			monitor.subTask("resource:" + object + " with Visitor:"
+				+ visitor.getClass().getSimpleName());
+			ResourceHandler newResourceHandler = visitor
+				.newResourceHandler();
+			newResourceHandler.handleResource(resource);
+		    }
+		    // monitor.worked(1);
+		}
+		monitor.worked(oneResourceWork);
+	    }
+	} finally {
+	    monitor.done();
+	}
+
     }
 }

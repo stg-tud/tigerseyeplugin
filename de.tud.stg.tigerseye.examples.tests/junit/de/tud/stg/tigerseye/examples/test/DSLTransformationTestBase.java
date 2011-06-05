@@ -12,6 +12,7 @@ import org.junit.Before;
 
 public class DSLTransformationTestBase {
 
+	private static final String generated_groovy_file_output_folder = "junit/generated/";
 	private DSLTransformationTester dtt;
 
 	@Before
@@ -49,7 +50,7 @@ public class DSLTransformationTestBase {
 	
 
 	protected File getOutputFile(String filePrefix) {
-		String gen = "junit/generated/" + filePrefix + ".generated.groovy";
+		String gen = generated_groovy_file_output_folder + filePrefix + ".generated.groovy";
 		return new File(gen);
 	}
 

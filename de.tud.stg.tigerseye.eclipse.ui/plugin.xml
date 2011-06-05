@@ -130,7 +130,7 @@
          <menu
                icon="icons/plane16.png"
                id="de.tud.stg.tigerseye.eclipse.tigerseyemenu"
-               label="Tigerseye"
+               label="%menu.label"
                path="additions">
          </menu>
          <visibility>
@@ -147,7 +147,7 @@
          <action
                class="de.tud.stg.tigerseye.ui.actions.RemoveTigerseyeNatureAction"
                id="de.tud.stg.tigerseye.ui.action.removenature"
-               label="Remove Tigerseye nature"
+               label="%action.label"
                menubarPath="de.tud.stg.tigerseye.eclipse.tigerseyemenu/nature">
          </action>
          <visibility>
@@ -164,6 +164,59 @@
             extender="de.tud.stg.tigerseye.ui.editors.TigerseyeGroovyEditorHighlightingExtender"
             natureID="de.tud.stg.tigerseye.eclipse.core.tigerseyeNature">
       </highlightingExtender>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="de.tud.stg.tigerseye.ui.handler.SwitchBetweenTranformerTransformedFile"
+            description="Switches to the transformed file of the current DSL file."
+            id="de.tud.stg.tigerseye.eclipse.ui.switchToTransformedFile"
+            name="%opentransformedfile.name">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="true"
+            locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+         <command
+               commandId="de.tud.stg.tigerseye.eclipse.ui.switchToTransformedFile"
+               label="%opentransformedfile.label"
+               style="push">
+            <visibleWhen
+                  checkEnabled="false">
+               <iterate
+                     operator="or">
+                  <test
+                        property="org.eclipse.core.resources.extension"
+                        value="dsl">
+                  </test>
+               </iterate>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+      <menuContribution
+            allPopups="true"
+            locationURI="popup:de.stg.tud.tigerseye.ui.editors.TigerseyeEditor.EditorContext?after=additions">
+         <command
+               commandId="de.tud.stg.tigerseye.eclipse.ui.switchToTransformedFile"
+               label="%opentransformedfile.label"
+               style="push">
+            <visibleWhen
+                  checkEnabled="false">
+            </visibleWhen>
+         </command>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="de.tud.stg.tigerseye.eclipse.ui.switchToTransformedFile"
+            contextId="org.eclipse.ui.contexts.window"
+            locale="en, de"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M3+M2+J">
+      </key>
    </extension>
 
 </plugin>

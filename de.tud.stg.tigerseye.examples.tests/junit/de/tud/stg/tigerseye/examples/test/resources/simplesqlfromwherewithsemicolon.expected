@@ -1,0 +1,20 @@
+def q12 = selectFrom(
+[
+"NAME",
+"AGE"
+] as String[],
+[
+"PERSONS"
+] as String[])
+
+def q22 = selectFromWhere(
+[
+"NAME",
+"AGE"
+] as String[],
+[
+"PERSONS"
+] as String[],
+[
+"AGE>20"
+] as String[]);

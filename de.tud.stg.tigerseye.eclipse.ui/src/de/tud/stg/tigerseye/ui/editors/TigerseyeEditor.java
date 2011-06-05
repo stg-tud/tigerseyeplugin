@@ -13,7 +13,9 @@ import org.codehaus.groovy.eclipse.core.util.ReflectionUtils;
 import org.codehaus.groovy.eclipse.editor.GroovyConfiguration;
 import org.codehaus.groovy.eclipse.editor.GroovyEditor;
 import org.codehaus.groovy.eclipse.editor.GroovyTagScanner;
+import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.jdt.internal.ui.javaeditor.JavaOutlinePage;
 import org.eclipse.jdt.internal.ui.text.CombinedWordRule;
 import org.eclipse.jdt.internal.ui.text.CombinedWordRule.WordMatcher;
 import org.eclipse.jdt.ui.text.JavaSourceViewerConfiguration;
@@ -144,6 +146,23 @@ public class TigerseyeEditor extends GroovyEditor {
 	}
 	this.fileType = FileTypeHelper.getTypeForSrcResource(file.getName());
 	this.activeDSLs = activeDSLSet;
+    }
+
+    /*
+     * Have to override default groovy behavior, sinceI have no
+     * GroovyCompilationUnit to return. That causes a null pointer exception
+     * since no check is made for a non null GroovyCompilationUnit
+     */
+    @Override
+    protected JavaOutlinePage createOutlinePage() {
+	GroovyCompilationUnit gcu = getGroovyCompilationUnit();
+	if (gcu == null) {
+	    JavaOutlinePage page = new JavaOutlinePage(fOutlinerContextMenuId,
+		    this);
+	    setOutlinePageInput(page, getEditorInput());
+	    return page;
+	}
+	return super.createOutlinePage();
     }
 
 }

@@ -101,7 +101,7 @@ public class TestUtils {
 	public static void equalsIgnoringWhitspace(String output, String expected) {
 		output = removeWhitespaces(output);
 		expected = removeWhitespaces(expected);
-		Assert.assertEquals(output, expected);
+		Assert.assertEquals(expected, output);
 	}
 	
 	private static void equalsLinewiseIgnoringWhitespace(String stringa, String stringb){

@@ -1,16 +1,18 @@
-package de.tud.stg.tigerseye.example.dzoneunits;
+package de.tud.stg.tigerseye.examples.test.unitsdsl;
 
-import static org.junit.Assert.*;
-
-import javax.measure.unit.Unit;
-
-import org.jscience.physics.amount.Amount;
+import org.jscience.physics.amount.Amount
 import org.junit.Before;
 import org.junit.Test;
+import javax.measure.unit.Unit;
+import static org.junit.Assert.*;
 
-import de.tud.stg.tigerseye.eclipse.core.builder.transformers.AnnotationExtractor.DoubleElementHandler;
+import de.tud.stg.tigerseye.example.dzoneunits.UnitsDSL
 
-class UnitsDSLTest {
+/**
+ * Tests that the {@link UnitsDSL} API can be used as intended
+ *
+ */
+class UnitsDSLSemanticTest {
 
 	UnitsDSL ud
 	
@@ -49,7 +51,6 @@ class UnitsDSLTest {
 	public void testShowComplexSeconds() {
 		println ud.seconds(5)
 		def complexTime = ud.seconds(5) + ud.hours(20)
-		println complexTime
 		Amount expected = amountVal(5,"s").plus(amountVal(20,"h"))
 		println expected.compareTo(complexTime.plus(amountVal(3,"min")))
 		println expected.compareTo(expected)

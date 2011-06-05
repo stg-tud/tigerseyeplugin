@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
+import org.apache.commons.collections.SetUtils;
+
 import de.tud.stg.popart.builder.core.annotations.DSL;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod;
 import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
@@ -65,7 +67,7 @@ public class SetDSL implements de.tud.stg.popart.dslsupport.DSL {
 	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
 	public Set intersection(Set a, Set b) {
 		HashSet set = new HashSet(a);
-		set.addAll(b);
+		set.retainAll(b);
 		return set;
 	}
 
