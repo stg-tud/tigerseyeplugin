@@ -11,7 +11,7 @@ package de.tud.stg.tigerseye.examples.sql
 
 
 
-sql(name:'SqlQuery'){
+sql(name:'SqlQuery'){ 
 
 	def q11 = selectFrom( ["NAME","AGE"] as String[] , ["PERSONS"]  as String[] )
 	
