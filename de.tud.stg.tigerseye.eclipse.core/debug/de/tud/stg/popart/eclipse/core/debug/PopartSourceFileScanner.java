@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Stack;
 
+import org.apache.commons.io.IOUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 
@@ -27,7 +28,7 @@ import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartStructuredEleme
  */
 public class PopartSourceFileScanner {
 
-	private Stack<PopartSourceFileStructuredElementKeyword> stack = new Stack<PopartSourceFileStructuredElementKeyword>();
+	private final Stack<PopartSourceFileStructuredElementKeyword> stack = new Stack<PopartSourceFileStructuredElementKeyword>();
 	private int lineNumber = 1;
 	
 	/**
@@ -38,7 +39,7 @@ public class PopartSourceFileScanner {
 	 */
 	public void scanFile(IFile file) {
 		PopartSourceFileKeywordRegistry.getInstance().clear();
-		BufferedReader in;
+	BufferedReader in = null;
 		try {
 			in = new BufferedReader(new InputStreamReader(file.getContents()));
 			String line = null;			
@@ -56,7 +57,9 @@ public class PopartSourceFileScanner {
 			e.printStackTrace();
 		} catch (CoreException e) {
 			e.printStackTrace();
-		}	
+	} finally {
+	    IOUtils.closeQuietly(in);
+	}
 	}
 
 	/**

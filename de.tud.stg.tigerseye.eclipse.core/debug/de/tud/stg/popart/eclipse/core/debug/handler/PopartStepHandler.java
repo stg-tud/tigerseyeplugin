@@ -1,18 +1,13 @@
 package de.tud.stg.popart.eclipse.core.debug.handler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Observable;
 
+import org.apache.commons.io.IOUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
@@ -22,10 +17,11 @@ import org.eclipse.debug.core.IDebugEventSetListener;
 import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IThread;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.tud.stg.popart.eclipse.core.debug.PopartDebugUtils;
 import de.tud.stg.popart.eclipse.core.debug.PopartInvisibleLineBreakpoint;
-
 import de.tud.stg.popart.eclipse.core.debug.PopartSourceFileKeywordRegistry;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartSourceFileKeyword;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartSourceFileStructuredElementKeyword;
@@ -48,10 +44,10 @@ private static final Logger logger = LoggerFactory.getLogger(PopartStepHandler.c
 	private int runToLine;
 	private IThread thread;
 	private PopartSourceFileKeyword currentKeyword;
-	private ArrayList<PopartInvisibleLineBreakpoint> lastBreakpoints = new ArrayList<PopartInvisibleLineBreakpoint>();
+	private final ArrayList<PopartInvisibleLineBreakpoint> lastBreakpoints = new ArrayList<PopartInvisibleLineBreakpoint>();
 	private boolean secondResume = false;
 
-	private ArrayList<IObserver> observers = new ArrayList<IObserver>();
+	private final ArrayList<IObserver> observers = new ArrayList<IObserver>();
 
 	public void addObserver(ArrayList<IObserver> observer) {
 		logger.info("adding observers");
@@ -144,17 +140,22 @@ private static final Logger logger = LoggerFactory.getLogger(PopartStepHandler.c
 	private void setBreakPointOnClosure() {
 
 		InputStream inputstream;
+	BufferedReader bff = null;
 		try {
 			inputstream = PopartDebugUtils.getGroovyTempFile().getContents();
 			InputStreamReader reader = new InputStreamReader(inputstream);
-			BufferedReader bff = new BufferedReader(reader);
+	    bff = new BufferedReader(reader);
 			for (int i = 0; i < currentLine; i++) {
 				bff.readLine();
 			}
 			String line = bff.readLine();
+	    if (line == null)
+		return;
 			int lineNumber = currentLine + 1;
 			while (line.trim().equals("")) {
 				line = bff.readLine();
+		if (line == null)
+		    return;
 				lineNumber++;
 			}
 			if (line.trim().equals("{")) {
@@ -165,6 +166,8 @@ private static final Logger logger = LoggerFactory.getLogger(PopartStepHandler.c
 
 		} catch (IOException e) {
 			logger.warn("Generated log statement",e);
+	} finally {
+	    IOUtils.closeQuietly(bff);
 		}
 
 		secondResume = true;
@@ -276,6 +279,7 @@ private static final Logger logger = LoggerFactory.getLogger(PopartStepHandler.c
 	/**
 	 * Handles behavior after reaching a breakpoint (that could be temporally)
 	 */
+	@Override
 	public void handleDebugEvents(DebugEvent[] events) {
 
 		if (containsEvent(events, DebugEvent.SUSPEND)) {

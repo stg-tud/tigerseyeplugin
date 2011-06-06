@@ -1,16 +1,20 @@
-package de.tud.stg.tigerseye.examples.test;
+package de.tud.stg.tigerseye.test.transformation.utils;
+
+import javax.annotation.Nullable;
+
+import junit.framework.Assert;
 
 import de.tud.stg.popart.dslsupport.DSL;
 import de.tud.stg.tigerseye.test.PrettyGroovyCodePrinterFactory;
 import de.tud.stg.tigerseye.test.TestDSLTransformation;
-import de.tud.stg.tigerseye.test.TestUtils;
+import de.tud.stg.tigerseye.test.utils.StringComparison;
 
 public class DSLTransformationTester {
 	
-	private GeneratedTransformationWriter genWriter;
+	private @Nullable GeneratedTransformationWriter genWriter;
 	private final ExpectedRetriever expectedRetriever;
 	private final DSLInputRetriever inputRetriever;
-
+ 
 	public DSLTransformationTester(DSLInputRetriever ir, ExpectedRetriever er) {
 		this.inputRetriever = ir;
 		this.expectedRetriever = er;
@@ -54,9 +58,10 @@ public class DSLTransformationTester {
 		if(this.genWriter != null)
 			this.genWriter.write(filePrefix, transformation);
 	
-		TestUtils.equalsIgnoringWhitspace(transformation, getExpectedStream(filePrefix));
+		StringComparison.equalsIgnoringWhitspace(transformation, getExpectedStream(filePrefix));
 	
 	}
+	
 
 	private String getExpectedStream(String filePrefix) {
 		return this.expectedRetriever.getExpectedFor(filePrefix);

@@ -1,4 +1,4 @@
-package de.tud.stg.tigerseye.examples.test;
+package de.tud.stg.tigerseye.test.transformation.utils;
 
 public interface DSLInputRetriever {
 
