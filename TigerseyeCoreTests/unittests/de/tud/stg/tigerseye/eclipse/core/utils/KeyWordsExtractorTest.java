@@ -39,6 +39,8 @@ public class KeyWordsExtractorTest {
 		assertTrue("expected empty list", declaredLiteralKeywords.isEmpty());
 	}
 
+	//FIXME ("uses local resources that are not available on the classpath")
+	@Ignore("uses local resources that are not available on the classpath")
 	@Test
 	public void testGetDeclaredLiteralKeywordsForLogo() throws Exception {
 		Class<?> loadLogoClass = loadLogoClass();
@@ -79,6 +81,8 @@ public class KeyWordsExtractorTest {
 		return logoDSL;
 	}
 	
+	//FIXME ("uses local resources that are not available on the classpath")
+	@Ignore("uses local resources that are not available on the classpath")
 	@Test
 	public void testGetDeclaredMethodsLogo() throws Exception {
 		Class<?> logoClass = loadLogoClass();
