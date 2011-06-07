@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: transformingstatemachine
+Bundle-SymbolicName: transformingstatemachine
+Bundle-Version: 1.0.0.qualifier
+Require-Bundle: de.tud.stg.tigerseye.eclipse.dslsupport;bundle-version="0.0.1"
+Export-Package: de.tud.stg.tigerseye.transformingstatemachine
