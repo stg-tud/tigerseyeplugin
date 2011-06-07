@@ -1,8 +1,12 @@
 package com.example.fsm;
 
-import javax.swing.plaf.basic.BasicDesktopPaneUI.CloseAction;
+import groovy.lang.Closure;
 
-import com.example.fsm.examples.actions.ClosureAction;
+
+//import com.example.fsm.examples.actions.ClosureAction;
+
+import com.example.fsm.examples.actions.ClosureAction
+
 
 public class StateMachineDSL {
 
@@ -20,6 +24,19 @@ public class StateMachineDSL {
   public StateMachineDSL() {
 	  
   }
+  
+  /*
+   * ##########################################################################################################
+   * decompiled source 
+   */
+ 
+
+//  private State currentState;
+//  private StateMachine currentStateMachine;
+  
+  /*
+   * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+   */
   
   /**
    * Defines a new state machine.

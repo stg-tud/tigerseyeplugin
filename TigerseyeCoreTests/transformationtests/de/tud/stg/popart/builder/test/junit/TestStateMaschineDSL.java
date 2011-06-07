@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import de.tud.stg.popart.builder.test.statemachine.StateMachineDSL;
 
-@Ignore("about 10 seconds")
+//@Ignore("about 10 seconds")
 public class TestStateMaschineDSL {
 	@Test
 	public void testStateMachineDSL() {

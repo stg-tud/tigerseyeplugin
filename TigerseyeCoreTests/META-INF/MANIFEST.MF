@@ -14,8 +14,6 @@ Bundle-ClassPath: libs/mockito-all-1.8.5.jar,
  libs/hamcrest-all-1.1.jar
 Export-Package: de.tud.stg.popart.builder.test.dsls,
  de.tud.stg.popart.builder.test.junit,
- de.tud.stg.popart.builder.test.statemachine,
- de.tud.stg.popart.builder.test.statemachine.fsm,
  de.tud.stg.tigerseye.test,
  de.tud.stg.tigerseye.test.transformation.utils
 Bundle-Vendor: TUD

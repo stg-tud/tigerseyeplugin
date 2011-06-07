@@ -43,11 +43,11 @@ private static final Logger logger = LoggerFactory.getLogger(ATermBuilder.class)
     public ATerm getATerm() {
 	this.term = this.buildATerm(head);
 
-	logger.debug("built ATerm: {}", this.term);
+	logger.debug("built ATerm: \n{}", this.term);
 	try {
 	    this.term = (ATerm) this.term.accept(new ATermSimplifier());
 
-	    logger.debug("simplified ATerm: {}", this.term);
+	    logger.debug("simplified ATerm: \n{}", this.term);
 	} catch (VisitFailure e) {
 	    logger.warn("Generated log statement", e);
 	}

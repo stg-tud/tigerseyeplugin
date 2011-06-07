@@ -373,17 +373,19 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 					}
 				} else {
 
-		    Character c = unicodeLookupTable.transform(keyword);
+		    String uniChar = unicodeLookupTable.nameToUnicode(keyword);
 
-					if (c != null) {
-						keyword = c.toString();
+					if (uniChar == null) {
+			logger.error("failed to resolve unicode character for "
+				+ keyword);
+			uniChar = keyword;
 					}
 
-					sb.append(keyword);
+		    sb.append(uniChar);
 
-					categories.add(new Category(keyword, true));
+					categories.add(new Category(uniChar, true));
 
-					this.keywords.add(keyword);
+					this.keywords.add(uniChar);
 				}
 			} else {
 				int parameterIndex = Integer.parseInt(parameterMatcher.group(1));

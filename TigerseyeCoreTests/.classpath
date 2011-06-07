@@ -2,13 +2,12 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry excluding="de/tud/stg/popart/builder/eclipse/resources/|de/tud/stg/tigerseye/eclipse/core/utils/resources/" kind="src" path="unittests"/>
+	<classpathentry excluding="de/tud/stg/popart/builder/eclipse/resources/|de/tud/stg/tigerseye/eclipse/core/utils/resources/" kind="src" path="junit"/>
 	<classpathentry excluding="generated/" kind="src" path="transformationtests"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="lib" path="libs/mockito-all-1.8.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/powermock-mockito-1.4.6-full.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/stateMachineDSL.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/hamcrest-all-1.1.jar"/>
-	<classpathentry exported="true" kind="con" path="GROOVY_SUPPORT"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

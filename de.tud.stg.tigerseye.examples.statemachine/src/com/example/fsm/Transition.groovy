@@ -21,4 +21,5 @@ class Transition {
   public String toString() {
 	return "$from.name($event) -> $to.name"
   }
+  
 }

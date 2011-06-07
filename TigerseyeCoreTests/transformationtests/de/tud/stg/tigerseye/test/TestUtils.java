@@ -7,7 +7,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 
 import jjtraveler.VisitFailure;
 
@@ -68,5 +71,18 @@ public class TestUtils {
 			IOUtils.closeQuietly(out);
 		}
 	}
+	
+	private static InputStreamReader getMathClassEx11(){
+		InputStream resourceAsStream = TestUtils.class.getResourceAsStream("MathClassEx-11.txt");
+		InputStreamReader reader;
+		try {
+			reader = new InputStreamReader(resourceAsStream, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new UnhandledException(e);
+		}
+		return reader;
+	}
+	
+	public static InputStreamReader MATH_CLASS_EX11 = getMathClassEx11();
 
 }
