@@ -44,7 +44,7 @@ public class TestDSLTransformation {
 	}
 	
 	public TestDSLTransformation(CodePrinterFactory cpf) throws FileNotFoundException {
-		this.ult = new UnicodeLookupTable(getClass().getResourceAsStream("MathClassEx-11.txt"));
+		this.ult = TestUtils.getDefaultLookupTable();
 		this.cpf = cpf;	
 	}
 

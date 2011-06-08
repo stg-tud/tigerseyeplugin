@@ -66,16 +66,6 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 	public final HashMap<String, MethodOptions> methodAliases = new HashMap<String, MethodOptions>();
 	private final Set<String> keywords = new LinkedHashSet<String>();
 
-    /**
-     * This Constructor sets a default Unicode lookup table, expecting to be run
-     * in a plug-in environment
-     * 
-     * @deprecated use {@link #GrammarBuilder(UnicodeLookupTable)} when possible
-     */
-	@Deprecated
-	public GrammarBuilder() {
-	this(UnicodeLookupTable.getDefaultInstance());
-	}
 
     public GrammarBuilder(UnicodeLookupTable ult) {
 	this.unicodeLookupTable = ult;

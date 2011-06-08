@@ -3,6 +3,7 @@ package de.tud.stg.tigerseye.test;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 
 import jjtraveler.VisitFailure;
@@ -19,12 +21,15 @@ import org.apache.commons.lang.UnhandledException;
 import org.junit.Test;
 
 import de.tud.stg.popart.dslsupport.DSL;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.UnicodeLookupTable;
 import de.tud.stg.tigerseye.test.transformation.utils.DefaultDSLTransformationTester;
 
 
 public class TestUtils {
 	
 	
+	private static final String MATH_CLASS_EX_TXT = "MathClassEx-12.txt";
+
 	private static final String generatedFilesFolder = DefaultDSLTransformationTester.GENERATED_OUTPUT_FOLDER;
 
 	private static DefaultDSLTransformationTester dtt = new DefaultDSLTransformationTester(TestUtils.class, new File(generatedFilesFolder), "resources" );
@@ -72,17 +77,21 @@ public class TestUtils {
 		}
 	}
 	
-	private static InputStreamReader getMathClassEx11(){
-		InputStream resourceAsStream = TestUtils.class.getResourceAsStream("MathClassEx-11.txt");
-		InputStreamReader reader;
+	private static Reader getMathClassEx11(){
+		InputStream resourceAsStream = TestUtils.class.getResourceAsStream(MATH_CLASS_EX_TXT);
 		try {
-			reader = new InputStreamReader(resourceAsStream, "UTF-8");
+			InputStreamReader reader = new InputStreamReader(resourceAsStream, "UTF-8");			
+			BufferedReader bufferedReader = new BufferedReader(reader);
+			return bufferedReader;
 		} catch (UnsupportedEncodingException e) {
 			throw new UnhandledException(e);
-		}
-		return reader;
+		} 
 	}
 	
-	public static InputStreamReader MATH_CLASS_EX11 = getMathClassEx11();
+	public static UnicodeLookupTable getDefaultLookupTable(){
+		Reader reader = getMathClassEx11();
+		UnicodeLookupTable ult = new UnicodeLookupTable().load(reader);
+		return ult;
+	}
 
 }

@@ -1,106 +1,204 @@
 package de.tud.stg.tigerseye.eclipse.core.codegeneration;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+
+import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+import javax.annotation.CheckForNull;
+
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.tigerseye.eclipse.TigerseyeLibraryProvider;
-
 /**
  * {@link UnicodeLookupTable} stores the mapping between unicodes and their
- * textual representation.
+ * textual representation. <br>
+ * Use the {@link #load(Readable...)} method to initialize the
+ * {@link UnicodeLookupTable} object.
  * 
  * @author Kamil Erhard
  * @author Leo Roos
  * 
  */
 public class UnicodeLookupTable {
-private static final Logger logger = LoggerFactory.getLogger(UnicodeLookupTable.class);
+    private static final Logger logger = LoggerFactory
+	    .getLogger(UnicodeLookupTable.class);
 
+    static final String UNDEFINEDNAME = "NO_REPRESENTATION_AVAILABLE";
 
-	private static volatile UnicodeLookupTable defaultUnicodeTable;
     private final Map<String, String> unicodeToName = new HashMap<String, String>();
     private final Map<String, String> nameToUnicode = new HashMap<String, String>();
 
-    public UnicodeLookupTable(Readable... files)
-	    throws FileNotFoundException {
-	Scanner s;
-		int cnt = 0;
-
-	for (Readable file : files) {
-			try {
-				s = new Scanner(file);
-
-				s.useDelimiter("\n");
-
-				while (s.hasNextLine()) {
-
-		    /*
-		     * TODO it seems that s.next.split(";") should return a 7
-		     * element array. Instead of an assertion after the split
-		     * call line is initialized with an seven element array
-		     * which is overwritten with the following assignment.
-		     */
-		    // String[] line = new String[7];
-
-					String[] line = s.next().split(";");
-
-					try {
-			String characterCode = line[0];
-			int characterInt = Integer.parseInt(characterCode, 16);
-
-			/*
-			 * I use a String instead of a Character to support the
-			 * supplementary characters from \u100000 to \u10FFFF
-			 * that exceed the 16 bits of the char primitive.
-			 */
-			String characterString = newString(characterInt);
-
-						String name = line[3] != null && !line[3].isEmpty() ? line[3] : line[5] != null
-								&& !line[5].isEmpty() ? line[5] : line[6];
-			this.unicodeToName.put(characterString, name.trim());
-			this.nameToUnicode.put(name.trim(), characterString);
-
-					} catch (NumberFormatException ignored) {
-			logger.warn("Could not decode character code. {}",
-				ignored.getMessage());
-					}
-
-					cnt++;
-				}
-			} catch (NoSuchElementException e) {
-				logger.warn("Generated log statement",e);
-			}
-		}
-	}
-
     /**
-     * To avoid encoding issues use the
-     * {@link #UnicodeLookupTable(InputStreamReader...)} constructor.
+     * The {@link #load(Readable...)} method returns the instance of the current
+     * object this can be used to initialize the {@link UnicodeLookupTable} on a
+     * single line:
      * 
-     * @param files
-     * @throws FileNotFoundException
+     * <pre>
+     * UnicodeLookupTable ult = new UnicodeLookupTable().load(reader);
+     * </pre>
      */
-    @Deprecated
-    public UnicodeLookupTable(InputStream... files)
-	    throws FileNotFoundException {
-	this(transformToReader(files));
+    public UnicodeLookupTable() {
+
     }
 
-    private static InputStreamReader[] transformToReader(InputStream... files) {
-	InputStreamReader[] reader = new InputStreamReader[files.length];
-	for (int i = 0; i < files.length; i++) {
-	    InputStream inputStream = files[i];
-	    reader[i] = new InputStreamReader(inputStream);
+    /**
+     * Load the mappings defined in passed parameters. The expected format is
+     * described on
+     * 
+     * <pre>
+     *            http://unicode.org/Public/math/revision-11/MathClassEx-11.txt
+     * </pre>
+     * 
+     * @param files
+     *            containing the mappings
+     * @return a instance of itself. Can be used for method chained
+     *         initialization
+     */
+    public UnicodeLookupTable load(Reader... files) {
+	for (Reader file : files) {
+	    addUnicodesOfFile(file);
 	}
-	return reader;
+	return this;
+    }
+
+    private void addUnicodesOfFile(Reader file) {
+	Scanner s = new Scanner(file);
+	try {
+	    while (s.hasNextLine()) {
+		String nextLine = s.nextLine();
+		if (!nextLine.trim().isEmpty() && !nextLine.startsWith("#")) {
+		    processNextLine(nextLine);
+
+		} else
+		    ;// ignore line beginning with #.
+	    }
+	} finally {
+	    s.close();
+	}
+    }
+
+    /**
+     * @param codePoint
+     *            a String representation of a hexadecimal number, e.g. F243
+     * @return the parsed codePoint or {@code -1} if the the passed string has
+     *         an unsupported format
+     */
+    int hasValidCharacterCodeForm(String codePoint) {
+	try {
+	    int parseInt = Integer.parseInt(codePoint, 16);
+	    if (Character.isDefined(parseInt))
+		return parseInt;
+	    else {
+		return -1;
+	    }
+	} catch (NumberFormatException e) {
+	    return -1;
+	}
+    }
+
+    private void processNextLine(String nextLine) {
+	    UnicodeNamePair uniname = addNewUnicodeCharacter(nextLine);
+	    if (uniname == null) {
+		logger.debug("Following line has an unsupported format: {}",
+			nextLine);
+		return;
+	    }
+	    this.unicodeToName.put(uniname.characterString, uniname.name);
+	    this.nameToUnicode.put(uniname.name, uniname.characterString);
+    }
+
+    /*
+     * Returns a new {@link UnicodeNamePair} or null if the format was invalid
+     */
+    @CheckForNull
+    UnicodeNamePair addNewUnicodeCharacter(String line) {
+	String[] nextLine = line.split(";");
+
+	String characterCode = getChecked(nextLine, 0);
+
+	int characterInt = hasValidCharacterCodeForm(characterCode);
+	if (characterInt < 0)
+	    return null;
+
+	String characterString = newString(characterInt);
+
+	String unicodeChar = getChecked(nextLine, 3);
+	String descrComment = getChecked(nextLine, 5);
+	String unicodeName = getChecked(nextLine, 6);
+
+	String name;
+
+	if (unicodeChar != null && !unicodeChar.isEmpty()) {
+	    name = unicodeChar;
+	} else if (descrComment != null && !descrComment.isEmpty()) {
+	    name = descrComment;
+	} else if (unicodeName != null && !unicodeName.isEmpty()) {
+	    name = unicodeName;
+	} else {
+	    // There should be no such case, if there is, it should still be
+	    // safe to ignore it.
+	    name = UNDEFINEDNAME;
+	}
+
+	String trimmedName = name.trim();
+	return new UnicodeNamePair(characterString, trimmedName);
+    }
+
+    /**
+     * @param nextLine
+     * @param idx
+     * @return element on index in String array {@code nextLine} if the array
+     *         has a minimal length of {@code idx + 1}. Otherwise an empty
+     *         String is returned.
+     */
+    private String getChecked(String[] nextLine, int idx) {
+	return nextLine.length > idx ? nextLine[idx] : "";
+    }
+
+    static class UnicodeNamePair {
+
+	public UnicodeNamePair(String characterString, String name) {
+	    this.characterString = characterString;
+	    this.name = name;
+	}
+
+	public final String characterString;
+	public final String name;
+
+	@Override
+	public boolean equals(Object obj) {
+	    if (obj == null) {
+		return false;
+	    }
+	    if (obj == this) {
+		return true;
+	    }
+	    if (obj.getClass() != getClass()) {
+		return false;
+	    }
+	    UnicodeNamePair rhs = (UnicodeNamePair) obj;
+	    return new EqualsBuilder()
+		    .append(characterString, rhs.characterString)
+		    .append(name, rhs.name).isEquals();
+	}
+
+	@Override
+	public int hashCode() {
+	    return new HashCodeBuilder().append(characterString).append(name)
+		    .toHashCode();
+	}
+
+	@Override
+	public String toString() {
+	    return ToStringBuilder.reflectionToString(UnicodeNamePair.this,
+		    ToStringStyle.SIMPLE_STYLE);
+	}
+
     }
 
     /**
@@ -115,7 +213,7 @@ private static final Logger logger = LoggerFactory.getLogger(UnicodeLookupTable.
      * you may want to optimize for the very, very, very common case where the
      * code point is a BMP character:
      */
-    private String newString(int codePoint) {
+    static String newString(int codePoint) {
 	if (Character.charCount(codePoint) == 1) {
 	    return String.valueOf((char) codePoint);
 	} else {
@@ -123,19 +221,7 @@ private static final Logger logger = LoggerFactory.getLogger(UnicodeLookupTable.
 	}
     }
 
-	private UnicodeLookupTable() throws IOException {
-		this(loadDefaultCharacterMapping());
-	}
-
-    private static InputStreamReader loadDefaultCharacterMapping()
-	    throws IOException {
-	InputStream openStream = TigerseyeLibraryProvider.getDefault()
-		.getBundle().getEntry("resources/MathClassEx-11.txt")
-		.openStream();
-	return new InputStreamReader(openStream, "UTF-8");
-    }
-
-    public String unicodeCharToName(String input) {
+    public String unicodeToName(String input) {
 	String output = this.unicodeToName.get(input);
 
 	return output;
@@ -143,26 +229,7 @@ private static final Logger logger = LoggerFactory.getLogger(UnicodeLookupTable.
 
     public String nameToUnicode(String input) {
 	String output = this.nameToUnicode.get(input);
-		return output;
-	}
+	return output;
+    }
 
-	public static UnicodeLookupTable getDefaultInstance() {
-		try {
-			if (defaultUnicodeTable == null) {
-				synchronized (UnicodeLookupTable.class) {
-					if (defaultUnicodeTable == null) {
-						defaultUnicodeTable = new UnicodeLookupTable();
-					}
-				}
-			}
-
-			return defaultUnicodeTable;
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public static synchronized void setDefaultInstance(UnicodeLookupTable table) {
-		defaultUnicodeTable = table;
-	}
 }

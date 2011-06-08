@@ -30,6 +30,7 @@ import de.tud.stg.parlex.lexer.KeywordSeperator;
 import de.tud.stg.parlex.parser.IChart;
 import de.tud.stg.parlex.parser.earley.EarleyParser;
 import de.tud.stg.popart.builder.eclipse.EDSL;
+import de.tud.stg.tigerseye.eclipse.TigerseyeLibraryProvider;
 import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.DSLNotFoundException;
@@ -45,6 +46,7 @@ import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TextualTransformat
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformerConfigurationProvider;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.UnicodeLookupTable;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.ATermBuilder;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.CodePrinter;
 import de.tud.stg.tigerseye.eclipse.core.utils.OutputPathHandler;
@@ -146,8 +148,9 @@ public class DSLResourceHandler implements ResourceHandler {
     }
 
 	protected GrammarBuilder buildNeccessaryGrammar(Context context) {
-	// FIXME(Leo Roos) last access to deprecated grammar builder constructor
-		GrammarBuilder gb = new GrammarBuilder();
+	UnicodeLookupTable ult = new UnicodeLookupTable();
+	ult.load(TigerseyeLibraryProvider.getMathClassEx11());
+	GrammarBuilder gb = new GrammarBuilder(ult);
 		IGrammar<String> grammar = gb.buildGrammar(context.getDSLClasses());
 
 		if (logger.isDebugEnabled()) {

@@ -40,10 +40,10 @@ private static final Logger logger = LoggerFactory.getLogger(TestWordMachine.cla
 
 	public void testWordMaschine(String inputFile, OutputStream out) {
 		try {
-			UnicodeLookupTable.setDefaultInstance(new UnicodeLookupTable(new FileInputStream(
-					"resources/MathClassEx-11.txt")));
 
-			GrammarBuilder gb = new GrammarBuilder();
+			UnicodeLookupTable ult = TestUtils.getDefaultLookupTable();
+			
+			GrammarBuilder gb = new GrammarBuilder(ult);
 
 			IGrammar<String> grammar = gb.buildGrammar(WordMachine.class);
 
