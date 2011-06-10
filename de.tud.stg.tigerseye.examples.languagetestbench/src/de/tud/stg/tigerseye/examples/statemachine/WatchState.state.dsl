@@ -19,34 +19,20 @@ package de.tud.stg.tigerseye.examples.statemachine
  *  void perform(Closure)
  *  void propertyMissing(String, Object)
  *  Object propertyMissing(String)
- *  void setDEBUG(boolean)
+ *  void setDEBUG(boolean
  *  State state(HashMap, Closure)
  *  void transitions(Closure)
  *  void when(HashMap)
  */
 
-//Had to import the Actions manually
+//Must import additonal dependencies manually
 import com.example.fsm.examples.actions.*;
+//import com.example.fsm.StateMachine;
 
+def watch = state(name:'WatchState'){
 
-state(name:'WatchState'){
-
-	HashMap aMap = new HashMap();
-	aMap.put("loopRunning",new LoopRunningAction());
-	aMap.put("pauseTimer",new PauseTimerAction());
-	aMap.put("resetTimer",new ResetTimerAction());
-	aMap.put("startTimer",new StartTimerAction());
-	aMap.put("stopTimer",new StopTimerAction());
-	aMap.put("switchOff",new SwitchOffAction());
+	setDEBUG(false)
 	
-	Binding aBinding = new Binding();
-	aBinding.setVariable("myActionBinding", aMap);
-	
-	def myActionBinding = aMap
-	
-	setDEBUG(true)
-	
-	fsm(name:"watch",actionBinding:aBinding) {
 		state(name:"reseted",type:"start") {
 		  entry "resetTimer";
 		  transitions {
@@ -86,8 +72,21 @@ state(name:'WatchState'){
 			when(enter:"end");
 		  }
 		}
-	}
-
-	
-	
 }
+
+
+watch.status();
+watch.start();
+watch.status();
+
+watch.receiveEvent("start");
+watch.status();
+
+watch.receiveEvent("split");
+watch.status();
+
+watch.receiveEvent("stop");
+watch.status()
+
+watch.receiveEvent("switchOff");
+watch.status()
