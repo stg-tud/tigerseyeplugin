@@ -79,7 +79,8 @@ public class SwitchBetweenTranformerTransformedFile extends AbstractHandler
 
     private void errorDialogResourceDoesNotExist(Shell shell,
 	    String resourceName) {
-	ErrorDialog.openError(shell, "Failed to open resource.", "",
+	String shortmsg = "Failed to open resource.";
+	ErrorDialog.openError(shell, shortmsg, shortmsg,
 		new Status(IStatus.ERROR, TigerseyeUIActivator.PLUGIN_ID,
 			"Resource does not exist \n\n " + resourceName));
     }

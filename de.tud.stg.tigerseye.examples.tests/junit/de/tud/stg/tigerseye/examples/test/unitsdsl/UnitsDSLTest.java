@@ -3,8 +3,9 @@ package de.tud.stg.tigerseye.examples.test.unitsdsl;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import utilities.DSLTransformationTestBase;
+
 import de.tud.stg.tigerseye.example.dzoneunits.UnitsDSL;
-import de.tud.stg.tigerseye.examples.test.DSLTransformationTestBase;
 
 public class UnitsDSLTest extends DSLTransformationTestBase{
 

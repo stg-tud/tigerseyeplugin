@@ -1,5 +1,6 @@
 package de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 import jjtraveler.VisitFailure;
@@ -15,7 +16,6 @@ import aterm.Visitable;
 import aterm.pure.PureFactory;
 import aterm.pure.SingletonFactory;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ASTTransformation;
-import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.textual.TransformationUtils;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.MethodOptions;
@@ -38,7 +38,7 @@ private static final Logger logger = LoggerFactory.getLogger(ClosureResultTransf
 	private final static AFun dslInvokerFunction;
 
 	private ATermList dslInvokerClasses;
-	private Context context;
+    private Map<String, MethodOptions> moptions;
 
 	static {
 		PureFactory factory = SingletonFactory.getInstance();
@@ -51,8 +51,8 @@ private static final Logger logger = LoggerFactory.getLogger(ClosureResultTransf
 	public ClosureResultTransformation() {
 	}
 
-	public ClosureResultTransformation(Context context) {
-		this.context = context;
+    public ClosureResultTransformation(Map<String, MethodOptions> moptions) {
+	this.moptions = moptions;
 		dslInvokerClasses = factory.makeList();
 	}
 
@@ -72,7 +72,9 @@ private static final Logger logger = LoggerFactory.getLogger(ClosureResultTransf
 		if (v0 != null) {
 			String statement = ((ATermAppl) v0).getName();
 
-			MethodOptions methodAlias = context.getGrammarBuilder().getMethodOptions(statement);
+	    MethodOptions methodAlias = moptions
+.get(
+		    statement);
 
 			if (methodAlias != null) {
 
@@ -93,9 +95,9 @@ private static final Logger logger = LoggerFactory.getLogger(ClosureResultTransf
 	}
 
     @Override
-    public ATerm transform(Context context, ATerm aterm) {
+    public ATerm transform(Map<String, MethodOptions> moptions, ATerm aterm) {
 	ClosureResultTransformation crt = new ClosureResultTransformation(
-		context);
+		moptions);
 
 	logger.info("[ClosureResult] start");
 	try {

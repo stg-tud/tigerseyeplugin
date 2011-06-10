@@ -165,4 +165,17 @@ public class TigerseyeEditor extends GroovyEditor {
 	return super.createOutlinePage();
     }
 
+    @Override
+    public Object getAdapter(Class required) {
+	Object adapter = super.getAdapter(required);
+	if (GroovyCompilationUnit.class == required
+		&& !(adapter instanceof GroovyCompilationUnit)) {
+	    logger.trace(getClass().getSimpleName() + " can not adapt to "
+		    + GroovyCompilationUnit.class);
+	    return null;
+	} else {
+	    return adapter;
+	}
+    }
+
 }

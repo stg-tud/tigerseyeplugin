@@ -31,11 +31,11 @@ public class PackageImporter implements TextualTransformation {
 
 		LinkedList<String> imports = new LinkedList<String>();
 
-		for (Class<?> clazz : context.dslClasses.values()) {
+	for (Class<?> clazz : context.getDSLClasses()) {
 			imports.add(clazz.getCanonicalName());
 		}
 
-		if (matcher.find() && !context.dslClasses.isEmpty()) {
+	if (matcher.find() && !(context.getDSLClasses().length < 1)) {
 			sb.append("$1");
 			sb.append("$2\n");
 			sb.append('\n');
@@ -46,7 +46,7 @@ public class PackageImporter implements TextualTransformation {
 			sb.append("$4");
 
 			matcher.appendReplacement(out, sb.toString());
-		} else if (!context.dslClasses.isEmpty()) {
+	} else if (!(context.getDSLClasses().length < 1)) {
 			out.append(sb);
 		}
 

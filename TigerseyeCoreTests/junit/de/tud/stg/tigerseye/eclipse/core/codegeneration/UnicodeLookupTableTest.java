@@ -34,6 +34,7 @@ import de.tud.stg.tigerseye.test.TestUtils;
 
 public class UnicodeLookupTableTest {
 
+	private static final String controlSampleProperties = "resources/testvals.properties";
 	private UnicodeLookupTable cut = getUnicodeTable();
 
 	private static UnicodeLookupTable getUnicodeTable() {
@@ -61,6 +62,16 @@ public class UnicodeLookupTableTest {
 		assertNotNull(transform);
 		assertEquals("Qfr", back);
 	}
+	
+	@Test
+	public void shouldFindSemicolon() throws Exception {
+		String mathclassex11 = "003B;P;;semi;ISONUM;;SEMICOLON";
+		String mathclassex12 = "003B;P;;;semi;ISONUM;;SEMICOLON";
+		UnicodeNamePair expectedpair = new UnicodeNamePair(";", "semi");
+		shouldReturnExpectedForAddNewUnicodeCharacter(mathclassex11, expectedpair);
+		shouldReturnExpectedForAddNewUnicodeCharacter(mathclassex12, expectedpair);
+		
+	}
 
 	/**
 	 * Tests if all elements provided in the testvals.properties file can 
@@ -72,7 +83,7 @@ public class UnicodeLookupTableTest {
 		InputStreamReader inputStreamReader = null;
 		try {
 			InputStream resourceAsStream = UnicodeLookupTableTest.class
-					.getResourceAsStream("testvals.properties");
+					.getResourceAsStream(controlSampleProperties);
 			assertNotNull(resourceAsStream);
 			inputStreamReader = new InputStreamReader(
 					resourceAsStream, "UTF-8");

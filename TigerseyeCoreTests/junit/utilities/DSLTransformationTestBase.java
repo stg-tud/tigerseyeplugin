@@ -1,4 +1,4 @@
-package de.tud.stg.tigerseye.examples.test;
+package utilities;
 
 import java.io.File;
 
@@ -9,7 +9,7 @@ import de.tud.stg.tigerseye.test.transformation.utils.DefaultDSLTransformationTe
 public class DSLTransformationTestBase {
 	
 	private DefaultDSLTransformationTester dtt;
-	private static final String generated_groovy_file_output_folder = DefaultDSLTransformationTester.GENERATED_OUTPUT_FOLDER;
+	private static final File generated_groovy_file_output_folder = DefaultDSLTransformationTester.GENERATED_OUTPUT_FOLDER;
 
 	@Before
 	public void setUp() throws Exception {
@@ -18,8 +18,8 @@ public class DSLTransformationTestBase {
 
 	protected DefaultDSLTransformationTester createTransformationTester() {
 		return new DefaultDSLTransformationTester(
-				DSLTransformationTestBase.class, new File(
-						generated_groovy_file_output_folder), "resources");
+				getClass(), 
+						generated_groovy_file_output_folder, "resources");
 	}
 
 	protected File getOutputFile(String filePrefix) {

@@ -1,8 +1,8 @@
-package de.tud.stg.tigerseye.test.utils;
+package utilities;
 
 import junit.framework.Assert;
 
-public class StringComparison {
+public class StringUtils {
 
 	public static void equalsIgnoringWhitspace(String output, String expected) {
 		output = removeWhitespaces(output);

@@ -5,8 +5,9 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import de.tud.stg.popart.builder.transformers.FileTypeTest;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilderTest;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarTest;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.UnicodeLookupTableTest;
-import de.tud.stg.tigerseye.eclipse.core.preferences.TransformationsTableDialog;
 import de.tud.stg.tigerseye.eclipse.core.preferences.TransformerTableDialogTest;
 import de.tud.stg.tigerseye.eclipse.core.runtime.DSLClasspathResolverTest;
 import de.tud.stg.tigerseye.eclipse.core.runtime.FileHelperTest;
@@ -25,6 +26,8 @@ import de.tud.stg.tigerseye.eclipse.core.utils.OutputPathHandlerTest;
 	FileHelperTest.class, //
 	JDTClasspathResolverTest.class, //
 	UnicodeLookupTableTest.class, //
+	GrammarBuilderTest.class, //
+	GrammarTest.class, //
 	})
 public class AllTestsCoreJUnitTests {
 

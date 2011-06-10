@@ -2,7 +2,6 @@ package de.tud.stg.popart.builder.test.junit;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -54,7 +53,6 @@ private static final Logger logger = LoggerFactory.getLogger(TestWordMachine.cla
 			Chart chart = (Chart) earleyParser.parse(sb.trim());
 
 			Context context = new Context(inputFile);
-			context.setGrammarBuilder(gb);
 			context.addDSL(WordMachine.class.getSimpleName(), WordMachine.class);
 
 			IAbstractNode ast;
@@ -66,7 +64,7 @@ private static final Logger logger = LoggerFactory.getLogger(TestWordMachine.cla
 			aTermBuilder = new ATermBuilder(ast);
 			term = aTermBuilder.getATerm();
 
-			term = new KeywordChainingTransformation().transform(context, term);
+			term = new KeywordChainingTransformation().transform(gb.getMethodOptions(), term);
 
 			PrettyGroovyCodePrinter prettyPrinter = new PrettyGroovyCodePrinter();
 
@@ -103,10 +101,10 @@ private static final Logger logger = LoggerFactory.getLogger(TestWordMachine.cla
 		printWriter.write(header);
 		printWriter.flush();
 
-		long start = System.nanoTime();
+//		long start = System.nanoTime();
 		new TestWordMachine().testWordMaschine(inputStateMachine, out);
 
-		long end = System.nanoTime();
+//		long end = System.nanoTime();
 		String footer = "\n}";
 
 		printWriter.write(footer);
@@ -133,7 +131,7 @@ private static final Logger logger = LoggerFactory.getLogger(TestWordMachine.cla
 
 		stateMachine.start();
 
-		long end2 = System.nanoTime();
+//		long end2 = System.nanoTime();
 
 		// logger.info();
 		// logger.info("parsing: " + TimeUnit.NANOSECONDS.toSeconds(end - start));

@@ -15,13 +15,13 @@ import de.tud.stg.popart.dslsupport.DSL;
 
 public class DefaultDSLTransformationTester{
 	
-	public static final String GENERATED_OUTPUT_FOLDER = "junit/generated/";
+	public static final File GENERATED_OUTPUT_FOLDER = new File("junit/generated/");
 
 	private final Class<?> resourceLoader;
 	private final DSLTransformationTester dtt;
 	private final @Nullable File genOutputFolder;
 	private final @Nullable String resourceSubPackage;
-
+	
 	public DefaultDSLTransformationTester(Class<?> resourceLoader,
 			@Nullable File generatedOutputFolder,
 			@Nullable String resourceSubPackage) {

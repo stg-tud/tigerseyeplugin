@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 
@@ -31,7 +32,7 @@ public class TigerseyeLibraryProvider extends Plugin {
 	/**
 	 * @return a reader for the MathClassEx-11 resource, which defines the mapping for special character naming.
 	 */
-	public static InputStreamReader getMathClassEx11(){
+	public static Reader getMathClassEx11(){
 		
 		URL entry = getDefault().getBundle().getEntry(path);
 		if(entry == null)

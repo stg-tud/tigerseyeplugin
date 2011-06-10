@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
@@ -30,6 +31,7 @@ import de.tud.stg.parlex.lexer.KeywordSeperator;
 import de.tud.stg.parlex.parser.IChart;
 import de.tud.stg.parlex.parser.earley.EarleyParser;
 import de.tud.stg.popart.builder.eclipse.EDSL;
+import de.tud.stg.popart.dslsupport.DSL;
 import de.tud.stg.tigerseye.eclipse.TigerseyeLibraryProvider;
 import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.DSLKey;
@@ -46,6 +48,7 @@ import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TextualTransformat
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformerConfigurationProvider;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.MethodOptions;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.UnicodeLookupTable;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.ATermBuilder;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.CodePrinter;
@@ -122,7 +125,7 @@ public class DSLResourceHandler implements ResourceHandler {
 	    context.setFiletype(filetype);
 	    ByteArrayOutputStream transformedContent = getTransformedContent(
 		    resourceContent, context);
-	    this.writeResourceContent(outputFile, transformedContent);
+	    this.writeResourceContent(transformedContent, outputFile);
 	} catch (DSLNotFoundException e) {
 	    logger.debug("Resource {} could not be handled. {}", new Object[] {
 		    srcFile, e.noDSLMsg() }, e);
@@ -134,32 +137,27 @@ public class DSLResourceHandler implements ResourceHandler {
 	StringBuffer textualTransformedInput = this
 		.performTextualTransformations(input, context);
 
-	GrammarBuilder grammar = this.buildNeccessaryGrammar(context);
-	context.setGrammarBuilder(grammar);
+	Class<? extends DSL>[] dslClasses = context.getDSLClasses();
 
-	ATerm term = this.parseResource(textualTransformedInput, context);
+	UnicodeLookupTable ult = new UnicodeLookupTable()
+		.load(TigerseyeLibraryProvider.getMathClassEx11());
+	GrammarBuilder grammarBuilder = new GrammarBuilder(ult);
+	IGrammar<String> grammar = grammarBuilder.buildGrammar(dslClasses);
 
-	ATerm astTransformedTerm = this
-		.performASTTransformations(term, context);
+	if (logger.isDebugEnabled()) {
+	    logger.debug("Grammar successfully construced");
+	    logger.trace("Grammar is: {}", grammar.toString());
+	}
+
+	ATerm term = this.parseResource(textualTransformedInput, grammar);
+
+	ATerm astTransformedTerm = this.performASTTransformations(term,
+		context, grammarBuilder.getMethodOptions());
 
 	ByteArrayOutputStream out = this
 		.performPrettyPrinting(astTransformedTerm);
 	return out;
     }
-
-	protected GrammarBuilder buildNeccessaryGrammar(Context context) {
-	UnicodeLookupTable ult = new UnicodeLookupTable();
-	ult.load(TigerseyeLibraryProvider.getMathClassEx11());
-	GrammarBuilder gb = new GrammarBuilder(ult);
-		IGrammar<String> grammar = gb.buildGrammar(context.getDSLClasses());
-
-		if (logger.isDebugEnabled()) {
-			logger.debug("Grammar successfully construced");
-			logger.trace("Grammar: {}", grammar.toString());
-		}
-
-		return gb;
-	}
 
     /**
      * Will perform transformations on the passed input
@@ -276,7 +274,8 @@ public class DSLResourceHandler implements ResourceHandler {
 	return transformedInput;
     }
 
-    private ATerm performASTTransformations(ATerm aterm, Context context) {
+    private ATerm performASTTransformations(ATerm aterm, Context context,
+	    Map<String, MethodOptions> methodOptions) {
 	logger.trace("starting ast transformations");
 	ArrayList<TransformationType> idents = new ArrayList<TransformationType>(
 		context.getDsls());
@@ -286,17 +285,16 @@ public class DSLResourceHandler implements ResourceHandler {
 			idents.toArray(new TransformationType[0]));
 	logger.trace("found transformations {}", configuredTextualTransformers);
 	for (ASTTransformation t : configuredTextualTransformers) {
-	    aterm = t.transform(context, aterm);
+	    aterm = t.transform(methodOptions, aterm);
 	}
 	return aterm;
     }
 
-	protected ATerm parseResource(StringBuffer input, Context context) {
+    protected ATerm parseResource(StringBuffer input, IGrammar<String> grammar) {
 		KeywordSensitiveLexer ksl = new KeywordSensitiveLexer(
 				new KeywordSeperator());
 
-		EarleyParser parser = new EarleyParser(ksl, context.getGrammarBuilder()
-				.getGrammar());
+		EarleyParser parser = new EarleyParser(ksl, grammar);
 		IChart chart = parser.parse(input.toString().trim());
 
 		IAbstractNode program = chart.getAST();
@@ -325,7 +323,7 @@ public class DSLResourceHandler implements ResourceHandler {
 	return null;
     }
 
-    private void writeResourceContent(IFile file, ByteArrayOutputStream content) {
+    private void writeResourceContent(ByteArrayOutputStream content, IFile file) {
 	ByteArrayInputStream bais = new ByteArrayInputStream(
 		content.toByteArray());
 	try {

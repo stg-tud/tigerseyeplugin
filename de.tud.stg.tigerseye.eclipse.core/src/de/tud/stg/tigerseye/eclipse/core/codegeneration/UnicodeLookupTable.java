@@ -18,13 +18,22 @@ import org.slf4j.LoggerFactory;
  * {@link UnicodeLookupTable} stores the mapping between unicodes and their
  * textual representation. <br>
  * Use the {@link #load(Readable...)} method to initialize the
- * {@link UnicodeLookupTable} object.
+ * {@link UnicodeLookupTable} object. <br>
+ * Expects a file of format as described onn
+ * 
+ * <pre>
+ * http://www.unicode.org/Public/math/revision-12/MathClassEx-12.txt
+ * </pre>
  * 
  * @author Kamil Erhard
  * @author Leo Roos
  * 
  */
 public class UnicodeLookupTable {
+    private static final String commentLineStartString = "#";
+
+    private static final String splitString = ";";
+
     private static final Logger logger = LoggerFactory
 	    .getLogger(UnicodeLookupTable.class);
 
@@ -71,11 +80,10 @@ public class UnicodeLookupTable {
 	try {
 	    while (s.hasNextLine()) {
 		String nextLine = s.nextLine();
-		if (!nextLine.trim().isEmpty() && !nextLine.startsWith("#")) {
+		if (!nextLine.trim().isEmpty()
+			&& !nextLine.startsWith(commentLineStartString)) {
 		    processNextLine(nextLine);
-
-		} else
-		    ;// ignore line beginning with #.
+		}
 	    }
 	} finally {
 	    s.close();
@@ -102,24 +110,30 @@ public class UnicodeLookupTable {
     }
 
     private void processNextLine(String nextLine) {
-	    UnicodeNamePair uniname = addNewUnicodeCharacter(nextLine);
-	    if (uniname == null) {
-		logger.debug("Following line has an unsupported format: {}",
-			nextLine);
-		return;
-	    }
-	    this.unicodeToName.put(uniname.characterString, uniname.name);
-	    this.nameToUnicode.put(uniname.name, uniname.characterString);
+	UnicodeNamePair uniname = addNewUnicodeCharacter(nextLine);
+	if (uniname == null) {
+	    logger.debug(
+		    "Following line has an unsupported character code (either not supported by JVM or unsupported format): {}",
+		    nextLine);
+	    return;
+	}
+	this.unicodeToName.put(uniname.characterString, uniname.name);
+	this.nameToUnicode.put(uniname.name, uniname.characterString);
     }
 
     /*
-     * Returns a new {@link UnicodeNamePair} or null if the format was invalid
+     * Returns a new {@link UnicodeNamePair} or null if the character code is
+     * not recognized or format was invalid
      */
     @CheckForNull
     UnicodeNamePair addNewUnicodeCharacter(String line) {
-	String[] nextLine = line.split(";");
-
-	String characterCode = getChecked(nextLine, 0);
+	Scanner scanner = new Scanner(line).useDelimiter(splitString);
+	String characterCode;
+	if (scanner.hasNext()) {
+	    characterCode = scanner.next();
+	} else {
+	    return null;
+	}
 
 	int characterInt = hasValidCharacterCodeForm(characterCode);
 	if (characterInt < 0)
@@ -127,37 +141,60 @@ public class UnicodeLookupTable {
 
 	String characterString = newString(characterInt);
 
-	String unicodeChar = getChecked(nextLine, 3);
-	String descrComment = getChecked(nextLine, 5);
-	String unicodeName = getChecked(nextLine, 6);
+	String name = "";
+	String element = "";
 
-	String name;
+	int elementNumber = 2;
+	while (name.isEmpty()) {
+	    if (scanner.hasNext())
+		element = scanner.next();
+	    else
+		element = "";
 
-	if (unicodeChar != null && !unicodeChar.isEmpty()) {
-	    name = unicodeChar;
-	} else if (descrComment != null && !descrComment.isEmpty()) {
-	    name = descrComment;
-	} else if (unicodeName != null && !unicodeName.isEmpty()) {
-	    name = unicodeName;
-	} else {
-	    // There should be no such case, if there is, it should still be
-	    // safe to ignore it.
-	    name = UNDEFINEDNAME;
+	    switch (elementNumber) {
+	    case 2: // 2: class, one of: N,A,B,C,D,F,G,L,O,P,R,S,U,V,X
+		    // not a descriptive representation
+		break;
+	    case 3: // 3: Unicode character (UTF-8)
+		assert element.equals(characterString);
+		break;
+	    case 4: // 4: entity name
+		/*
+		 * XXX This is what we want. Should be perhaps the only option
+		 * and UNDEFINED otherwise.
+		 */
+		if (splitString.equals(characterString)
+			&& element.isEmpty()) {
+		    elementNumber--; /*
+				      * Have to try next element to support both
+				      * versions, i.e. 11 and 12, of
+				      * MatchClassEx.
+				      */
+		}
+		name = element;
+		break;
+	    case 5: // 5: ISO entity set
+		    // not descriptive enough
+		break;
+	    case 6: // 6: descriptive comments (of various types)
+		name = element;
+		break;
+	    case 7: /*
+		     * 7: Unicode 'name' (or name range), in all caps. They are
+		     * not normative and may not always match the official
+		     * character names.
+		     */
+		name = element;
+		break;
+	    default:
+		name = UNDEFINEDNAME;
+	    }
+
+	    elementNumber++;
 	}
 
 	String trimmedName = name.trim();
 	return new UnicodeNamePair(characterString, trimmedName);
-    }
-
-    /**
-     * @param nextLine
-     * @param idx
-     * @return element on index in String array {@code nextLine} if the array
-     *         has a minimal length of {@code idx + 1}. Otherwise an empty
-     *         String is returned.
-     */
-    private String getChecked(String[] nextLine, int idx) {
-	return nextLine.length > idx ? nextLine[idx] : "";
     }
 
     static class UnicodeNamePair {
@@ -203,7 +240,8 @@ public class UnicodeLookupTable {
 
     /**
      * Creates new String that contains just the given code point. Version that
-     * optimizes for BMP characters.
+     * optimizes for BMP characters. (BMP = Basic Multilingual Plane; the
+     * unicode characters in range {@code u+0000 - u+ffff})
      */
     /*
      * Suggested solution from:

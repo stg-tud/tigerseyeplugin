@@ -2,12 +2,13 @@ package de.tud.stg.tigerseye.test.transformation.utils;
 
 import javax.annotation.Nullable;
 
+import utilities.StringUtils;
+
 import junit.framework.Assert;
 
 import de.tud.stg.popart.dslsupport.DSL;
 import de.tud.stg.tigerseye.test.PrettyGroovyCodePrinterFactory;
 import de.tud.stg.tigerseye.test.TestDSLTransformation;
-import de.tud.stg.tigerseye.test.utils.StringComparison;
 
 public class DSLTransformationTester {
 	
@@ -58,7 +59,7 @@ public class DSLTransformationTester {
 		if(this.genWriter != null)
 			this.genWriter.write(filePrefix, transformation);
 	
-		StringComparison.equalsIgnoringWhitspace(transformation, getExpectedStream(filePrefix));
+		StringUtils.equalsIgnoringWhitspace(transformation, getExpectedStream(filePrefix));
 	
 	}
 	

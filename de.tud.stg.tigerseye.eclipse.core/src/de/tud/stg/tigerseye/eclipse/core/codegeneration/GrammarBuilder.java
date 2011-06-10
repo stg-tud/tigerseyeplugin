@@ -4,15 +4,8 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -71,8 +64,6 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 	this.unicodeLookupTable = ult;
 		this.grammar = new Grammar();
 		this.typeHandler = new HandlingDispatcher(this.grammar);
-
-		this.setupGeneralGrammar();
 	}
 
 	private void setWaterEnabled(boolean enabled) {
@@ -111,11 +102,15 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 	}
 
 	public IGrammar<String> buildGrammar(Class<?>... clazzes) {
+	this.setupGeneralGrammar();// TODO moved from constructor check if valid
 
 		boolean waterSupported = true;
 
 		for (Class<?> clazz : clazzes) {
-			logger.info("class " + clazz.getCanonicalName() + " has annotation: "
+	    // TODO Should normally not use any additional methods calls in a
+	    // log statement unless they already have been called in the program
+	    logger.debug("class " + clazz.getCanonicalName()
+		    + " has annotations: "
 					+ Arrays.toString(clazz.getAnnotations()));
 
 			// check for configuration options
@@ -177,6 +172,7 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 		}
 
 		this.setWaterEnabled(waterSupported);
+
 		return this.grammar;
 	}
 
@@ -366,9 +362,14 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 		    String uniChar = unicodeLookupTable.nameToUnicode(keyword);
 
 					if (uniChar == null) {
-			logger.error("failed to resolve unicode character for "
-				+ keyword);
+			logger.debug(
+				"No unicode representation for [{}] found. Assuming this is a literal keyword.",
+				keyword);
 			uniChar = keyword;
+		    } else {
+			logger.debug(
+				"found unicode representation [{}] for [{}]",
+				uniChar, keyword);
 					}
 
 		    sb.append(uniChar);
@@ -466,12 +467,12 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 		return this.startRule;
 	}
 
-	public IGrammar<String> getGrammar() {
+    private IGrammar<String> getGrammar() {
 		return this.grammar;
 	}
 
-	public MethodOptions getMethodOptions(String string) {
-		return this.methodAliases.get(string);
+    public Map<String, MethodOptions> getMethodOptions() {
+	return Collections.unmodifiableMap(this.methodAliases);
 	}
 
 	public Set<String> getKeywords() {

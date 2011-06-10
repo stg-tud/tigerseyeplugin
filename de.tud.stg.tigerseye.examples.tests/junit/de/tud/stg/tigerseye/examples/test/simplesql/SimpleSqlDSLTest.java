@@ -3,8 +3,9 @@ package de.tud.stg.tigerseye.examples.test.simplesql;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import utilities.DSLTransformationTestBase;
+
 import de.tud.stg.tigerseye.examples.simplesql.SimpleSqlDSL;
-import de.tud.stg.tigerseye.examples.test.DSLTransformationTestBase;
 
 public class SimpleSqlDSLTest extends DSLTransformationTestBase {
 

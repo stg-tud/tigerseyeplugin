@@ -2,8 +2,9 @@ package de.tud.stg.tigerseye.examples.test.logo;
 
 import org.junit.Test;
 
+import utilities.DSLTransformationTestBase;
+
 import de.tud.stg.tigerseye.examples.logo.LogoDSL;
-import de.tud.stg.tigerseye.examples.test.DSLTransformationTestBase;
 
 public class LogoDSLTest extends DSLTransformationTestBase {
 

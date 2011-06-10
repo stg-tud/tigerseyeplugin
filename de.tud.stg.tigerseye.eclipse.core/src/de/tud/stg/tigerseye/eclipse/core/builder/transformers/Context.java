@@ -12,7 +12,6 @@ import de.tud.stg.popart.dslsupport.DSL;
 import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder;
 
 /**
  * This class represents the context of a Tigerseye source file during the
@@ -23,10 +22,12 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder;
  */
 public class Context {
     private final List<DSLDefinition> dsls = new ArrayList<DSLDefinition>();
-    public Map<String, Class<? extends DSL>> dslClasses = new HashMap<String, Class<? extends DSL>>();
-    public Set<String> currentAssurances = new HashSet<String>();
+    private final Map<String, Class<? extends DSL>> dslClasses = new HashMap<String, Class<? extends DSL>>();
+    private final Set<String> currentAssurances = new HashSet<String>();
 
-    public GrammarBuilder grammarBuilder;
+    public Class<? extends DSL> getDSLForExtension(String dslExtension) {
+	return dslClasses.get(dslExtension);
+    }
 
     private FileType filetype;
 
@@ -53,17 +54,10 @@ public class Context {
 		new String[this.dslClasses.size()]);
     }
 
+    @SuppressWarnings("unchecked")
     public Class<? extends DSL>[] getDSLClasses() {
 	return this.dslClasses.values().toArray(
 		new Class[this.dslClasses.size()]);
-    }
-
-    public GrammarBuilder getGrammarBuilder() {
-	return this.grammarBuilder;
-    }
-
-    public void setGrammarBuilder(GrammarBuilder grammarBuilder) {
-	this.grammarBuilder = grammarBuilder;
     }
 
     public String getFileName() {
@@ -86,7 +80,7 @@ public class Context {
 	 */
 	if (this.dslClasses.size() != dsls.size())
 	    throw new IllegalStateException(
-		    "Tried to access Context in an inconsistent manner. Defined amound of DSL classes is unequal the amount of defined dsls.");
+		    "Tried to access Context in an inconsistent manner. Defined amound of DSL classes is unequal to the amount of defined dsls.");
 
 	return Collections.unmodifiableList(dsls);
     }

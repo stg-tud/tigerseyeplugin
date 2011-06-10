@@ -18,11 +18,12 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import utilities.DSLTransformationTestBase;
+
 import de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler.DSLResourceHandler;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.PrettyGroovyCodePrinter;
 import de.tud.stg.tigerseye.examples.mapdsl.MapDSL;
-import de.tud.stg.tigerseye.examples.test.DSLTransformationTestBase;
 
 public class MapDSLTest extends DSLTransformationTestBase{
 

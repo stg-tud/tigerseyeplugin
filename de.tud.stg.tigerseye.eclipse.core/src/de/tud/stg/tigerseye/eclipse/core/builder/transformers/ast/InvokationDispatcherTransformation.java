@@ -16,7 +16,6 @@ import aterm.Visitable;
 import aterm.pure.PureFactory;
 import aterm.pure.SingletonFactory;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ASTTransformation;
-import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Transformation;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.textual.TransformationUtils;
@@ -37,7 +36,7 @@ private static final Logger logger = LoggerFactory.getLogger(InvokationDispatche
 
 
 	private final static AFun dslInvokerFunction;
-	private Context context;
+    private Map<String, MethodOptions> moptions;
 
 	static {
 		PureFactory factory = SingletonFactory.getInstance();
@@ -47,8 +46,9 @@ private static final Logger logger = LoggerFactory.getLogger(InvokationDispatche
 	public InvokationDispatcherTransformation() {
 	}
 
-	public InvokationDispatcherTransformation(Context context) {
-		this.context = context;
+    public InvokationDispatcherTransformation(
+	    Map<String, MethodOptions> moptions) {
+	this.moptions = moptions;
 	}
 
 	public boolean areRequirementsSatisfied(Set<Class<? extends Transformation>> set) {
@@ -76,7 +76,8 @@ private static final Logger logger = LoggerFactory.getLogger(InvokationDispatche
 		if (v0 != null) {
 			String statement = ((ATermAppl) v0).getName();
 
-			MethodOptions methodAlias = context.getGrammarBuilder().getMethodOptions(statement);
+	    MethodOptions methodAlias = moptions.get(
+		    statement);
 
 			if (methodAlias != null) {
 
@@ -96,8 +97,8 @@ private static final Logger logger = LoggerFactory.getLogger(InvokationDispatche
 	}
 
 	@Override
-	public ATerm transform(Context context, ATerm aterm) {
-		InvokationDispatcherTransformation crt = new InvokationDispatcherTransformation(context);
+	public ATerm transform(Map<String, MethodOptions> moptions, ATerm aterm) {
+		InvokationDispatcherTransformation crt = new InvokationDispatcherTransformation(moptions);
 
 		logger.info("[InvokationDispatcher] start");
 		try {

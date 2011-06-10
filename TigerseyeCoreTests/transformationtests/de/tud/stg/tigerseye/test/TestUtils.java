@@ -1,7 +1,10 @@
 package de.tud.stg.tigerseye.test;
 
 
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.matchers.JUnitMatchers.containsString;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,6 +16,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.util.Scanner;
 
 import jjtraveler.VisitFailure;
 
@@ -30,9 +34,9 @@ public class TestUtils {
 	
 	private static final String MATH_CLASS_EX_TXT = "MathClassEx-12.txt";
 
-	private static final String generatedFilesFolder = DefaultDSLTransformationTester.GENERATED_OUTPUT_FOLDER;
+	private static final File generatedFilesFolder = DefaultDSLTransformationTester.GENERATED_OUTPUT_FOLDER;
 
-	private static DefaultDSLTransformationTester dtt = new DefaultDSLTransformationTester(TestUtils.class, new File(generatedFilesFolder), "resources" );
+	private static DefaultDSLTransformationTester dtt = new DefaultDSLTransformationTester(TestUtils.class, generatedFilesFolder, "resources" );
 	public static OutputStream out = System.out;
 
 	@SuppressWarnings("unchecked")
@@ -77,10 +81,17 @@ public class TestUtils {
 		}
 	}
 	
+	public static void assertContainsAllLines(String doesContain, String isContained) {
+		Scanner expScanner = new Scanner(isContained);
+		while(expScanner.hasNextLine()){
+			assertThat(doesContain, containsString(expScanner.nextLine()));
+		}
+	}
+
 	private static Reader getMathClassEx11(){
 		InputStream resourceAsStream = TestUtils.class.getResourceAsStream(MATH_CLASS_EX_TXT);
 		try {
-			InputStreamReader reader = new InputStreamReader(resourceAsStream, "UTF-8");			
+			InputStreamReader reader = new InputStreamReader(resourceAsStream, "UTF-8");
 			BufferedReader bufferedReader = new BufferedReader(reader);
 			return bufferedReader;
 		} catch (UnsupportedEncodingException e) {
@@ -92,6 +103,13 @@ public class TestUtils {
 		Reader reader = getMathClassEx11();
 		UnicodeLookupTable ult = new UnicodeLookupTable().load(reader);
 		return ult;
+	}
+
+	public static void assertContainsAllLinesMutually(String s1,
+			String s2) {
+		assertContainsAllLines(s1,s2);
+		assertContainsAllLines(s2,s1);
+		
 	}
 
 }

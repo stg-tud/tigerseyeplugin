@@ -3,7 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Statemachine
 Bundle-SymbolicName: de.tud.stg.tigerseye.examples.statemachine;singleton:=true
 Bundle-Version: 0.0.1.qualifier
-Export-Package: com.example.fsm
+Export-Package: com.example.fsm,
+ com.example.fsm.examples.actions
 Bundle-Vendor: TUD
 Require-Bundle: de.tud.stg.tigerseye.eclipse;bundle-version="0.0.1",
  de.tud.stg.tigerseye.eclipse.core;bundle-version="0.0.1"

@@ -1,6 +1,7 @@
 package de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import jjtraveler.VisitFailure;
@@ -15,34 +16,33 @@ import aterm.Visitable;
 import aterm.pure.PureFactory;
 import aterm.pure.SingletonFactory;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ASTTransformation;
-import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.textual.TransformationUtils;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.MethodOptions;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.RecursiveVisitor;
 
 /**
- * {@link KeywordChainingTransformation} is capable of detecting and rebuilding chained keywords into the callable
- * methods of the dsl interface
- *
+ * {@link KeywordChainingTransformation} is capable of detecting and rebuilding
+ * chained keywords into the callable methods of the DSL interface
+ * 
  * @author Kamil Erhard
- *
+ * 
  */
 public class KeywordChainingTransformation extends RecursiveVisitor implements ASTTransformation {
 private static final Logger logger = LoggerFactory.getLogger(KeywordChainingTransformation.class);
 
 
-	private GrammarBuilder gb;
-	private final static ATerm methodCompositionTemplate = SingletonFactory
-			.getInstance().make("[<list>]");
+    private Map<String, MethodOptions> moptions;
+
+    // private final static ATerm methodCompositionTemplate = SingletonFactory
+    // .getInstance().make("[<list>]");
 
 	public KeywordChainingTransformation() {
 
 	}
 
-	public KeywordChainingTransformation(Context context) {
-		gb = context.getGrammarBuilder();
+    private KeywordChainingTransformation(Map<String, MethodOptions> moptions) {
+	this.moptions = moptions;
 	}
 
 	private ATerm checkMethodComposition(ATerm arg, Type type) {
@@ -68,7 +68,7 @@ private static final Logger logger = LoggerFactory.getLogger(KeywordChainingTran
 
 		String statement = ((ATermAppl) annotation).getName();
 
-		MethodOptions methodOptions = gb.getMethodOptions(statement);
+	MethodOptions methodOptions = moptions.get(statement);
 
 		boolean isComposedMethod = methodOptions != null;
 
@@ -97,19 +97,22 @@ private static final Logger logger = LoggerFactory.getLogger(KeywordChainingTran
 		return appl;
 	}
 
-	@Override
-	public ATerm transform(Context context, ATerm aterm) {
+    @Override
+    public ATerm transform(Map<String, MethodOptions> moptions, ATerm aterm) {
 
-		KeywordChainingTransformation keywordChainingTransformer = new KeywordChainingTransformation(context);
+	// TODO just change to this.moptions = moptions
+	// why has there to be created a new object of the same type as this?
+	KeywordChainingTransformation keywordChainingTransformer = new KeywordChainingTransformation(
+		moptions);
 
-		try {
-			aterm = (ATerm) aterm.accept(keywordChainingTransformer);
-		} catch (VisitFailure e) {
-			logger.warn("Generated log statement",e);
-		}
-
-		return aterm;
+	try {
+	    aterm = (ATerm) aterm.accept(keywordChainingTransformer);
+	} catch (VisitFailure e) {
+	    logger.warn("Generated log statement", e);
 	}
+
+	return aterm;
+    }
 
 	@Override
 	public Visitable visitList(ATermList arg) throws VisitFailure {

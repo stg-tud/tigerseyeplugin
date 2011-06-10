@@ -24,20 +24,6 @@ public class StateMachineDSL {
   public StateMachineDSL() {
 	  
   }
-  
-  /*
-   * ##########################################################################################################
-   * decompiled source 
-   */
- 
-
-//  private State currentState;
-//  private StateMachine currentStateMachine;
-  
-  /*
-   * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-   */
-  
   /**
    * Defines a new state machine.
    * @param     params				The named parameters for the fsm abstraction operator.
@@ -47,9 +33,9 @@ public class StateMachineDSL {
   public StateMachine fsm(HashMap<String,Object> params, Closure machineDefinition) {
     if (DEBUG) println "MachineDSL.define: defining new machine $params.";
 	assert (params.name != null);	  
-	assert (params.actionBinding != null);
+//	assert (params.actionBinding != null);
 	
-	StateMachine stateMachine = new StateMachine(params.name,params.actionBinding);
+	StateMachine stateMachine = new StateMachine(params.name/*,params.actionBinding*/);
 	
     setCurrentStateMachine(stateMachine);
 	
@@ -79,8 +65,8 @@ public class StateMachineDSL {
 	
 	currentState = currentStateMachine.getState(params.name);
 	if (currentState == null) {
-      if (DEBUG) println "StateMachineDSL.state: detailed definition create new state $currentState.";
 	  currentState = new State(params.name,startState);
+	  if (DEBUG) println "StateMachineDSL.state: detailed definition create new state $currentState.";
 	  currentStateMachine.addState(currentState);	
 	} else {
 	  //update detailed state definition

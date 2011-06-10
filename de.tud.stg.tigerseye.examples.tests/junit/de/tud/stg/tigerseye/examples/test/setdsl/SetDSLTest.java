@@ -4,8 +4,9 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import utilities.DSLTransformationTestBase;
+
 import de.tud.stg.tigerseye.examples.setdsl.SetDSL;
-import de.tud.stg.tigerseye.examples.test.DSLTransformationTestBase;
 
 public class SetDSLTest extends DSLTransformationTestBase {
 

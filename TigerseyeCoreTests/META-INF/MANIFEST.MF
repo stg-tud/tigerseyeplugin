@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: TigerseyeCoreTests
-Bundle-SymbolicName: de.tud.tigerseye.test
+Bundle-SymbolicName: de.tud.tigerseye.eclipse.core.test
 Bundle-Version: 0.0.0.qualifier
 Fragment-Host: de.tud.stg.tigerseye.eclipse.core;bundle-version="0.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
@@ -14,7 +14,9 @@ Bundle-ClassPath: libs/mockito-all-1.8.5.jar,
  libs/hamcrest-all-1.1.jar
 Export-Package: de.tud.stg.popart.builder.test.dsls,
  de.tud.stg.popart.builder.test.junit,
+ de.tud.stg.popart.builder.test.statemachine,
  de.tud.stg.tigerseye.test,
- de.tud.stg.tigerseye.test.transformation.utils
+ de.tud.stg.tigerseye.test.transformation.utils,
+ utilities
 Bundle-Vendor: TUD
 
