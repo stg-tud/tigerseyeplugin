@@ -1,23 +1,17 @@
-/*jadclipse*/// Decompiled by Jad v1.5.8e. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.geocities.com/kpdus/jad.html
-// Decompiler options: packimports(3) radix(10) lradix(10) 
-// Source File Name:   StateMachineDSL.java
-
 package de.tud.stg.tigerseye.transformingstatemachine;
 
 import de.tud.stg.popart.builder.core.annotations.DSLMethod;
 import de.tud.stg.popart.dslsupport.DSL;
 import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeyword;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.JavaSpecificGrammar;
 import de.tud.stg.tigerseye.transformingstatemachine.fsm.ActionDelegate;
 import de.tud.stg.tigerseye.transformingstatemachine.fsm.State;
 import de.tud.stg.tigerseye.transformingstatemachine.fsm.StateMachine;
 import groovy.lang.Closure;
 import java.util.HashMap;
 
-// Referenced classes of package de.tud.stg.popart.builder.test.statemachine:
-//            ActionType, Transitions, OutputAction
-
+@de.tud.stg.popart.builder.core.annotations.DSL(hostLanguageRules=JavaSpecificGrammar.class,waterSupported=true,arrayDelimiter=" ")
 public class StateMachineDSL
     implements DSL
 {
@@ -124,15 +118,3 @@ public class StateMachineDSL
     private State currentState;
     private StateMachine currentStateMachine;
 }
-
-
-/*
-	DECOMPILATION REPORT
-
-	Decompiled from: /home/leo/wss/tigerseyemain/TigerseyeCoreTests/libs/stateMachineDSL.jar
-	Total time: 73 ms
-	Jad reported messages/errors:
-The class file version is 50.0 (only 45.3, 46.0 and 47.0 are supported)
-	Exit status: 0
-	Caught exceptions:
-*/
