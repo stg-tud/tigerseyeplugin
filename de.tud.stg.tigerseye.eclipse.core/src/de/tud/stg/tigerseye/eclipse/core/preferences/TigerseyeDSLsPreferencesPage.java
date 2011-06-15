@@ -40,6 +40,7 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.tud.stg.popart.dslsupport.DSL;
 import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.ILanguageProvider;
@@ -624,8 +625,18 @@ Composite parent,
 	declaredKeywordsTable.removeAll();
 
 	// Read all public declared Fields from external class
+	Class<? extends DSL> loadClass = language.loadClass();
+	if (loadClass == null) {
+	    TableItem tableItem = new TableItem(declaredKeywordsTable,
+		    SWT.BORDER);
+	    tableItem.setText(0, "Class " + language.getClassPath()
+		    + " not loadable");
+	    tableItem.setText(1, "");
+	    return;
+	}
+
 	KeyWordExtractor keyWordExtractor = new KeyWordExtractor(
-		language.loadClass());
+		loadClass);
 	Field[] publicDeclaredFields = keyWordExtractor
 		.getDeclaredLiteralKeywords();
 	for (Field declaredField : publicDeclaredFields) {

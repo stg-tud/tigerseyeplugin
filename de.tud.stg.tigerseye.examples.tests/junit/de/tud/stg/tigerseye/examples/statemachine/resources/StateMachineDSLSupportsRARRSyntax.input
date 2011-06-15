@@ -1,0 +1,39 @@
+state "reseted" type "start" {
+  entry "resetTimer"
+  transitions {
+  	"start" → "running" 
+  	"switchOff" → "off"
+  }
+};
+
+state "running" {
+  entry "startTimer"
+  perform "loopRunning" //do is a reserved keyword in Groovy
+  transitions {
+  "split" → "paused"
+  "stop" → "stopped"
+  }
+};
+
+state "paused" {
+  entry "pauseTimer"
+  transitions {
+  	"unsplit" → "running"
+  	"stop" → "stopped"
+  }
+};
+
+state "stopped" {
+  entry "stopTimer"
+  transitions {
+  "reset" → "stopped"
+  "switchOff" → "off"
+  }
+};
+
+state "off" {
+  exit "switchOff"
+  transitions {
+	→ "end"
+  }
+};

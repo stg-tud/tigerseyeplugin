@@ -1,5 +1,6 @@
 package de.tud.stg.tigerseye.eclipse.core;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationType;
@@ -63,13 +64,15 @@ public interface DSLDefinition extends TransformationType {
      * Loads class with fully qualified name {@link #getClassPath()} from bundle
      * described by {@link #getContributorSymbolicName()}.
      * 
-     * @return the loaded Class of this {@code DSLDefinition}
+     * @return the loaded Class of this {@code DSLDefinition} or
+     *         <code>null</code> if class can not be loaded.
      * @throws TigerseyeRuntimeException
      *             if class can not be loaded, which will encapsulate a
      *             {@link ClassNotFoundException}. This will usually be
      *             prevented because the existence of the class should have been
      *             checked during initialization.
      */
+    @CheckForNull
     public abstract Class<? extends de.tud.stg.popart.dslsupport.DSL> loadClass();
 
     /**
