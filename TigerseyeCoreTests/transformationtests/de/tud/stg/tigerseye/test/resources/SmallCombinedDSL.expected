@@ -16,8 +16,8 @@ println a
 println b
 
 Map m = DSLInvoker.getDSL(MapDSL.class).buildMap(Integer.class,String.class,
-            [ DSLInvoker.getDSL(MapDSL.class).buildEntry(a,"Hans") as Entry[] ,
-              DSLInvoker.getDSL(MapDSL.class).buildEntry(b,"Peter") as Entry[] ])
+            [ DSLInvoker.getDSL(MapDSL.class).buildEntry(1,"Hans") ,
+              DSLInvoker.getDSL(MapDSL.class).buildEntry(2,"Peter") ] as Entry[])
 
 print m
 

@@ -12,7 +12,7 @@ DSLInvoker.eval([MapDSL.class, MathDSL.class] as Class[]) {
 	println a
 	println b
 	
-	Map m = [Integer, String: a="Hans", b="Peter"]
+	Map m = [Integer, String: 1="Hans", 2="Peter"]
 	
 	print m
 }

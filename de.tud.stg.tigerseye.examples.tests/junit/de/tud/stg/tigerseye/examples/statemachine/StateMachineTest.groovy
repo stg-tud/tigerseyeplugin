@@ -57,7 +57,7 @@ public class StateMachineTest {
 	}
 
 	private void setEntry(State s, String entry){
-		def action = m.getAction entry
+		def action = m.getAction (entry)
 		s.setEntry action
 	}
 
