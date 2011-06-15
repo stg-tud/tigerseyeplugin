@@ -25,10 +25,8 @@ package de.tud.stg.tigerseye.examples.statemachine
  *  void when(HashMap)
  */
 
-
-
-
-state(name:'WatchStateArrows'){
+ 
+def watch = state(name:'WatchStateArrows'){
 	
 	state(name:"reseted",type:"start") {
 		entry "resetTimer";
@@ -72,3 +70,19 @@ state(name:'WatchStateArrows'){
 	
 	
 }
+
+watch.status();
+watch.start();
+watch.status();
+
+watch.receiveEvent("start");
+watch.status();
+
+watch.receiveEvent("split");
+watch.status();
+
+watch.receiveEvent("stop");
+watch.status()
+
+watch.receiveEvent("switchOff");
+watch.status()
