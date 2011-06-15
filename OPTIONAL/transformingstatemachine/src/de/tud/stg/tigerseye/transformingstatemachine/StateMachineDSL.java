@@ -23,7 +23,7 @@ public class StateMachineDSL
     public Object eval(HashMap map, Closure cl)
     {
         cl.setDelegate(this);
-        cl.setResolveStrategy(1);
+        cl.setResolveStrategy(Closure.DELEGATE_FIRST);
         return cl.call();
     }
 
