@@ -251,11 +251,13 @@ public class TransformationsPreferencePage extends PreferencePage implements
 	logger.trace("About to save items {} for {}", new Object[] {
 		changedItems, toBeAssociatedTo });
 	for (CheckedItem checkedItem : changedItems) {
-	    TransformationHandler transformationHandler = (TransformationHandler) checkedItem.data;
-	    if (transformationHandler == null)
+	    Object data = checkedItem.data;
+
+	    if (data == null || !(data instanceof TransformationHandler))
 		throw new UnhandledException(
 			"Wrong configured. Expected TransformationHandler",
 			null);
+	    TransformationHandler transformationHandler = (TransformationHandler) data;
 	    transformationHandler.setActiveStateFor(toBeAssociatedTo,
 		    checkedItem.checked);
 	}
