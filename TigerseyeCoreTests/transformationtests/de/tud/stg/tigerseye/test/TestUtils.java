@@ -108,8 +108,12 @@ public class TestUtils {
 	public static void assertContainsAllLinesMutually(String s1,
 			String s2) {
 		assertContainsAllLines(s1,s2);
-		assertContainsAllLines(s2,s1);
-		
+		assertContainsAllLines(s2,s1);		
+	}
+	
+	public static InputStream loadTestResource(String resourceName){
+		InputStream resourceAsStream = TestUtils.class.getResourceAsStream("resources" + "/" + resourceName);
+		return resourceAsStream;
 	}
 
 }

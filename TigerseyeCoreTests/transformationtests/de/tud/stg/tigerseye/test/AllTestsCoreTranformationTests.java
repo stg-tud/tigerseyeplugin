@@ -35,7 +35,8 @@ import de.tud.stg.popart.builder.test.junit.TestWordMachine;
 	TestSimpleSqlDSL.class, //
 	TestStatefulDSL.class, //
 	TestStateMaschineDSL.class, //
-	TestWordMachine.class, //
+	
+	//TestWordMachine.class, //Too Long
 })
 public class AllTestsCoreTranformationTests {
 
