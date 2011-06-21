@@ -18,7 +18,6 @@ import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.ILanguageProvider;
 import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
-import de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyePreferenceConstants;
 import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntimeException;
 
 /**
@@ -56,6 +55,22 @@ public class LanguageProviderImpl implements ILanguageProvider {
     @Override
     public List<DSLDefinition> getDSLDefinitions() {
 	List<DSLDefinition> registeredDefinitions = getPluginConfiguredDSLLanguages();
+
+	// TODO #56
+	// boolean defaultActive = getStore().getBoolean(
+	// TigerseyePreferenceConstants.DEFAULT_LANGUAGE_ACTIVE_KEY);
+	// if(defaultActive){
+	// String dslIsActiveKey = dsl.getKeyFor(DSLKey.LANGUAGE_ACTIVE);
+	// // Must only activate so many as to leave a valid state
+	// if (defaultActive) {
+	// boolean keyWasSet = getStore().contains(dslIsActiveKey);
+	// // Could be added if no further DSLs conflict
+	// if (!keyWasSet) {
+	//
+	// }
+	// }
+	// }
+
 	return Collections.unmodifiableList(registeredDefinitions);
     }
 
@@ -125,11 +140,6 @@ public class LanguageProviderImpl implements ILanguageProvider {
 	    return;
 	String keyFor = dsl.getKeyFor(DSLKey.EXTENSION);
 	getStore().setDefault(keyFor, defExt);
-
-	String dslIsActiveKey = dsl.getKeyFor(DSLKey.LANGUAGE_ACTIVE);
-	boolean defaultActive = getStore().getBoolean(
-		TigerseyePreferenceConstants.DEFAULT_LANGUAGE_ACTIVE_KEY);
-	getStore().contains(dslIsActiveKey);
     }
 
     @Override
