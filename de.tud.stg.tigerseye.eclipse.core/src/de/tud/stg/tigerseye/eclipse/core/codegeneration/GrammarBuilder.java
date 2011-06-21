@@ -25,7 +25,9 @@ import de.tud.stg.popart.builder.core.annotations.DSLMethod;
 import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartLiteralKeyword;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeyword;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.CategoryNames;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.HostLanguageGrammar;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ParameterOptions;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.TypeHandler;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.GrammarBuilderHelper;
 
@@ -36,15 +38,15 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.GrammarBuilderHelp
  * 
  */
 public class GrammarBuilder {
-private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.class);
 
-	private static final String DEFAULT_ARRAY_DELIMITER = ",";
+    public static final String DEFAULT_ARRAY_DELIMITER = ",";
 	public static final String DEFAULT_PARAMETER_ESCAPE = "p";
 	public static final String DEFAULT_WHITESPACE_ESCAPE = "_";
 	// private static final String DEFAULT_STRING_QUOTATION = "([\\w_]+|(\".*?\"))";
 	private static final String DEFAULT_STRING_QUOTATION = "(\".*?\")";
 
-	private final IGrammar<String> grammar;
+    private final Grammar grammar;
 
 	private final AtomicInteger parameterCounter = new AtomicInteger();
 
@@ -74,16 +76,16 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 			Rule rAnyStatement = new Rule(this.statement, anything);
 			this.grammar.addRule(rAnyStatement);
 
-			Grammar g = (Grammar) this.grammar;
+			Grammar g = this.grammar;
 			g.addWaterRule(rAnyStatement);
 		}
 	}
 
 	private void setupGeneralGrammar() {
-		Category program = new Category("PROGRAM", false);
+		Category program = new Category(CategoryNames.PROGRAM_CATEGORY, false);
 
-		this.statement = new Category("STATEMENT", false);
-		this.statements = new Category("STATEMENTS", false);
+	this.statement = new Category(CategoryNames.STATEMENT_CATEGORY, false);
+	this.statements = new Category(CategoryNames.STATEMENTS_CATEGORY, false);
 
 		this.startRule = new Rule(program, this.statements);
 
@@ -205,10 +207,10 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 		Map<String, String> resultMap = new HashMap<String, String>();
 
 		if (dslAnnotation != null) {
-			resultMap.put("parameterEscape", dslAnnotation.parameterEscape());
-			resultMap.put("whitespaceEscape", dslAnnotation.whitespaceEscape());
-			resultMap.put("arrayDelimiter", dslAnnotation.arrayDelimiter());
-			resultMap.put("stringQuotation", dslAnnotation.stringQuotation());
+			resultMap.put(ParameterOptions.PARAMETER_ESCAPE, dslAnnotation.parameterEscape());
+			resultMap.put(ParameterOptions.WHITESPACE_ESCAPE, dslAnnotation.whitespaceEscape());
+	    resultMap.put(ParameterOptions.ARRAY_DELIMITER, dslAnnotation.arrayDelimiter());
+	    resultMap.put(ParameterOptions.STRING_QUOTATION, dslAnnotation.stringQuotation());
 		}
 
 		for (Entry<String, String> e : currentOptions.entrySet()) {
@@ -307,7 +309,7 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 		String methodProduction = getMethodProduction(method, method.getName());
 
 		Pattern[] pattern = 
-				getPattern(methodOptions.get("parameterEscape"), methodOptions.get("whitespaceEscape"));
+				getPattern(methodOptions.get(ParameterOptions.PARAMETER_ESCAPE), methodOptions.get(ParameterOptions.WHITESPACE_ESCAPE));
 
 		Type[] parameters = method.getGenericParameterTypes();
 
@@ -361,7 +363,7 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 
 		    String uniChar = unicodeLookupTable.nameToUnicode(keyword);
 
-					if (uniChar == null) {
+		    if (uniChar == null) {
 			logger.debug(
 				"No unicode representation for [{}] found. Assuming this is a literal keyword.",
 				keyword);
@@ -370,7 +372,7 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 			logger.debug(
 				"found unicode representation [{}] for [{}]",
 				uniChar, keyword);
-					}
+		    }
 
 		    sb.append(uniChar);
 
@@ -410,7 +412,8 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 				ICategory<String> parameterMapping = this.typeHandler.handle(parameterType, parameterOptions);
 				Rule rule = new Rule(parameterCategory, parameterMapping);
 
-				ICategory<String> typeCategory = new Category("PTYPE", false);
+		ICategory<String> typeCategory = new Category(
+			CategoryNames.PTYPE_CATEGORY, false);
 				Rule typeRule = new Rule(parameterMapping, typeCategory);
 
 				this.grammar.addRule(rule);
@@ -454,7 +457,8 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 			ICategory<String> returnTypeCategory = this.typeHandler.handle(returnType, methodOptions);
 			this.grammar.addCategory(returnTypeCategory);
 
-			ICategory<String> typeCategory = new Category("RTYPE", false);
+	    ICategory<String> typeCategory = new Category(
+		    CategoryNames.RTYPE_CATEGORY, false);
 			Rule typeToMethod = new Rule(typeCategory, methodCategory);
 			this.grammar.addRule(typeToMethod);
 
@@ -481,10 +485,10 @@ private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.clas
 
 	public Map<String, String> getDefaultOptions() {
 		Map<String, String> defaultOptions = new HashMap<String, String>();
-		defaultOptions.put("parameterEscape", DEFAULT_PARAMETER_ESCAPE);
-		defaultOptions.put("whitespaceEscape", DEFAULT_WHITESPACE_ESCAPE);
-		defaultOptions.put("arrayDelimiter", DEFAULT_ARRAY_DELIMITER);
-		defaultOptions.put("stringQuotation", DEFAULT_STRING_QUOTATION);
+		defaultOptions.put(ParameterOptions.PARAMETER_ESCAPE, DEFAULT_PARAMETER_ESCAPE);
+		defaultOptions.put(ParameterOptions.WHITESPACE_ESCAPE, DEFAULT_WHITESPACE_ESCAPE);
+	defaultOptions.put(ParameterOptions.ARRAY_DELIMITER, DEFAULT_ARRAY_DELIMITER);
+	defaultOptions.put(ParameterOptions.STRING_QUOTATION, DEFAULT_STRING_QUOTATION);
 		return defaultOptions;
 	}
 

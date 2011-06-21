@@ -10,6 +10,7 @@ import de.tud.stg.parlex.core.IGrammar;
 import de.tud.stg.parlex.core.Rule;
 import de.tud.stg.parlex.core.groupcategories.DoubleCategory;
 import de.tud.stg.parlex.core.groupcategories.IntegerCategory;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.CategoryNames;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.HandlingDispatcherHelper;
 
 public class NumberHandler implements ClassTypeHandler {
@@ -57,7 +58,7 @@ public class NumberHandler implements ClassTypeHandler {
 
 		grammar.addRules(rule1, rule2);
 
-		Category rType = new Category("TYPE", false);
+		Category rType = new Category(CategoryNames.TYPE_CATEGORY, false);
 		Rule typeRule = new Rule(rType, doubleCategory);
 		grammar.addRule(typeRule);
 

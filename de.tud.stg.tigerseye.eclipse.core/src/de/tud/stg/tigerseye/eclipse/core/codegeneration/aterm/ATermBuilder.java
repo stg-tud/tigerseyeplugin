@@ -15,6 +15,7 @@ import aterm.pure.SingletonFactory;
 import de.tud.stg.parlex.ast.IAbstractNode;
 import de.tud.stg.parlex.ast.Terminal;
 import de.tud.stg.parlex.core.ICategory;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.CategoryNames;
 
 /**
  * {@link ATermBuilder} builds an ATERM AST out of the generated earley parser tree.
@@ -115,10 +116,13 @@ private static final Logger logger = LoggerFactory.getLogger(ATermBuilder.class)
 	private boolean isClosure(IAbstractNode node) {
 		String lhsName = node.getItem().getRule().getLhs().getName();
 
-		if (lhsName.equals("Closure") || lhsName.equals("PROGRAM")) {
+	if (lhsName.equals("Closure")
+		|| lhsName.equals(CategoryNames.PROGRAM_CATEGORY)) {
 			List<ICategory<String>> rhs = node.getItem().getRule().getRhs();
 
-			return rhs.size() == 1 && rhs.get(0).getName().equals("STATEMENTS");
+	    return rhs.size() == 1
+		    && rhs.get(0).getName()
+			    .equals(CategoryNames.STATEMENTS_CATEGORY);
 		}
 
 		return false;

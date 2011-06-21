@@ -28,7 +28,7 @@ public class MathDSL implements de.tud.stg.popart.dslsupport.DSL {
 			sum += i;
 		}
 		return sum;
-	}
+	}	
 
 	public static void main(String[] args) {
 

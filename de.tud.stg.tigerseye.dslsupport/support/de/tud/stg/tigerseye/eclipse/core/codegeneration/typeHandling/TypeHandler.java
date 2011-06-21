@@ -8,6 +8,7 @@ import de.tud.stg.parlex.core.IGrammar;
 import de.tud.stg.parlex.core.Rule;
 import de.tud.stg.parlex.core.groupcategories.CustomCategory;
 import de.tud.stg.parlex.core.groupcategories.StringCategory;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.CategoryNames;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.HandlingDispatcherHelper;
 
 public abstract class TypeHandler implements ClassTypeHandler {
@@ -30,7 +31,7 @@ public abstract class TypeHandler implements ClassTypeHandler {
 		Rule rule1 = new Rule(this.category, this.group);
 		grammar.addRules(rule1);
 
-		Category rType = new Category("TYPE", false);
+		Category rType = new Category(CategoryNames.TYPE_CATEGORY, false);
 		Rule typeRule = new Rule(rType, this.category);
 		grammar.addRule(typeRule);
 

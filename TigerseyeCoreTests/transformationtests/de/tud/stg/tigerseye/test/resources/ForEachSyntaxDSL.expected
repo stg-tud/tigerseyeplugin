@@ -9,7 +9,7 @@ new DSLInvoker(ForEachSyntaxDSL.class).eval() {
 	
 	forEach(
 			String.class,
-			"s",
+			s,
 			abc,
 			{
 				if (s.startsWith("a")) {

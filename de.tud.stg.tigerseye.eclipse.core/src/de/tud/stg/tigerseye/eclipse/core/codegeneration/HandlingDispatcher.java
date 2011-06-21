@@ -9,7 +9,6 @@ import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,20 +16,21 @@ import org.slf4j.LoggerFactory;
 import de.tud.stg.parlex.core.Category;
 import de.tud.stg.parlex.core.ICategory;
 import de.tud.stg.parlex.core.IGrammar;
-import de.tud.stg.parlex.core.IRule;
 import de.tud.stg.parlex.core.Rule;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.BooleanHandler;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ClassHandler;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ClassTypeHandler;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ClosureHandler;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.NumberHandler;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ParameterOptions;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.StringHandler;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.TypeHandler;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.GrammarBuilderHelper;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.HandlingDispatcherHelper;
 
 public class HandlingDispatcher {
-private static final Logger logger = LoggerFactory.getLogger(HandlingDispatcher.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(HandlingDispatcher.class);
 
 
 // TODO check cyclic Dependency between Grammar and HandlingDispatcher
@@ -53,65 +53,8 @@ private static final Logger logger = LoggerFactory.getLogger(HandlingDispatcher.
 			}
 		}
 	}
-	
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-	public HandlingDispatcher(){
-		this(new IGrammar<String>(){
-
-			@Override
-			public void setCategories(Set categories) {
-				throw new UnsupportedOperationException();
-			}
-
-			@Override
-			public Set getCategories() {
-				throw new UnsupportedOperationException();
-			}
-
-			@Override
-			public void setRules(Set rules) {
-				throw new UnsupportedOperationException();
-				
-			}
-
-			@Override
-			public Set getRules() {
-				throw new UnsupportedOperationException();
-			}
-
-			@Override
-			public void setStartRule(IRule startRule) {
-				throw new UnsupportedOperationException();
-			}
-
-			@Override
-			public IRule getStartRule() {
-				throw new UnsupportedOperationException();
-			}
-
-			@Override
-			public void addRule(IRule rule) {
-				throw new UnsupportedOperationException();
-			}
-
-			@Override
-			public void addRules(IRule... rules) {
-				throw new UnsupportedOperationException();
-			}
-
-			@Override
-			public void addCategory(ICategory category) {
-				throw new UnsupportedOperationException();
-			}
-
-			@Override
-			public void addCategories(ICategory... categories) {
-				throw new UnsupportedOperationException();
-			}});
-	}
 
 	/**
-	 * FIXME never used?
 	 * @param grammar
 	 */
 	public HandlingDispatcher(IGrammar<String> grammar) {
@@ -204,12 +147,12 @@ private static final Logger logger = LoggerFactory.getLogger(HandlingDispatcher.
 	// GrammarBuilder gb = new GrammarBuilder();
 		
 		Rule r1 = null;
-		if (parameterOptions.get("arrayDelimiter").matches("\\s+")) {
+		if (parameterOptions.get(ParameterOptions.ARRAY_DELIMITER).matches("\\s+")) {
 			r1 = new Rule(objects, objects, GrammarBuilderHelper.getWhitespaceCategory(this.grammar, false), objects);
-		} else if (parameterOptions.get("arrayDelimiter").isEmpty()) {
+		} else if (parameterOptions.get(ParameterOptions.ARRAY_DELIMITER).isEmpty()) {
 			r1 = new Rule(objects, objects, objects);
 		} else {
-			Category ad = new Category(parameterOptions.get("arrayDelimiter"), true);
+			Category ad = new Category(parameterOptions.get(ParameterOptions.ARRAY_DELIMITER), true);
 			this.grammar.addCategory(ad);
 			ICategory<String> WS = GrammarBuilderHelper.getWhitespaceCategory(this.grammar, true);
 			r1 = new Rule(objects, objects, WS, ad, WS, objects);

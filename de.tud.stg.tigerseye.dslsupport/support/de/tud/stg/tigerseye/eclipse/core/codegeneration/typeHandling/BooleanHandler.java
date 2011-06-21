@@ -6,6 +6,7 @@ import de.tud.stg.parlex.core.Category;
 import de.tud.stg.parlex.core.ICategory;
 import de.tud.stg.parlex.core.IGrammar;
 import de.tud.stg.parlex.core.Rule;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.CategoryNames;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.HandlingDispatcherHelper;
 
 public class BooleanHandler implements ClassTypeHandler {
@@ -39,12 +40,12 @@ public class BooleanHandler implements ClassTypeHandler {
 		// Rule rule8 = new Rule(booleanCategory, objectCategory, new
 		// Category("!=", true), objectCategory);
 		//
-		// Category pType = new Category("PTYPE", false);
+		// Category pType = new Category(CategoryNames.PTYPE_CATEGORY, false);
 		// Rule rule9 = new Rule(pType, objectCategory);
 		//
 		// grammar.addRules(rule3, rule4, rule5, rule6, rule7, rule8, rule9);
 
-		Category rType = new Category("TYPE", false);
+		Category rType = new Category(CategoryNames.TYPE_CATEGORY, false);
 		Rule typeRule = new Rule(rType, booleanCategory);
 		grammar.addRule(typeRule);
 

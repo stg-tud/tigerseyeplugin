@@ -13,6 +13,8 @@ import de.tud.stg.parlex.core.Rule;
  * 
  */
 public class HandlingDispatcherHelper {
+	
+	
 
     public static ICategory<String> getExplicitObjectHierarchy(
             IGrammar<String> grammar, Class<?> clazz) {

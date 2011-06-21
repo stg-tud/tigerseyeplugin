@@ -10,6 +10,7 @@ import de.tud.stg.popart.builder.core.annotations.DSL;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod;
 import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeyword;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.CategoryNames;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.TypeHandler;
 
 /**
@@ -68,7 +69,7 @@ public class BnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 	public Syntax syntax(Rule[] rules) {
 		Syntax syntax = new Syntax(rules);
 
-//		Category syntaxCategory = new Category("PROGRAM", false);
+//		Category syntaxCategory = new Category(CategoryNames.PROGRAM_CATEGORY, false);
 		// this.grammar.addCategory(syntaxCategory);
 		//
 		// for (Rule r : rules) {
@@ -269,6 +270,7 @@ public class BnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 
 	public static class Syntax implements Evaluable {
 
+		private static final String RULES_CAGORY = "RULES";
 		private Grammar grammar;
 		private final de.tud.stg.popart.builder.test.dsls.BnfDSL.Rule[] rules;
 
@@ -287,8 +289,8 @@ public class BnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 		@Override
 		public Category evaluate(Grammar grammar, HashMap<Identifier, Expression> mapping) {
 
-			Category cat = new Category("PROGRAM", false);
-			Category rules = new Category("RULES", false);
+			Category cat = new Category(CategoryNames.PROGRAM_CATEGORY, false);
+			Category rules = new Category(RULES_CAGORY, false);
 
 			de.tud.stg.parlex.core.Rule startRule = new de.tud.stg.parlex.core.Rule(cat, rules);
 			grammar.addRule(startRule);

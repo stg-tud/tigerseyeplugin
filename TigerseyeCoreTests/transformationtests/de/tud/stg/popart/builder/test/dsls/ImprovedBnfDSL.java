@@ -11,6 +11,7 @@ import de.tud.stg.popart.builder.core.annotations.DSL;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod;
 import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeyword;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.CategoryNames;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.TypeHandler;
 
 /**
@@ -61,7 +62,7 @@ public class ImprovedBnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 	public Syntax syntax(Rule[] rules) {
 		Syntax syntax = new Syntax(rules);
 
-		Category syntaxCategory = new Category("PROGRAM", false);
+		Category syntaxCategory = new Category(CategoryNames.PROGRAM_CATEGORY, false);
 		this.grammar.addCategory(syntaxCategory);
 
 		for (Rule r : rules) {

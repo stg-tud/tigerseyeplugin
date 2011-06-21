@@ -87,10 +87,5 @@ public class StateMachineDSLSemanticsTest {
 	
 		watch.multiply(watch)
 	}
-	
-	@Test
-	public void testMore() throws Exception {
-		fail("Implement some actual tests");
-	}
-		
+
 }
