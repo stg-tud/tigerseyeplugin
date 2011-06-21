@@ -32,6 +32,10 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.ATermBuilder;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.CodePrinter;
 
 public class TestDSLTransformation {
+	
+	
+	private static final Logger logger = LoggerFactory
+			.getLogger(TestDSLTransformation.class);
 
 	private final UnicodeLookupTable ult;
 	private CodePrinterFactory cpf;
@@ -88,9 +92,11 @@ public class TestDSLTransformation {
 		ILexer lexer = new KeywordSensitiveLexer(new KeywordSeperator());
 		EarleyParser earleyParser = new EarleyParser(lexer, gr.grammar);
 
+		
 		// logger.info("= Parsing input stream = {}", inputStream);
 
 		Chart chart = (Chart) earleyParser.parse(sb.trim());
+		logger.debug("Resulting AST is:\n{}", chart.getAST());
 
 		Context context = new Context("dummyFileName");
 		for (Class<?> clazz : gr.classes) {

@@ -51,7 +51,7 @@ import de.tud.stg.tigerseye.eclipse.core.utils.KeyWordExtractor;
 
 /**
  * TigerseyeDSLsPreferencesPage is the DSL languages configuration page. It
- * provides the configuration of registered DSLs. Such as defining which file
+ * provides the configuration of registered DSLs. Here can be defined which file
  * extension has to be interpreted as what DSL. <br>
  * Additionally, if supported by the DSL, its keywords are listed.
  * 
@@ -126,7 +126,7 @@ public class TigerseyeDSLsPreferencesPage extends PreferencePage implements
 	    @Override
 	    public void widgetSelected(SelectionEvent e) {
 		if (currentlyEditedDSL != null)
-		    finishEditingExtension(currentlyEditedDSL);
+		    finishEditingDSL(currentlyEditedDSL);
 	    }
 
 	    @Override
@@ -254,7 +254,7 @@ Composite parent,
 	extension.addFocusListener(new FocusAdapter() {
 	    @Override
 	    public void focusLost(FocusEvent e) {
-		finishEditingExtension(propDSL);
+		finishEditingDSL(propDSL);
 	    }
 	});
 	extension.addMouseListener(new MouseAdapter() {
@@ -278,12 +278,12 @@ Composite parent,
 	    TableItem item) {
 	TableEditor tableEditor = new TableEditor(languagesTable);
 	final Button button = new Button(languagesTable, SWT.CHECK);
-	button.setSelection(propDSL.isActive());
+	button.setSelection(propDSL.isActiveLocal());
 	button.pack();
 	button.addSelectionListener(new SelectionAdapter() {
 	    @Override
 	    public void widgetSelected(SelectionEvent e) {
-		propDSL.setIsActive(button.getSelection());
+		propDSL.setIsActiveLocal(button.getSelection());
 		updateValidState();
 	    }
 	});
@@ -314,7 +314,7 @@ Composite parent,
     private void setAllCheckBoxState(boolean isActive) {
 	Set<Entry<PrefDSL, Button>> values = checkBoxMap.entrySet();
 	for (Entry<PrefDSL, Button> entry : values) {
-	    entry.getKey().setIsActive(isActive);
+	    entry.getKey().setIsActiveLocal(isActive);
 	    entry.getValue().setSelection(isActive);
 	}
 	updateValidState();
@@ -381,7 +381,7 @@ Composite parent,
 	if (oldButton == null) {
 	    initializeCheckBoxControl(column, propDSL, item);
 	} else {
-	    oldButton.setSelection(propDSL.isActive());
+	    oldButton.setSelection(propDSL.isActiveLocal());
 	}
     }
 
@@ -395,7 +395,7 @@ Composite parent,
 	}
     }
 
-    private void finishEditingExtension(final PrefDSL propDSL) {
+    private void finishEditingDSL(PrefDSL propDSL) {
 	Text extension = extensionTextMap.get(propDSL);
 	propDSL.setExtension(extension.getText());
 	extension.setVisible(false);
@@ -493,7 +493,7 @@ Composite parent,
 
 	    boolean activeKey = DSLKey.LANGUAGE_ACTIVE.getDefault(
 		    dslDefinition, getPreferenceStore());
-	    dsl.setIsActive(activeKey);
+	    dsl.setIsActiveLocal(activeKey);
 	}
 	rebuildTableItems(dsls);
 	super.performDefaults();
@@ -503,7 +503,7 @@ Composite parent,
 	PrefDSL[] prefDSLs = this.dslList.toArray(new PrefDSL[0]);
 	for (int i = 0; i < prefDSLs.length; i++) {
 	    PrefDSL prefDSL = prefDSLs[i];
-	    if (prefDSL.isActive()) {
+	    if (prefDSL.isActiveLocal()) {
 		if (existsSecondActiveDSLOfSameExtension(
 			prefDSL.getExtension(), prefDSLs, i + 1)) {
 		    setInvalidState("At most one DSL of the same extension may be active at the same time.");
@@ -518,7 +518,7 @@ Composite parent,
 	    PrefDSL[] prefDSLs, int beginningIndex) {
 	for (int j = beginningIndex; j < prefDSLs.length; j++) {
 	    PrefDSL dsl = prefDSLs[j];
-	    if (dsl.isActive()) {
+	    if (dsl.isActiveLocal()) {
 		boolean equals = setExtension.equals(dsl.getExtension());
 		if (equals)
 		    return true;
@@ -587,7 +587,7 @@ Composite parent,
 	    return getDsl().getValue(DSLKey.LANGUAGE_ACTIVE);
 	}
 
-	public Boolean isActive() {
+	public Boolean isActiveLocal() {
 	    if (isActive == null) {
 		try {
 		    isActive = getIsActiveFromStore();
@@ -598,7 +598,7 @@ Composite parent,
 	    return isActive;
 	}
 
-	public void setIsActive(boolean isActive) {
+	public void setIsActiveLocal(boolean isActive) {
 	    setNeedsStoring();
 	    this.isActive = isActive;
 	}

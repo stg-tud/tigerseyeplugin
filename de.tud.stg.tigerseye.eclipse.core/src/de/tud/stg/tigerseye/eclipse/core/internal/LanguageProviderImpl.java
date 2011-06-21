@@ -18,6 +18,7 @@ import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.ILanguageProvider;
 import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
+import de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyePreferenceConstants;
 import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntimeException;
 
 /**
@@ -27,6 +28,12 @@ import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntimeException;
  * 
  */
 public class LanguageProviderImpl implements ILanguageProvider {
+
+    private static final String EXTENSION_ATTRIBUTE = "extension";
+
+    private static final String CLASS_ATTRIBUTE = "class";
+
+    private static final String NAME_ATTRIBUTE = "name";
 
     private static final Logger logger = LoggerFactory
 	    .getLogger(LanguageProviderImpl.class);
@@ -70,10 +77,10 @@ public class LanguageProviderImpl implements ILanguageProvider {
 
     private @CheckForNull
     DSLDefinitionImpl createDSLDefinition(IConfigurationElement confEl) {
-	String dslNameAttribute = confEl.getAttribute("name");
+	String dslNameAttribute = confEl.getAttribute(NAME_ATTRIBUTE);
 	if (dslNameAttribute == null)
 	    dslNameAttribute = "";
-	String dslClassAttribute = confEl.getAttribute("class");
+	String dslClassAttribute = confEl.getAttribute(CLASS_ATTRIBUTE);
 	String dslContributorPlugin = confEl.getContributor().getName();
 	String languageKey = dslContributorPlugin + dslClassAttribute;
 	DSLDefinitionImpl dsl = new DSLDefinitionImpl(dslClassAttribute,
@@ -88,9 +95,10 @@ public class LanguageProviderImpl implements ILanguageProvider {
 	    Class<? extends DSL> loadClass = dsl.loadClass();
 	    // Cannot do the next check since that would also execute possible
 	    // logic within the constructor
-	    // loadClass.newInstance(); // TODO: Error Message if the
-	    // constructor
-				     // has non-empty args
+	    // loadClass.newInstance();
+	    /*
+	     * TODO: Error Message if the constructor has non-empty args
+	     */
 	} catch (Exception e) {
 	    logger.warn(
 		    "Could not access registered DSL {} with class {} of plug-in {}. It will be ignored. Check your configuration. Is the correct DSL class name given? Is the plug-in accessible?",
@@ -112,11 +120,16 @@ public class LanguageProviderImpl implements ILanguageProvider {
     private void fillOptionalValues(IConfigurationElement confEl,
 	    DSLDefinitionImpl dsl) {
 	dsl.setStore(getStore());
-	String defExt = confEl.getAttribute("extension");
+	String defExt = confEl.getAttribute(EXTENSION_ATTRIBUTE);
 	if (defExt == null)
 	    return;
 	String keyFor = dsl.getKeyFor(DSLKey.EXTENSION);
 	getStore().setDefault(keyFor, defExt);
+
+	String dslIsActiveKey = dsl.getKeyFor(DSLKey.LANGUAGE_ACTIVE);
+	boolean defaultActive = getStore().getBoolean(
+		TigerseyePreferenceConstants.DEFAULT_LANGUAGE_ACTIVE_KEY);
+	getStore().contains(dslIsActiveKey);
     }
 
     @Override

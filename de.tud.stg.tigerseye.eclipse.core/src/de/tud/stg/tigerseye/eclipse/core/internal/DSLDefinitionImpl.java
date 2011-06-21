@@ -1,5 +1,7 @@
 package de.tud.stg.tigerseye.eclipse.core.internal;
 
+import javax.annotation.Nonnull;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.eclipse.core.runtime.Platform;
@@ -31,7 +33,8 @@ public class DSLDefinitionImpl implements DSLDefinition {
      * @param color
      * @param languageKey
      */
-    public DSLDefinitionImpl(String classPath, String contributorSymbolicName,
+    public @Nonnull
+    DSLDefinitionImpl(String classPath, String contributorSymbolicName,
 	    String dslName, String languageKey) {
 	this.classPath = classPath;
 	this.contributorSymbolicName = contributorSymbolicName;

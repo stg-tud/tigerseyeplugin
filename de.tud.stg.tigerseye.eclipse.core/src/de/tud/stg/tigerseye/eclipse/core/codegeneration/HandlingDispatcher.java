@@ -134,6 +134,9 @@ public class HandlingDispatcher {
 
 	private ICategory<String> handleObjectArray(Class<?> clazz, Map<String, String> parameterOptions) {
 		ICategory<String> objects = HandlingDispatcherHelper.getObjectHierarchy(this.grammar, clazz);
+	logger.debug(
+		"Objects in array are {} for class {} with parameterOptions {}",
+		new Object[] { objects, clazz, parameterOptions });
 
 		Class<?> componentType = clazz.getComponentType();
 		ICategory<String> componentCategory = this.handle(componentType, parameterOptions);
@@ -156,11 +159,21 @@ public class HandlingDispatcher {
 			this.grammar.addCategory(ad);
 			ICategory<String> WS = GrammarBuilderHelper.getWhitespaceCategory(this.grammar, true);
 			r1 = new Rule(objects, objects, WS, ad, WS, objects);
+	    // Rule r1a = new Rule(objects, objects, ad, WS, objects);
+	    // Rule r1b = new Rule(objects, objects, WS, ad, objects);
+	    // Rule r1c = new Rule(objects, objects, ad, objects);
+	    // this.grammar.addRules(r1c, r1b, r1a);
 		}
 
 		Rule r2 = new Rule(objects, componentCategory);
 
-		this.grammar.addRules(r1, r2);
+	this.grammar.addRules(r1, r2);
+
+	// Set<IRule<String>> waterRules = this.grammar.getWaterRules();
+	// if (!waterRules.isEmpty()) {
+	// Rule water = new Rule(objects, new WaterCategory());
+	// this.grammar.addRule(water);
+	// }
 
 		this.grammar.addCategories(objects);
 

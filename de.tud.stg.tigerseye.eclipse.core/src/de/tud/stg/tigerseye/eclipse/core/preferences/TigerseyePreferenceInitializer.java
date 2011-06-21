@@ -21,10 +21,14 @@ import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationType
 public class TigerseyePreferenceInitializer extends
 	AbstractPreferenceInitializer {
 
+    /*
+     * XXX could move default strings where possible to a properties file, seems
+     * too much configuration for now
+     */
     public static final FileType[] RESOURCE_FILE_TYPES = { JAVA, GROOVY, TIGERSEYE };
     public static final FileType[] DSL_FILETYPES = { DSL };
     public static final String DEFAULT_OUTPUT_DIRECTORY_NAME = "src-tigerseye";
-    public static final boolean DEFAULT_LANGUAGE_ACTIVE_VALUE = false;
+    public static final boolean DEFAULT_LANGUAGE_ACTIVE_VALUE = true;
     public static final boolean DEFAULT_TRANSFORMER_FOR_RESOURCES_ACTIVATION_STATE = true;
     public static final boolean DEFAULT_TRANSFORMER_FOR_DSLS_ACTIVATION_STATE = false;
 

@@ -76,8 +76,7 @@ public class GrammarBuilder {
 			Rule rAnyStatement = new Rule(this.statement, anything);
 			this.grammar.addRule(rAnyStatement);
 
-			Grammar g = this.grammar;
-			g.addWaterRule(rAnyStatement);
+	    this.grammar.addWaterRule(rAnyStatement);
 		}
 	}
 
@@ -137,6 +136,8 @@ public class GrammarBuilder {
 				waterSupported &= annotation.waterSupported();
 			}
 
+	    this.setWaterEnabled(waterSupported);
+
 			// get all methods, including inherited ones
 			Set<Method> methods = new LinkedHashSet<Method>();
 			methods.addAll(Arrays.asList(clazz.getMethods()));
@@ -170,10 +171,10 @@ public class GrammarBuilder {
 			// this.handleConstructor(constructor, methodEscape.getX(),
 			// methodEscape.getY());
 			// }
-			// }
+	    // }
 		}
 
-		this.setWaterEnabled(waterSupported);
+
 
 		return this.grammar;
 	}
