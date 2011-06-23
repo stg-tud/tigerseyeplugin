@@ -54,6 +54,7 @@ public class Context {
 		new String[this.dslClasses.size()]);
     }
 
+    @Deprecated
     @SuppressWarnings("unchecked")
     public Class<? extends DSL>[] getDSLClasses() {
 	return this.dslClasses.values().toArray(

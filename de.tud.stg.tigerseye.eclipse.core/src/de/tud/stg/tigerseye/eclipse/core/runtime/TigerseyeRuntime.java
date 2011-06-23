@@ -40,7 +40,7 @@ public class TigerseyeRuntime {
 
     public static String getOutputDirectoryPath() {
 	String outputfolder = TigerseyeCore.getPreferences().getString(
-		TigerseyePreferenceConstants.TIGERSEYE_OUTPUT_FOLDER_PATH);
+		TigerseyePreferenceConstants.TIGERSEYE_OUTPUT_FOLDER_PATH_KEY);
 	return outputfolder;
     }
 

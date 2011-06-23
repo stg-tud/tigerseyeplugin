@@ -9,7 +9,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Transformation;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationType;
-import de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyePreferenceInitializer;
+import de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyePreferenceConstants;
 
 /**
  * This class wraps actual {@link Transformation} objects and provides access to
@@ -118,7 +118,7 @@ public class TransformationHandler {
      * @return
      */
     public static boolean getDefaultFor(TransformationType identifiable) {
-	Boolean defBool = TigerseyePreferenceInitializer.DEFAULT_TRANSFORMATION_ACTIVATION
+	Boolean defBool = TigerseyePreferenceConstants.DEFAULT_TRANSFORMATION_ACTIVATION
 		.get(identifiable);
 	return defBool == null ? false : defBool;
     }

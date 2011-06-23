@@ -59,7 +59,7 @@ public class TigerseyeMainPreferencePage extends FieldEditorPreferencePage
 
     @Override
     public void createFieldEditors() {
-	String outputFolderProperty = TigerseyePreferenceConstants.TIGERSEYE_OUTPUT_FOLDER_PATH;
+	String outputFolderProperty = TigerseyePreferenceConstants.TIGERSEYE_OUTPUT_FOLDER_PATH_KEY;
 	outPutDirEditor = new OutPutDirectoryFieldEditor(outputFolderProperty,
 		"&Output Directory", getFieldEditorParent());
 	originalOutputFolder = TigerseyeRuntime.getOutputDirectoryPath();

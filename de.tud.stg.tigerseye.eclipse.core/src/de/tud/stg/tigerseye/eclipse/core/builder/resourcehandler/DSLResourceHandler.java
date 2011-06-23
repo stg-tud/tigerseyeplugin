@@ -123,9 +123,17 @@ public class DSLResourceHandler implements ResourceHandler {
 	    Context context = this.determineInvolvedDSLs(srcFile,
 		    resourceContent);
 	    context.setFiletype(filetype);
+	    if (context.getDsls().size() < 1) {
+		logger.trace("No DSLs for {} determined. Will not attempt a transformation.");
+		return;
+	    }
 	    ByteArrayOutputStream transformedContent = getTransformedContent(
 		    resourceContent, context);
-	    this.writeResourceContent(transformedContent, outputFile);
+	    if (transformedContent.size() > 0) {
+		this.writeResourceContent(transformedContent, outputFile);
+	    } else {
+		logger.trace("Made no transformation for {}", resource);
+	    }
 	} catch (DSLNotFoundException e) {
 	    logger.debug("Resource {} could not be handled. {}", new Object[] {
 		    srcFile, e.noDSLMsg() }, e);
@@ -146,7 +154,7 @@ public class DSLResourceHandler implements ResourceHandler {
 
 	if (logger.isDebugEnabled()) {
 	    logger.debug("Grammar successfully construced");
-	    logger.trace("Grammar is: {}", grammar.toString());
+	    logger.trace("Grammar is: {}", grammar);
 	}
 
 	ATerm term = this.parseResource(textualTransformedInput, grammar);

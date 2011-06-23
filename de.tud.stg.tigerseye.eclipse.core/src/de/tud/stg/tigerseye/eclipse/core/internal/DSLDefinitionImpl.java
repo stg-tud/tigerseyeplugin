@@ -7,6 +7,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.osgi.framework.Bundle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.tud.stg.popart.dslsupport.DSL;
 import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
@@ -15,6 +17,9 @@ import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
 import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntimeException;
 
 public class DSLDefinitionImpl implements DSLDefinition {
+    
+    private static final Logger logger = LoggerFactory
+	    .getLogger(DSLDefinitionImpl.class);
 
     private final String classPath;
     private final String contributorSymbolicName;
@@ -123,7 +128,12 @@ public class DSLDefinitionImpl implements DSLDefinition {
 
     @Override
     public boolean isActive() {
-	return getStore().getBoolean(getKeyFor(DSLKey.LANGUAGE_ACTIVE));
+	try {
+	    return getValue(DSLKey.LANGUAGE_ACTIVE);
+	} catch (NoLegalPropertyFound e) {
+	    logger.error("DSL should always have an active state.", e);
+	    return false;
+	}
     }
 
     @Override

@@ -1,5 +1,6 @@
 package de.tud.stg.tigerseye.eclipse.core;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyePreferenceConstants;
@@ -15,6 +16,9 @@ import de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyePreferenceConstant
  *      {@link DSLDefinition#setToDefault(DSLKey)}
  */
 public abstract class DSLKey<T> {
+
+    private static final String SUFFIX_LANGUAGE = "_language";
+    private static final String SUFFIX_EXTENSION = "_extension";
 
     /**
      * Key to access the configured extension name for a DSL.
@@ -114,7 +118,7 @@ public abstract class DSLKey<T> {
     private final static class ExtensionDSLKey extends DSLKey<String> {
 
 	protected ExtensionDSLKey() {
-	    super(TigerseyePreferenceConstants._EXTENSION);
+	    super(SUFFIX_EXTENSION);
 	}
 
 	@Override
@@ -139,23 +143,56 @@ public abstract class DSLKey<T> {
 
     }
 
+    /*
+     * The values are deliberately saved as strings instead of booleans. When
+     * saved as boolean, Eclipse seems to delete the keys when they equal the
+     * default value, i.e. IPreferenceStore#contains(String) returns false
+     * although the key was manually set/changed.
+     * 
+     * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=22533
+     */
     private final static class LanguageDSLKey extends DSLKey<Boolean> {
 
+	private static final String TRUE = "MYTRUE";
+	private static final String FALSE = "MYFALSE";
+
 	protected LanguageDSLKey() {
-	    super("");
+	    super(SUFFIX_LANGUAGE);// The only key without a suffix
 	}
 
 	@Override
 	public Boolean getValue(DSLDefinition dsl, IPreferenceStore store)
 		throws NoLegalPropertyFound {
-	    boolean languageKey = store.getBoolean(key(dsl));
-	    return languageKey;
+	    String key = key(dsl);
+	    if (!store.contains(key)) {
+		return TigerseyePreferenceConstants.DEFAULT_LANGUAGE_ACTIVE_VALUE;
+	    }
+	    String bool = store.getString(key(dsl));
+	    return parseMyBool(bool);
+	}
+
+	private Boolean parseMyBool(String bool) {
+	    if (bool.equals(TRUE))
+		return true;
+	    else if (bool.equals(FALSE))
+		return false;
+	    else
+		throw new IllegalArgumentException("Found unexpected value: ["
+			+ bool + "] where one of: "
+			+ ArrayUtils.toString(new String[] { TRUE, FALSE })
+			+ " was expected.");
 	}
 
 	@Override
 	public void setValue(DSLDefinition dsl, IPreferenceStore store,
 		Boolean value) {
-	    store.setValue(key(dsl), value);
+	    String key = key(dsl);
+	    String bool = null;
+	    if (value)
+		bool = TRUE;
+	    else
+		bool = FALSE;
+	    store.setValue(key, bool);
 	}
 
 	/**

@@ -3,7 +3,10 @@ package de.tud.stg.tigerseye.eclipse.core.internal;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.CheckForNull;
 
@@ -18,6 +21,7 @@ import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.ILanguageProvider;
 import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
+import de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyePreferenceConstants;
 import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntimeException;
 
 /**
@@ -56,22 +60,67 @@ public class LanguageProviderImpl implements ILanguageProvider {
     public List<DSLDefinition> getDSLDefinitions() {
 	List<DSLDefinition> registeredDefinitions = getPluginConfiguredDSLLanguages();
 
-	// TODO #56
-	// boolean defaultActive = getStore().getBoolean(
-	// TigerseyePreferenceConstants.DEFAULT_LANGUAGE_ACTIVE_KEY);
-	// if(defaultActive){
-	// String dslIsActiveKey = dsl.getKeyFor(DSLKey.LANGUAGE_ACTIVE);
-	// // Must only activate so many as to leave a valid state
-	// if (defaultActive) {
-	// boolean keyWasSet = getStore().contains(dslIsActiveKey);
-	// // Could be added if no further DSLs conflict
-	// if (!keyWasSet) {
-	//
-	// }
-	// }
-	// }
+	setValidActivationState(registeredDefinitions);
 
 	return Collections.unmodifiableList(registeredDefinitions);
+    }
+
+    void setValidActivationState(
+	    List<DSLDefinition> registeredDefinitions) {
+
+	Map<DSLDefinition, String> dslToKey = new HashMap<DSLDefinition, String>(
+		registeredDefinitions.size());
+	Map<String, DSLDefinition> activatedExtensions = new HashMap<String, DSLDefinition>(
+		registeredDefinitions.size());
+
+	for (DSLDefinition dsl : registeredDefinitions) {
+	    String extension = getExtensionOrNull(dsl);
+	    dslToKey.put(dsl, extension);
+	}
+
+	// Activate manually changed at first
+	for (Entry<DSLDefinition, String> entry : dslToKey.entrySet()) {
+	    DSLDefinition dsl = entry.getKey();
+	    String extension = entry.getValue();
+	    if (extension != null && activeStateAlreadySet(dsl)
+		    && dsl.isActive())
+		if (activatedExtensions.containsKey(extension)) {
+		    logger.error(
+			    "More than one dsl has the extension [{}]. Cannot activate this DSL [{}] since the DSL [{}] has the same extension.",
+			    new Object[] { extension, dsl,
+				    activatedExtensions.get(extension) });
+		    dsl.setValue(DSLKey.LANGUAGE_ACTIVE, false);
+		} else {
+		    activatedExtensions.put(extension, dsl);
+	    }
+	}
+
+	boolean defaultActivationState = TigerseyePreferenceConstants.DEFAULT_LANGUAGE_ACTIVE_VALUE;
+	// Check newly added languages
+	for (Entry<DSLDefinition, String> entry : dslToKey.entrySet()) {
+	    DSLDefinition dsl = entry.getKey();
+	    String extension = entry.getValue();
+	    if (extension != null
+		    && !activatedExtensions.containsKey(extension)
+		    && !activeStateAlreadySet(dsl)) {
+		dsl.setValue(DSLKey.LANGUAGE_ACTIVE, defaultActivationState);
+		activatedExtensions.put(extension, dsl);
+	    }
+	}
+    }
+
+    private @CheckForNull
+    String getExtensionOrNull(DSLDefinition dsl) {
+	try {
+	    return dsl.getValue(DSLKey.EXTENSION);
+	} catch (NoLegalPropertyFound e) {
+	    return null;
+	}
+    }
+
+    private boolean activeStateAlreadySet(DSLDefinition dsl) {
+	String dslIsActiveKey = dsl.getKeyFor(DSLKey.LANGUAGE_ACTIVE);
+	return getStore().contains(dslIsActiveKey);
     }
 
     private ArrayList<DSLDefinition> getPluginConfiguredDSLLanguages() {
@@ -153,7 +202,7 @@ public class LanguageProviderImpl implements ILanguageProvider {
 	    }
 	}
 	if (possibleTargets.isEmpty()) {
-	    logger.warn("No active DSL for extension '{}' found", dslName);
+	    //logger.info("No active DSL for extension '{}' found", dslName);
 	    return null;
 	}
 	if (possibleTargets.size() > 1) {

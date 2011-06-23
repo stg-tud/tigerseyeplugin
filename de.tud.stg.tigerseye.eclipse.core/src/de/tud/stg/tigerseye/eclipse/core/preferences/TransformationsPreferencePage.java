@@ -34,7 +34,7 @@ import de.tud.stg.tigerseye.eclipse.core.preferences.TableDialog.CheckedItem;
 public class TransformationsPreferencePage extends PreferencePage implements
 	IWorkbenchPreferencePage {
 
-    private static final FileType[] resourceFileTypes = TigerseyePreferenceInitializer.RESOURCE_FILE_TYPES;
+    private static final FileType[] resourceFileTypes = TigerseyePreferenceConstants.RESOURCE_FILE_TYPES;
     private static final Logger logger = LoggerFactory
 	    .getLogger(TransformationsPreferencePage.class);
     private Collection<TransformationHandler> configuredTransformations;
