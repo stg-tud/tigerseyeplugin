@@ -8,7 +8,7 @@ SRCDIR="text"
 KEYVALS=( "listoftables=''") #"listoffigures=''"
 
 #Passed Parameters
-TOFORMAT="html"
+TOFORMAT="html" #The default generated format
 STANDALONE="-s"
 TOC="--toc"
 PARSERAW="-R"

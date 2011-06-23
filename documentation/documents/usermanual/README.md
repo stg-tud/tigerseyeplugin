@@ -35,14 +35,14 @@ It is more sophisticated and unlike the original markdown philosophy it is not o
 to generate HTML but many other output formats such as `Latex`.
 
 ## Installation
-*   `pandoc` has to be installed and accessible via command line.
+*   `Pandoc` has to be installed and accessible via command line.
     I use version `1.8.1.1`, it won't work with `1.5` (from the
-    Ubuntu packages) since I use the `\newcommand` tex macro to
+    Ubuntu packages) since I use the `\newcommand` TeX macro to
     define macros which is supported since `1.6`.
-*   to generate html `pandoc` is sufficient
-*   to generate a pdf `pdflatex` has to be accessible via command line.
+*   to generate html Pandoc is sufficient
+*   to generate a PDF file `pdflatex` has to be accessible via command line.
 *   Since the TU design is used, the according latex packages must be
-    installed
+    installed.
 
 ## `pandoc` Commands 
 1.  To create a html file

@@ -20,7 +20,7 @@ plug-ins and the required versions, if any.
   ----------------------------------- --------------- ---------------------------------------------------------------------
   de.tud.stg.tigerseye.eclipse.core   $\versionnum$   Core functionality.
   de.tud.stg.tigerseye.eclipse.ui     $\versionnum$   User Interface functionality.
-  de.tud.stg.tigerseye                $\versionnum$   Contains libraries and plug-ins used by multiple $\tiger$ plug-ins.
+  de.tud.stg.tigerseye.eclipse        $\versionnum$   Contains libraries and plug-ins used by multiple $\tiger$ plug-ins.
   Groovy Eclipse Feature              2.1.1           Groovy Eclipse Plug-ins.
   org.apache.commons.collections      -               Apache utility classes for collection handling.
   org.apache.commons.io               -               Apache IO utility classes.
@@ -62,7 +62,7 @@ started with all available plug-ins active.
 To install a newly created language it is currently necessary to export
 it as a plug-in. As in the [Examples](#examples) section described the
 project can be converted into a plug-in project using the Eclipse PDE
-tools. It is than necessary to add the `de.tud.stg.tigerseye` and the
+tools. It is than necessary to add the `de.tud.stg.tigerseye.eclipse` and the
 `de.tud.stg.tigerseye.eclipse.core` plug-ins as dependencies. The core
 plug-in provides the `dslLanguages` extension point. This point has to
 be extended by declaring what the language class of the exported
