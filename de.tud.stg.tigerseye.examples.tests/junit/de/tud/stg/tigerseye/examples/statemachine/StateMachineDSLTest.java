@@ -8,8 +8,11 @@ import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import utilities.DSLTransformationTestBase;
 
@@ -27,49 +30,23 @@ import de.tud.stg.tigerseye.test.transformation.utils.DefaultDSLTransformationTe
 
 public class StateMachineDSLTest extends DSLTransformationTestBase {
 
+	
+	private static final Logger logger = LoggerFactory
+			.getLogger(StateMachineDSLTest.class);
+	private DefaultDSLTransformationTester tester;
+	
+	
 
 	@Test
 	public void shouldNotTransformAnything() throws Exception {
 		assertTransformedDSLEqualsExpectedUnchecked(
 				"StateMachineDSL",
 				StateMachineDSL.class);
-	}
-	
-	private String loadResource(String name) throws Exception{
-		InputStream resourceAsStream = getClass().getResourceAsStream("resources/"+name);
-		return IOUtils.toString(resourceAsStream);
-	}
-	
-//	@Ignore("no correct expected grammar definition available yet")
-	@Test
-	public void shouldProduceExpectedGrammar() throws Exception {
-		Class<StateMachineDSL> reengclass = StateMachineDSL.class;
-		GrammarResult reenggrammarbuilder = newGrammar(reengclass);
-		String expected = loadResource("statemachinedsltostring.expected");
-		String actual = reenggrammarbuilder.grammar.toString();
-		System.out.println(actual);
-		TestUtils.assertContainsAllLines(expected,actual);
-	}
+	}	
 	
 	@Test
-	public void shouldProduceExpectedOutputForInput() throws Exception {
-		GrammarResult newGrammar = newGrammar(StateMachineDSL.class);
-		
-		DefaultDSLTransformationTester tester = new DefaultDSLTransformationTester(getClass(), DefaultDSLTransformationTester.GENERATED_OUTPUT_FOLDER, "resources");
-		
-		tester.assertTransformedDSLEqualsExpectedUnchecked("StateMachineDSLSupportsRARRSyntax", StateMachineDSL.class);
-	}
-
-
-	private GrammarResult newGrammar(Class<?> ... classes) {
-		
-		GrammarBuilder grammarBuilder = new GrammarBuilder(TestUtils.getDefaultLookupTable());
-		
-		IGrammar<String> buildGrammar = grammarBuilder.buildGrammar(classes);
-		
-		GrammarResult grammarResult = new GrammarResult(buildGrammar, grammarBuilder.getMethodOptions(), classes);
-		
-		return grammarResult;
+	public void shouldTransformEverythingInCombination() throws Exception {		
+		assertTransformedDSLEqualsExpectedUnchecked("StateMachineDSLSupportsRARRSyntax", StateMachineDSL.class);
 	}
 
 }

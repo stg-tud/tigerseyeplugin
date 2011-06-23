@@ -10,54 +10,54 @@ new DSLInvoker ( ModifiedStateMachineDSL.class ) .eval ( ) {
 	
 	boolean variabilityFlag = true;
 	
-	StateMachine m = machine Watch {
-			start state reseted {
+	StateMachine m = machine "Watch" {
+			start state "reseted" {
 				entry: output "entering reseted";
 		 		exit: output "leaving reseted";
 				 transitions {
 				 	
-				 	 start → running;
+				 	 "start" → "running";
 				 	 
 				     if (variabilityFlag) { 
-  					   switchOff → off;
+  					   "switchOff" → "off";
   					 } else {
-  					   switchOff → paused;  					 
+  					   "switchOff" → "paused";  					 
   					 } 
 				 }
 			 }
 								                            
-			 state running {
+			 state "running" {
 				entry: output "entering running";
 			 	exit: output "leaving running";
 				 transitions {
-					 split → paused;
-					 stop → stopped;
+					 "split" → "paused";
+					 "stop" → "stopped";
 				 }
 			 }
 								                            
-			 state paused {
+			 state "paused" {
 				entry: output "entering paused";
 			 	exit: output "leaving paused";
 				 transitions {
-					 unsplit → running;
-					 stop → Stopped;
+					 "unsplit" → "running";
+					 "stop" → "Stopped";
 				 }
 			 }
 								                           
-			 state stopped {
+			 state "stopped" {
 				entry: output "entering stopped";
 			 	exit: output "leaving stopped";
 				 transitions {
-					 reset → stopped;
-					 switchOff → off;
+					 "reset" → "stopped";
+					 "switchOff" → "off";
 				 }
 			 }
 								                            
-			 state off {
+			 state "off" {
 				 entry: output "entering off";
 				 exit: output "leaving off";
 				 transitions {
-					 toEnd → reseted;
+					 "toEnd" → "reseted";
 				 }	
 			 }
 		}

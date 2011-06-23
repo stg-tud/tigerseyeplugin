@@ -15,15 +15,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link UnicodeLookupTable} stores the mapping between unicodes and their
- * textual representation. <br>
+ * {@link UnicodeLookupTable} stores the mapping between Unicode characters and
+ * their textual representation. <br>
  * Use the {@link #load(Readable...)} method to initialize the
- * {@link UnicodeLookupTable} object. <br>
- * Expects a file of format as described onn
- * 
- * <pre>
- * http://www.unicode.org/Public/math/revision-12/MathClassEx-12.txt
- * </pre>
+ * {@link UnicodeLookupTable} object.
+ * <p>
+ * The expected file format is described on the <a
+ * href="http://www.unicode.org/Public/math/revision-12/MathClassEx-12.txt"
+ * ><i>The Unicode Consortium</i> home page</a>. The implementation has been
+ * tested with <i>MathClassEx-11.txt</i> and <i>MathClassEx-12.txt</i>.
  * 
  * @author Kamil Erhard
  * @author Leo Roos
@@ -116,9 +116,10 @@ public class UnicodeLookupTable {
 		    "Following line has an unsupported character code (either not supported by JVM or unsupported format): {}",
 		    nextLine);
 	    return;
+	} else {
+	    this.unicodeToName.put(uniname.characterString, uniname.name);
+	    this.nameToUnicode.put(uniname.name, uniname.characterString);
 	}
-	this.unicodeToName.put(uniname.characterString, uniname.name);
-	this.nameToUnicode.put(uniname.name, uniname.characterString);
     }
 
     /*
@@ -161,10 +162,9 @@ public class UnicodeLookupTable {
 	    case 4: // 4: entity name
 		/*
 		 * XXX This is what we want. Should be perhaps the only option
-		 * and UNDEFINED otherwise.
+		 * and undefined otherwise.
 		 */
-		if (splitString.equals(characterString)
-			&& element.isEmpty()) {
+		if (splitString.equals(characterString) && element.isEmpty()) {
 		    elementNumber--; /*
 				      * Have to try next element to support both
 				      * versions, i.e. 11 and 12, of

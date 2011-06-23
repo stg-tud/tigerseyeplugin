@@ -6,14 +6,19 @@ import org.junit.Test;
 
 import de.tud.stg.popart.builder.test.dsls.MapDSL;
 import de.tud.stg.popart.builder.test.dsls.MathDSL;
+import de.tud.stg.popart.builder.test.dsls.SimpleSqlDSL;
 
 public class SmallCombinedMapMathDSL {
 	
-	//TODO prior version failed because of ambiguity in map dsl language was available
-	// The input file used variables so that the concrete type of the variables was unknown 
-	// and more than one transformation valid
 	@Test
 	public void testSmallCombinedDSL() {
-		test(true, "SmallCombinedDSL", MathDSL.class, MapDSL.class);
+		test("SmallCombinedDSL", MathDSL.class, SimpleSqlDSL.class);
 	}
+	
+	@Test
+	public void testSmallCombinedDSLwWhereAnd() {
+		test("SmallCombinedDSLwWhereAnd", MathDSL.class, SimpleSqlDSL.class);
+	}
+	
+	
 }

@@ -4,6 +4,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import de.tud.stg.popart.builder.test.junit.AmbiguityFailuresTest;
 import de.tud.stg.popart.builder.test.junit.ConditionalWithNestingDSL;
 import de.tud.stg.popart.builder.test.junit.SmallCombinedMapMathDSL;
 import de.tud.stg.popart.builder.test.junit.TestBigCombinedMapMathDSL;
@@ -35,6 +36,7 @@ import de.tud.stg.popart.builder.test.junit.TestWordMachine;
 	TestSimpleSqlDSL.class, //
 	TestStatefulDSL.class, //
 	TestStateMaschineDSL.class, //
+	AmbiguityFailuresTest.class, //
 	
 	//TestWordMachine.class, //Too Long
 })

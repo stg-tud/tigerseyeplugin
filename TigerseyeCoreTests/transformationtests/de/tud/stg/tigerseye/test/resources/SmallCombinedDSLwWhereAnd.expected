@@ -18,3 +18,16 @@ println b
 		"students"
 	] as String[])
 
+	DSLInvoker.getDSL(SimpleSqlDSL.class).selectFromWhere(
+	[
+		"id",
+ 		"age",
+ 		"haircolor"
+	] as String[],
+	[
+		"students"
+	] as String[],
+	[
+		"id!=0",
+ 		"age>20"
+	] as String[]) // works when followed by such a comment

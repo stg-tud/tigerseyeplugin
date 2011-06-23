@@ -6,4 +6,6 @@
 	println b
 	
     SELECT "id", "age", "haircolor" FROM "students"
+    
+    SELECT "id", "age", "haircolor" FROM "students" WHERE "id!=0" AND "age>20"
 	

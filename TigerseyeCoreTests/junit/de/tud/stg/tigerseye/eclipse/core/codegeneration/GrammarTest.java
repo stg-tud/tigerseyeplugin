@@ -60,7 +60,7 @@ public class GrammarTest {
 	}
 
 	private IGrammar<String> newGrammar(Class<? extends DSL> classForTest) {
-		return new GrammarBuilder(TestUtils.getDefaultLookupTable()).buildGrammar(classForTest);
+		return TestUtils.newGrammar(classForTest).grammar;
 	}
 
 	private String loadresource(String name) throws IOException {

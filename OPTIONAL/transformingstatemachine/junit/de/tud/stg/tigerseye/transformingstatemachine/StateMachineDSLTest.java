@@ -5,8 +5,6 @@ import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
-import de.tud.stg.parlex.core.IGrammar;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder;
 import de.tud.stg.tigerseye.test.PrettyGroovyCodePrinterFactory;
 import de.tud.stg.tigerseye.test.TestDSLTransformation;
 import de.tud.stg.tigerseye.test.TestDSLTransformation.GrammarResult;
@@ -44,22 +42,9 @@ public class StateMachineDSLTest {
 	@Test
 	public void shouldProduceExpectedGrammar() throws Exception {
 		Class<de.tud.stg.tigerseye.transformingstatemachine.StateMachineDSL> reengclass = de.tud.stg.tigerseye.transformingstatemachine.StateMachineDSL.class;
-		GrammarResult reenggrammarbuilder = newGrammar(reengclass);
+		GrammarResult reenggrammarbuilder = TestUtils.newGrammar(reengclass);
 		String expected = loadResource("statemachinedsltostring.expected");
 		String actual = reenggrammarbuilder.grammar.toString();
 		TestUtils.assertContainsAllLines(expected, actual);
-	}
-
-	private GrammarResult newGrammar(Class<?>... classes) {
-
-		GrammarBuilder grammarBuilder = new GrammarBuilder(
-				TestUtils.getDefaultLookupTable());
-
-		IGrammar<String> buildGrammar = grammarBuilder.buildGrammar(classes);
-
-		GrammarResult grammarResult = new GrammarResult(buildGrammar,
-				grammarBuilder.getMethodOptions(), classes);
-
-		return grammarResult;
 	}
 }

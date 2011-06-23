@@ -30,8 +30,9 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.osgi.framework.Bundle;
 
+import de.tud.stg.tigerseye.test.TestUtils;
+
 import utilities.GlobalResourceCollection;
-import utilities.TestUtilities;
 
 public class JDTClasspathResolverTest {
 
@@ -53,7 +54,6 @@ public class JDTClasspathResolverTest {
 	@Before
 	public void before() {
 		MockitoAnnotations.initMocks(this);
-
 	}
 
 	@Ignore("JUnit Plug-in Test")
@@ -156,7 +156,7 @@ public class JDTClasspathResolverTest {
 	}
 
 	private File[] getFilesFor(File eclipseJavaProjectRoot, String... expected) {
-		return TestUtilities.getFilesRelativeToRoot(eclipseJavaProjectRoot,
+		return TestUtils.getFilesRelativeToRoot(eclipseJavaProjectRoot,
 				expected);
 	}
 

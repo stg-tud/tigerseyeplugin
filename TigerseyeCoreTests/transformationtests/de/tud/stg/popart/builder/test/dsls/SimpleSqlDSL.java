@@ -14,7 +14,7 @@ import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeywor
  * @author Kamil Erhard
  * 
  */
-@DSL(whitespaceEscape=" ")
+//@DSL(whitespaceEscape=" ")
 public class SimpleSqlDSL implements de.tud.stg.popart.dslsupport.DSL {
 
 
@@ -27,12 +27,12 @@ public class SimpleSqlDSL implements de.tud.stg.popart.dslsupport.DSL {
 	@DSLMethod(prettyName = "SELECT__p0__FROM__p1")
 	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
 	public void selectFrom(String[] columns, String[] tables) {
-		System.out.println("sending QUERY");
+		System.out.println("sending QUERY: SELECT " + columns + " FROM " + "tables");
 	}
 
 	@DSLMethod(prettyName = "SELECT__p0__FROM__p1__WHERE__p2")
 	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
 	public void selectFromWhere(String[] columns, String[] tables, @DSL(arrayDelimiter = "AND") String[] checks) {
-		System.out.println("sending QUERY");
+		System.out.println("sending QUERY: SELECT " + columns + " FROM " + "tables" + "WHERE" + " AND_concatenatedarray: " + checks);
 	}
 }

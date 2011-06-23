@@ -52,19 +52,6 @@ public class StateMachineDSL {
 		this.currentStateMachine = stateMachine;
 	}
 	
-	
-	@DSLMethod(prettyName = "state_p0_type_p1_lcub_p2_rcub_semi")
-	@PopartType(clazz=PopartOperationKeyword.class, breakpointPossible = 0)
-	public void state_name_type_closure(String stateName, String type, Closure cl){
-		state(name:stateName,type:type, cl)
-	}
-	
-	@DSLMethod(prettyName = "state_p0_lcub_p1_rcub_semi")
-	@PopartType(clazz=PopartOperationKeyword.class, breakpointPossible = 0)
-	public void state_name_closure(String stateName, Closure cl){
-		state(name:stateName, cl)
-	}
-
 	/**
 	 * Defines a new state for this machine. 
 	 */

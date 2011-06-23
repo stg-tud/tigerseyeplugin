@@ -24,8 +24,11 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.junit.Test;
 
+import de.tud.stg.parlex.core.IGrammar;
 import de.tud.stg.popart.dslsupport.DSL;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.UnicodeLookupTable;
+import de.tud.stg.tigerseye.test.TestDSLTransformation.GrammarResult;
 import de.tud.stg.tigerseye.test.transformation.utils.DefaultDSLTransformationTester;
 
 
@@ -81,6 +84,27 @@ public class TestUtils {
 		}
 	}
 	
+	public static GrammarResult newGrammar(Class<?>... classes) {
+	
+		GrammarBuilder grammarBuilder = new GrammarBuilder(
+				getDefaultLookupTable());
+	
+		IGrammar<String> buildGrammar = grammarBuilder.buildGrammar(classes);
+	
+		GrammarResult grammarResult = new GrammarResult(buildGrammar,
+				grammarBuilder.getMethodOptions(), classes);
+	
+		return grammarResult;
+	}
+
+	public static File[] getFilesRelativeToRoot(File resFile, String ... expected) {
+		File[] expectedFiles = new File[expected.length];
+		for (int i = 0 ; i < expected.length; i ++) {
+			expectedFiles[i] = new File(resFile, expected[i]);
+		}
+		return expectedFiles;
+	}
+
 	public static void assertContainsAllLines(String doesContain, String isContained) {
 		Scanner expScanner = new Scanner(isContained);
 		while(expScanner.hasNextLine()){

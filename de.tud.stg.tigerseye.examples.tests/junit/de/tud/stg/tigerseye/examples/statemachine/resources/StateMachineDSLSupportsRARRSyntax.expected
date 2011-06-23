@@ -1,5 +1,5 @@
 
-		state_name_type_closure("reseted","start") {
+		state(name:"reseted",type:"start") {
 		  entry "resetTimer"
 		  transitions {
 			when_event_enter("start","running")
@@ -7,16 +7,16 @@
 		  }
 		};
 	
-		state_name_closure("running") {
+		state(name:"running") {
 		  entry "startTimer"
-		  perform: "loopRunning" //do is a reserved keyword in Groovy
+		  perform "loopRunning" //do is a reserved keyword in Groovy
 		  transitions {
 			when_event_enter("split","paused")
 			when_event_enter("stop","stopped")
 		  }
 		};
 	
-		state_name_closure("paused") {
+		state(name:"paused") {
 		  entry "pauseTimer"
 		  transitions {
 			when_event_enter("unsplit","running")
@@ -24,7 +24,7 @@
 		  }
 		};
 	
-		state_name_closure("stopped") {
+		state(name:"stopped") {
 		  entry "stopTimer"
 		  transitions {
 			when_event_enter("reset","stopped")
@@ -32,7 +32,7 @@
 		  }
 		};
 	
-		state_name_closure("off") {
+		state(name:"off") {
 		  exit "switchOff"
 		  transitions {
 			when_enter("end")

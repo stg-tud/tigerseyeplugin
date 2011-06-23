@@ -31,7 +31,8 @@ import org.mockito.MockitoAnnotations;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 
-import utilities.TestUtilities;
+import de.tud.stg.tigerseye.test.TestUtils;
+
 
 public class DSLClasspathResolverTest {
 
@@ -116,7 +117,7 @@ public class DSLClasspathResolverTest {
 			throws URISyntaxException {
 		File resFile = res.getFile();
 		String[] expected = cpEntries.split(",");		
-		return TestUtilities.getFilesRelativeToRoot(resFile, expected);
+		return TestUtils.getFilesRelativeToRoot(resFile, expected);
 	}
 
 	private File[] executeResolveWithBundleMock() {

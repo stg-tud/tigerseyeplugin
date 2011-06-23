@@ -19,17 +19,12 @@ import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import utilities.TestUtilities;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.utils.OutputPathHandler;
 
 public class OutputPathHandlerTest {
     private static final String OUTPUT_DIRECTORY = "src-testoutput";
 
-    static {
-	TestUtilities.initLogger();
-    }
-    
     @Before
     public void before(){
 	actualOutputPath = null;
