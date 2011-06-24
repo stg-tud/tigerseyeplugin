@@ -15,9 +15,10 @@ import aterm.ATermList;
 import aterm.Visitable;
 import aterm.pure.PureFactory;
 import aterm.pure.SingletonFactory;
+import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ASTTransformation;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
-import de.tud.stg.tigerseye.eclipse.core.builder.transformers.textual.TransformationUtils;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.textual.TextualTransformationUtils;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.MethodOptions;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.RecursiveVisitor;
 
@@ -120,8 +121,8 @@ private static final Logger logger = LoggerFactory.getLogger(ClosureResultTransf
 	}
 
 	@Override
-	public Set<FileType> getSupportedFileTypes() {
-		return TransformationUtils.getSetForFiletypes(FileType.GROOVY);
+	public Set<TransformationType> getSupportedFileTypes() {
+		return TextualTransformationUtils.getSetForFiletypes(FileType.GROOVY);
 	}
 
 	@Override

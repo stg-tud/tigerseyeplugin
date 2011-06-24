@@ -1,9 +1,10 @@
-package de.tud.stg.tigerseye.eclipse.core;
+package de.tud.stg.tigerseye.eclipse.core.api;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyePreferenceConstants;
+
 
 /**
  * A class to centralize the naming scheme of properties for different DSLs. If
@@ -165,7 +166,7 @@ public abstract class DSLKey<T> {
 		throws NoLegalPropertyFound {
 	    String key = key(dsl);
 	    if (!store.contains(key)) {
-		return TigerseyePreferenceConstants.DEFAULT_LANGUAGE_ACTIVE_VALUE;
+		return TigerseyeDefaultConstants.DEFAULT_LANGUAGE_ACTIVE_VALUE;
 	    }
 	    String bool = store.getString(key(dsl));
 	    return parseMyBool(bool);
@@ -199,7 +200,7 @@ public abstract class DSLKey<T> {
 	 * This implementation only forwards to
 	 * {@link #getDefaultLanguageActiveValue(IPreferenceStore)}
 	 * 
-	 * @see de.tud.stg.tigerseye.eclipse.core.DSLKey#getDefault(de.tud.stg.tigerseye.eclipse.core.DSLDefinition,
+	 * @see de.tud.stg.tigerseye.eclipse.core.api.DSLKey#getDefault(de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition,
 	 *      org.eclipse.jface.preference.IPreferenceStore)
 	 */
 	@Override

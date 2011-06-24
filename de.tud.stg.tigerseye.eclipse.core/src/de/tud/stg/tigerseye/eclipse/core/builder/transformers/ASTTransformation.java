@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Set;
 
 import aterm.ATerm;
+import de.tud.stg.tigerseye.eclipse.core.api.Transformation;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.MethodOptions;
 
 /**

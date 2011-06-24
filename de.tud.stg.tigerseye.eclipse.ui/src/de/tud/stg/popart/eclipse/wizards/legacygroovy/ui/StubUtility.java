@@ -1,4 +1,4 @@
-package legacy.org.codehaus.groovy.eclipse.ui;
+package de.tud.stg.popart.eclipse.wizards.legacygroovy.ui;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -51,7 +51,7 @@ public class StubUtility {
 	
 	/**
 	 * Don't use this method directly, use CodeGeneration.
-	 * @see legacy.org.codehaus.groovy.eclipse.ui.CodeGeneration#getFileComment(IJavaProject, String, String)
+	 * @see de.tud.stg.popart.eclipse.wizards.legacygroovy.ui.CodeGeneration#getFileComment(IJavaProject, String, String)
 	 */	
 	public static String getFileComment(IJavaProject project, String typeName, String packageName, String lineDelimiter) throws CoreException {
 		Template template= getCodeTemplate(CodeTemplateContextType.FILECOMMENT_ID, project);
@@ -67,7 +67,7 @@ public class StubUtility {
 	
 	/**
 	 * Don't use this method directly, use CodeGeneration.
-	 * @see legacy.org.codehaus.groovy.eclipse.ui.CodeGeneration#getTypeComment(IJavaProject, String, String, String)
+	 * @see de.tud.stg.popart.eclipse.wizards.legacygroovy.ui.CodeGeneration#getTypeComment(IJavaProject, String, String, String)
 	 */		
 	public static String getTypeComment(IJavaProject project, String typeQualifiedName, String packageName, String[] typeParameterNames, String lineDelim) throws CoreException {
 		Template template= getCodeTemplate(CodeTemplateContextType.TYPECOMMENT_ID, project);
@@ -111,8 +111,8 @@ public class StubUtility {
 	
 	/**
 	 * Don't use this method directly, use CodeGeneration.
-	 * @see legacy.org.codehaus.groovy.eclipse.ui.CodeGeneration#getTypeComment(IJavaProject, String, String, String, String[], String[], String, IMethod, boolean, String)
-	 * @see legacy.org.codehaus.groovy.eclipse.ui.CodeGeneration#getTypeComment(IJavaProject, String, String, String, String[], String, String)
+	 * @see de.tud.stg.popart.eclipse.wizards.legacygroovy.ui.CodeGeneration#getTypeComment(IJavaProject, String, String, String, String[], String[], String, IMethod, boolean, String)
+	 * @see de.tud.stg.popart.eclipse.wizards.legacygroovy.ui.CodeGeneration#getTypeComment(IJavaProject, String, String, String, String[], String, String)
 	 */	
 	public static String getMethodComment(IJavaProject javaProject, String typeName, String packageName, String methodName, String[] paramNames, String[] excTypeSig, String retTypeSig, String[] typeParameterNames, IMethod target, boolean delegate, String lineDelimiter) throws CoreException {
 		String templateName= CodeTemplateContextType.METHODCOMMENT_ID;
@@ -184,7 +184,7 @@ public class StubUtility {
 	
 	/**
 	 * Don't use this method directly, use CodeGeneration.
-	 * @see legacy.org.codehaus.groovy.eclipse.ui.CodeGeneration#getTypeComment(IJavaProject, String, String, boolean, String, String)
+	 * @see de.tud.stg.popart.eclipse.wizards.legacygroovy.ui.CodeGeneration#getTypeComment(IJavaProject, String, String, boolean, String, String)
 	 */	
 	public static String getMethodBodyContent(boolean isConstructor, IJavaProject project, String destTypeName, String methodName, String bodyStatement, String lineDelimiter) throws CoreException {
 		String templateName= isConstructor ? CodeTemplateContextType.CONSTRUCTORSTUB_ID : CodeTemplateContextType.METHODSTUB_ID;

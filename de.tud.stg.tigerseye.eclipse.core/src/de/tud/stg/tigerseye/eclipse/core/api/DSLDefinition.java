@@ -1,10 +1,8 @@
-package de.tud.stg.tigerseye.eclipse.core;
+package de.tud.stg.tigerseye.eclipse.core.api;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
-import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationType;
-import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntimeException;
 
 /**
  * General interface to handle registered DSLs between plug-in components. <br>

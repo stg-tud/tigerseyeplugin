@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tud.stg.parlex.parser.earley.Pair;
+import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.AnnotationExtractor;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
@@ -135,8 +136,8 @@ private static final Logger logger = LoggerFactory.getLogger(KeywordTranslationT
 	}
 
 	@Override
-	public Set<FileType> getSupportedFileTypes() {
-		return TransformationUtils.getSetForFiletypes(FileType.DSL);
+	public Set<TransformationType> getSupportedFileTypes() {
+		return TextualTransformationUtils.getSetForFiletypes(FileType.DSL);
 	}
 
 }

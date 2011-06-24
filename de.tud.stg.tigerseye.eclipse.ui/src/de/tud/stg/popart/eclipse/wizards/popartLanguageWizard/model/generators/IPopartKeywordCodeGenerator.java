@@ -1,10 +1,11 @@
 package de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.generators;
 
-import legacy.org.codehaus.groovy.eclipse.ui.ArtifactCodeGenerator;
 
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
+
+import de.tud.stg.popart.eclipse.wizards.legacygroovy.ui.ArtifactCodeGenerator;
 
 /**
  * A interface for Popart keyword code generators. A PopartKeywordCodeGenerator

@@ -7,8 +7,10 @@ import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
-import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
-import de.tud.stg.tigerseye.eclipse.core.TransformationHandler;
+import de.tud.stg.tigerseye.eclipse.core.api.ITransformationHandler;
+import de.tud.stg.tigerseye.eclipse.core.api.ITransformationProvider;
+import de.tud.stg.tigerseye.eclipse.core.api.Transformation;
+import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 
 /**
  * 
@@ -19,19 +21,21 @@ import de.tud.stg.tigerseye.eclipse.core.TransformationHandler;
  */
 public class TransformerConfigurationProvider {
 
-    private Collection<TransformationHandler> configuredTransformations = Collections
-	    .emptySet();;
+    private Collection<ITransformationHandler> configuredTransformations = Collections
+	    .emptySet();
+    private final ITransformationProvider provider;;
 
-    public TransformerConfigurationProvider() {
+    public TransformerConfigurationProvider(ITransformationProvider p) {
+	this.provider = p;
 	init();
     }
 
     private void init() {
-	this.configuredTransformations = TigerseyeCore
-		.getTransformationProvider().getConfiguredTransformations();
+	this.configuredTransformations = provider
+		.getConfiguredTransformations();
     }
 
-    private Collection<TransformationHandler> getTransformations() {
+    private Collection<ITransformationHandler> getTransformations() {
 	return this.configuredTransformations;
     }
 
@@ -54,8 +58,8 @@ public class TransformerConfigurationProvider {
 	    TransformationFilter<T> filter, TransformationType... identiables) {
 	Set<T> ts = new LinkedHashSet<T>();
 	for (TransformationType i : identiables) {
-	    Collection<TransformationHandler> transformations = getTransformations();
-	    for (TransformationHandler h : transformations) {
+	    Collection<ITransformationHandler> transformations = getTransformations();
+	    for (ITransformationHandler h : transformations) {
 		if (h.isActiveFor(i)) {
 		    Transformation t = h.getTransformation();
 		    T instanceOrNull = filter.instanceOrNull(t);

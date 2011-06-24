@@ -4,12 +4,11 @@
  * To change the template for this generated file go to Window - Preferences -
  * Java - Code Generation - Code and Comments
  */
-package legacy.org.codehaus.groovy.eclipse.wizards;
+package de.tud.stg.popart.eclipse.wizards.legacygroovy.wizards;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import legacy.org.codehaus.groovy.eclipse.ui.ArtifactCodeGenerator;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.core.resources.IContainer;
@@ -21,6 +20,8 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaModelException;
+
+import de.tud.stg.popart.eclipse.wizards.legacygroovy.ui.ArtifactCodeGenerator;
 
 /**
  * @author MelamedZ

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package legacy.org.codehaus.groovy.eclipse.ui;
+package de.tud.stg.popart.eclipse.wizards.legacygroovy.ui;
 
 import java.io.IOException;
 import java.io.LineNumberReader;

@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 public class DSLClasspathResolver {
 
     private static final Logger logger = LoggerFactory
-	    .getLogger(TigerseyeDSLDefinitionsCPContainer.class);
+	    .getLogger(DSLClasspathResolver.class);
 
     private final FileLocatorWrapper fileHelper;
 

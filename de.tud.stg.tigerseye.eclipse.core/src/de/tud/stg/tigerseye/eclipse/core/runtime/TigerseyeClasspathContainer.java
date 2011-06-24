@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.JavaCore;
 
 import de.tud.stg.tigerseye.eclipse.TigerseyeLibraryProvider;
+import de.tud.stg.tigerseye.eclipse.core.api.TigerseyeRuntimeException;
 
 public class TigerseyeClasspathContainer implements IClasspathContainer {
 

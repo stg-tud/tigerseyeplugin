@@ -1,8 +1,5 @@
 package de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.generators;
 
-import legacy.org.codehaus.groovy.eclipse.ui.ArtifactCodeGenerator;
-import legacy.org.codehaus.groovy.eclipse.ui.ArtifactCodeGenerator.IndentationDirection;
-import legacy.org.codehaus.groovy.eclipse.wizards.WizardUtil;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IJavaProject;
@@ -12,6 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartLiteralKeyword;
+import de.tud.stg.popart.eclipse.wizards.legacygroovy.ui.ArtifactCodeGenerator;
+import de.tud.stg.popart.eclipse.wizards.legacygroovy.ui.ArtifactCodeGenerator.IndentationDirection;
+import de.tud.stg.popart.eclipse.wizards.legacygroovy.wizards.WizardUtil;
 
 /**
  * A code generator for PopartLiteralKeywords.

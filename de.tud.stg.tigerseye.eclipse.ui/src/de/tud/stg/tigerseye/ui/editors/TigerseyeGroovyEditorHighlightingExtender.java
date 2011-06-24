@@ -21,9 +21,9 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
 
-import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
-import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
+import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFound;
 import de.tud.stg.tigerseye.eclipse.core.utils.KeyWordExtractor;
 import de.tud.stg.tigerseye.ui.preferences.DSLUIKey;
 

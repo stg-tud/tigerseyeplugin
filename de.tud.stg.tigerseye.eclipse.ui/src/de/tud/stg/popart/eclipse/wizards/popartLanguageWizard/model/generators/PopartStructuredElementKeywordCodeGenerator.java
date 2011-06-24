@@ -1,14 +1,14 @@
 package de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.generators;
 
-import legacy.org.codehaus.groovy.eclipse.ui.ArtifactCodeGenerator;
-import legacy.org.codehaus.groovy.eclipse.ui.ArtifactCodeGenerator.IndentationDirection;
-import legacy.org.codehaus.groovy.eclipse.wizards.WizardUtil;
 
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartStructuredElementKeyword;
+import de.tud.stg.popart.eclipse.wizards.legacygroovy.ui.ArtifactCodeGenerator;
+import de.tud.stg.popart.eclipse.wizards.legacygroovy.ui.ArtifactCodeGenerator.IndentationDirection;
+import de.tud.stg.popart.eclipse.wizards.legacygroovy.wizards.WizardUtil;
 
 /**
  * A code generator for PopartStructuredElementKeywords.

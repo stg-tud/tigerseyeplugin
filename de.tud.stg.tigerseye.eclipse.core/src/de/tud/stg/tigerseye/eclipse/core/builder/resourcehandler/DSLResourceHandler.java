@@ -33,19 +33,19 @@ import de.tud.stg.parlex.parser.earley.EarleyParser;
 import de.tud.stg.popart.builder.eclipse.EDSL;
 import de.tud.stg.popart.dslsupport.DSL;
 import de.tud.stg.tigerseye.eclipse.TigerseyeLibraryProvider;
-import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
-import de.tud.stg.tigerseye.eclipse.core.DSLKey;
-import de.tud.stg.tigerseye.eclipse.core.DSLNotFoundException;
-import de.tud.stg.tigerseye.eclipse.core.ILanguageProvider;
-import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
+import de.tud.stg.tigerseye.eclipse.core.api.DSLKey;
+import de.tud.stg.tigerseye.eclipse.core.api.DSLNotFoundException;
+import de.tud.stg.tigerseye.eclipse.core.api.ILanguageProvider;
+import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFound;
+import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ASTTransformation;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.AnnotationExtractor;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileTypeHelper;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TextualTransformation;
-import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformerConfigurationProvider;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.MethodOptions;
@@ -78,7 +78,8 @@ public class DSLResourceHandler implements ResourceHandler {
 
     private void init() {
 	this.languageProvider = TigerseyeCore.getLanguageProvider();
-	this.transformerProvider = new TransformerConfigurationProvider();
+	this.transformerProvider = new TransformerConfigurationProvider(
+		TigerseyeCore.getTransformationProvider());
 	this.outputPathHandler = new OutputPathHandler();
     }
 

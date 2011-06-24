@@ -1,6 +1,8 @@
-package de.tud.stg.tigerseye.eclipse.core.builder.transformers;
+package de.tud.stg.tigerseye.eclipse.core.api;
 
 import java.util.Set;
+
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 
 /**
  * The Base interface for all Transformations. Implementing classes are expected
@@ -20,6 +22,6 @@ public interface Transformation {
 	/**
 	 * @return the {@link FileType} for which this transformer can be used.
 	 */
-	public Set<FileType> getSupportedFileTypes();
+	public Set<TransformationType> getSupportedFileTypes();
 
 }

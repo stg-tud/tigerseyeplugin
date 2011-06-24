@@ -1,4 +1,4 @@
-package de.tud.stg.tigerseye.eclipse.core;
+package de.tud.stg.tigerseye.eclipse.core.api;
 
 import javax.annotation.Nonnull;
 

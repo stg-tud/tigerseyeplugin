@@ -3,9 +3,6 @@ package de.tud.stg.popart.eclipse.wizards.popartLanguageWizard;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import legacy.org.codehaus.groovy.eclipse.ui.ArtifactCodeGenerator;
-import legacy.org.codehaus.groovy.eclipse.ui.ArtifactCodeGenerator.IndentationDirection;
-import legacy.org.codehaus.groovy.eclipse.wizards.WizardUtil;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -19,6 +16,9 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.Image;
 
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartKeyword;
+import de.tud.stg.popart.eclipse.wizards.legacygroovy.ui.ArtifactCodeGenerator;
+import de.tud.stg.popart.eclipse.wizards.legacygroovy.ui.ArtifactCodeGenerator.IndentationDirection;
+import de.tud.stg.popart.eclipse.wizards.legacygroovy.wizards.WizardUtil;
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.PopartKeywordCodeGeneratorFactory;
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.PopartLanguageModel;
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.generators.IPopartKeywordCodeGenerator;

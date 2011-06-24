@@ -1,5 +1,7 @@
 package de.tud.stg.tigerseye.eclipse.core.builder.transformers;
 
+import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
+
 /*
  * FIXME need to reorder responsibilities. java groovy popart are resource types, all four are transformation types.
  */
@@ -32,6 +34,8 @@ public enum FileType implements TransformationType {
      * This FileTypes descriptive, unique name.
      */
     public final String name;
+    public static final FileType[] RESOURCE_FILE_TYPES = { JAVA, GROOVY, TIGERSEYE };
+    public static final FileType[] DSL_FILETYPES = { DSL };
 
     private FileType(String name, String srcFileEnding, String outPutFileEnding) {
 	this.name = name;

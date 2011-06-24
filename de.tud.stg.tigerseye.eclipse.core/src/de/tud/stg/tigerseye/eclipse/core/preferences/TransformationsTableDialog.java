@@ -18,11 +18,12 @@ import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.tigerseye.eclipse.core.TransformationHandler;
+import de.tud.stg.tigerseye.eclipse.core.api.ITransformationHandler;
+import de.tud.stg.tigerseye.eclipse.core.api.Transformation;
+import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ASTTransformation;
-import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TextualTransformation;
-import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Transformation;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationHandler;
 
 public class TransformationsTableDialog extends TableDialog {
 
@@ -69,14 +70,14 @@ public class TransformationsTableDialog extends TableDialog {
 	private String getFormattedItem() {
 	    Object data = checkedItem.data;
 	    if (data instanceof TransformationHandler) {
-		TransformationHandler handler = (TransformationHandler) data;
+		ITransformationHandler handler = (ITransformationHandler) data;
 		String formatted = format(handler);
 		return formatted;
 	    } else
 		return "<no data to display>";
 	}
 
-	private String format(TransformationHandler handler) {
+	private String format(ITransformationHandler handler) {
 	    StringBuilder sb = new StringBuilder();
 	    Transformation transformation = handler.getTransformation();
 	    if (transformation instanceof TextualTransformation) {
@@ -88,9 +89,10 @@ public class TransformationsTableDialog extends TableDialog {
 	    }
 
 	    sb.append("\n\nSupported FileTypes:\n");
-	    Set<FileType> supportedFileTypes = handler.getTransformation()
+	    Set<TransformationType> supportedFileTypes = handler
+		    .getTransformation()
 		    .getSupportedFileTypes();
-	    for (FileType fileType : supportedFileTypes) {
+	    for (TransformationType fileType : supportedFileTypes) {
 		sb.append(fileType.toString()).append("\n");
 	    }
 	    sb.append("\nDescription:\n");

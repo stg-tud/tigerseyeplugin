@@ -1,8 +1,8 @@
-package de.tud.stg.tigerseye.eclipse.core;
+package de.tud.stg.tigerseye.eclipse.core.api;
 
 import java.util.Collection;
 
-import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Transformation;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationHandler;
 
 /**
  * Provides access to registered transformations
@@ -20,7 +20,7 @@ public interface ITransformationProvider {
      * @return registered Transformations wrapped in a
      *         {@link TransformationHandler}
      */
-    public Collection<TransformationHandler> getConfiguredTransformations();
+    public Collection<ITransformationHandler> getConfiguredTransformations();
 
     // <T extends Transformation> Set<T> getTransformations(
     // TransformationFilter<T> filter, TransformationType... types);

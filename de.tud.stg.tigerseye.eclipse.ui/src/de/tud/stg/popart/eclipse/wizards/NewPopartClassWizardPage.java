@@ -10,11 +10,6 @@ import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
-import legacy.org.codehaus.groovy.eclipse.ui.ArtifactCodeGenerator;
-import legacy.org.codehaus.groovy.eclipse.ui.ArtifactCodeGenerator.IndentationDirection;
-import legacy.org.codehaus.groovy.eclipse.ui.CodeGeneration;
-import legacy.org.codehaus.groovy.eclipse.ui.ImportManager;
-import legacy.org.codehaus.groovy.eclipse.wizards.WizardUtil;
 
 import org.apache.commons.lang.UnhandledException;
 import org.codehaus.groovy.eclipse.wizards.NewClassWizardPage;
@@ -40,10 +35,15 @@ import org.eclipse.swt.widgets.Label;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
-import de.tud.stg.tigerseye.eclipse.core.DSLKey;
-import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
+import de.tud.stg.popart.eclipse.wizards.legacygroovy.ui.ArtifactCodeGenerator;
+import de.tud.stg.popart.eclipse.wizards.legacygroovy.ui.CodeGeneration;
+import de.tud.stg.popart.eclipse.wizards.legacygroovy.ui.ImportManager;
+import de.tud.stg.popart.eclipse.wizards.legacygroovy.ui.ArtifactCodeGenerator.IndentationDirection;
+import de.tud.stg.popart.eclipse.wizards.legacygroovy.wizards.WizardUtil;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeImage;
+import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
+import de.tud.stg.tigerseye.eclipse.core.api.DSLKey;
+import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFound;
 import de.tud.stg.tigerseye.eclipse.core.utils.KeyWordExtractor;
 import de.tud.stg.tigerseye.ui.TigerseyeUIActivator;
 

@@ -1,10 +1,11 @@
-package legacy.org.codehaus.groovy.eclipse.ui;
+package de.tud.stg.popart.eclipse.wizards.legacygroovy.ui;
 
-import legacy.org.codehaus.groovy.eclipse.ui.ArtifactCodeGenerator.IndentationDirection;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMethod;
+
+import de.tud.stg.popart.eclipse.wizards.legacygroovy.ui.ArtifactCodeGenerator.IndentationDirection;
 /**
  * Class that offers access to the templates contained in the 'code templates'
  * preference page.

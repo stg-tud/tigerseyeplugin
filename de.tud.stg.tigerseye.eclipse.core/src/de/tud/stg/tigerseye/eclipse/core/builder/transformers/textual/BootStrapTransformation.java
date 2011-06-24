@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import de.tud.stg.popart.dslsupport.DSL;
 import de.tud.stg.popart.dslsupport.InterpreterCombiner;
+import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TextualTransformation;
@@ -140,8 +141,8 @@ private static final Logger logger = LoggerFactory.getLogger(BootStrapTransforma
 	}
 
 	@Override
-	public Set<FileType> getSupportedFileTypes() {
-		return TransformationUtils.getSetForFiletypes(FileType.TIGERSEYE);
+	public Set<TransformationType> getSupportedFileTypes() {
+		return TextualTransformationUtils.getSetForFiletypes(FileType.TIGERSEYE);
 	}
 
 	@Override

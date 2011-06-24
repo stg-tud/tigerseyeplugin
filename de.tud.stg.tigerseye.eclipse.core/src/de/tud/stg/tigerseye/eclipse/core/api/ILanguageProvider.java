@@ -1,11 +1,10 @@
-package de.tud.stg.tigerseye.eclipse.core;
+package de.tud.stg.tigerseye.eclipse.core.api;
 
 import java.util.List;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
-import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntimeException;
 
 @Nonnull
 public interface ILanguageProvider {

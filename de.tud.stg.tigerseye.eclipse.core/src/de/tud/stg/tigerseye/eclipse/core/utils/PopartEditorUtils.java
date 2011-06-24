@@ -14,10 +14,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
-import de.tud.stg.tigerseye.eclipse.core.DSLKey;
-import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
+import de.tud.stg.tigerseye.eclipse.core.api.DSLKey;
+import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFound;
 
 /**
  * TODO this class is no longer used but could be used again? If you know that

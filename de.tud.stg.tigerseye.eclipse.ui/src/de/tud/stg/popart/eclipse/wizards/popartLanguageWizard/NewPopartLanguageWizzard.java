@@ -1,6 +1,5 @@
 package de.tud.stg.popart.eclipse.wizards.popartLanguageWizard;
 
-import legacy.org.codehaus.groovy.eclipse.wizards.WizardUtil;
 
 import org.apache.commons.lang.UnhandledException;
 import org.codehaus.groovy.eclipse.wizards.NewClassWizard;
@@ -10,6 +9,7 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.INewWizard;
 
+import de.tud.stg.popart.eclipse.wizards.legacygroovy.wizards.WizardUtil;
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.PopartLanguageModel;
 import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntime;
 import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntimeConstants;

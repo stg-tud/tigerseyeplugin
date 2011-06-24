@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.tud.stg.popart.builder.utils.DSLInvoker;
+import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TextualTransformation;
@@ -93,8 +94,8 @@ public class PackageImporter implements TextualTransformation {
 	}
 
 	@Override
-	public Set<FileType> getSupportedFileTypes() {
-		return TransformationUtils.getSetForFiletypes(FileType.TIGERSEYE,
+	public Set<TransformationType> getSupportedFileTypes() {
+		return TextualTransformationUtils.getSetForFiletypes(FileType.TIGERSEYE,
 				FileType.JAVA, FileType.GROOVY);
 	}
 

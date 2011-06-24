@@ -17,12 +17,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tud.stg.popart.dslsupport.DSL;
-import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
-import de.tud.stg.tigerseye.eclipse.core.DSLKey;
-import de.tud.stg.tigerseye.eclipse.core.ILanguageProvider;
-import de.tud.stg.tigerseye.eclipse.core.NoLegalPropertyFound;
-import de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyePreferenceConstants;
-import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntimeException;
+import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
+import de.tud.stg.tigerseye.eclipse.core.api.DSLKey;
+import de.tud.stg.tigerseye.eclipse.core.api.ILanguageProvider;
+import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFound;
+import de.tud.stg.tigerseye.eclipse.core.api.TigerseyeDefaultConstants;
+import de.tud.stg.tigerseye.eclipse.core.api.TigerseyeRuntimeException;
 
 /**
  * Provides access to registered DSLs.
@@ -95,7 +95,7 @@ public class LanguageProviderImpl implements ILanguageProvider {
 	    }
 	}
 
-	boolean defaultActivationState = TigerseyePreferenceConstants.DEFAULT_LANGUAGE_ACTIVE_VALUE;
+	boolean defaultActivationState = TigerseyeDefaultConstants.DEFAULT_LANGUAGE_ACTIVE_VALUE;
 	// Check newly added languages
 	for (Entry<DSLDefinition, String> entry : dslToKey.entrySet()) {
 	    DSLDefinition dsl = entry.getKey();

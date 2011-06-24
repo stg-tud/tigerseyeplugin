@@ -23,21 +23,22 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.tigerseye.eclipse.core.DSLDefinition;
-import de.tud.stg.tigerseye.eclipse.core.ILanguageProvider;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
-import de.tud.stg.tigerseye.eclipse.core.TransformationHandler;
+import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
+import de.tud.stg.tigerseye.eclipse.core.api.ILanguageProvider;
+import de.tud.stg.tigerseye.eclipse.core.api.ITransformationHandler;
+import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
-import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationType;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationHandler;
 import de.tud.stg.tigerseye.eclipse.core.preferences.TableDialog.CheckedItem;
 
 public class TransformationsPreferencePage extends PreferencePage implements
 	IWorkbenchPreferencePage {
 
-    private static final FileType[] resourceFileTypes = TigerseyePreferenceConstants.RESOURCE_FILE_TYPES;
+    private static final FileType[] resourceFileTypes = FileType.RESOURCE_FILE_TYPES;
     private static final Logger logger = LoggerFactory
 	    .getLogger(TransformationsPreferencePage.class);
-    private Collection<TransformationHandler> configuredTransformations;
+    private Collection<ITransformationHandler> configuredTransformations;
     private Table languagesTable;
     private ILanguageProvider languageProvider;
     private Table resourcesTable;
@@ -59,7 +60,7 @@ public class TransformationsPreferencePage extends PreferencePage implements
 	return languageProvider;
     }
 
-    public Collection<TransformationHandler> getConfiguredTransformations() {
+    public Collection<ITransformationHandler> getConfiguredTransformations() {
 	return configuredTransformations;
     }
 
@@ -218,7 +219,7 @@ public class TransformationsPreferencePage extends PreferencePage implements
 	List<CheckedItem> items = getTransformationsForFiletypeAssociatedToIdentity(
 		dslFT, selectedDSL);
 	List<CheckedItem> changedItems = openDialogForItemsReturnChanged(items,
-		title, TransformationHandler.getDefaultFor(dslFT));
+		title, TransformationHandler.getDefaultActivationStateFor(dslFT));
 	saveItemsFor(changedItems, selectedDSL);
     }
 
@@ -231,7 +232,7 @@ public class TransformationsPreferencePage extends PreferencePage implements
 	    String title) {
 	List<CheckedItem> items = getTransformationsAsCheckedItemsForFiletype(fileType);
 	List<CheckedItem> changedItems = openDialogForItemsReturnChanged(items,
-		title, TransformationHandler.getDefaultFor(fileType));
+		title, TransformationHandler.getDefaultActivationStateFor(fileType));
 	saveItemsFor(changedItems, fileType);
     }
 
@@ -257,7 +258,7 @@ public class TransformationsPreferencePage extends PreferencePage implements
 		throw new UnhandledException(
 			"Wrong configured. Expected TransformationHandler",
 			null);
-	    TransformationHandler transformationHandler = (TransformationHandler) data;
+	    ITransformationHandler transformationHandler = (ITransformationHandler) data;
 	    transformationHandler.setActiveStateFor(toBeAssociatedTo,
 		    checkedItem.checked);
 	}
@@ -265,7 +266,7 @@ public class TransformationsPreferencePage extends PreferencePage implements
 
     private List<CheckedItem> getTransformationsForFiletypeAssociatedToIdentity(
 	    FileType fileType, TransformationType identitiy) {
-	ArrayList<TransformationHandler> supportedTransformers = getSupportedTransformationsForFiletype(fileType);
+	ArrayList<ITransformationHandler> supportedTransformers = getSupportedTransformationsForFiletype(fileType);
 	List<CheckedItem> items = makeCheckItemsForTransformationsAssociatedToIdentity(
 		supportedTransformers, identitiy);
 	return items;
@@ -280,20 +281,20 @@ public class TransformationsPreferencePage extends PreferencePage implements
     }
 
     private List<CheckedItem> makeCheckItemsForTransformationsAssociatedToIdentity(
-	    ArrayList<TransformationHandler> supportedTransformers,
+	    ArrayList<ITransformationHandler> supportedTransformers,
 	    TransformationType identity) {
 	List<CheckedItem> items = new ArrayList<CheckedItem>();
-	for (TransformationHandler handler : supportedTransformers) {
+	for (ITransformationHandler handler : supportedTransformers) {
 	    boolean activeFor = handler.isActiveFor(identity);
 	    items.add(new CheckedItem(handler, handler.getName(), activeFor));
 	}
 	return items;
     }
 
-    private ArrayList<TransformationHandler> getSupportedTransformationsForFiletype(
+    private ArrayList<ITransformationHandler> getSupportedTransformationsForFiletype(
 	    FileType type) {
-	ArrayList<TransformationHandler> supportedTransformers = new ArrayList<TransformationHandler>();
-	for (TransformationHandler handler : getConfiguredTransformations()) {
+	ArrayList<ITransformationHandler> supportedTransformers = new ArrayList<ITransformationHandler>();
+	for (ITransformationHandler handler : getConfiguredTransformations()) {
 	    if (handler.supports(type)) {
 		supportedTransformers.add(handler);
 	    }
