@@ -18,8 +18,10 @@ import jjtraveler.VisitFailure;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,9 +57,8 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.CodePrinter;
 import de.tud.stg.tigerseye.eclipse.core.utils.OutputPathHandler;
 
 public class DSLResourceHandler implements ResourceHandler {
-	private static final Logger logger = LoggerFactory
-			.getLogger(DSLResourceHandler.class);
-
+    private static final Logger logger = LoggerFactory
+	    .getLogger(DSLResourceHandler.class);
 
     private final CodePrinter prettyPrinter;
 
@@ -104,7 +105,8 @@ public class DSLResourceHandler implements ResourceHandler {
 	    return;
 	}
 	IFile srcFile = (IFile) resource;
-	FileType filetype = FileTypeHelper.getTypeForSrcResource(srcFile.getName());
+	FileType filetype = FileTypeHelper.getTypeForSrcResource(srcFile
+		.getName());
 	if (filetype == null) {
 	    logger.error("No filetype could be determined for {}",
 		    srcFile.getName());
@@ -176,26 +178,26 @@ public class DSLResourceHandler implements ResourceHandler {
      * @return
      * @throws DSLNotFoundException
      */
-    protected Context determineInvolvedDSLs(IFile resource,
-			StringBuffer input) throws DSLNotFoundException {
-		Context context = new Context(resource.getName());
+    protected Context determineInvolvedDSLs(IFile resource, StringBuffer input)
+	    throws DSLNotFoundException {
+	Context context = new Context(resource.getName());
 	ILanguageProvider languageProvider = getLanguageProvider();
 
-		int fileExtensionIndex = resource.getName().lastIndexOf(
+	int fileExtensionIndex = resource.getName().lastIndexOf(
 		fileType.srcFileEnding);
-		if (fileExtensionIndex < 1) {
-			throw new DSLNotFoundException(
-					"No dsl extension could be determined for " + resource);
-		}
+	if (fileExtensionIndex < 1) {
+	    throw new DSLNotFoundException(
+		    "No dsl extension could be determined for " + resource);
+	}
 
-		String[] str = resource.getName().substring(0, fileExtensionIndex - 1)
-				.split("\\.");
+	String[] str = resource.getName().substring(0, fileExtensionIndex - 1)
+		.split("\\.");
 
-		List<int[]> edslAnnotations = new LinkedList<int[]>();
+	List<int[]> edslAnnotations = new LinkedList<int[]>();
 
-		if (str.length > 1) {
-			for (int i = 1; i < str.length; i++) {
-				String dslName = str[i];
+	if (str.length > 1) {
+	    for (int i = 1; i < str.length; i++) {
+		String dslName = str[i];
 
 		DSLDefinition activeDSLForExtension = languageProvider
 			.getActiveDSLForExtension(dslName);
@@ -206,23 +208,23 @@ public class DSLResourceHandler implements ResourceHandler {
 			throw new DSLNotFoundException(e);
 		    }
 		}
-			}
-		} else {
+	    }
+	} else {
 
 	    // Java EDSL context, can be used to determine DSLs in Java file
 	    // context
-			AnnotationExtractor<EDSL> extractor = new AnnotationExtractor<EDSL>(
-					EDSL.class);
-			extractor.setInput(input.toString());
+	    AnnotationExtractor<EDSL> extractor = new AnnotationExtractor<EDSL>(
+		    EDSL.class);
+	    extractor.setInput(input.toString());
 
-			EDSL annotation = extractor.find();
-			edslAnnotations.add(extractor.getBounds());
+	    EDSL annotation = extractor.find();
+	    edslAnnotations.add(extractor.getBounds());
 
-			if (annotation == null) {
-				return context;
-			}
+	    if (annotation == null) {
+		return context;
+	    }
 
-			for (String dslName : annotation.value()) {
+	    for (String dslName : annotation.value()) {
 		DSLDefinition activeDSL = languageProvider
 			.getActiveDSLForExtension(dslName);
 		if (activeDSL != null) {
@@ -232,39 +234,39 @@ public class DSLResourceHandler implements ResourceHandler {
 			throw new DSLNotFoundException(e);
 		    }
 		}
-			}
-		}
+	    }
+	}
 
 	// Has this any effect?
-		for (int[] b : edslAnnotations) {
-			input.delete(b[0], b[1]);
-		}
-
-		return context;
+	for (int[] b : edslAnnotations) {
+	    input.delete(b[0], b[1]);
 	}
+
+	return context;
+    }
 
     private void addDSLToContext(@Nonnull DSLDefinition clazz, Context context)
 	    throws NoLegalPropertyFound {
 
 	context.addDSL(clazz);
-	logger.debug("added dsl '{}' to context", clazz.getValue(DSLKey.EXTENSION));
+	logger.debug("added dsl '{}' to context",
+		clazz.getValue(DSLKey.EXTENSION));
 
-	}
-
+    }
 
     protected ByteArrayOutputStream performPrettyPrinting(ATerm term) {
 
-		try {
-			term.accept(prettyPrinter);
-		} catch (VisitFailure e) {
-			logger.warn("Pretty printing on term failed", e);
-		}
-
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		prettyPrinter.write(out);
-
-		return out;
+	try {
+	    term.accept(prettyPrinter);
+	} catch (VisitFailure e) {
+	    logger.warn("Pretty printing on term failed", e);
 	}
+
+	ByteArrayOutputStream out = new ByteArrayOutputStream();
+	prettyPrinter.write(out);
+
+	return out;
+    }
 
     private StringBuffer performTextualTransformations(
 	    StringBuffer originalInput, Context context) {
@@ -300,24 +302,25 @@ public class DSLResourceHandler implements ResourceHandler {
     }
 
     protected ATerm parseResource(StringBuffer input, IGrammar<String> grammar) {
-		KeywordSensitiveLexer ksl = new KeywordSensitiveLexer(
-				new KeywordSeperator());
+	KeywordSensitiveLexer ksl = new KeywordSensitiveLexer(
+		new KeywordSeperator());
 
-		EarleyParser parser = new EarleyParser(ksl, grammar);
-		IChart chart = parser.parse(input.toString().trim());
+	EarleyParser parser = new EarleyParser(ksl, grammar);
+	IChart chart = parser.parse(input.toString().trim());
 
-		IAbstractNode program = chart.getAST();
-		ATermBuilder aterm = new ATermBuilder(program);
+	IAbstractNode program = chart.getAST();
+	ATermBuilder aterm = new ATermBuilder(program);
 
-		ATerm term = aterm.getATerm();
+	ATerm term = aterm.getATerm();
 
-		return term;
-	}
+	return term;
+    }
 
     /**
      * @param resource
      *            the resource to read
-     * @return The content of {@code resource} or <code>null</code> if resource can not be read
+     * @return The content of {@code resource} or <code>null</code> if resource
+     *         can not be read
      */
     private @CheckForNull
     StringBuffer readResource(IFile resource) {
@@ -355,13 +358,17 @@ public class DSLResourceHandler implements ResourceHandler {
     private void createFolders(IFolder folder) throws CoreException {
 
 	if (!folder.exists()) {
-	    IFolder parentFolder = folder.getProject().getFolder(
-		    folder.getProjectRelativePath().removeLastSegments(1));
-	    if (!parentFolder.exists()) {
-		createFolders(parentFolder);
+	    IPath parentPath = folder.getProjectRelativePath()
+		    .removeLastSegments(1);
+	    boolean notProjectRoot = !parentPath.isEmpty();
+	    if (notProjectRoot) {
+		IProject project = folder.getProject();
+		IFolder parentFolder = project.getFolder(parentPath);
+		if (!parentFolder.exists()) {
+		    createFolders(parentFolder);
+		}
 	    }
 	    folder.create(false, true, null);
 	}
     }
 }
-

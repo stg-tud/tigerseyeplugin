@@ -77,15 +77,15 @@ public class SetDSL implements de.tud.stg.popart.dslsupport.DSL {
 		return new HashSet(Arrays.asList(a.toArray()));
 	}
 
-	@DSLMethod(prettyName = "p0")
+	@DSLMethod(prettyName = "p0", topLevel = false)
 	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
-	private MyList singleElementedList(String head) {
+	public MyList singleElementedList(String head) {
 		return new MyList(head, null);
 	}
 
-	@DSLMethod(prettyName = "p0 , p1")
+	@DSLMethod(prettyName = "p0 , p1", topLevel=false)
 	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
-	private MyList multiElementedList(String head, MyList tail) {
+	public MyList multiElementedList(String head, MyList tail) {
 		return new MyList(head, tail);
 	}
 }

@@ -2,6 +2,7 @@ package de.tud.stg.tigerseye.eclipse.core.builder.transformers.textual;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,6 +43,7 @@ private static final Logger logger = LoggerFactory.getLogger(KeywordTranslationT
 
 	@Override
 	public StringBuffer transform(Context context, StringBuffer sb) {
+
 		annotationExtractor.setInput(sb.toString());
 		Translation translation = null;
 
@@ -55,42 +57,69 @@ private static final Logger logger = LoggerFactory.getLogger(KeywordTranslationT
 
 		LinkedList<int[]> bounds = new LinkedList<int[]>();
 
-		do {
-			translation = annotationExtractor.find();
+	do {
+	    translation = annotationExtractor.find();
 
-			if (translation != null) {
-				bounds.add(annotationExtractor.getBounds());
-				String f = translation.file();
+	    if (translation != null) {
+		bounds.add(annotationExtractor.getBounds());
+		String f = translation.file();
 
-				currentUsedTranslations.add(f);
+		currentUsedTranslations.add(f);
 
-				if (!storedTranslations.contains(f)) {
-					storedTranslations.add(f);
+		
 
-					Properties p = new Properties();
-					FileReader reader = null;
-					try {
-						reader = new FileReader(f);
-						p.load(reader);
+		if (!storedTranslations.contains(f)) {
 
-						for (Entry<Object, Object> e : p.entrySet()) {
-							String key = (String) e.getKey();
-							String value = (String) e.getValue();
+		    InputStreamReader reader = null;
+		    Properties p = new Properties();
+		    try {
+			storedTranslations.add(f);
 
-							logger.info("key: " + key + ", value: " + value);
-							this.addTranslations(new Pair<String, String>(key, value));
-						}
-					} catch (FileNotFoundException e) {
-						logger.warn("Generated log statement",e);
-					} catch (IOException e) {
-						logger.warn("Generated log statement",e);
-					}finally{
-					    IOUtils.closeQuietly(reader);
-					}
-				}
+			try {
+			    reader = new FileReader(f);
+			} catch (FileNotFoundException e) {
+			    logger.debug("Translation file not found.", e);
 			}
+			// if (reader == null) {
+			//
+			// InputStream resourceAsStream = context.getDsls()
+			// .get(0).loadClass().getClass()
+			// .getResourceAsStream(f);
+			// if (resourceAsStream != null)
+			// reader = new InputStreamReader(resourceAsStream);
+			//
+			// }
 
-		} while (translation != null);
+			if (reader != null) {
+			    try {
+				p.load(reader);
+
+				for (Entry<Object, Object> e : p.entrySet()) {
+				    String key = (String) e.getKey();
+				    String value = (String) e.getValue();
+
+				    logger.info("key: " + key + ", value: "
+					    + value);
+				    this.addTranslations(new Pair<String, String>(
+					    key, value));
+				}
+			    } catch (IOException e) {
+				logger.warn(
+					"Could not read properties from translation file.",
+					e);
+			    }
+			} else
+			    logger.error(
+				    "Failed to determine Translation file from {}.",
+				    f);
+		    } finally {
+			IOUtils.closeQuietly(reader);
+		    }
+
+		}
+	    }
+
+	} while (translation != null);
 
 		for (int[] b : bounds) {
 			sb.delete(b[0], b[1]);

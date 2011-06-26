@@ -1,6 +1,5 @@
 package de.tud.stg.popart.eclipse.core.debug.model.keywords;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import de.tud.stg.tigerseye.dslsupport.logger.DSLSupportLogger;
 
 /**
  * A PopartStructuredElementKeyword represents a structured
@@ -15,7 +14,7 @@ import org.slf4j.LoggerFactory;
  * @author Thorsten Peter
  */
 public class PopartStructuredElementKeyword extends PopartParameterKeyword {
-private static final Logger logger = LoggerFactory.getLogger(PopartStructuredElementKeyword.class);
+private static final DSLSupportLogger logger = new DSLSupportLogger(PopartStructuredElementKeyword.class);
 
 	
 	public final static int NAMED = 0;

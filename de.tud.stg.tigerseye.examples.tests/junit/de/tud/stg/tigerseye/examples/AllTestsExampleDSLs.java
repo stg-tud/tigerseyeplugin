@@ -5,6 +5,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 
+import de.tud.stg.popart.dslsupport.InterpreterCombinerTest;
 import de.tud.stg.tigerseye.examples.logo.LogoDSLTest;
 import de.tud.stg.tigerseye.examples.mapdsl.MapDSLTest;
 import de.tud.stg.tigerseye.examples.setdsl.SetDSLSemanticsTest;
@@ -30,6 +31,7 @@ import de.tud.stg.tigerseye.examples.unitsdsl.UnitsDSLTest;
 	StateMachineTest.class, //
 	StateMachineDSLSemanticsTest.class,//
 	StateMachineDSLTest.class,//
+	InterpreterCombinerTest.class, //
 	
 })
 public class AllTestsExampleDSLs {

@@ -78,10 +78,10 @@ public class TestDSLTransformation {
 		public final Class<?>[] classes;
 
 		public GrammarResult(IGrammar<String> buildGrammar,
-				Map<String, MethodOptions> methodOptions, Class<?>... classes) {
+				Map<String, MethodOptions> methodOptions, Class<?>... cs) {
 			grammar = buildGrammar;
 			moptions = methodOptions;
-			this.classes = classes;
+			classes = cs;
 		}
 
 	}

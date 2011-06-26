@@ -8,16 +8,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.tud.stg.popart.dslsupport.DSL;
 import de.tud.stg.popart.dslsupport.InterpreterCombiner;
+import de.tud.stg.tigerseye.dslsupport.logger.DSLSupportLogger;
 
 public class DSLInvoker {
 	
-	private static final Logger logger = LoggerFactory
-			.getLogger(DSLInvoker.class);
+	private static final DSLSupportLogger logger = new DSLSupportLogger(DSLInvoker.class);
 	
 	private static final DSLInvoker instance = new DSLInvoker();
 

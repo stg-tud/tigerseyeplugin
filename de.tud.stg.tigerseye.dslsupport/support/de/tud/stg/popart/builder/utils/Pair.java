@@ -1,8 +1,7 @@
 package de.tud.stg.popart.builder.utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.Serializable;
+
+import de.tud.stg.tigerseye.dslsupport.logger.DSLSupportLogger;
 
 /**
  * {@link Pair} links an object of type X and an object of type Y to a pair.
@@ -12,8 +11,6 @@ import java.io.Serializable;
  */
 
 public class Pair<X, Y> implements Serializable {
-private static final Logger logger = LoggerFactory.getLogger(Pair.class);
-
 
 	private static final long serialVersionUID = -1343477089401295365L;
 
