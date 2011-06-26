@@ -17,7 +17,6 @@ import de.tud.stg.parlex.core.Category;
 import de.tud.stg.parlex.core.Grammar;
 import de.tud.stg.parlex.core.ICategory;
 import de.tud.stg.parlex.core.IGrammar;
-import de.tud.stg.parlex.core.IRule;
 import de.tud.stg.parlex.core.Rule;
 import de.tud.stg.parlex.core.groupcategories.WaterCategory;
 import de.tud.stg.popart.builder.core.annotations.DSL;
@@ -54,11 +53,13 @@ public class GrammarBuilder {
 	private Category statements;
 	private final HandlingDispatcher typeHandler;
 
-	private Rule startRule;
+    // private Rule startRule;
 
     private final UnicodeLookupTable unicodeLookupTable;
 
 	public final HashMap<String, MethodOptions> methodAliases = new HashMap<String, MethodOptions>();
+    // (Leo Roos; Jun 27, 2011):Never used; still necessary to save the
+    // resulting set of keywords?
 	private final Set<String> keywords = new LinkedHashSet<String>();
 
 
@@ -86,7 +87,7 @@ public class GrammarBuilder {
 	this.statement = new Category(CategoryNames.STATEMENT_CATEGORY, false);
 	this.statements = new Category(CategoryNames.STATEMENTS_CATEGORY, false);
 
-		this.startRule = new Rule(program, this.statements);
+	Rule startRule = new Rule(program, this.statements);
 
 		Rule rStatements = new Rule(this.statements, this.statement, GrammarBuilderHelper.getWhitespaceCategory(this.grammar, true),
 				this.statements);
@@ -97,7 +98,7 @@ public class GrammarBuilder {
 		this.grammar.addCategory(this.statement);
 		this.grammar.addCategory(this.statements);
 
-		this.grammar.setStartRule(this.startRule);
+	this.grammar.setStartRule(startRule);
 		this.grammar.addRule(rStatement);
 		this.grammar.addRule(rStatements);
 	}
@@ -468,9 +469,11 @@ public class GrammarBuilder {
 		}
 	}
 
-	public IRule<String> getStartRule() {
-		return this.startRule;
-	}
+    // (Leo Roos; Jun 27, 2011): Never used; plus this information is also
+    // available via the generated IGrammar
+    // public IRule<String> getStartRule() {
+    // return this.startRule;
+    // }
 
     private IGrammar<String> getGrammar() {
 		return this.grammar;
@@ -480,9 +483,10 @@ public class GrammarBuilder {
 	return Collections.unmodifiableMap(this.methodAliases);
 	}
 
-	public Set<String> getKeywords() {
-		return this.keywords;
-	}
+    // (Leo Roos; Jun 27, 2011): never used
+    /*
+     * public Set<String> getKeywords() { return this.keywords; }
+     */
 
 	public Map<String, String> getDefaultOptions() {
 		Map<String, String> defaultOptions = new HashMap<String, String>();

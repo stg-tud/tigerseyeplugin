@@ -81,7 +81,7 @@ public class Context {
 	 */
 	if (this.dslClasses.size() != dsls.size())
 	    throw new IllegalStateException(
-		    "Tried to access Context in an inconsistent manner. Defined amound of DSL classes is unequal to the amount of defined dsls.");
+		    "Tried to access Context in an inconsistent manner. Defined amount of DSL classes is unequal to the amount of defined dsls.");
 
 	return Collections.unmodifiableList(dsls);
     }

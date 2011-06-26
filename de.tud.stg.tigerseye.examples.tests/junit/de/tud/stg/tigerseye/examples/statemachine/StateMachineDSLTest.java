@@ -39,14 +39,14 @@ public class StateMachineDSLTest extends DSLTransformationTestBase {
 
 	@Test
 	public void shouldNotTransformAnything() throws Exception {
-		assertTransformedDSLEqualsExpectedUnchecked(
+		assertTransformedDSLEqualsExpected(
 				"StateMachineDSL",
 				StateMachineDSL.class);
 	}	
 	
 	@Test
 	public void shouldTransformEverythingInCombination() throws Exception {		
-		assertTransformedDSLEqualsExpectedUnchecked("StateMachineDSLSupportsRARRSyntax", StateMachineDSL.class);
+		assertTransformedDSLEqualsExpected("StateMachineDSLSupportsRARRSyntax", StateMachineDSL.class);
 	}
 
 }

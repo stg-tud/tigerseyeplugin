@@ -18,7 +18,7 @@ public class UnitsDSLTest extends DSLTransformationTestBase{
 	}
 
 	private void test(String string) throws Exception {
-		assertTransformedDSLEqualsExpectedUnchecked(string, UnitsDSL.class);
+		assertTransformedDSLEqualsExpected(string, UnitsDSL.class);
 	}
 
 	@Test

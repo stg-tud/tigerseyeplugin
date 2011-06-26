@@ -29,20 +29,20 @@ public class MapDSLTest extends DSLTransformationTestBase {
 
 	@Test
 	public void testAMapDSLTransformationShorter() throws Exception {
-		assertTransformedDSLEqualsExpectedUnchecked("MapDSLShorter",
+		assertTransformedDSLEqualsExpected("MapDSLShorter",
 				MapDSL.class);
 	}
 
 	@Ignore("fails because priorization of Number before String was removed")
 	@Test
 	public void testAMapDSLTransformation() throws Exception {
-		assertTransformedDSLEqualsExpectedUnchecked("MapDSL", MapDSL.class);
+		assertTransformedDSLEqualsExpected("MapDSL", MapDSL.class);
 	}
 
 	@Ignore("fails because priorization of Number before String was removed")
 	@Test
 	public void testmultipleMapstatementstransformations() throws Exception {
-		assertTransformedDSLEqualsExpectedUnchecked("MapDSLlonger",
+		assertTransformedDSLEqualsExpected("MapDSLlonger",
 				MapDSL.class);
 	}
 
@@ -53,14 +53,14 @@ public class MapDSLTest extends DSLTransformationTestBase {
 		 * Fails because variables instead of the concrete type are passed for
 		 * values
 		 */
-		assertTransformedDSLEqualsExpectedUnchecked(
+		assertTransformedDSLEqualsExpected(
 				"MapDSLWithVariablesAsKeys", MapDSL.class);
 	}
 
 	@Ignore("Test needs different transforamtion procedure")
 	@Test
 	public void testMapDSLFileFormatTransformation() throws Exception {
-		assertTransformedDSLEqualsExpectedUnchecked("MapDSLinDSLFileFormat",
+		assertTransformedDSLEqualsExpected("MapDSLinDSLFileFormat",
 				MapDSL.class);
 
 		DSLResourceHandler drh = new DSLResourceHandler(FileType.DSL,

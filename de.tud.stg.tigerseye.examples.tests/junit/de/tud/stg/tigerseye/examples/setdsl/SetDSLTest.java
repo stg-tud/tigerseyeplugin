@@ -19,7 +19,7 @@ public class SetDSLTest extends DSLTransformationTestBase {
 	}
 
 	private void doTest(String setdsl) throws Exception {
-		assertTransformedDSLEqualsExpectedUnchecked(setdsl, SetDSL.class);
+		assertTransformedDSLEqualsExpected(setdsl, SetDSL.class);
 	}
 	
 	@Test

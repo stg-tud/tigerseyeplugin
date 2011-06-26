@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import jjtraveler.VisitFailure;
 
 import org.apache.bsf.util.IOUtils;
@@ -83,6 +85,18 @@ public class TestDSLTransformation {
 			moptions = methodOptions;
 			classes = cs;
 		}
+		
+		@Deprecated
+		public Context generateContext(@Nullable String contextName){
+			if(contextName == null)
+				contextName = "no_context_name_given";
+			Context context = new Context(contextName);
+			for (int i = 0; i < classes.length ; i++){				
+				context.addDSL("anyextension"+i, (Class<? extends DSL>) classes[i]);
+			}
+			context.setFiletype(null);
+			return context;
+		}
 
 	}
 
@@ -132,5 +146,7 @@ public class TestDSLTransformation {
 
 		return new String(out.toByteArray());
 	}
+	
+	
 
 }

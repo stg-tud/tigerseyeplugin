@@ -11,19 +11,19 @@ public class SimpleSqlDSLTest extends DSLTransformationTestBase {
 
 	@Test
 	public void shoudlTransformSelectFrom() throws Exception {
-		assertTransformedDSLEqualsExpectedUnchecked("simplesqlfrom", SimpleSqlDSL.class);
+		assertTransformedDSLEqualsExpected("simplesqlfrom", SimpleSqlDSL.class);
 	}
 	
 	
 	@Ignore("Is acceptable here (recheck when ambiguites are resolved in antoher way)")
 	@Test
 	public void shouldTransformSelectFromWhere() throws Exception {
-		assertTransformedDSLEqualsExpectedUnchecked("simplesqlfromwhere", SimpleSqlDSL.class);
+		assertTransformedDSLEqualsExpected("simplesqlfromwhere", SimpleSqlDSL.class);
 	}
 	
 	@Test
 	public void shouldTransformSelectFromWhereWithSemicolon() throws Exception {
-		assertTransformedDSLEqualsExpectedUnchecked("simplesqlfromwherewithsemicolon", SimpleSqlDSL.class);
+		assertTransformedDSLEqualsExpected("simplesqlfromwherewithsemicolon", SimpleSqlDSL.class);
 	}
 	
 }

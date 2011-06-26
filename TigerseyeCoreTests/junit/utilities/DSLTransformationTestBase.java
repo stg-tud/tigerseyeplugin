@@ -28,7 +28,7 @@ public class DSLTransformationTestBase {
 		return new File(gen);
 	}
 
-	protected void assertTransformedDSLEqualsExpectedUnchecked(String string,
+	protected void assertTransformedDSLEqualsExpected(String string,
 			Class... classes) throws Exception {
 		dtt.assertTransformedDSLEqualsExpected(string, classes);
 	}

@@ -2,6 +2,7 @@ package de.tud.stg.tigerseye.eclipse.core.builder.transformers.textual;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.Collections;
@@ -80,15 +81,22 @@ private static final Logger logger = LoggerFactory.getLogger(KeywordTranslationT
 			} catch (FileNotFoundException e) {
 			    logger.debug("Translation file not found.", e);
 			}
-			// if (reader == null) {
-			//
-			// InputStream resourceAsStream = context.getDsls()
-			// .get(0).loadClass().getClass()
-			// .getResourceAsStream(f);
-			// if (resourceAsStream != null)
-			// reader = new InputStreamReader(resourceAsStream);
-			//
-			// }
+			/*
+			 * TODO(Leo Roos;Jun 26, 2011): this is in practice only
+			 * code used by test cases. Although it could be useful
+			 * the current implementation can not determine a
+			 * Translation File on the classpath of a Tigerseye
+			 * Project.
+			 */
+			Class classes[] = context.getDSLClasses();
+			if (reader == null && classes.length > 0) {
+
+			    InputStream resourceAsStream = classes[0]
+				    .getResourceAsStream(f);
+			    if (resourceAsStream != null)
+				reader = new InputStreamReader(resourceAsStream);
+
+			}
 
 			if (reader != null) {
 			    try {

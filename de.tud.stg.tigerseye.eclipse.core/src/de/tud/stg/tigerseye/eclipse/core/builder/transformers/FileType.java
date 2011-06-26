@@ -3,7 +3,7 @@ package de.tud.stg.tigerseye.eclipse.core.builder.transformers;
 import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 
 /*
- * FIXME need to reorder responsibilities. java groovy popart are resource types, all four are transformation types.
+ * FIXME need to reorder responsibilities. java groovy tigerseye are resource types, all four are transformation types.
  */
 /**
  * Describes different source file types and the corresponding applied file

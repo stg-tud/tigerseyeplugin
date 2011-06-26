@@ -249,7 +249,7 @@ public class DSLResourceHandler implements ResourceHandler {
 	    throws NoLegalPropertyFound {
 
 	context.addDSL(clazz);
-	logger.debug("added dsl '{}' to context",
+	logger.trace("added dsl '{}' to context",
 		clazz.getValue(DSLKey.EXTENSION));
 
     }
