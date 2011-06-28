@@ -237,7 +237,7 @@ public class DSLResourceHandler implements ResourceHandler {
 	    }
 	}
 
-	// Has this any effect?
+	// XXX Has this any effect?
 	for (int[] b : edslAnnotations) {
 	    input.delete(b[0], b[1]);
 	}

@@ -1,4 +1,4 @@
-package de.tud.stg.tigerseye.example.tinysql;
+package de.tud.stg.tigerseye.examples.tinysql;
 
 import java.util.ArrayList;
 import java.util.HashMap;

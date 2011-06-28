@@ -14,6 +14,7 @@ import de.tud.stg.tigerseye.examples.simplesql.SimpleSqlDSLTest;
 import de.tud.stg.tigerseye.examples.statemachine.StateMachineDSLSemanticsTest;
 import de.tud.stg.tigerseye.examples.statemachine.StateMachineDSLTest;
 import de.tud.stg.tigerseye.examples.statemachine.StateMachineTest;
+import de.tud.stg.tigerseye.examples.tinysql.TinySQLTest;
 import de.tud.stg.tigerseye.examples.unitsdsl.UnitsDSLSemanticTest;
 import de.tud.stg.tigerseye.examples.unitsdsl.UnitsDSLTest;
 
@@ -32,6 +33,7 @@ import de.tud.stg.tigerseye.examples.unitsdsl.UnitsDSLTest;
 	StateMachineDSLSemanticsTest.class,//
 	StateMachineDSLTest.class,//
 	InterpreterCombinerTest.class, //
+	TinySQLTest.class, //
 	
 })
 public class AllTestsExampleDSLs {
