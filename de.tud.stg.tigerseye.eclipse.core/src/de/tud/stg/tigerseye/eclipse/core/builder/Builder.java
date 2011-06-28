@@ -60,7 +60,8 @@ public class Builder extends IncrementalProjectBuilder {
 		    continue;
 
 		if (isTigerseyeOutputSourceDirectory(packRoot)) {
-		    IPath projectRelativePath = packRoot.getResource().getProjectRelativePath();
+		    IPath projectRelativePath = packRoot.getResource()
+			    .getProjectRelativePath();
 		    IFolder outputsrcfolder = getProject().getFolder(
 			    projectRelativePath);
 		    int includeAll = IContainer.INCLUDE_HIDDEN
@@ -103,12 +104,8 @@ public class Builder extends IncrementalProjectBuilder {
 	try {
 	    monitor.beginTask("Tigerseye Build", 100);
 	    if (kind == IncrementalProjectBuilder.CLEAN_BUILD) {
-
 		this.fullBuild(monitor);
-
-	    } else
-
-	    if (kind == IncrementalProjectBuilder.FULL_BUILD) {
+	    } else if (kind == IncrementalProjectBuilder.FULL_BUILD) {
 		this.fullBuild(monitor);
 	    } else {
 		IResourceDelta delta = this.getDelta(this.getProject());
@@ -117,7 +114,6 @@ public class Builder extends IncrementalProjectBuilder {
 		} else {
 		    this.incrementalBuild(delta, monitor);
 		}
-
 	    }
 	} finally {
 	    monitor.done();
@@ -151,21 +147,15 @@ public class Builder extends IncrementalProjectBuilder {
 		    monitor.worked(totalWork / visitors.length);
 		}
 	    } else {
-
 		IPackageFragmentRoot[] packageFragmentRoots = jp
 			.getPackageFragmentRoots();
-
 		List<IPackageFragmentRoot> sourcesToBuild = new ArrayList<IPackageFragmentRoot>();
-
 		for (IPackageFragmentRoot packRoot : packageFragmentRoots) {
-
 		    if (!(packRoot.getKind() == IPackageFragmentRoot.K_SOURCE))
 			continue;
-
 		    if (!isTigerseyeOutputSourceDirectory(packRoot)) {
 			sourcesToBuild.add(packRoot);
 		    }
-
 		}
 
 		int sourceDirWorked = totalWork / sourcesToBuild.size();
@@ -173,7 +163,6 @@ public class Builder extends IncrementalProjectBuilder {
 		    buildResourcesInSourceDirectory(new SubProgressMonitor(
 			    monitor, sourceDirWorked), sourceDirRoot);
 		}
-
 	    }
 	} catch (CoreException e) {
 	    logger.warn("Build failed", e);

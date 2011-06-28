@@ -5,6 +5,8 @@
  **/
 package de.tud.stg.popart.dslsupport;
 
+import java.util.HashMap;
+
 import groovy.lang.Closure;
 import groovy.lang.GroovyObjectSupport;
 import groovy.lang.MetaClass;
@@ -34,5 +36,12 @@ public class Interpreter extends GroovyObjectSupport implements DSL {
 	
 	public Interpreter add(Interpreter other) {
 		return new InterpreterCombiner(this, other, new java.util.HashMap<String,Object>());
+	}
+	
+	//XXX (Leo Roos; Jun 28, 2011): Added this method since it is the most often applied used case.
+	public Object eval(@SuppressWarnings("rawtypes") HashMap map, @SuppressWarnings("rawtypes") Closure cl) {
+		cl.setDelegate(this);
+		cl.setResolveStrategy(Closure.DELEGATE_FIRST);
+		return cl.call();
 	}
 }

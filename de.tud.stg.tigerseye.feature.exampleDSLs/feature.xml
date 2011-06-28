@@ -64,4 +64,18 @@
          version="0.0.0"
          unpack="false"/>
 
+   <plugin
+         id="de.tud.stg.tigerseye.examples.unitsdsl"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="de.tud.stg.tigerseye.examples.TinySQL"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
 </feature>
