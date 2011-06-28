@@ -8,7 +8,8 @@ import de.tud.stg.tigerseye.eclipse.core.api.Transformation;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.MethodOptions;
 
 /**
- * The interface for all AST transformations that are processed after parsing on the generated syntrax tree
+ * The is the interface for all AST transformations that are processed after
+ * parsing on the generated syntax tree
  * 
  * @author Kamil Erhard
  * 

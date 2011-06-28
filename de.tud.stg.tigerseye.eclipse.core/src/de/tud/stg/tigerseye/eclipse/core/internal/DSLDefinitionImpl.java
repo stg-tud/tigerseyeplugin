@@ -140,6 +140,10 @@ public class DSLDefinitionImpl implements DSLDefinition {
     public Class<? extends DSL> loadClass() {
 	try {
 	    Bundle bundle = Platform.getBundle(getContributorSymbolicName());
+	    if (bundle == null)
+		throw new TigerseyeRuntimeException("Could not access bundle "
+			+ getContributorSymbolicName() + " to load class "
+			+ getClassPath());
 	    Class<?> loadClass = bundle.loadClass(getClassPath());
 	    /*
 	     * The cast must be successful or else the DSL language is erroneous

@@ -59,10 +59,15 @@ public class DSLClasspathResolver {
 	}
 
 	if (bundleFile.isFile()) {
-	    if (FileHelper.isJar(bundleFile.getName())) {
+	    if (FileHelper.isJar(bundleFile)) {
+		logger.debug(
+			"Bundle {} is a Jar file: {}. Will be put as is onto Tigerseye classpath",
+			bundle, bundleFile);
 		return new File[] { bundleFile };
 	    } else {
-		logger.debug("unknown format of file: ", bundleFile);
+		logger.warn(
+			"unknown format of file: {}. Can not determine any classpathentries for bundle {}",
+			bundleFile, bundle);
 		return null;
 	    }
 	}

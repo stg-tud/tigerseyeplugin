@@ -79,7 +79,7 @@ public class TransformerConfigurationProvider {
     }
 
     public Set<ASTTransformation> getConfiguredASTTransformers(
-	    TransformationType... identiables) {
+	    TransformationType... identifiables) {
 	return getTransformations(
 		new TransformationFilter<ASTTransformation>() {
 		    @Override
@@ -88,7 +88,7 @@ public class TransformerConfigurationProvider {
 			    return (ASTTransformation) t;
 			return null;
 		    }
-		}, identiables);
+		}, identifiables);
     }
 
 

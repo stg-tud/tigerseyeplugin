@@ -1,4 +1,4 @@
-package de.tud.stg.tigerseye.example;
+package de.tud.stg.tigerseye.example.dzoneunits;
 
 /*
  * When using the GroovyCompilationAdapter at least one Java file has to exist in the compiled

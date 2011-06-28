@@ -27,6 +27,10 @@ public class TigerseyePreferenceInitializer extends
 		TigerseyePreferenceConstants.DEFAULT_LANGUAGE_ACTIVE_KEY,
 		TigerseyeDefaultConstants.DEFAULT_LANGUAGE_ACTIVE_VALUE);
 
+	store.setDefault(
+		TigerseyePreferenceConstants.DEFAULT_RELOAD_DSL_CLASSES_BEFORE_TRANSFORMATION_KEY,
+		TigerseyeDefaultConstants.DEFAULT_RELOAD_DSL_CLASSES_BEFORE_TRANSFORMATION_VALUE);
+
     }
 
 }

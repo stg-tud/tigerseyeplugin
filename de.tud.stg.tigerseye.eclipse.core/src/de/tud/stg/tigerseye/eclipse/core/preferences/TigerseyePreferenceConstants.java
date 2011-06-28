@@ -15,4 +15,6 @@ public class TigerseyePreferenceConstants {
 
     public static final String DEFAULT_LANGUAGE_ACTIVE_KEY = "de.tud.stg.tigerseye.languageisactive.default";
 
+    public static final String DEFAULT_RELOAD_DSL_CLASSES_BEFORE_TRANSFORMATION_KEY = "de.tud.stg.tigerseye.reloaddslclasses.default";
+
 }

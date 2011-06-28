@@ -113,7 +113,24 @@ public abstract class DSLKey<T> {
 
     public static boolean getDefaultLanguageActiveValue(IPreferenceStore store) {
         return store
-    	    .getDefaultBoolean(TigerseyePreferenceConstants.DEFAULT_LANGUAGE_ACTIVE_KEY);
+		.getDefaultBoolean(TigerseyePreferenceConstants.DEFAULT_LANGUAGE_ACTIVE_KEY);
+    }
+
+    /**
+     * Whether the DSL Bundles should be refreshed before a transformation takes
+     * place. Depending on the size of a DSL bundle and the amount of different
+     * DSL bundles such a operation could cause noticeable performance
+     * reduction.
+     * 
+     * @param store
+     *            the Tigerseye store
+     * @return <code>true</code> if a DSL bundle should be reloaded and
+     *         <code>false</code> otherwise.
+     */
+    public static boolean isReloadDSLPackageBeforeTransforamtionActive(
+	    IPreferenceStore store) {
+	return store
+		.getBoolean(TigerseyePreferenceConstants.DEFAULT_RELOAD_DSL_CLASSES_BEFORE_TRANSFORMATION_KEY);
     }
 
     private final static class ExtensionDSLKey extends DSLKey<String> {
@@ -146,9 +163,9 @@ public abstract class DSLKey<T> {
 
     /*
      * The values are deliberately saved as strings instead of booleans. When
-     * saved as boolean, Eclipse seems to delete the keys when they equal the
-     * default value, i.e. IPreferenceStore#contains(String) returns false
-     * although the key was manually set/changed.
+     * saved as boolean, the keys are deleted when they equal the default value,
+     * i.e. IPreferenceStore#contains(String) returns false although the key was
+     * manually set/changed.
      * 
      * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=22533
      */

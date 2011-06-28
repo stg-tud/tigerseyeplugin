@@ -24,6 +24,7 @@ import de.tud.stg.popart.builder.core.annotations.DSLMethod;
 import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartLiteralKeyword;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeyword;
+import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.CategoryNames;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.HostLanguageGrammar;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ParameterOptions;
@@ -40,10 +41,11 @@ public class GrammarBuilder {
     private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.class);
 
     public static final String DEFAULT_ARRAY_DELIMITER = ",";
-	public static final String DEFAULT_PARAMETER_ESCAPE = "p";
-	public static final String DEFAULT_WHITESPACE_ESCAPE = "_";
-	// private static final String DEFAULT_STRING_QUOTATION = "([\\w_]+|(\".*?\"))";
-	private static final String DEFAULT_STRING_QUOTATION = "(\".*?\")";
+    public static final String DEFAULT_PARAMETER_ESCAPE = "p";
+    public static final String DEFAULT_WHITESPACE_ESCAPE = "_";
+    // private static final String DEFAULT_STRING_QUOTATION =
+    // "([\\w_]+|(\".*?\"))";
+    private static final String DEFAULT_STRING_QUOTATION = "(\".*?\")";
 
     private final Grammar grammar;
 
@@ -102,6 +104,21 @@ public class GrammarBuilder {
 		this.grammar.addRule(rStatement);
 		this.grammar.addRule(rStatements);
 	}
+
+    public IGrammar<String> buildGrammar(List<DSLDefinition> dsls) {
+	ArrayList<Class<?>> clazzes = new ArrayList<Class<?>>(dsls.size());
+	for (DSLDefinition dsl : dsls) {
+	    Class<? extends de.tud.stg.popart.dslsupport.DSL> loadClass = dsl
+		    .loadClass();
+	    if (loadClass != null)
+		clazzes.add(loadClass);
+	    else
+		logger.error(
+			"Failed to load dsl {}, can not perform any transformations for that class",
+			dsl);
+	}
+	return buildGrammar(clazzes.toArray(new Class<?>[0]));
+    }
 
 	public IGrammar<String> buildGrammar(Class<?>... clazzes) {
 	this.setupGeneralGrammar();// TODO moved from constructor check if valid
@@ -227,7 +244,12 @@ public class GrammarBuilder {
 	private  String assignFirstStringOrDefault(String stringToCheck, String defaultString) {
 		final String UNASSIGNED = "[unassigned]";
 
-		return (stringToCheck == null || stringToCheck.equals(UNASSIGNED)) ? defaultString : stringToCheck;
+	String string;
+	if (stringToCheck == null || stringToCheck.equals(UNASSIGNED))
+	    string = defaultString;
+	else
+	    string = stringToCheck;
+		return string;
 	}
 
 	private final static Pattern literalPattern = Pattern.compile("^get(\\S+)");
@@ -435,8 +457,9 @@ public class GrammarBuilder {
 		int methodCounter = this.parameterCounter.getAndIncrement();
 
 		String indexedMethodProduction = "M" + methodCounter + "(" + methodProduction + ")";
-		this.methodAliases.put(indexedMethodProduction, new MethodOptions(method.getName(), parameterIndices, method
-				.getDeclaringClass()));
+		MethodOptions value = new MethodOptions(method.getName(), parameterIndices, method
+				.getDeclaringClass());
+		this.methodAliases.put(indexedMethodProduction, value);
 
 		Category methodCategory = new Category(indexedMethodProduction, false);
 		this.grammar.addCategory(methodCategory);

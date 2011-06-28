@@ -30,7 +30,7 @@ import de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler.ResourceHandler
 import de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler.ResourceVisitor;
 import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntime;
 
-//FIXME refactoring and tests for logic
+//FIXME; still FIXME(Leo Roos;Jun 29, 2011)refactoring and tests for logic
 public class Builder extends IncrementalProjectBuilder {
     private static final Logger logger = LoggerFactory.getLogger(Builder.class);
 
@@ -49,13 +49,15 @@ public class Builder extends IncrementalProjectBuilder {
 	    monitor.beginTask("Cleaning " + getProject(), totalWork);
 	    String outputDirectoryPath = TigerseyeRuntime
 		    .getOutputDirectoryPath();
-	    logger.trace("cleaning output directory {} for  {}",
+	    logger.debug("cleaning output directory {} for  {}",
 		    outputDirectoryPath, getProject());
 
 	    IJavaProject jp = JavaCore.create(getProject());
 	    IPackageFragmentRoot[] packageFragmentRoots;
 	    packageFragmentRoots = jp.getPackageFragmentRoots();
 	    for (IPackageFragmentRoot packRoot : packageFragmentRoots) {
+		if (monitor.isCanceled())
+		    return;
 		if (!(packRoot.getKind() == IPackageFragmentRoot.K_SOURCE))
 		    continue;
 
@@ -128,7 +130,7 @@ public class Builder extends IncrementalProjectBuilder {
     private void fullBuild(IProgressMonitor monitor) {
 	if (monitor == null)
 	    monitor = new NullProgressMonitor();
-	logger.info("starting full build");
+	logger.debug("starting full build");
 	try {
 	    int totalWork = 10000;
 	    monitor.beginTask("Building", totalWork);
@@ -139,10 +141,12 @@ public class Builder extends IncrementalProjectBuilder {
 
 	    if (delta != null) {
 		for (ResourceVisitor visitor : visitors) {
+		    if (monitor.isCanceled())
+			return;
 		    monitor.subTask("Delta:" + delta.getResource()
 			    + " with Visitor:"
 			    + visitor.getClass().getSimpleName());
-		    logger.info("Starting build with visitor {}", visitor);
+		    logger.trace("Starting build with visitor {}", visitor);
 		    delta.accept(visitor);
 		    monitor.worked(totalWork / visitors.length);
 		}
@@ -151,6 +155,8 @@ public class Builder extends IncrementalProjectBuilder {
 			.getPackageFragmentRoots();
 		List<IPackageFragmentRoot> sourcesToBuild = new ArrayList<IPackageFragmentRoot>();
 		for (IPackageFragmentRoot packRoot : packageFragmentRoots) {
+		    if (monitor.isCanceled())
+			return;
 		    if (!(packRoot.getKind() == IPackageFragmentRoot.K_SOURCE))
 			continue;
 		    if (!isTigerseyeOutputSourceDirectory(packRoot)) {
@@ -183,6 +189,8 @@ public class Builder extends IncrementalProjectBuilder {
 	    for (Object object : nonJavaResources) {
 		IResource resource = (IResource) object;
 		for (ResourceVisitor visitor : visitors) {
+		    if (monitor.isCanceled())
+			return;
 		    if (visitor.isInteresstedIn(resource)) {
 			monitor.subTask("resource:" + object + " with Visitor:"
 				+ visitor.getClass().getSimpleName());

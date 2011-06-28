@@ -1,7 +1,9 @@
 package de.tud.stg.tigerseye.eclipse.core.runtime;
 
+import java.io.File;
+
 /**
- * General utility class for operations with files.
+ * Utility class for operations with files.
  * 
  * @author Leo Roos
  * 
@@ -15,6 +17,13 @@ public class FileHelper {
 	}
 	String extension = name.substring(beginIndex);
 	return "jar".equalsIgnoreCase(extension);
+    }
+
+    public static boolean isJar(File bundleFile) {
+	if (bundleFile.isFile())
+	    return isJar(bundleFile.getName());
+	else
+	    return false;
     }
 
 }

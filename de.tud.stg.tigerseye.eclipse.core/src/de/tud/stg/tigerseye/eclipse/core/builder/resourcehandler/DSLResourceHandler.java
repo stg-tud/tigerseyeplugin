@@ -5,6 +5,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +24,11 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.service.packageadmin.PackageAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,9 +40,9 @@ import de.tud.stg.parlex.lexer.KeywordSeperator;
 import de.tud.stg.parlex.parser.IChart;
 import de.tud.stg.parlex.parser.earley.EarleyParser;
 import de.tud.stg.popart.builder.eclipse.EDSL;
-import de.tud.stg.popart.dslsupport.DSL;
 import de.tud.stg.tigerseye.eclipse.TigerseyeLibraryProvider;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeCoreActivator;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLNotFoundException;
@@ -70,6 +77,8 @@ public class DSLResourceHandler implements ResourceHandler {
 
     private OutputPathHandler outputPathHandler;
 
+    private IPreferenceStore tigerseyePreferenceStore;
+
     public DSLResourceHandler(FileType fileType, CodePrinter prettyPrinter) {
 
 	this.fileType = fileType;
@@ -82,6 +91,7 @@ public class DSLResourceHandler implements ResourceHandler {
 	this.transformerProvider = new TransformerConfigurationProvider(
 		TigerseyeCore.getTransformationProvider());
 	this.outputPathHandler = new OutputPathHandler();
+	this.tigerseyePreferenceStore = TigerseyeCore.getPreferences();
     }
 
     protected ILanguageProvider getLanguageProvider() {
@@ -122,25 +132,42 @@ public class DSLResourceHandler implements ResourceHandler {
 	    logger.error("Skipping unhandled resource {}", srcFile);
 	    return;
 	}
+	Set<DSLDefinition> dslDefinitions = Collections.emptySet();
 	try {
-	    Context context = this.determineInvolvedDSLs(srcFile,
+	    dslDefinitions = this.determineInvolvedDSLs(srcFile,
 		    resourceContent);
-	    context.setFiletype(filetype);
-	    if (context.getDsls().size() < 1) {
-		logger.trace("No DSLs for {} determined. Will not attempt a transformation.");
-		return;
-	    }
-	    ByteArrayOutputStream transformedContent = getTransformedContent(
-		    resourceContent, context);
-	    if (transformedContent.size() > 0) {
-		this.writeResourceContent(transformedContent, outputFile);
-	    } else {
-		logger.trace("Made no transformation for {}", resource);
-	    }
 	} catch (DSLNotFoundException e) {
 	    logger.debug("Resource {} could not be handled. {}", new Object[] {
 		    srcFile, e.noDSLMsg() }, e);
 	}
+	if (dslDefinitions.size() < 1) {
+	    logger.trace("No DSLs for {} determined. Will not attempt a transformation.");
+	    return;
+	}
+	if (DSLKey
+		.isReloadDSLPackageBeforeTransforamtionActive(tigerseyePreferenceStore)) {
+	    Set<Bundle> dslBundles = new HashSet<Bundle>(dslDefinitions.size());
+	    for (DSLDefinition dslDefinition : dslDefinitions) {
+		String contributorSymbolicName = dslDefinition
+			.getContributorSymbolicName();
+		Bundle bundle = Platform.getBundle(contributorSymbolicName);
+		dslBundles.add(bundle);
+	    }
+	    refreshBundles(dslBundles);
+	}
+	Context context = new Context(resource.getName());
+	context.addDSLs(dslDefinitions);
+	context.setFiletype(filetype);
+	ByteArrayOutputStream transformedContent = getTransformedContent(
+		resourceContent, context);
+	if (transformedContent.size() > 0) {
+	    this.writeResourceContent(transformedContent, outputFile);
+	} else {
+	    logger.trace(
+		    "Transformation for {} was empty. Will not write any change to file.",
+		    resource);
+	}
+
     }
 
     private ByteArrayOutputStream getTransformedContent(StringBuffer input,
@@ -148,12 +175,12 @@ public class DSLResourceHandler implements ResourceHandler {
 	StringBuffer textualTransformedInput = this
 		.performTextualTransformations(input, context);
 
-	Class<? extends DSL>[] dslClasses = context.getDSLClasses();
+	List<DSLDefinition> dsls = context.getDsls();
 
 	UnicodeLookupTable ult = new UnicodeLookupTable()
 		.load(TigerseyeLibraryProvider.getMathClassEx11());
 	GrammarBuilder grammarBuilder = new GrammarBuilder(ult);
-	IGrammar<String> grammar = grammarBuilder.buildGrammar(dslClasses);
+	IGrammar<String> grammar = grammarBuilder.buildGrammar(dsls);
 
 	if (logger.isDebugEnabled()) {
 	    logger.debug("Grammar successfully construced");
@@ -162,12 +189,41 @@ public class DSLResourceHandler implements ResourceHandler {
 
 	ATerm term = this.parseResource(textualTransformedInput, grammar);
 
+	Map<String, MethodOptions> methodOptions = grammarBuilder
+		.getMethodOptions();
 	ATerm astTransformedTerm = this.performASTTransformations(term,
-		context, grammarBuilder.getMethodOptions());
+		context, methodOptions);
 
 	ByteArrayOutputStream out = this
 		.performPrettyPrinting(astTransformedTerm);
 	return out;
+    }
+
+    private void refreshBundles(Set<Bundle> bundlesToRefresh) {
+	Bundle[] bundles = bundlesToRefresh.toArray(new Bundle[0]);
+	BundleContext bc = TigerseyeCoreActivator.getDefault().getBundle()
+		.getBundleContext();
+	if (bc == null) {
+	    logger.error("Could not retrieve BundleContext. Can not refresh DSL Bundles");
+	    return;
+	}
+	/**
+	 * Code stolen from
+	 * FrameworkCommandProvider#_refresh(CommandInterpreter)
+	 */
+	org.osgi.framework.ServiceReference packageAdminRef = bc
+		.getServiceReference(PackageAdmin.class.getName());
+	if (packageAdminRef != null) {
+	    org.osgi.service.packageadmin.PackageAdmin packageAdmin = (org.osgi.service.packageadmin.PackageAdmin) bc
+		    .getService(packageAdminRef);
+	    if (packageAdmin != null) {
+		try {
+		    packageAdmin.refreshPackages(bundles);
+		} finally {
+		    bc.ungetService(packageAdminRef);
+		}
+	    }
+	}
     }
 
     /**
@@ -178,9 +234,10 @@ public class DSLResourceHandler implements ResourceHandler {
      * @return
      * @throws DSLNotFoundException
      */
-    protected Context determineInvolvedDSLs(IFile resource, StringBuffer input)
+    protected Set<DSLDefinition> determineInvolvedDSLs(IFile resource,
+	    StringBuffer input)
 	    throws DSLNotFoundException {
-	Context context = new Context(resource.getName());
+	Set<DSLDefinition> determinedDSLs = new HashSet<DSLDefinition>();
 	ILanguageProvider languageProvider = getLanguageProvider();
 
 	int fileExtensionIndex = resource.getName().lastIndexOf(
@@ -203,7 +260,8 @@ public class DSLResourceHandler implements ResourceHandler {
 			.getActiveDSLForExtension(dslName);
 		if (activeDSLForExtension != null) {
 		    try {
-			this.addDSLToContext(activeDSLForExtension, context);
+			this.addDSLToContext(activeDSLForExtension,
+				determinedDSLs);
 		    } catch (NoLegalPropertyFound e) {
 			throw new DSLNotFoundException(e);
 		    }
@@ -211,7 +269,7 @@ public class DSLResourceHandler implements ResourceHandler {
 	    }
 	} else {
 
-	    // Java EDSL context, can be used to determine DSLs in Java file
+	    // Java EDSL Annotation, can be used to determine DSLs in Java file
 	    // context
 	    AnnotationExtractor<EDSL> extractor = new AnnotationExtractor<EDSL>(
 		    EDSL.class);
@@ -221,7 +279,7 @@ public class DSLResourceHandler implements ResourceHandler {
 	    edslAnnotations.add(extractor.getBounds());
 
 	    if (annotation == null) {
-		return context;
+		return determinedDSLs;
 	    }
 
 	    for (String dslName : annotation.value()) {
@@ -229,7 +287,7 @@ public class DSLResourceHandler implements ResourceHandler {
 			.getActiveDSLForExtension(dslName);
 		if (activeDSL != null) {
 		    try {
-			this.addDSLToContext(activeDSL, context);
+			this.addDSLToContext(activeDSL, determinedDSLs);
 		    } catch (NoLegalPropertyFound e) {
 			throw new DSLNotFoundException(e);
 		    }
@@ -237,21 +295,20 @@ public class DSLResourceHandler implements ResourceHandler {
 	    }
 	}
 
-	// XXX Has this any effect?
+	// Removes the EDSL annotation from the source file
 	for (int[] b : edslAnnotations) {
 	    input.delete(b[0], b[1]);
 	}
 
-	return context;
+	return determinedDSLs;
     }
 
-    private void addDSLToContext(@Nonnull DSLDefinition clazz, Context context)
+    private void addDSLToContext(@Nonnull DSLDefinition clazz,
+	    Set<DSLDefinition> context)
 	    throws NoLegalPropertyFound {
-
-	context.addDSL(clazz);
+	context.add(clazz);
 	logger.trace("added dsl '{}' to context",
 		clazz.getValue(DSLKey.EXTENSION));
-
     }
 
     protected ByteArrayOutputStream performPrettyPrinting(ATerm term) {

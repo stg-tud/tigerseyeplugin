@@ -80,7 +80,7 @@ public class TigerseyeDSLDefinitionsCPContainer implements IClasspathContainer {
 	Bundle bundle = Platform.getBundle(contributorSymbolicName);
 	// File bundleFile = new FileLocatorWrapper().getBundleFile(bundle);
 
-	List<File> cpEntriesToAdd = null;
+	List<File> cpEntriesToAdd;
 	// File buildProps = new File(bundleFile, "build.properties");
 	// if (buildProps.exists()) {
 	// cpEntriesToAdd = getClasspathEntriesForBundleProperties(bundleFile,

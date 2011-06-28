@@ -1,5 +1,6 @@
 package de.tud.stg.tigerseye.eclipse.core.runtime;
 
+import java.io.File;
 import java.net.URI;
 
 import org.eclipse.core.resources.IProject;
@@ -36,9 +37,18 @@ public class ProjectLinker {
 	    projDesc.setLocationURI(location);
 	    project.create(projDesc, null);
 	} else {
-	    logger.warn(
-		    "project {} already exists; assuming this is the project you need",
-		    project);
+	    URI locationURI = project.getLocationURI();
+	    String path = location.getPath();
+	    String path2 = locationURI == null ? "" : locationURI.getPath();
+	    boolean equalsPath = new File(path).equals(new File(path2));
+	    if (locationURI != null && equalsPath) {
+		logger.trace(
+			"project {} with location {} already exists; assuming this is the project you need.",
+			project, locationURI);
+	    } else
+		logger.error(
+			"project {} already exists but its location [{}] does not fit the expected location: [{}].\nThis means probably you already have a different project in your workspace which has the same name as the project to be linked.\nCannot link to the according DSL.",
+			new Object[] { project, locationURI, location });
 	}
 	return project;
     }

@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
 public class NoLegalPropertyFound extends Exception {
 
     /**
-     * 
+     * to suppress warnings
      */
     private static final long serialVersionUID = 1L;
     private static final DSLKey<?> NullKey = DSLKey.NULL_KEY;

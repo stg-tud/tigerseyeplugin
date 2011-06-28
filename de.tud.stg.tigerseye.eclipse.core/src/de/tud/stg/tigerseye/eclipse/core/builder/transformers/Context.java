@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.tud.stg.popart.dslsupport.DSL;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLKey;
@@ -21,6 +24,8 @@ import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFound;
  * 
  */
 public class Context {
+
+    private static final Logger logger = LoggerFactory.getLogger(Context.class);
     private final List<DSLDefinition> dsls = new ArrayList<DSLDefinition>();
     private final Map<String, Class<? extends DSL>> dslClasses = new HashMap<String, Class<? extends DSL>>();
     private final Set<String> currentAssurances = new HashSet<String>();
@@ -84,6 +89,25 @@ public class Context {
 		    "Tried to access Context in an inconsistent manner. Defined amount of DSL classes is unequal to the amount of defined dsls.");
 
 	return Collections.unmodifiableList(dsls);
+    }
+
+    /**
+     * This method will simply call {@link #addDSL(String, Class)} for each
+     * element and ignore any element that causes an exception during the
+     * addition.
+     * 
+     * @param dslDefinitions
+     */
+    public void addDSLs(Set<DSLDefinition> dslDefinitions) {
+	for (DSLDefinition dsl : dslDefinitions) {
+	    try {
+		this.addDSL(dsl);
+	    } catch (NoLegalPropertyFound e) {
+		logger.warn(
+			"DSL {} not properly initialized. Will be ignored.",
+			dsl, e);
+	    }
+	}
     }
 
 }

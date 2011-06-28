@@ -38,5 +38,7 @@ Export-Package:
  de.tud.stg.tigerseye.eclipse.core.preferences,
  de.tud.stg.tigerseye.eclipse.core.runtime,
  de.tud.stg.tigerseye.eclipse.core.utils
+ 
+Eclipse-BuddyPolicy: registered
 Eclipse-ExtensibleAPI: true
  
