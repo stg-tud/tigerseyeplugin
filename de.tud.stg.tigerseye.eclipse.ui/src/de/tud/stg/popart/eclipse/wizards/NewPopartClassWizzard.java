@@ -1,7 +1,7 @@
 package de.tud.stg.popart.eclipse.wizards;
 
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
@@ -44,7 +44,7 @@ public class NewPopartClassWizzard extends NewElementWizard {
     @Override
     public void addPages() {
 
-	List<DSLDefinition> dslDefinitions = TigerseyeCore
+	Collection<DSLDefinition> dslDefinitions = TigerseyeCore
 		.getLanguageProvider().getDSLDefinitions();
 	Set<DSLDefinition> activeDSLs = new HashSet<DSLDefinition>();
 	for (DSLDefinition dsl : dslDefinitions) {

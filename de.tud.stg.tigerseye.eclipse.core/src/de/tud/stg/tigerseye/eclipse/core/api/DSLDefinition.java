@@ -3,14 +3,15 @@ package de.tud.stg.tigerseye.eclipse.core.api;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
-
 /**
- * General interface to handle registered DSLs between plug-in components. <br>
+ * Interface to consistently handle DSL definitions independent from their
+ * definition location.
+ * <p>
  * Only unmodifiable values which every DSL definition has are directly
  * accessible <br>
  * Further DSL attributes can be retrieved using the {@link #getValue(DSLKey)}
  * method and set using the {@link #setValue(DSLKey, Object)}. This class
- * provides a preference store key which can be used to directly accessing the
+ * provides a preference store key which can be used to directly access the
  * preference store for requested attributes through {@link #getKeyFor(DSLKey)}.
  * But the use of the getValue and setValue methods is recommended.<br>
  * 
@@ -25,7 +26,7 @@ public interface DSLDefinition extends TransformationType {
     /**
      * DSL with no behavior or state.
      */
-    public static final DSLDefinition NULL_DSL = new NULLDSL();
+    static final DSLDefinition NULL_DSL = new NULLDSL();
 
     /**
      * Whether the language has been set to active.
@@ -33,7 +34,7 @@ public interface DSLDefinition extends TransformationType {
      * @return <code>true</code> if language is active <code>false</code>
      *         otherwise.
      */
-    public abstract boolean isActive();
+    abstract boolean isActive();
 
     /**
      * The class path of the class implementing the
@@ -42,21 +43,27 @@ public interface DSLDefinition extends TransformationType {
      * 
      * @return
      */
-    public abstract String getClassPath();
+    public String getClassPath();
 
     /**
      * The identifier of the plug-in providing this DSL
      * 
      * @return
      */
-    public abstract String getContributorSymbolicName();
+    @Deprecated
+    public String getContributorSymbolicName();
+
+    /**
+     * @return the contributor of this dslDefinition
+     */
+    DSLContributor getContributor();
 
     /**
      * The user friendly name of this DSL.
      * 
      * @return
      */
-    public String getDslName();
+    String getDslName();
 
     /**
      * Loads class with fully qualified name {@link #getClassPath()} from bundle
@@ -71,14 +78,14 @@ public interface DSLDefinition extends TransformationType {
      *             checked during initialization.
      */
     @CheckForNull
-    public abstract Class<? extends de.tud.stg.popart.dslsupport.DSL> loadClass();
+    Class<? extends de.tud.stg.popart.dslsupport.DSL> loadClass();
 
     /**
      * The unique identifier preference store key for this DSL.
      * 
      * @return
      */
-    public abstract String getLanguageKey();
+    String getLanguageKey();
 
     /**
      * Returns the preference store key of this DSL for the attribute specified
@@ -89,15 +96,14 @@ public interface DSLDefinition extends TransformationType {
      * @return the final preference store key to access the value of the
      *         attribute defined through {@code key} for this DSL.
      */
-    public abstract String getKeyFor(DSLKey<?> key);
-
+    String getKeyFor(DSLKey<?> key);
 
     /**
      * Sets the attribute of this DSL described by {@code key} to its default.
      * 
      * @param key
      */
-    public void setToDefault(DSLKey<?> key);
+    void setToDefault(DSLKey<?> key);
 
     /**
      * Set attribute of type {@code T} identified through {@code key} for this
@@ -110,7 +116,7 @@ public interface DSLDefinition extends TransformationType {
      * @param value
      *            the value to set for key {@code key} of this DSL.
      */
-    public <T> void setValue(DSLKey<T> key, T value);
+    <T> void setValue(DSLKey<T> key, T value);
 
     /**
      * Gets value of type {@code T} from the preference store.
@@ -120,9 +126,9 @@ public interface DSLDefinition extends TransformationType {
      * @param key
      *            describing what preference to get for this DSL
      * @return the attribute of type {@code T} for key {@code key} for this DSL.
-     * @throws NoLegalPropertyFound
+     * @throws NoLegalPropertyFoundException
      */
-    public <T> T getValue(DSLKey<T> key) throws NoLegalPropertyFound;
+    <T> T getValue(DSLKey<T> key) throws NoLegalPropertyFoundException;
 
     static class NULLDSL implements DSLDefinition {
 	private NULLDSL() {
@@ -162,7 +168,8 @@ public interface DSLDefinition extends TransformationType {
 	}
 
 	@Override
-	public <T> T getValue(DSLKey<T> key) throws NoLegalPropertyFound {
+	public <T> T getValue(DSLKey<T> key)
+		throws NoLegalPropertyFoundException {
 	    return null;
 	}
 
@@ -179,6 +186,11 @@ public interface DSLDefinition extends TransformationType {
 	@Override
 	public String getIdentifer() {
 	    return "";
+	}
+
+	@Override
+	public DSLContributor getContributor() {
+	    return null;
 	}
 
     }

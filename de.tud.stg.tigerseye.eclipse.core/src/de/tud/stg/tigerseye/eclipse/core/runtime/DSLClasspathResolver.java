@@ -84,6 +84,7 @@ public class DSLClasspathResolver {
 	}
 
 
+
 	@SuppressWarnings("unchecked")
 	// guaranteed by documentation
 	Dictionary<String, String> headers = bundle.getHeaders();
@@ -91,7 +92,7 @@ public class DSLClasspathResolver {
 
 	File[] result = getBundleLocationPrependedClasspathFiles(bundleFile,
 		manifestClassPathEntries);
-	return result;
+	return result; 
     }
 
     private File[] getBundleLocationPrependedClasspathFiles(File bundleFile,
@@ -109,7 +110,10 @@ public class DSLClasspathResolver {
 
 	String[] result;
 	if (cpEntries == null)
-	    // if no classpath-entry is available, the default classpath is used
+	    /*
+	     * if no classpath-entry is available, the default classpath is
+	     * assumed
+	     */
 	    result = new String[] { "." };
 	else
 	    result = cpEntries.split(",");

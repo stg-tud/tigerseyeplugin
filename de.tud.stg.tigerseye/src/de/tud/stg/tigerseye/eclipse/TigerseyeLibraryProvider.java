@@ -15,7 +15,7 @@ import de.tud.stg.tigerseye.eclipse.dslsupport.TigerseyeSupportActivator;
 //FIXME refactoring and tests
 public class TigerseyeLibraryProvider extends Plugin {
 
-	public static final String PLUGIN_ID = "de.tud.stg.tigerseye";
+	public static final String PLUGIN_ID = "de.tud.stg.tigerseye.eclipse";
 
 	private static TigerseyeLibraryProvider plugin;
 

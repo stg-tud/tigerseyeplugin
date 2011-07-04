@@ -19,7 +19,7 @@ import de.tud.stg.tigerseye.eclipse.core.api.TigerseyeRuntimeException;
 public class TigerseyeClasspathContainer implements IClasspathContainer {
 
 
-    private final Set<IClasspathEntry> cpEntries = new HashSet<IClasspathEntry>();
+    private Set<IClasspathEntry> cpEntries = new HashSet<IClasspathEntry>();
 
     private final IProject project;
 
@@ -28,32 +28,23 @@ public class TigerseyeClasspathContainer implements IClasspathContainer {
 
     public TigerseyeClasspathContainer(IProject project) {
 	this.project = project;
-	reset();
     }
 
-    public void reset() {
-	cpEntries.clear();
-	// File allRuntimeJars;
+    private Set<IClasspathEntry> createCPEntries() {
+	Set<IClasspathEntry> cpEntries = new HashSet<IClasspathEntry>();
 	File[] runtimeJars;
 	try {
-//	    allRuntimeJars = TigerseyeLibraryProvider
-//		    .getTigerseyeRuntimeLibraryFolder();
 	    runtimeJars = TigerseyeLibraryProvider
 	    .getTigerseyeRuntimeLibraries();
 	    
 	} catch (IOException e) {
 	    throw new TigerseyeRuntimeException(e);
 	}
-	// File[] runtimeJars = allRuntimeJars.listFiles(new FilenameFilter() {
-	// @Override
-	// public boolean accept(File parentFile, String fileName) {
-	// return fileName.endsWith(".jar");
-	// }
-	// });
 	for (File jar : runtimeJars) {
 	    Path path = new Path(jar.getAbsolutePath());
-	    IClasspathEntry entry2 = JavaCore.newLibraryEntry(path, null, null);
-	    cpEntries.add(entry2);
+	    IClasspathEntry libEntry = JavaCore.newLibraryEntry(path, null,
+		    null);
+	    cpEntries.add(libEntry);
 	}
 	/*
 	 * FIXME the TigerseyeDSLDefinitionsCPContainer should be added as
@@ -64,11 +55,15 @@ public class TigerseyeClasspathContainer implements IClasspathContainer {
 	 */
 	IClasspathEntry[] classpathEntries = new TigerseyeDSLDefinitionsCPContainer(project).getClasspathEntries();
 	Collections.addAll(cpEntries, classpathEntries);
+
+	return cpEntries;
     }
 
     @Override
     public IClasspathEntry[] getClasspathEntries() {
-	return this.cpEntries.toArray(new IClasspathEntry[cpEntries.size()]);
+	if (cpEntries == null || cpEntries.isEmpty())
+	    cpEntries = createCPEntries();
+	return this.cpEntries.toArray(new IClasspathEntry[0]);
     }
 
     @Override

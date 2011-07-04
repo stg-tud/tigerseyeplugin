@@ -26,7 +26,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
-import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFound;
+import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFoundException;
 import de.tud.stg.tigerseye.eclipse.core.preferences.PreferenceDSL;
 
 public class TigerseyeUIPreferencePage extends PreferencePage
@@ -183,7 +183,7 @@ public class TigerseyeUIPreferencePage extends PreferencePage
 	    super(dsl, store);
 	    try {
 		this.rgb = getDsl().getValue(DSLUIKey.COLOR);
-	    } catch (NoLegalPropertyFound e) {
+	    } catch (NoLegalPropertyFoundException e) {
 		this.rgb = DSLUIKey.getDefaultColor(getStore());
 	    }
 	}

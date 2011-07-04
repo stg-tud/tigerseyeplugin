@@ -45,7 +45,7 @@ import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.api.ILanguageProvider;
-import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFound;
+import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFoundException;
 import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntime;
 import de.tud.stg.tigerseye.eclipse.core.utils.KeyWordExtractor;
 
@@ -567,14 +567,14 @@ Composite parent,
 	    if (extension == null) {
 		try {
 		    extension = getExtensionFromStore();
-		} catch (NoLegalPropertyFound e) {
+		} catch (NoLegalPropertyFoundException e) {
 		    extension = "";
 		}
 	    }
 	    return extension;
 	}
 
-	public String getExtensionFromStore() throws NoLegalPropertyFound {
+	public String getExtensionFromStore() throws NoLegalPropertyFoundException {
 	    return getDsl().getValue(DSLKey.EXTENSION);
 	}
 
@@ -583,7 +583,7 @@ Composite parent,
 	    this.extension = extension;
 	}
 
-	public Boolean getIsActiveFromStore() throws NoLegalPropertyFound {
+	public Boolean getIsActiveFromStore() throws NoLegalPropertyFoundException {
 	    return getDsl().getValue(DSLKey.LANGUAGE_ACTIVE);
 	}
 
@@ -591,7 +591,7 @@ Composite parent,
 	    if (isActive == null) {
 		try {
 		    isActive = getIsActiveFromStore();
-		} catch (NoLegalPropertyFound e) {
+		} catch (NoLegalPropertyFoundException e) {
 		    isActive = false;
 		}
 	    }

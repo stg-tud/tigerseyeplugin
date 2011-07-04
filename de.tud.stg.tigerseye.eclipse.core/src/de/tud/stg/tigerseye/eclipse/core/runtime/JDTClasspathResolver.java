@@ -7,12 +7,14 @@ import java.util.ArrayList;
 
 import javax.annotation.CheckForNull;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.launching.JavaRuntime;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,47 +48,61 @@ public class JDTClasspathResolver {
 	try {
 	    IProject project = linker.linkProject(bundleFile.toURI(),
 		    bundle.getSymbolicName());
-	    project.open(null);
-
-
-	    IJavaProject javaProject = JavaCore.create(project);
-
-	    IClasspathEntry[] detectedClasspath = javaProject
-		    .getResolvedClasspath(false);
-
-	    // IClasspathEntry[] detectedClasspath = detector
-	    // .getClasspath(project);
-
-	    URI projectLocationURI = project.getLocationURI();
-	    IPath outputLocation = javaProject.getOutputLocation();
-
-	    File absoluteOutputFolder = new File(new File(projectLocationURI),
-		    outputLocation.removeFirstSegments(1).toOSString());
-
-	    IPath projectLoc = project.getLocation();
-	    String projectName = projectLoc.lastSegment();
-
-	    ArrayList<File> resultClassPath = new ArrayList<File>();
-	    resultClassPath.add(absoluteOutputFolder);
-	    for (int i = 0; i < detectedClasspath.length; i++) {
-		IPath cpPath = detectedClasspath[i].getPath();
-		String cpAsString = cpPath.toString();
-		// boolean isSource = IPackageFragmentRoot.K_SOURCE ==
-		// detectedClasspath[i].getContentKind();
-		int entryKind = detectedClasspath[i].getEntryKind();
-		boolean isSource = IClasspathEntry.CPE_SOURCE == entryKind;
-
-		if (!isSource && projectName.equals(cpPath.segment(0)))
-		    resultClassPath.add(new File(new File(projectLocationURI),
-			    cpPath.removeFirstSegments(1).toOSString()));
-	    }
-	    // project.close(null);
-	    // project.delete(false, true, null);
-	    return resultClassPath.toArray(new File[0]);
+	    return resolveClasspath(project);
 	} catch (CoreException e) {
 	    logger.warn("Failed to resolve project classpath", e);
 	}
 	return null;
+    }
+
+    public File[] resolveClasspath(IProject project) throws CoreException {
+	IJavaProject javaProject = JavaCore.create(project);
+	project.open(null);
+	IClasspathEntry[] detectedClasspath = javaProject
+	    .getResolvedClasspath(false);
+
+	try {
+	    String[] computeDefaultRuntimeClassPath = JavaRuntime
+		    .computeDefaultRuntimeClassPath(javaProject);
+	    logger.info("Computed Default Classpath is {}",
+		    ArrayUtils.toString(computeDefaultRuntimeClassPath));
+	    ArrayList<File> resultList = new ArrayList<File>();
+	    for (String string : computeDefaultRuntimeClassPath) {
+		resultList.add(new File(string));
+	    }
+	    // return resultList.toArray(new File[0]);
+	} catch (CoreException e) {
+	    e.printStackTrace();
+	}
+	// IClasspathEntry[] detectedClasspath = detector
+	// .getClasspath(project);
+
+	URI projectLocationURI = project.getLocationURI();
+	IPath outputLocation = javaProject.getOutputLocation();
+
+	File absoluteOutputFolder = new File(new File(projectLocationURI),
+	    outputLocation.removeFirstSegments(1).toOSString());
+
+	IPath projectLoc = project.getLocation();
+	String projectName = projectLoc.lastSegment();
+
+	ArrayList<File> resultClassPath = new ArrayList<File>();
+	resultClassPath.add(absoluteOutputFolder);
+	for (int i = 0; i < detectedClasspath.length; i++) {
+	IPath cpPath = detectedClasspath[i].getPath();
+	String cpAsString = cpPath.toString();
+	// boolean isSource = IPackageFragmentRoot.K_SOURCE ==
+	// detectedClasspath[i].getContentKind();
+	int entryKind = detectedClasspath[i].getEntryKind();
+	boolean isSource = IClasspathEntry.CPE_SOURCE == entryKind;
+
+	if (!isSource && projectName.equals(cpPath.segment(0)))
+	    resultClassPath.add(new File(new File(projectLocationURI),
+		    cpPath.removeFirstSegments(1).toOSString()));
+	}
+	// project.close(null);
+	// project.delete(false, true, null);
+	return resultClassPath.toArray(new File[0]);
     }
 
 

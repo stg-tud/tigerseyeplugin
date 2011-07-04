@@ -175,7 +175,7 @@ public class TransformationsPreferencePage extends PreferencePage implements
     }
 
     private void fillDSLTableWithDSLs(Table languagesTable,
-	    List<DSLDefinition> dsls) {
+	    Collection<DSLDefinition> dsls) {
 	for (DSLDefinition dsl : dsls) {
 	    TableItem aDslItem = new TableItem(languagesTable, SWT.NONE);
 	    aDslItem.setData(dsl);

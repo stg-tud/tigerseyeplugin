@@ -1,6 +1,7 @@
 package learningtests.manifest;
 
 import static org.junit.Assert.*;
+import static org.junit.matchers.JUnitMatchers.hasItem;
 
 import static org.hamcrest.CoreMatchers.*;
 
@@ -87,6 +88,7 @@ public class ManifestReaderLearningTest {
 			System.out.println(object);
 		}
 		String classpath = manifest.getValue(Constants.BUNDLE_CLASSPATH);
+		//the manifest under test has no classpath entries
 		assertNull(classpath);
 	}
 
@@ -98,15 +100,15 @@ public class ManifestReaderLearningTest {
 		assertNotNull(value);
 		ManifestElement[] elements = manifest
 				.getElements(Constants.BUNDLE_CLASSPATH);
-		assertTrue(elements.length == 2);
 		List<String> results = new ArrayList<String>();
 		for (ManifestElement mel : elements) {
 			printME(mel);
 			results.add(mel.getValue());
 		}
 
-		assertTrue(results.contains("."));
-		assertTrue(results.contains("lib/javalogo.jar"));
+		assertEquals(2, results.size());
+		assertThat(results, hasItem("."));
+		assertThat(results, hasItem("lib/javalogo.jar"));
 	}
 
 	private void printME(ManifestElement mel) {

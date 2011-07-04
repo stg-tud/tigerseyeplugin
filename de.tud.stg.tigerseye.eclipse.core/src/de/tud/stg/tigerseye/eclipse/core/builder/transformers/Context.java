@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import de.tud.stg.popart.dslsupport.DSL;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLKey;
-import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFound;
+import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFoundException;
 
 /**
  * This class represents the context of a Tigerseye source file during the
@@ -74,7 +74,7 @@ public class Context {
 	return this.currentAssurances;
     }
 
-    public void addDSL(DSLDefinition dsl) throws NoLegalPropertyFound {
+    public void addDSL(DSLDefinition dsl) throws NoLegalPropertyFoundException {
 	addDSL(dsl.getValue(DSLKey.EXTENSION), dsl.loadClass());
 	this.dsls.add(dsl);
     }
@@ -102,7 +102,7 @@ public class Context {
 	for (DSLDefinition dsl : dslDefinitions) {
 	    try {
 		this.addDSL(dsl);
-	    } catch (NoLegalPropertyFound e) {
+	    } catch (NoLegalPropertyFoundException e) {
 		logger.warn(
 			"DSL {} not properly initialized. Will be ignored.",
 			dsl, e);

@@ -4,9 +4,9 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry excluding="de/tud/stg/popart/builder/eclipse/resources/|de/tud/stg/tigerseye/eclipse/core/utils/resources/|generated/" kind="src" path="junit"/>
 	<classpathentry excluding="generated/" kind="src" path="transformationtests"/>
+	<classpathentry kind="src" path="plugin"/>
 	<classpathentry exported="true" kind="lib" path="libs/mockito-all-1.8.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/powermock-mockito-1.4.6-full.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/stateMachineDSL.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/hamcrest-all-1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

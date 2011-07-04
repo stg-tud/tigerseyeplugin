@@ -47,7 +47,7 @@ public class ProjectLinker {
 			project, locationURI);
 	    } else
 		logger.error(
-			"project {} already exists but its location [{}] does not fit the expected location: [{}].\nThis means probably you already have a different project in your workspace which has the same name as the project to be linked.\nCannot link to the according DSL.",
+			"project {} already exists but its location [{}] does not fit the expected location: [{}].\nThis means probably you already have a different project in your workspace which has the same name as the project to be linked.\nCannot link to the project.",
 			new Object[] { project, locationURI, location });
 	}
 	return project;

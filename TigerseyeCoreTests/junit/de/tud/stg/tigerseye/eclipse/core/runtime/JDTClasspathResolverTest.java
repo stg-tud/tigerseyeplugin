@@ -1,7 +1,7 @@
 package de.tud.stg.tigerseye.eclipse.core.runtime;
 
-import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.*;
+import static org.junit.matchers.JUnitMatchers.hasItems;
 import static org.mockito.Mockito.when;
 
 import java.io.File;

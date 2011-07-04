@@ -4,16 +4,16 @@ import javax.annotation.Nonnull;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tud.stg.popart.dslsupport.DSL;
+import de.tud.stg.tigerseye.eclipse.core.api.ClassLoaderStrategy;
+import de.tud.stg.tigerseye.eclipse.core.api.DSLContributor;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLKey;
-import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFound;
+import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFoundException;
 import de.tud.stg.tigerseye.eclipse.core.api.TigerseyeRuntimeException;
 
 public class DSLDefinitionImpl implements DSLDefinition {
@@ -22,29 +22,32 @@ public class DSLDefinitionImpl implements DSLDefinition {
 	    .getLogger(DSLDefinitionImpl.class);
 
     private final String classPath;
-    private final String contributorSymbolicName;
+    // private final String contributorSymbolicName;
     private final String languageKey;
     private final String dslName;
     private IPreferenceStore store;
+
+    private final ClassLoaderStrategy classloaderStrategy;
+
+    private final DSLContributor contributor;
 
     /**
      * Constructs a {@link DSLDefinition} for given values, <code>null</code> is
      * never valid.
      * 
-     * @param extension
      * @param classPath
-     * @param contributorSymbolicName
      * @param dslName
-     * @param color
+     * @param classloaderStrategy
      * @param languageKey
      */
-    public @Nonnull
-    DSLDefinitionImpl(String classPath, String contributorSymbolicName,
+    @Nonnull
+    public DSLDefinitionImpl(String classPath, DSLContributor contributor,
 	    String dslName, String languageKey) {
 	this.classPath = classPath;
-	this.contributorSymbolicName = contributorSymbolicName;
 	this.dslName = dslName;
 	this.languageKey = languageKey;
+	this.contributor = contributor;
+	this.classloaderStrategy = contributor.createClassLoaderStrategy();
     }
 
     @Override
@@ -54,7 +57,7 @@ public class DSLDefinitionImpl implements DSLDefinition {
 
     @Override
     public String getContributorSymbolicName() {
-	return contributorSymbolicName;
+	return this.contributor.getId();
     }
 
     @Override
@@ -80,8 +83,8 @@ public class DSLDefinitionImpl implements DSLDefinition {
 	    DSLDefinitionImpl other = (DSLDefinitionImpl) obj;
 	    return new EqualsBuilder()//
 		    .append(this.classPath, other.classPath)//
-		    .append(this.contributorSymbolicName,
-			    other.contributorSymbolicName)//
+		    .append(getContributor().getId(),
+			    other.getContributor().getId())//
 		    .isEquals();
 	}
 	return false;
@@ -91,7 +94,7 @@ public class DSLDefinitionImpl implements DSLDefinition {
     public int hashCode() {
 	HashCodeBuilder hashCodeBuilder = new HashCodeBuilder(345, 13)//
 		.append(this.classPath)//
-		.append(this.contributorSymbolicName);
+		.append(this.contributor.getId());
 	return hashCodeBuilder.toHashCode();
     }
 
@@ -101,7 +104,7 @@ public class DSLDefinitionImpl implements DSLDefinition {
     }
 
     @Override
-    public <T> T getValue(DSLKey<T> key) throws NoLegalPropertyFound {
+    public <T> T getValue(DSLKey<T> key) throws NoLegalPropertyFoundException {
 	T value = key.getValue(this, getStore());
 	return value;
     }
@@ -130,7 +133,7 @@ public class DSLDefinitionImpl implements DSLDefinition {
     public boolean isActive() {
 	try {
 	    return getValue(DSLKey.LANGUAGE_ACTIVE);
-	} catch (NoLegalPropertyFound e) {
+	} catch (NoLegalPropertyFoundException e) {
 	    logger.error("DSL should always have an active state.", e);
 	    return false;
 	}
@@ -139,12 +142,7 @@ public class DSLDefinitionImpl implements DSLDefinition {
     @Override
     public Class<? extends DSL> loadClass() {
 	try {
-	    Bundle bundle = Platform.getBundle(getContributorSymbolicName());
-	    if (bundle == null)
-		throw new TigerseyeRuntimeException("Could not access bundle "
-			+ getContributorSymbolicName() + " to load class "
-			+ getClassPath());
-	    Class<?> loadClass = bundle.loadClass(getClassPath());
+	    Class<?> loadClass = classloaderStrategy.loadClass(getClassPath());
 	    /*
 	     * The cast must be successful or else the DSL language is erroneous
 	     * and an exception appropriate
@@ -156,6 +154,11 @@ public class DSLDefinitionImpl implements DSLDefinition {
 	    throw new TigerseyeRuntimeException("DSLDefinition "
 		    + this.toString() + " is not loadable", e);
 	}
+    }
+
+    @Override
+    public DSLContributor getContributor() {
+	return this.contributor;
     }
 
     @Override

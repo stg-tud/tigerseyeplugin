@@ -43,7 +43,7 @@ import de.tud.stg.popart.eclipse.wizards.legacygroovy.wizards.WizardUtil;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeImage;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLKey;
-import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFound;
+import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFoundException;
 import de.tud.stg.tigerseye.eclipse.core.utils.KeyWordExtractor;
 import de.tud.stg.tigerseye.ui.TigerseyeUIActivator;
 
@@ -75,7 +75,7 @@ public class NewPopartClassWizardPage extends NewClassWizardPage {
 	    try {
 		extension = dsl.getValue(DSLKey.EXTENSION);
 		dsls.put(extension, dsl);
-	    } catch (NoLegalPropertyFound e) {
+	    } catch (NoLegalPropertyFoundException e) {
 		// Can be safely ignored
 	    }
 	}
@@ -288,7 +288,7 @@ public class NewPopartClassWizardPage extends NewClassWizardPage {
 	    if (active) {
 		try {
 		    combo.add(extension.getValue(DSLKey.EXTENSION));
-		} catch (NoLegalPropertyFound e) {
+		} catch (NoLegalPropertyFoundException e) {
 		    throw new UnhandledException(
 			    "Since dsls have already been questioned once for the extension this exception should never be thrown.",
 			    e);

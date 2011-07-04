@@ -65,11 +65,11 @@ public abstract class DSLKey<T> {
      * @param dsl
      * @param store
      * @return a validated attribute
-     * @throws NoLegalPropertyFound
+     * @throws NoLegalPropertyFoundException
      *             if property can not be found
      */
     public abstract T getValue(DSLDefinition dsl, IPreferenceStore store)
-	    throws NoLegalPropertyFound;
+	    throws NoLegalPropertyFoundException;
 
     /**
      * A convenience method to set the value for this key for a given DSL in the
@@ -141,10 +141,10 @@ public abstract class DSLKey<T> {
 
 	@Override
 	public String getValue(DSLDefinition dsl, IPreferenceStore store)
-		throws NoLegalPropertyFound {
+		throws NoLegalPropertyFoundException {
 	    String extension = store.getString(key(dsl));
 	    if (extension.isEmpty())
-		throw new NoLegalPropertyFound();
+		throw new NoLegalPropertyFoundException();
 	    return extension;
 	}
 
@@ -180,7 +180,7 @@ public abstract class DSLKey<T> {
 
 	@Override
 	public Boolean getValue(DSLDefinition dsl, IPreferenceStore store)
-		throws NoLegalPropertyFound {
+		throws NoLegalPropertyFoundException {
 	    String key = key(dsl);
 	    if (!store.contains(key)) {
 		return TigerseyeDefaultConstants.DEFAULT_LANGUAGE_ACTIVE_VALUE;

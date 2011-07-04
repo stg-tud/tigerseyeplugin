@@ -33,6 +33,14 @@ import de.tud.stg.tigerseye.eclipse.core.TigerseyeCoreActivator;
 import de.tud.stg.tigerseye.eclipse.core.api.TigerseyeRuntimeException;
 import de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyePreferenceConstants;
 
+/**
+ * Provides static functions for configuration of Tigerseye nature Projects.
+ * 
+ * @see TigerseyeCoreConstants
+ * 
+ * @author Leo Roos
+ * 
+ */
 public class TigerseyeRuntime {
     private static final Logger logger = LoggerFactory
 	    .getLogger(TigerseyeRuntime.class);
@@ -91,7 +99,7 @@ public class TigerseyeRuntime {
     public static boolean isTigerseyeNature(IProject iProject) {
 	try {
 	    return iProject
-		    .isNatureEnabled(TigerseyeRuntimeConstants.TIGERSEYE_NATURE_ID);
+		    .isNatureEnabled(TigerseyeCoreConstants.TIGERSEYE_NATURE_ID);
 	} catch (CoreException e) {
 	    return false;
 	}
@@ -224,12 +232,12 @@ public class TigerseyeRuntime {
 	try {
 	    final IProjectDescription description = project.getDescription();
 	    List<String> natureIds = new LinkedList<String>();
-	    if (natureIds.contains(TigerseyeRuntimeConstants.TIGERSEYE_NATURE_ID))
+	    if (natureIds.contains(TigerseyeCoreConstants.TIGERSEYE_NATURE_ID))
 		return;
 
 	    Collections.addAll(natureIds, description.getNatureIds());
 	    String[] necessaryNatures = new String[] { //
-	    TigerseyeRuntimeConstants.TIGERSEYE_NATURE_ID,//
+	    TigerseyeCoreConstants.TIGERSEYE_NATURE_ID,//
 		    GroovyNature.GROOVY_NATURE,//
 	    /*
 	     * If the Java nature has not already been initialized, simply
@@ -259,7 +267,7 @@ public class TigerseyeRuntime {
 	IProjectDescription description = project.getDescription();
 	String[] natureIds = description.getNatureIds();
 	List<String> asList = new ArrayList<String>(Arrays.asList(natureIds));
-	asList.remove(TigerseyeRuntimeConstants.TIGERSEYE_NATURE_ID);
+	asList.remove(TigerseyeCoreConstants.TIGERSEYE_NATURE_ID);
 	String[] noTigerseye = asList.toArray(new String[0]);
 	description.setNatureIds(noTigerseye);
 	project.setDescription(description, new NullProgressMonitor());

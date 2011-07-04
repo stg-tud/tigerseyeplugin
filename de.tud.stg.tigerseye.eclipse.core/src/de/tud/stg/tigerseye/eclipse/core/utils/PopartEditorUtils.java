@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -17,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLKey;
-import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFound;
+import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFoundException;
 
 /**
  * TODO this class is no longer used but could be used again? If you know that
@@ -112,13 +113,13 @@ public class PopartEditorUtils {
      */
     private static List<String> getPopartLanguageExtensionsFromStore() {
 	List<String> extensions = new ArrayList<String>();
-	List<DSLDefinition> dslDefinitions = TigerseyeCore
+	Collection<DSLDefinition> dslDefinitions = TigerseyeCore
 		.getLanguageProvider().getDSLDefinitions();
 	for (DSLDefinition dslDefinition : dslDefinitions) {
 	    try {
 		String value = dslDefinition.getValue(DSLKey.EXTENSION);
 		extensions.add(value);
-	    } catch (NoLegalPropertyFound e) {
+	    } catch (NoLegalPropertyFoundException e) {
 		logger.debug("no extension found for dslDefinition {} ",
 			dslDefinition, e);
 	    }

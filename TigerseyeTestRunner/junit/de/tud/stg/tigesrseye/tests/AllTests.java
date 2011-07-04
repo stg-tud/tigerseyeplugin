@@ -5,15 +5,15 @@ import org.junit.runners.Suite.SuiteClasses;
 
 import de.tud.stg.tigerseye.examples.AllTestsExampleDSLs;
 import de.tud.stg.tigerseye.test.AllTestsCoreJUnitTests;
+import de.tud.stg.tigerseye.test.AllTestsCorePluginTests;
 import de.tud.stg.tigerseye.test.AllTestsCoreTranformationTests;
 
 
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	AllTestsCoreTranformationTests.class,//
-	AllTestsExampleDSLs.class,//
-	AllTestsCoreJUnitTests.class, //
+	AllJUnitTests.class, //
+	AllTestsCorePluginTests.class, //
 })
 
 public class AllTests {

@@ -1,27 +1,26 @@
 package de.tud.stg.tigerseye.eclipse.core;
 
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.RegistryFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.ILanguageProvider;
 import de.tud.stg.tigerseye.eclipse.core.api.ITransformationProvider;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationHandler;
-import de.tud.stg.tigerseye.eclipse.core.internal.LanguageProviderImpl;
+import de.tud.stg.tigerseye.eclipse.core.internal.LanguageProviderFactory;
 import de.tud.stg.tigerseye.eclipse.core.internal.TransformationProviderImpl;
 
 /**
  * Provides access to this plug-ins preference store. Additionally it provides
  * access to registered {@link DSLDefinition}s and
- * {@link de.tud.stg.tigerseye.eclipse.core.api.Transformation}
- * s.
+ * {@link de.tud.stg.tigerseye.eclipse.core.api.Transformation} s.
  * 
  * @author Leo Roos
  * 
  */
 public class TigerseyeCore {
-
-    private static final String DSLDEFINITIONS_EXTENSION_POINT_ID = "de.tud.stg.tigerseye.dslDefinitions";
 
     public static IPreferenceStore getPreferences() {
 	return TigerseyeCoreActivator.getDefault().getPreferenceStore();
@@ -35,9 +34,8 @@ public class TigerseyeCore {
      * @return an updated language provider
      */
     public static ILanguageProvider getLanguageProvider() {
-	return new LanguageProviderImpl(TigerseyeCore.getPreferences(),
-		Platform.getExtensionRegistry().getConfigurationElementsFor(
-			DSLDEFINITIONS_EXTENSION_POINT_ID));
+	return new LanguageProviderFactory()
+		.createLanguageProvider(getPreferences());
     }
 
     /**
@@ -47,13 +45,19 @@ public class TigerseyeCore {
      * provider.
      * 
      * @return {@link ITransformationProvider} for currently configured
-     *         {@link de.tud.stg.tigerseye.eclipse.core.api.Transformation}
-     *         s
+     *         {@link de.tud.stg.tigerseye.eclipse.core.api.Transformation} s
      */
     public static ITransformationProvider getTransformationProvider() {
-	return new TransformationProviderImpl(getPreferences(), Platform
-		.getExtensionRegistry().getConfigurationElementsFor(
-			TransformationHandler.ID));
+	IExtensionRegistry extensionRegistry = RegistryFactory.getRegistry();
+	if (extensionRegistry != null) {
+	    return new TransformationProviderImpl(
+		    getPreferences(),
+		    extensionRegistry
+			    .getConfigurationElementsFor(TransformationHandler.ID));
+	} else {
+	    return new TransformationProviderImpl(getPreferences(),
+		    new IConfigurationElement[0]);
+	}
     }
 
 }

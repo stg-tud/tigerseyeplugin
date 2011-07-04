@@ -3,6 +3,7 @@ package de.tud.stg.tigerseye.ui.editors;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -23,7 +24,7 @@ import org.eclipse.swt.graphics.RGB;
 
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
-import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFound;
+import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFoundException;
 import de.tud.stg.tigerseye.eclipse.core.utils.KeyWordExtractor;
 import de.tud.stg.tigerseye.ui.preferences.DSLUIKey;
 
@@ -111,7 +112,7 @@ public class TigerseyeGroovyEditorHighlightingExtender implements
 
     private List<DSLDefinition> getActiveDSLs() {
 	List<DSLDefinition> activeDSLs = new ArrayList<DSLDefinition>();
-	List<DSLDefinition> dslDefinitions = TigerseyeCore
+	Collection<DSLDefinition> dslDefinitions = TigerseyeCore
 		.getLanguageProvider().getDSLDefinitions();
 	for (DSLDefinition dsl : dslDefinitions) {
 	    if (dsl.isActive()) {
@@ -129,7 +130,7 @@ public class TigerseyeGroovyEditorHighlightingExtender implements
 	RGB value;
 	try {
 	    value = dsl.getValue(DSLUIKey.COLOR);
-	} catch (NoLegalPropertyFound e) {
+	} catch (NoLegalPropertyFoundException e) {
 	    value = DSLUIKey.getDefaultColor(TigerseyeCore.getPreferences());
 	}
 	return new TextAttribute(cmanager.getColor(value), null, SWT.BOLD);

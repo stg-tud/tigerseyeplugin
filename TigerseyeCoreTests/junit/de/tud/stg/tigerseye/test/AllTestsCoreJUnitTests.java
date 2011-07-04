@@ -22,7 +22,6 @@ import de.tud.stg.tigerseye.eclipse.core.utils.OutputPathHandlerTest;
 	DSLExtensionsExtractorTest.class, //
 	KeyWordsExtractorTest.class, //
 	OutputPathHandlerTest.class, //
-	DSLClasspathResolverTest.class, //
 	FileHelperTest.class, //
 	JDTClasspathResolverTest.class, //
 	UnicodeLookupTableTest.class, //

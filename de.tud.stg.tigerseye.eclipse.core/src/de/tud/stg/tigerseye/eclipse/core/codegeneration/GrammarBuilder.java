@@ -164,19 +164,45 @@ public class GrammarBuilder {
 
 			this.typeHandler.handleDefaults(classOptions);
 
-			for (Method method : methods) {
-				Map<String, String> methodOptions = this.getOptions(method.getAnnotation(DSL.class), classOptions);
+	    for (Method method : methods) {
+		Map<String, String> methodOptions = this.getOptions(
+			method.getAnnotation(DSL.class), classOptions);
 
-				PopartType p = method.getAnnotation(PopartType.class);
+		// FIXME(Leo Roos;Jul 2, 2011) returns always null for classes
+		// loaded via URLClassloader. Perhaps I should use ByteCode
+		// Analysis Tools, that analyze the code independent from
+		// Reflections capability
+		Annotation[] annotations = method.getAnnotations();
+		PopartType p = null;
+		for (Annotation anno : annotations) {
+		    Class<? extends Annotation> annotationType = anno
+			    .annotationType();
+		    if (annotationType.getName().equals(
+			    PopartType.class.getName())) {
+			boolean isPopartType = anno instanceof PopartType;
+			if (!isPopartType)
+			    throw new IllegalStateException(
+				    "Loaded class "
+					    + clazz
+					    + " has as expected a dsl method annotation "
+					    + PopartType.class
+					    + ". But the class is not considered equal to it. The problem is probably caused by a faulty class loader configuration where the class is loaded from a different context in which it is here processed.");
+		    }
+		}
+		DSLMethod dslMethodAnnotation = method
+			.getAnnotation(DSLMethod.class);
 
-				if (p != null) {
-					if (p.clazz() == PopartOperationKeyword.class) {
-						this.handleMethod(method, methodOptions);
-					} else if (p.clazz() == PopartLiteralKeyword.class) {
-						this.handleLiteral(method, methodOptions);
-					}
-				}
-			}
+		if (p == null)
+		    p = method.getAnnotation(PopartType.class);
+
+		if (p != null) {
+		    if (p.clazz() == PopartOperationKeyword.class) {
+			this.handleMethod(method, methodOptions);
+		    } else if (p.clazz() == PopartLiteralKeyword.class) {
+			this.handleLiteral(method, methodOptions);
+		    }
+		}
+	    }
 
 			// for (Constructor<?> constructor : clazz.getConstructors()) {
 			// PopartType p = constructor.getAnnotation(PopartType.class);

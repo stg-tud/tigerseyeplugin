@@ -18,7 +18,9 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.debug;bundle-version="3.6.1",
  org.codehaus.groovy.eclipse.core;bundle-version="2.1.1",
  de.tud.stg.tigerseye.eclipse;bundle-version="0.0.1",
- org.eclipse.team.core;bundle-version="3.5.101";resolution:=optional
+ org.eclipse.team.core;bundle-version="3.5.101";resolution:=optional,
+ org.eclipse.pde.core;bundle-version="3.6.2",
+ org.eclipse.pde.core.source;bundle-version="3.6.2";resolution:=optional
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Import-Package: org.eclipse.jdt.internal.debug.core.breakpoints,

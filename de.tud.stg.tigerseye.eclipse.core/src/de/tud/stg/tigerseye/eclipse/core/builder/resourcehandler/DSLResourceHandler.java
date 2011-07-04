@@ -24,11 +24,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.jface.preference.IPreferenceStore;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.service.packageadmin.PackageAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,12 +37,11 @@ import de.tud.stg.parlex.parser.earley.EarleyParser;
 import de.tud.stg.popart.builder.eclipse.EDSL;
 import de.tud.stg.tigerseye.eclipse.TigerseyeLibraryProvider;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
-import de.tud.stg.tigerseye.eclipse.core.TigerseyeCoreActivator;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLNotFoundException;
 import de.tud.stg.tigerseye.eclipse.core.api.ILanguageProvider;
-import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFound;
+import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFoundException;
 import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ASTTransformation;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.AnnotationExtractor;
@@ -77,7 +71,7 @@ public class DSLResourceHandler implements ResourceHandler {
 
     private OutputPathHandler outputPathHandler;
 
-    private IPreferenceStore tigerseyePreferenceStore;
+    // private IPreferenceStore tigerseyePreferenceStore;
 
     public DSLResourceHandler(FileType fileType, CodePrinter prettyPrinter) {
 
@@ -91,7 +85,7 @@ public class DSLResourceHandler implements ResourceHandler {
 	this.transformerProvider = new TransformerConfigurationProvider(
 		TigerseyeCore.getTransformationProvider());
 	this.outputPathHandler = new OutputPathHandler();
-	this.tigerseyePreferenceStore = TigerseyeCore.getPreferences();
+	// this.tigerseyePreferenceStore = TigerseyeCore.getPreferences();
     }
 
     protected ILanguageProvider getLanguageProvider() {
@@ -144,17 +138,6 @@ public class DSLResourceHandler implements ResourceHandler {
 	    logger.trace("No DSLs for {} determined. Will not attempt a transformation.");
 	    return;
 	}
-	if (DSLKey
-		.isReloadDSLPackageBeforeTransforamtionActive(tigerseyePreferenceStore)) {
-	    Set<Bundle> dslBundles = new HashSet<Bundle>(dslDefinitions.size());
-	    for (DSLDefinition dslDefinition : dslDefinitions) {
-		String contributorSymbolicName = dslDefinition
-			.getContributorSymbolicName();
-		Bundle bundle = Platform.getBundle(contributorSymbolicName);
-		dslBundles.add(bundle);
-	    }
-	    refreshBundles(dslBundles);
-	}
 	Context context = new Context(resource.getName());
 	context.addDSLs(dslDefinitions);
 	context.setFiletype(filetype);
@@ -199,32 +182,6 @@ public class DSLResourceHandler implements ResourceHandler {
 	return out;
     }
 
-    private void refreshBundles(Set<Bundle> bundlesToRefresh) {
-	Bundle[] bundles = bundlesToRefresh.toArray(new Bundle[0]);
-	BundleContext bc = TigerseyeCoreActivator.getDefault().getBundle()
-		.getBundleContext();
-	if (bc == null) {
-	    logger.error("Could not retrieve BundleContext. Can not refresh DSL Bundles");
-	    return;
-	}
-	/**
-	 * Code stolen from
-	 * FrameworkCommandProvider#_refresh(CommandInterpreter)
-	 */
-	org.osgi.framework.ServiceReference packageAdminRef = bc
-		.getServiceReference(PackageAdmin.class.getName());
-	if (packageAdminRef != null) {
-	    org.osgi.service.packageadmin.PackageAdmin packageAdmin = (org.osgi.service.packageadmin.PackageAdmin) bc
-		    .getService(packageAdminRef);
-	    if (packageAdmin != null) {
-		try {
-		    packageAdmin.refreshPackages(bundles);
-		} finally {
-		    bc.ungetService(packageAdminRef);
-		}
-	    }
-	}
-    }
 
     /**
      * Will perform transformations on the passed input
@@ -262,7 +219,7 @@ public class DSLResourceHandler implements ResourceHandler {
 		    try {
 			this.addDSLToContext(activeDSLForExtension,
 				determinedDSLs);
-		    } catch (NoLegalPropertyFound e) {
+		    } catch (NoLegalPropertyFoundException e) {
 			throw new DSLNotFoundException(e);
 		    }
 		}
@@ -288,7 +245,7 @@ public class DSLResourceHandler implements ResourceHandler {
 		if (activeDSL != null) {
 		    try {
 			this.addDSLToContext(activeDSL, determinedDSLs);
-		    } catch (NoLegalPropertyFound e) {
+		    } catch (NoLegalPropertyFoundException e) {
 			throw new DSLNotFoundException(e);
 		    }
 		}
@@ -305,7 +262,7 @@ public class DSLResourceHandler implements ResourceHandler {
 
     private void addDSLToContext(@Nonnull DSLDefinition clazz,
 	    Set<DSLDefinition> context)
-	    throws NoLegalPropertyFound {
+	    throws NoLegalPropertyFoundException {
 	context.add(clazz);
 	logger.trace("added dsl '{}' to context",
 		clazz.getValue(DSLKey.EXTENSION));

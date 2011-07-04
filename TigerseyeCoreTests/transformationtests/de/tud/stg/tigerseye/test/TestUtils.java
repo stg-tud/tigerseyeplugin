@@ -34,6 +34,7 @@ import de.tud.stg.tigerseye.test.transformation.utils.DefaultDSLTransformationTe
 
 public class TestUtils {
 	
+	public static String PluginIDOfCoreTestFragment = "de.tud.stg.tigerseye.eclipse.core.tests"; 
 	
 	private static final String MATH_CLASS_EX_TXT = "MathClassEx-12.txt";
 

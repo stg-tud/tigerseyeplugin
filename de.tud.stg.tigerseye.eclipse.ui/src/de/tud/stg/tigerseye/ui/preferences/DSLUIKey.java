@@ -6,7 +6,7 @@ import org.eclipse.swt.graphics.RGB;
 
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLKey;
-import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFound;
+import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFoundException;
 
 public abstract class DSLUIKey extends DSLKey<Object> {
 
@@ -34,11 +34,11 @@ public abstract class DSLUIKey extends DSLKey<Object> {
 
 	@Override
 	public RGB getValue(DSLDefinition dsl, IPreferenceStore store)
-		throws NoLegalPropertyFound {
+		throws NoLegalPropertyFoundException {
 	    String key = key(dsl);
 	    boolean contains = store.contains(key);
 	    if (!contains)
-		throw new NoLegalPropertyFound("No value for " + key
+		throw new NoLegalPropertyFoundException("No value for " + key
 			+ " found.");
 
 	    RGB rgb = PreferenceConverter.getColor(store, key);

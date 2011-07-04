@@ -20,7 +20,7 @@ public class DSLNotFoundException extends Exception {
 	super();
     }
 
-    public DSLNotFoundException(NoLegalPropertyFound e) {
+    public DSLNotFoundException(NoLegalPropertyFoundException e) {
 	super(e);
     }
 

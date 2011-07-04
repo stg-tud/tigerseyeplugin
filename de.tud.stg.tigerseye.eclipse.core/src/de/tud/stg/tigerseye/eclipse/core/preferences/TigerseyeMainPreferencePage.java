@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntime;
-import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntimeConstants;
+import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeCoreConstants;
 
 /**
  * Preference page root for all pages of the Tigerseye Plug-in. Provides core
@@ -87,7 +87,7 @@ public class TigerseyeMainPreferencePage extends FieldEditorPreferencePage
 	    IProject proj) {
 	try {
 	    if (proj.isOpen()
-		    && proj.hasNature(TigerseyeRuntimeConstants.TIGERSEYE_NATURE_ID)) {
+		    && proj.hasNature(TigerseyeCoreConstants.TIGERSEYE_NATURE_ID)) {
 		IJavaProject jp = JavaCore.create(proj);
 		TigerseyeRuntime.removeSourceFolder(jp, proj.getFolder(oldSrc));
 		TigerseyeRuntime.setSourceFolder(jp, proj.getFolder(newSrc));

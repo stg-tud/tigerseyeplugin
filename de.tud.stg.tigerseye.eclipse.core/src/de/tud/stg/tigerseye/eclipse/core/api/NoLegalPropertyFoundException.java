@@ -10,7 +10,7 @@ import javax.annotation.Nonnull;
  * 
  */
 @Nonnull
-public class NoLegalPropertyFound extends Exception {
+public class NoLegalPropertyFoundException extends Exception {
 
     /**
      * to suppress warnings
@@ -19,15 +19,15 @@ public class NoLegalPropertyFound extends Exception {
     private static final DSLKey<?> NullKey = DSLKey.NULL_KEY;
     private transient DSLKey<?> key;
 
-    public NoLegalPropertyFound() {
+    public NoLegalPropertyFoundException() {
 	super();
     }
 
-    public NoLegalPropertyFound(String message) {
+    public NoLegalPropertyFoundException(String message) {
 	super(message);
     }
 
-    public NoLegalPropertyFound setKey(DSLKey<?> key) {
+    public NoLegalPropertyFoundException setKey(DSLKey<?> key) {
 	this.key = key;
 	return this;
     }

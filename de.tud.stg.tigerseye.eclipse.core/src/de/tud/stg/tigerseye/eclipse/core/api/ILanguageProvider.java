@@ -1,6 +1,6 @@
 package de.tud.stg.tigerseye.eclipse.core.api;
 
-import java.util.List;
+import java.util.Set;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -10,14 +10,14 @@ import javax.annotation.Nonnull;
 public interface ILanguageProvider {
 
     /**
-     * Returns a list of registered DSL definitions.
+     * Returns a set of registered DSL definitions.
      * 
      * @return all known DSL definitions. May return an empty list if none are
      *         registered.
      * 
      * @see {@link DSLDefinition}
      */
-    public List<DSLDefinition> getDSLDefinitions();
+    public Set<DSLDefinition> getDSLDefinitions();
 
     /**
      * Returns the currently active {@link DSLDefinition} for extension
