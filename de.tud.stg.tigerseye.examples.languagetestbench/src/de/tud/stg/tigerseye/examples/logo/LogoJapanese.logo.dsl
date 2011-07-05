@@ -4,7 +4,7 @@ package de.tud.stg.tigerseye.examples.logo
 //choose Edit DSL specific Transformers and activate the TranslationTransformer 
 
 //The path to the actual translation file has to be provided as absolute path. 
-@Translation(file="/home/leo/wss/runtime-EclipseApplication42/de.tud.stg.tigerseye.examples.languagetestbench/src/de/tud/stg/tigerseye/examples/logo/translation.jpn")
+@Translation(file="absolutePathTo/translation.jpn")
 logo(name:'Test'){
 	オンワード 50
 	みぎ 90
