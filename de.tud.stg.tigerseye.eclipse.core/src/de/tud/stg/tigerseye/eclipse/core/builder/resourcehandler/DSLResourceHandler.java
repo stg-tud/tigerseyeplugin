@@ -3,6 +3,9 @@ package de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,7 +38,6 @@ import de.tud.stg.parlex.lexer.KeywordSeperator;
 import de.tud.stg.parlex.parser.IChart;
 import de.tud.stg.parlex.parser.earley.EarleyParser;
 import de.tud.stg.popart.builder.eclipse.EDSL;
-import de.tud.stg.tigerseye.eclipse.TigerseyeLibraryProvider;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLKey;
@@ -160,8 +162,17 @@ public class DSLResourceHandler implements ResourceHandler {
 
 	List<DSLDefinition> dsls = context.getDsls();
 
+	InputStream ulf = getClass().getResourceAsStream("MathClassEx-12.txt");
+	InputStreamReader inputStreamReader = null;
+	try {
+	    inputStreamReader = new InputStreamReader(ulf, "UTF-8");
+	} catch (UnsupportedEncodingException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+
 	UnicodeLookupTable ult = new UnicodeLookupTable()
-		.load(TigerseyeLibraryProvider.getMathClassEx11());
+		.load(inputStreamReader);
 	GrammarBuilder grammarBuilder = new GrammarBuilder(ult);
 	IGrammar<String> grammar = grammarBuilder.buildGrammar(dsls);
 
