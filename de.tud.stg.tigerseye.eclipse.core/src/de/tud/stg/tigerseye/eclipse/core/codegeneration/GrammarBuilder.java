@@ -91,7 +91,8 @@ public class GrammarBuilder {
 
 	Rule startRule = new Rule(program, this.statements);
 
-		Rule rStatements = new Rule(this.statements, this.statement, GrammarBuilderHelper.getWhitespaceCategory(this.grammar, true),
+	Rule rStatements = new Rule(this.statements, this.statement,
+		GrammarBuilderHelper.getOptionalWhitespace(this.grammar),
 				this.statements);
 
 		Rule rStatement = new Rule(this.statements, this.statement);
@@ -105,6 +106,7 @@ public class GrammarBuilder {
 		this.grammar.addRule(rStatements);
 	}
 
+    // XXX(Leo Roos;Aug 16, 2011) Untested
     public IGrammar<String> buildGrammar(List<DSLDefinition> dsls) {
 	ArrayList<Class<?>> clazzes = new ArrayList<Class<?>>(dsls.size());
 	for (DSLDefinition dsl : dsls) {
@@ -121,16 +123,22 @@ public class GrammarBuilder {
     }
 
 	public IGrammar<String> buildGrammar(Class<?>... clazzes) {
+	/**
+	 * <ul>
+	 * <li>2a involved dsls are passed via parameter
+	 * <li>2b introspection to load declared methods in EDSL interface
+	 * <li>2c Lookup host language via EDSL annotation; load host grammar
+	 * <li>2d
+	 * </ul>
+	 */
+	    
 	this.setupGeneralGrammar();// TODO moved from constructor check if valid
 
 		boolean waterSupported = true;
 
 		for (Class<?> clazz : clazzes) {
-	    // TODO Should normally not use any additional methods calls in a
-	    // log statement unless they already have been called in the program
-	    logger.debug("class " + clazz.getCanonicalName()
-		    + " has annotations: "
-					+ Arrays.toString(clazz.getAnnotations()));
+
+	    logClassQuietly(clazz);
 
 			// check for configuration options
 			Map<String, String> classOptions = getOptions(clazz.getAnnotation(DSL.class), getDefaultOptions());
@@ -222,6 +230,22 @@ public class GrammarBuilder {
 
 		return this.grammar;
 	}
+
+    /**
+     * Logs name and annotations about a class piping possible exceptions to
+     * another log output.
+     * 
+     * @param clazz
+     */
+    private void logClassQuietly(Class<?> clazz) {
+	try {
+	    logger.debug("class " + clazz.getCanonicalName()
+		    + " has annotations: "
+		    + Arrays.toString(clazz.getAnnotations()));
+	} catch (Exception e) {
+	    logger.warn("logging of {} failed ", clazz, e);
+	}
+    }
 
 	private void setupHostLanguageRules(Class<? extends HostLanguageGrammar>[] hostLanguageRules) {
 		for (Class<? extends HostLanguageGrammar> clazz : hostLanguageRules) {
@@ -403,12 +427,14 @@ public class GrammarBuilder {
 				Matcher whitespaceMatcher = pattern[2].matcher(keyword);
 				boolean isWhitespace = whitespaceMatcher.find();
 
-				if (isWhitespace) {
-					if (keyword.length() == 1) {
-						categories.add(GrammarBuilderHelper.getWhitespaceCategory(this.grammar, true));
-					} else {
-						categories.add(GrammarBuilderHelper.getWhitespaceCategory(this.grammar, false));
-					}
+		if (isWhitespace) {
+		    if (keyword.length() == 1) {
+			categories.add(GrammarBuilderHelper
+				.getOptionalWhitespace(this.grammar));
+		    } else {
+			categories.add(GrammarBuilderHelper
+				.getRWhitespace(this.grammar));
+		    }
 				} else {
 
 		    String uniChar = unicodeLookupTable.nameToUnicode(keyword);

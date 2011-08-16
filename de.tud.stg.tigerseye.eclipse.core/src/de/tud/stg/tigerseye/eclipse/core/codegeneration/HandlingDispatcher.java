@@ -151,13 +151,15 @@ public class HandlingDispatcher {
 		
 		Rule r1 = null;
 		if (parameterOptions.get(ParameterOptions.ARRAY_DELIMITER).matches("\\s+")) {
-			r1 = new Rule(objects, objects, GrammarBuilderHelper.getWhitespaceCategory(this.grammar, false), objects);
+	    r1 = new Rule(objects, objects,
+		    GrammarBuilderHelper.getRWhitespace(this.grammar), objects);
 		} else if (parameterOptions.get(ParameterOptions.ARRAY_DELIMITER).isEmpty()) {
 			r1 = new Rule(objects, objects, objects);
 		} else {
 			Category ad = new Category(parameterOptions.get(ParameterOptions.ARRAY_DELIMITER), true);
 			this.grammar.addCategory(ad);
-			ICategory<String> WS = GrammarBuilderHelper.getWhitespaceCategory(this.grammar, true);
+	    ICategory<String> WS = GrammarBuilderHelper.getOptionalWhitespace(
+this.grammar);
 			r1 = new Rule(objects, objects, WS, ad, WS, objects);
 	    // Rule r1a = new Rule(objects, objects, ad, WS, objects);
 	    // Rule r1b = new Rule(objects, objects, WS, ad, objects);

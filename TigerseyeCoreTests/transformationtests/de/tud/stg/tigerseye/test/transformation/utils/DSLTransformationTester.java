@@ -1,11 +1,11 @@
 package de.tud.stg.tigerseye.test.transformation.utils;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.annotation.Nullable;
 
 import utilities.StringUtils;
-
-import junit.framework.Assert;
-
 import de.tud.stg.popart.dslsupport.DSL;
 import de.tud.stg.tigerseye.test.PrettyGroovyCodePrinterFactory;
 import de.tud.stg.tigerseye.test.TestDSLTransformation;
@@ -27,16 +27,17 @@ public class DSLTransformationTester {
 	}
 	
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void assertTransformedDSLEqualsExpectedUnchecked(String filePrefix,
-			Class... classes) throws Exception {
-		assertTransformedDSLEqualsExpected(filePrefix, classes);
+			Class<? extends DSL>... classes) throws Exception {
+		
+		List<Class<? extends DSL>> asList =  (List<Class<? extends DSL>>) Arrays.asList(classes);
+		assertTransformedDSLEqualsExpected(filePrefix, asList);
 	}
 
 	/**
-	 * Takes a file {@code $filePrefix.input} as input file, performs the
+	 * Takes a file {@code filePrefix.input} as input file, performs the
 	 * transformation of its content and compares it to a file called
-	 * {@code $filePrefix.expected}. Their expected locations are defined by
+	 * {@code filePrefix.expected}. Their expected locations are defined by
 	 * {@link #getInputDSL(String)} and {@link #getExpectedStream(String)}
 	 * respectively. <br>
 	 * To easier analyze the result the transformed files are also written to a
@@ -50,7 +51,7 @@ public class DSLTransformationTester {
 	 *            classes passed.
 	 */
 	public void assertTransformedDSLEqualsExpected(
-			String filePrefix, Class<? extends DSL>... classes)
+			String filePrefix, List<Class<? extends DSL>> classes)
 			throws Exception {
 		String transformation = new TestDSLTransformation(
 				new PrettyGroovyCodePrinterFactory()).performTransformation(

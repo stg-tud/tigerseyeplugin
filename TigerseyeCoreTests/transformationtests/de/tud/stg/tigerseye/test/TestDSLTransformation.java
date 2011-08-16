@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -54,7 +55,7 @@ public class TestDSLTransformation {
 	}
 
 	public String performTransformation(InputStream inputStream,
-			Class<? extends DSL>[] classes) throws IOException, VisitFailure,
+			List<Class<? extends DSL>> classes) throws IOException, VisitFailure,
 			FileNotFoundException {
 		String sb = IOUtils.getStringFromReader(new InputStreamReader(
 				inputStream));
@@ -63,12 +64,15 @@ public class TestDSLTransformation {
 	}
 
 	public String performTransformation(String sb,
-			Class<? extends DSL>[] classes) throws VisitFailure {
+				List<Class<? extends DSL>> classes) throws VisitFailure {
 		GrammarBuilder gb = new GrammarBuilder(ult);
-		IGrammar<String> grammar = gb.buildGrammar(classes);
+		
+		Class<? extends DSL>[] array = classes.toArray(new Class[0]);
+		
+		IGrammar<String> grammar = gb.buildGrammar(array);
 
 		String performTransformation = performTransformation(sb,
-				new GrammarResult(grammar, gb.getMethodOptions(), classes));
+				new GrammarResult(grammar, gb.getMethodOptions(), array));
 
 		return performTransformation;
 	}

@@ -1,24 +1,22 @@
 package de.tud.stg.tigerseye.test;
 
 
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 import static org.junit.matchers.JUnitMatchers.containsString;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
-
-import jjtraveler.VisitFailure;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -30,11 +28,12 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.UnicodeLookupTable;
 import de.tud.stg.tigerseye.test.TestDSLTransformation.GrammarResult;
 import de.tud.stg.tigerseye.test.transformation.utils.DefaultDSLTransformationTester;
+import de.tud.stg.tigerseye.utils.ListBuilder;
 
 
 public class TestUtils {
 	
-	public static String PluginIDOfCoreTestFragment = "de.tud.stg.tigerseye.eclipse.core.tests"; 
+	public static final String PLUGIN_ID_OF_CORE_TESTFRAGMENT = "de.tud.stg.tigerseye.eclipse.core.tests"; 
 	
 	private static final String MATH_CLASS_EX_TXT = "MathClassEx-12.txt";
 
@@ -43,31 +42,34 @@ public class TestUtils {
 	private static DefaultDSLTransformationTester dtt = new DefaultDSLTransformationTester(TestUtils.class, generatedFilesFolder, "resources" );
 	public static OutputStream out = System.out;
 
-	@SuppressWarnings("unchecked")
-	public static void test(String file, @SuppressWarnings("rawtypes") Class ... classes) {
+	public static void test(String file, Class<? extends DSL> ... classes) {
 		test(true, file, classes);
 	}
 
 	public static void setOutputStream(OutputStream out) {
 		TestUtils.out = out;
 	}
-
+	
+	public static void test(String file,
+			List<Class<? extends DSL>> classes) {
+		test(true, file, classes);
+	}
+	
 	public static void test(boolean validate, String file,
-			Class<? extends DSL>... classes) {
+			List<Class<? extends DSL>> classes) {
 		try {
 
 			dtt.assertTransformedDSLEqualsExpectedUnchecked(file, classes);
-			
-		} catch (FileNotFoundException e) {
-			throw new UnhandledException(e);
-		} catch (IOException e) {
-			throw new UnhandledException(e);
-		} catch (VisitFailure e) {
-			throw new UnhandledException(e);
+					
 		} catch (Exception e) {
 			throw new UnhandledException(e);
 		}
+	}
 
+	public static void test(boolean validate, String file,
+			Class<? extends DSL>... classes) {	
+		List<Class<? extends DSL>> asList = Arrays.asList(classes);
+		test(validate, file, asList);
 	}
 	
 	@Test
@@ -139,6 +141,19 @@ public class TestUtils {
 	public static InputStream loadTestResource(String resourceName){
 		InputStream resourceAsStream = TestUtils.class.getResourceAsStream("resources" + "/" + resourceName);
 		return resourceAsStream;
+	}
+	
+	public static <T extends DSL>  List<Class<T>> newList(Class<T> ...classes){
+		ArrayList<Class<T>> asList = new ArrayList<Class<T>>(classes.length);
+		for (Class<T> c : classes) {
+			asList.add(c);
+		}
+		return asList;
+	}
+	
+	public static ListBuilder<Class<? extends DSL>> dslsList(Class<? extends DSL> element){
+		ListBuilder<Class<? extends DSL>> listGen = new ListBuilder<Class<?extends DSL>>(element);
+		return listGen;
 	}
 
 }

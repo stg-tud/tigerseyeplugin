@@ -26,6 +26,7 @@ import de.tud.stg.tigerseye.eclipse.core.preferences.TableDialog.CheckedItem;
  * @author Leo Roos
  * 
  */
+@Ignore("open close of windows during unit test runs is annoying. Try approach without creating windows.")
 public class TransformerTableDialogTest{
 	
 	private static final Logger logger = LoggerFactory

@@ -49,7 +49,7 @@ enum Resources {
 	public File getFileInPluginRun() throws Exception {
 		assertPlatformRunning();
 		Bundle bundle = Platform
-				.getBundle(TestUtils.PluginIDOfCoreTestFragment);
+				.getBundle(TestUtils.PLUGIN_ID_OF_CORE_TESTFRAGMENT);
 		URL entry = bundle.getEntry(new File(bundleRelativeResourcesPath,
 				this.NAME).getPath());
 		URL fileURL = FileLocator.toFileURL(entry);

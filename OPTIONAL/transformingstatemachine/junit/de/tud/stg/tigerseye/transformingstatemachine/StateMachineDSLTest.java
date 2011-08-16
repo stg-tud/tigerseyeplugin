@@ -19,11 +19,13 @@ public class StateMachineDSLTest {
 
 		String output = new TestDSLTransformation(
 				new PrettyGroovyCodePrinterFactory()).performTransformation(
-				input, new Class[] { StateMachineDSL.class });
+				input, TestUtils.dslsList(StateMachineDSL.class).toList());
 
 		String expectedRaw = loadResource("StateMachineDSL.expected");
 
-		//FIXME Current transformation does not use the an additionally needed layout s.t. currently the keywords which should be transformed to Strings are not
+		// FIXME Current transformation does not use the an additionally needed
+		// layout s.t. the keywords which should be transformed to
+		// Strings are not
 		String actual = removeQuotations(output);
 		String expected = removeQuotations(expectedRaw);
 		utilities.StringUtils.equalsIgnoringWhitspace(actual, expected);

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -97,9 +98,8 @@ public class DefaultDSLTransformationTester{
 	}
 	
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void assertTransformedDSLEqualsExpectedUnchecked(String filePrefix,
-			Class... classes) throws Exception {
+			List<Class<? extends DSL>> classes) throws Exception {
 		this.dtt.assertTransformedDSLEqualsExpected(filePrefix, classes);
 	}
 	

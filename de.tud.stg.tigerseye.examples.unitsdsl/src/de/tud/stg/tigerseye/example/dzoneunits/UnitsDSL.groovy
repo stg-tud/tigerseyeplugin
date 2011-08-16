@@ -34,6 +34,12 @@ class UnitsDSL extends Interpreter{
 	public Amount kilogram(Object n){
 		return amountFor(n,"kg");
 	}
+	
+	@DSLMethod(prettyName="p0__g")
+	@PopartType(clazz = PopartOperationKeyword.class)
+	public Amount gram(Object n){
+		return amountFor(n,"g");
+	}
 
 
 	Amount amountFor(Object value, String unit){

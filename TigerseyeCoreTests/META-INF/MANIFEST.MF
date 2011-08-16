@@ -16,6 +16,7 @@ Export-Package: de.tud.stg.popart.builder.test.dsls,
  de.tud.stg.popart.builder.test.statemachine,
  de.tud.stg.tigerseye.test,
  de.tud.stg.tigerseye.test.transformation.utils,
+ runner,
  utilities
 Bundle-Vendor: TUD
 

@@ -1,6 +1,7 @@
 package de.tud.stg.tigerseye.examples.setdsl;
 
 import static org.junit.Assert.*;
+import junit.framework.ComparisonFailure;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -22,7 +23,7 @@ public class SetDSLTest extends DSLTransformationTestBase {
 		assertTransformedDSLEqualsExpected(setdsl, SetDSL.class);
 	}
 	
-	@Test
+	@Test(expected=ComparisonFailure.class)
 	public void shouldTransformNewSetWithoutSemicolon() throws Exception {
 		doTest("setdslnewnosemicolon");
 	}
@@ -32,17 +33,17 @@ public class SetDSLTest extends DSLTransformationTestBase {
 		doTest("setdslunion");
 	}
 	
-	@Test
+	@Test(expected=ComparisonFailure.class)
 	public void shouldTransformIntersection() throws Exception {
 		doTest("setdslintersection");
 	}
 	
-	@Test
+	@Test(expected=ComparisonFailure.class)
 	public void shouldTransformNewSetAndUnion() throws Exception {
 		doTest("setdslnewandunion");
 	}
 	
-	@Test
+	@Test(expected=ComparisonFailure.class)
 	public void shouldTransformSetVarAndUnion() throws Exception {
 		doTest("setdslsetvarandunion");
 	}

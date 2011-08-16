@@ -19,6 +19,7 @@ import de.tud.stg.parlex.core.IGrammar;
 import de.tud.stg.parlex.lexer.ILexer;
 import de.tud.stg.parlex.lexer.KeywordSensitiveLexer;
 import de.tud.stg.parlex.lexer.KeywordSeperator;
+import de.tud.stg.parlex.parser.IChart;
 import de.tud.stg.parlex.parser.earley.Chart;
 import de.tud.stg.parlex.parser.earley.EarleyParser;
 import de.tud.stg.popart.builder.test.dsls.MathDSL;
@@ -107,7 +108,41 @@ public class GrammarBuilderTest {
 		InputStream resourceAsStream = GrammarBuilderTest.class.getResourceAsStream("resources/" + name);
 		return resourceAsStream;
 	}
-
+	
+	@Test
+	public void testSpecificNotWorkingTransformation() throws Exception {
+		String input = "int x = 10;\n" + 
+				"	∑ x, 10";
+		String expected = "int x = 10 ;\n" + 
+				" 	sum__p0(\n" + 
+				"		[x,\n" + 
+				"		10] as int[])";
+		Class<MathDSL> transformer = MathDSL.class;
+		IGrammar<String> buildGrammar = gb.buildGrammar(transformer);
+		EarleyParser ep = new EarleyParser(buildGrammar);
+		IChart parse = ep.parse(input);
+		System.out.println(parse);
+		System.out.println(parse.getAST());
+	}
+	
+	@Test
+	public void testSpecificWorkingTransformation() throws Exception {
+		String input = "∑ 10, 10";
+		String expected = "sum__p0(	[10, 10] as int[])";
+		Class<MathDSL> transformer = MathDSL.class;
+		IGrammar<String> buildGrammar = gb.buildGrammar(transformer);
+		EarleyParser ep = new EarleyParser(buildGrammar);
+		IChart parse = ep.parse(input);
+		System.out.println(parse);
+		System.out.println(parse.getAST());
+	}
+	
+	
+	/*
+	 * Extracting Grammars using Reflection
+	 */
+	
+	
 //	@Test
 //	public void testBuildGrammar() {
 //		fail("Not yet implemented"); // TODO
