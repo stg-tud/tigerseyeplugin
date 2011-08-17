@@ -12,7 +12,7 @@ package de.tud.stg.tigerseye.utils;
  * @param <B>
  *            transform to this type
  */
-public interface LMTransformer<A, B> {
+public interface Transformer<A, B> {
 
     B transform(A input);
 }

@@ -53,12 +53,12 @@ public class GrammarBuilderHelper {
 		}
 	}
 
-	public static ICategory<String> getOptionalWhitespace(
+	public static ICategory<String> getAndSetOptionalWhitespace(
 			IGrammar<String> grammar) {
 		return getWhitespaceCategory(grammar, true);
 	}
 
-	public static ICategory<String> getRWhitespace(IGrammar<String> grammar) {
+	public static ICategory<String> getAndSetRWhitespace(IGrammar<String> grammar) {
 		return getWhitespaceCategory(grammar, false);
 	}
 

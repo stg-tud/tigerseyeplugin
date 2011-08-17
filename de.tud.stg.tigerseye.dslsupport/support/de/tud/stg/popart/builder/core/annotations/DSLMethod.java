@@ -5,7 +5,11 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DSLMethod {
-	String prettyName() default "[unassigned]";
+	/**
+	 * The production name of the describe method. It's default value is
+	 * {@link AnnotationConstants#UNASSIGNED}.
+	 */
+	String prettyName() default AnnotationConstants.UNASSIGNED;
 
 	/**
 	 * Defines if this method is a top level statement or can only be referenced

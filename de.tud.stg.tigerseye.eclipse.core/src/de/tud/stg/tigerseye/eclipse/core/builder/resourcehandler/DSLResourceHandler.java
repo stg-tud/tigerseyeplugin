@@ -163,7 +163,7 @@ public class DSLResourceHandler implements ResourceHandler {
 	UnicodeLookupTable ult = new UnicodeLookupTable()
 		.load(TigerseyeLibraryProvider.getUnicodeMathClassFileInUTF8());
 	GrammarBuilder grammarBuilder = new GrammarBuilder(ult);
-	IGrammar<String> grammar = grammarBuilder.buildGrammar(dsls);
+	IGrammar<String> grammar = grammarBuilder.buildGrammarFromDefinitions(dsls);
 
 	if (logger.isDebugEnabled()) {
 	    logger.debug("Grammar successfully construced");

@@ -1,14 +1,27 @@
 package de.tud.stg.tigerseye.eclipse.core.codegeneration;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
-import java.util.*;
-import java.util.Map.Entry;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +32,7 @@ import de.tud.stg.parlex.core.ICategory;
 import de.tud.stg.parlex.core.IGrammar;
 import de.tud.stg.parlex.core.Rule;
 import de.tud.stg.parlex.core.groupcategories.WaterCategory;
+import de.tud.stg.popart.builder.core.annotations.AnnotationConstants;
 import de.tud.stg.popart.builder.core.annotations.DSL;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod;
 import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
@@ -28,34 +42,32 @@ import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.CategoryNames;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.HostLanguageGrammar;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ParameterOptions;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.TypeHandler;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.GrammarBuilderHelper;
+import de.tud.stg.tigerseye.utils.ListBuilder;
+import de.tud.stg.tigerseye.utils.ListMap;
+import de.tud.stg.tigerseye.utils.Transformer;
 
 /**
- * {@link GrammarBuilder} builds the grammar for given DSL interfaces
+ * {@link GrammarBuilder} builds the grammar for given classes implementing the
+ * DSL interface.
  * 
  * @author Kamil Erhard
+ * @author Leo Roos
  * 
  */
 public class GrammarBuilder {
     private static final Logger logger = LoggerFactory.getLogger(GrammarBuilder.class);
 
-    public static final String DEFAULT_ARRAY_DELIMITER = ",";
-    public static final String DEFAULT_PARAMETER_ESCAPE = "p";
-    public static final String DEFAULT_WHITESPACE_ESCAPE = "_";
     // private static final String DEFAULT_STRING_QUOTATION =
     // "([\\w_]+|(\".*?\"))";
-    private static final String DEFAULT_STRING_QUOTATION = "(\".*?\")";
-
-    private final Grammar grammar;
 
 	private final AtomicInteger parameterCounter = new AtomicInteger();
 
-	private Category statement;
-	private Category statements;
-	private final HandlingDispatcher typeHandler;
-
-    // private Rule startRule;
+    /*
+     * Only used as left hand side rule or grammar category
+     */
+    private ICategory<String> statement;
+    private ICategory<String> statements;
 
     private final UnicodeLookupTable unicodeLookupTable;
 
@@ -67,48 +79,51 @@ public class GrammarBuilder {
 
     public GrammarBuilder(UnicodeLookupTable ult) {
 	this.unicodeLookupTable = ult;
-		this.grammar = new Grammar();
-		this.typeHandler = new HandlingDispatcher(this.grammar);
 	}
 
-	private void setWaterEnabled(boolean enabled) {
+    private void setWaterEnabled(boolean enabled, Grammar grammar) {
 		if (enabled) {
-			Category anything = new WaterCategory();
-			this.grammar.addCategory(anything);
+	    ICategory<String> anything = new WaterCategory();
+	    grammar.addCategory(anything);
 
-			Rule rAnyStatement = new Rule(this.statement, anything);
-			this.grammar.addRule(rAnyStatement);
+	    Rule rAnyStatement = new Rule(this.statement,
+		    ListBuilder.single(anything));
+	    grammar.addRule(rAnyStatement);
 
-	    this.grammar.addWaterRule(rAnyStatement);
+	    grammar.addWaterRule(rAnyStatement);
 		}
 	}
 
-	private void setupGeneralGrammar() {
-		Category program = new Category(CategoryNames.PROGRAM_CATEGORY, false);
+    private void setupGeneralGrammar(Grammar grammar) {
+	Category program = new Category(CategoryNames.PROGRAM_CATEGORY, false);
 
 	this.statement = new Category(CategoryNames.STATEMENT_CATEGORY, false);
 	this.statements = new Category(CategoryNames.STATEMENTS_CATEGORY, false);
 
-	Rule startRule = new Rule(program, this.statements);
+	List<ICategory<String>> single = ListBuilder.single(this.statements);
+	Rule startRule = new Rule(program, single);
 
-	Rule rStatements = new Rule(this.statements, this.statement,
-		GrammarBuilderHelper.getOptionalWhitespace(this.grammar),
-				this.statements);
+	Rule rStatements = new Rule(this.statements, ListBuilder
+		.begin(this.statement)
+		.add(GrammarBuilderHelper.getAndSetOptionalWhitespace(grammar))
+		.add(this.statements).toList());
 
-		Rule rStatement = new Rule(this.statements, this.statement);
+	Rule rStatement = new Rule(this.statements,
+		ListBuilder.single(this.statement));
 
-		this.grammar.addCategory(program);
-		this.grammar.addCategory(this.statement);
-		this.grammar.addCategory(this.statements);
+	grammar.addCategory(program);
+	grammar.addCategory(this.statement);
+	grammar.addCategory(this.statements);
 
-	this.grammar.setStartRule(startRule);
-		this.grammar.addRule(rStatement);
-		this.grammar.addRule(rStatements);
-	}
+	grammar.setStartRule(startRule);
+	grammar.addRule(rStatement);
+	grammar.addRule(rStatements);
+    }
 
     // XXX(Leo Roos;Aug 16, 2011) Untested
-    public IGrammar<String> buildGrammar(List<DSLDefinition> dsls) {
-	ArrayList<Class<?>> clazzes = new ArrayList<Class<?>>(dsls.size());
+    public IGrammar<String> buildGrammarFromDefinitions(List<DSLDefinition> dsls) {
+	ArrayList<Class<? extends de.tud.stg.popart.dslsupport.DSL>> clazzes = new ArrayList<Class<? extends de.tud.stg.popart.dslsupport.DSL>>(
+		dsls.size());
 	for (DSLDefinition dsl : dsls) {
 	    Class<? extends de.tud.stg.popart.dslsupport.DSL> loadClass = dsl
 		    .loadClass();
@@ -119,139 +134,229 @@ public class GrammarBuilder {
 			"Failed to load dsl {}, can not perform any transformations for that class",
 			dsl);
 	}
-	return buildGrammar(clazzes.toArray(new Class<?>[0]));
+	return buildGrammar(clazzes);
     }
 
-	public IGrammar<String> buildGrammar(Class<?>... clazzes) {
-	/**
-	 * <ul>
-	 * <li>2a involved dsls are passed via parameter
-	 * <li>2b introspection to load declared methods in EDSL interface
-	 * <li>2c Lookup host language via EDSL annotation; load host grammar
-	 * <li>2d
-	 * </ul>
-	 */
-	    
-	this.setupGeneralGrammar();// TODO moved from constructor check if valid
+    /**
+     * @param clazzes
+     * @return the grammar for DSL classes
+     * @deprecated use type safe version {@link #buildGrammar(List)} instead
+     */
+    @Deprecated
+    public IGrammar<String> buildGrammar(
+	    Class<? extends de.tud.stg.popart.dslsupport.DSL>... clazzes)
+    {
+	List<Class<? extends de.tud.stg.popart.dslsupport.DSL>> clazzess = Arrays
+		.asList(clazzes);
+	return buildGrammar(clazzess);
+    }
 
-		boolean waterSupported = true;
+    static class ExtractedClassInforamtion {
+	public ExtractedClassInforamtion(Class<?> clazz) {
+	    this.clazz = clazz;
+	}
+	@Nonnull
+	public Map<ParameterOptions, String> classoptions = Collections
+		.emptyMap();
+	@Nonnull
+	public DSL classDslAnnotation = DefaultedAnnotation.of(DSL.class);
+	@Nonnull
+	public List<ExtractedMethodsInformation> methodsInformation = new ArrayList<ExtractedMethodsInformation>();
+	@Nonnull
+	public final Class<?> clazz;
+    }
+    
+    static class DefaultedAnnotation implements InvocationHandler {
+	@SuppressWarnings("unchecked")
+	public static <A extends Annotation> A of(Class<A> annotation) {
+	    return (A) Proxy.newProxyInstance(annotation.getClassLoader(),
+		    new Class[] { annotation }, new DefaultedAnnotation());
+	}
 
-		for (Class<?> clazz : clazzes) {
+	@Override
+	public Object invoke(Object proxy, Method method, Object[] args)
+		throws Throwable {
+	    return method.getDefaultValue();
+	}
+    }
 
-	    logClassQuietly(clazz);
+    static class ExtractedMethodsInformation {
+	public ExtractedMethodsInformation(Method method) {
+	    this.method = method;
+	}
+	@Nonnull
+	public Map<ParameterOptions, String> methodOptions = Collections
+		.emptyMap();
+	@Nullable
+	public PopartType popartType;
+	@Nonnull
+	public final Method method;
 
-			// check for configuration options
-			Map<String, String> classOptions = getOptions(clazz.getAnnotation(DSL.class), getDefaultOptions());
+    }
 
-			// logger.info("clazz: " + clazz + ", " + classOptions + " : " + getDefaultOptions() + ", ");
+    public IGrammar<String> buildGrammar(
+	    List<Class<? extends de.tud.stg.popart.dslsupport.DSL>> clazzes) {
 
-			DSL annotation = clazz.getAnnotation(DSL.class);
-			if (annotation != null) {
-				// check for additionals rules
-				Class<? extends TypeHandler>[] typeRules = annotation.typeRules();
+	List<ExtractedClassInforamtion> exInfos = extractClassesInformation(clazzes);
+
+	Grammar grammar = createCombinedGrammar(exInfos);
+
+	return grammar;
+    }
+
+    private List<ExtractedClassInforamtion> extractClassesInformation(
+	    List<Class<? extends de.tud.stg.popart.dslsupport.DSL>> clazzes) {
+	List<ExtractedClassInforamtion> exannos = ListMap
+		.map(clazzes,
+			new Transformer<Class<? extends de.tud.stg.popart.dslsupport.DSL>, ExtractedClassInforamtion>() {
+
+			    @Override
+			    public ExtractedClassInforamtion transform(
+				    Class<? extends de.tud.stg.popart.dslsupport.DSL> input) {
+				return extractClassInformation(input);
+			    }
+			});
+	return exannos;
+    }
+
+    private Grammar createCombinedGrammar(List<ExtractedClassInforamtion> exannos) {
+	Grammar grammar = new Grammar();
+	HandlingDispatcher typeHandler = new HandlingDispatcher(grammar);
+	this.setupGeneralGrammar(grammar);
+
+	// FIXME(Leo Roos;Aug 17, 2011) Is this interpretation of the water
+	// supported annotation correct?
+	// No test exists that sets watersupported to false
+	boolean waterSupported = true;
+	for (ExtractedClassInforamtion annos : exannos) {
+	    if (!annos.classDslAnnotation.waterSupported()) {
+		waterSupported = false;
+		break;
+	    }
+	}
+	this.setWaterEnabled(waterSupported, grammar);
+
+	for (ExtractedClassInforamtion classInfo : exannos) {
+	    DSL classAnnotation = classInfo.classDslAnnotation;
+	    Class<? extends HostLanguageGrammar>[] hostLanguageRules = classInfo.classDslAnnotation
+		    .hostLanguageRules();
+	    Map<ParameterOptions, String> classOptions = classInfo.classoptions;
+
+	    if (classAnnotation != null) {
+		// check for additionals rules
 
 		// TODO check cyclic Dependency between Grammar and
 		// HandlingDispatcher
-				this.typeHandler.addAdditionalTypeRules(typeRules);
+		typeHandler.addAdditionalTypeRules(classInfo.classDslAnnotation
+			.typeRules());
+		this.setupHostLanguageRules(hostLanguageRules, grammar);
+	    }
 
-				// check for host language rules
-				Class<? extends HostLanguageGrammar>[] hostLanguageRules = annotation.hostLanguageRules();
-				this.setupHostLanguageRules(hostLanguageRules);
+	    typeHandler.handleDefaults(classOptions);
 
-				// check water support
-				waterSupported &= annotation.waterSupported();
-			}
+	    for (ExtractedMethodsInformation methodInfo : classInfo.methodsInformation) {
 
-	    this.setWaterEnabled(waterSupported);
-
-			// get all methods, including inherited ones
-			Set<Method> methods = new LinkedHashSet<Method>();
-			methods.addAll(Arrays.asList(clazz.getMethods()));
-			methods.addAll(Arrays.asList(clazz.getDeclaredMethods()));
-			methods.removeAll(Arrays.asList(Object.class.getDeclaredMethods()));
-
-			this.typeHandler.handleDefaults(classOptions);
-
-	    for (Method method : methods) {
-		Map<String, String> methodOptions = this.getOptions(
-			method.getAnnotation(DSL.class), classOptions);
-
-		// FIXME(Leo Roos;Jul 2, 2011) returns always null for classes
-		// loaded via URLClassloader. Perhaps I should use ByteCode
-		// Analysis Tools, that analyze the code independent from
-		// Reflections capability
-		Annotation[] annotations = method.getAnnotations();
-		PopartType p = null;
-		for (Annotation anno : annotations) {
-		    Class<? extends Annotation> annotationType = anno
-			    .annotationType();
-		    if (annotationType.getName().equals(
-			    PopartType.class.getName())) {
-			boolean isPopartType = anno instanceof PopartType;
-			if (!isPopartType)
-			    throw new IllegalStateException(
-				    "Loaded class "
-					    + clazz
-					    + " has as expected a dsl method annotation "
-					    + PopartType.class
-					    + ". But the class is not considered equal to it. The problem is probably caused by a faulty class loader configuration where the class is loaded from a different context in which it is here processed.");
-		    }
-		}
-		DSLMethod dslMethodAnnotation = method
-			.getAnnotation(DSLMethod.class);
-
-		if (p == null)
-		    p = method.getAnnotation(PopartType.class);
+		PopartType p = methodInfo.popartType;
+		Map<ParameterOptions, String> methodOptions = methodInfo.methodOptions;
+		Method method = methodInfo.method;
 
 		if (p != null) {
 		    if (p.clazz() == PopartOperationKeyword.class) {
-			this.handleMethod(method, methodOptions);
+			this.handleMethod(method, methodOptions, grammar,
+				typeHandler);
 		    } else if (p.clazz() == PopartLiteralKeyword.class) {
-			this.handleLiteral(method, methodOptions);
+			this.handleLiteral(method, methodOptions, grammar,
+				typeHandler);
 		    }
 		}
 	    }
 
-			// for (Constructor<?> constructor : clazz.getConstructors()) {
-			// PopartType p = constructor.getAnnotation(PopartType.class);
-			//
-			// if (p != null) {
-			// Pair<String, String> methodEscape = this.getEscaping(constructor,
-			// classEscape.getX(), classEscape
-			// .getY());
-			//
-			// this.handleConstructor(constructor, methodEscape.getX(),
-			// methodEscape.getY());
-			// }
-	    // }
-		}
-
-
-
-		return this.grammar;
 	}
+	return grammar;
+    }
 
-    /**
-     * Logs name and annotations about a class piping possible exceptions to
-     * another log output.
-     * 
-     * @param clazz
-     */
-    private void logClassQuietly(Class<?> clazz) {
-	try {
-	    logger.debug("class " + clazz.getCanonicalName()
-		    + " has annotations: "
-		    + Arrays.toString(clazz.getAnnotations()));
-	} catch (Exception e) {
-	    logger.warn("logging of {} failed ", clazz, e);
+    private ExtractedClassInforamtion extractClassInformation(Class<?> clazz) {
+	ExtractedClassInforamtion classInfo = new ExtractedClassInforamtion(
+		clazz);
+	DSL classAnnotation = clazz.getAnnotation(DSL.class);
+	if (classAnnotation == null) {
+	    classInfo.classoptions = getDefaultOptions();
+	} else {
+	    classInfo.classoptions = getAnnotationParameterOptionsOverInitialMap(
+		    classAnnotation, getDefaultOptions());
+	    classInfo.classDslAnnotation = classAnnotation;
+	}
+	// get all methods, including inherited ones
+	Set<Method> methods = extractAllRelevantMethods(clazz);
+	final Map<ParameterOptions, String> classoptions = classInfo.classoptions;
+	List<ExtractedMethodsInformation> methodInfos = ListMap.map(methods,
+		new Transformer<Method, ExtractedMethodsInformation>() {
+
+		    @Override
+		    public ExtractedMethodsInformation transform(Method input) {
+			return extractMethodInformation(input, classoptions);
+		    }
+		});
+	classInfo.methodsInformation = methodInfos;
+	return classInfo;
+    }
+
+    private Set<Method> extractAllRelevantMethods(Class<?> clazz) {
+	Set<Method> methods = new LinkedHashSet<Method>();
+	methods.addAll(Arrays.asList(clazz.getMethods()));
+	methods.addAll(Arrays.asList(clazz.getDeclaredMethods()));
+	methods.removeAll(Arrays.asList(Object.class.getDeclaredMethods()));
+	return methods;
+    }
+
+    private ExtractedMethodsInformation extractMethodInformation(
+	    Method method, Map<ParameterOptions, String> defaultParameterOptions) {
+	validateClassIsLoadedInSameClassloader(method);
+	ExtractedMethodsInformation extMethAnnos = new ExtractedMethodsInformation(
+		method);
+	DSL methodDSLAnnotations = method.getAnnotation(DSL.class);
+	Map<ParameterOptions, String> methodOptions;
+	if (methodDSLAnnotations == null) {
+	    methodOptions = defaultParameterOptions;
+	} else {
+	    // XXX(Leo Roos;Aug 17, 2011) this branch is currently not entered
+	    // but might be useful to overwrite class-wide preferences.
+	    methodOptions = getAnnotationParameterOptionsOverInitialMap(
+		    methodDSLAnnotations, defaultParameterOptions);
+	}
+	extMethAnnos.methodOptions = methodOptions;
+	extMethAnnos.popartType = method.getAnnotation(PopartType.class);
+	return extMethAnnos;
+    }
+
+    private void validateClassIsLoadedInSameClassloader(Method method) {
+	// FIXME(Leo Roos;Jul 2, 2011) returns always null for classes
+	// loaded via URLClassloader. Perhaps I should use ByteCode
+	// Analysis Tools, that analyze the code independent from Java
+	// Reflections
+	Annotation[] annotations = method.getAnnotations();
+	for (Annotation anno : annotations) {
+	    Class<? extends Annotation> annotationType = anno.annotationType();
+	    if (annotationType.getName().equals(PopartType.class.getName())) {
+		boolean isPopartType = anno instanceof PopartType;
+		if (!isPopartType)
+		    throw new IllegalStateException(
+			    "Loaded class "
+				    + method.getClass()
+				    + " has as expected a dsl method annotation "
+				    + PopartType.class
+				    + ". But the class is not considered equal to it. The problem is probably caused by a faulty class loader configuration where the class is loaded from a different context in which it is here processed.");
+	    }
 	}
     }
 
-	private void setupHostLanguageRules(Class<? extends HostLanguageGrammar>[] hostLanguageRules) {
+    private void setupHostLanguageRules(
+	    Class<? extends HostLanguageGrammar>[] hostLanguageRules,
+	    Grammar grammar) {
 		for (Class<? extends HostLanguageGrammar> clazz : hostLanguageRules) {
 			try {
 				HostLanguageGrammar newInstance = clazz.newInstance();
-				newInstance.applySpecificGrammar(this.getGrammar());
+		newInstance.applySpecificGrammar(grammar);
 			} catch (InstantiationException e) {
 				logger.warn("Generated log statement",e);
 			} catch (IllegalAccessException e) {
@@ -272,30 +377,57 @@ public class GrammarBuilder {
 		return assignFirstStringOrDefault(methodProduction, defaultName);
 	}
 
-	public Map<String, String> getOptions(DSL dslAnnotation, Map<String, String> currentOptions) {
-		Map<String, String> resultMap = new HashMap<String, String>();
-
-		if (dslAnnotation != null) {
-			resultMap.put(ParameterOptions.PARAMETER_ESCAPE, dslAnnotation.parameterEscape());
-			resultMap.put(ParameterOptions.WHITESPACE_ESCAPE, dslAnnotation.whitespaceEscape());
-	    resultMap.put(ParameterOptions.ARRAY_DELIMITER, dslAnnotation.arrayDelimiter());
-	    resultMap.put(ParameterOptions.STRING_QUOTATION, dslAnnotation.stringQuotation());
-		}
-
-		for (Entry<String, String> e : currentOptions.entrySet()) {
-			String currentOption = currentOptions.get(e.getKey());
-			String newOption = resultMap.get(e.getKey());
-			resultMap.put(e.getKey(), assignFirstStringOrDefault(newOption, currentOption));
-		}
-
-		return resultMap;
+    /**
+     * Extracts the options of the passed {@link DSL} annotation. The method
+     * will create a copy of the passed map and overwrite existing values if
+     * different values for the same keys are found in the DSL annotation.
+     * 
+     * @param dslAnnotation
+     * @param initialMap
+     *            the initialMap will be copied and values found in the
+     *            annotation that differ from the defaults will overwrite the
+     *            values of the passed map
+     * @return
+     */
+    public Map<ParameterOptions, String> getAnnotationParameterOptionsOverInitialMap(
+	    @Nullable DSL dslAnnotation,
+	    Map<ParameterOptions, String> initialMap) {
+	Map<ParameterOptions, String> resultMap = new HashMap<ParameterOptions, String>(
+		initialMap);
+	if (dslAnnotation != null) {
+	    assignIfValid(resultMap, ParameterOptions.PARAMETER_ESCAPE,
+		    dslAnnotation.parameterEscape());
+	    assignIfValid(resultMap, ParameterOptions.WHITESPACE_ESCAPE,
+		    dslAnnotation.whitespaceEscape());
+	    assignIfValid(resultMap, ParameterOptions.ARRAY_DELIMITER,
+		    dslAnnotation.arrayDelimiter());
+	    assignIfValid(resultMap, ParameterOptions.STRING_QUOTATION,
+		    dslAnnotation.stringQuotation());
 	}
+	return resultMap;
+    }
+
+    /*
+     * assigns value with key to resultMap if the value is neither null nor
+     * equals the UNASSIGNED constant
+     */
+    private Map<ParameterOptions, String> assignIfValid(
+	    Map<ParameterOptions, String> resultMap,
+	    ParameterOptions stringQuotation, String value) {
+
+	if (value == null || value.equals(AnnotationConstants.UNASSIGNED))
+	    return resultMap;
+	else {
+	    resultMap.put(stringQuotation, value);
+	    return resultMap;
+	}
+    }
 
 	private  String assignFirstStringOrDefault(String stringToCheck, String defaultString) {
-		final String UNASSIGNED = "[unassigned]";
 
 	String string;
-	if (stringToCheck == null || stringToCheck.equals(UNASSIGNED))
+	if (stringToCheck == null
+		|| stringToCheck.equals(AnnotationConstants.UNASSIGNED))
 	    string = defaultString;
 	else
 	    string = stringToCheck;
@@ -304,7 +436,9 @@ public class GrammarBuilder {
 
 	private final static Pattern literalPattern = Pattern.compile("^get(\\S+)");
 
-	private boolean handleLiteral(Method method, Map<String, String> methodOptions) {
+    private boolean handleLiteral(Method method,
+	    Map<ParameterOptions, String> methodOptions, Grammar grammar,
+	    HandlingDispatcher typeHandler) {
 		Class<?> returnType = method.getReturnType();
 
 		if (returnType != void.class && returnType != Void.class) {
@@ -314,17 +448,20 @@ public class GrammarBuilder {
 				String literal = matcher.group(1);
 				literal = literal.substring(0, 1).toLowerCase() + literal.substring(1);
 
-				Category literalCategory = new Category(literal, true);
-				this.grammar.addCategory(literalCategory);
+		ICategory<String> literalCategory = new Category(literal, true);
+		grammar.addCategory(literalCategory);
 
-				Rule literalRule = new Rule(this.statement, literalCategory);
-				this.grammar.addRule(literalRule);
+		Rule literalRule = new Rule(this.statement,
+			ListBuilder.single(literalCategory));
+		grammar.addRule(literalRule);
 
-				ICategory<String> returnTypeCategory = this.typeHandler.handle(returnType, methodOptions);
-				this.grammar.addCategory(returnTypeCategory);
+		ICategory<String> returnTypeCategory = typeHandler.handle(
+			returnType, methodOptions);
+		grammar.addCategory(returnTypeCategory);
 
-				Rule returnTypeRule = new Rule(returnTypeCategory, literalCategory);
-				this.grammar.addRule(returnTypeRule);
+		Rule returnTypeRule = new Rule(returnTypeCategory,
+			ListBuilder.single(literalCategory));
+		grammar.addRule(returnTypeRule);
 
 				this.methodAliases.put(literal, new MethodOptions(method.getName(), new LinkedList<Integer>(), method
 						.getDeclaringClass()));
@@ -379,7 +516,9 @@ public class GrammarBuilder {
 	// parameters, pattern);
 	// }
 
-	private void handleMethod(Method method, Map<String, String> methodOptions) {
+    private void handleMethod(Method method,
+	    Map<ParameterOptions, String> methodOptions,
+	    Grammar grammar, HandlingDispatcher typeHandler) {
 		String methodProduction = getMethodProduction(method, method.getName());
 
 		Pattern[] pattern = 
@@ -388,7 +527,9 @@ public class GrammarBuilder {
 		Type[] parameters = method.getGenericParameterTypes();
 
 		this.handleNonLiteral(method, methodProduction, method.getGenericReturnType(), parameters, Modifier
-				.isPublic(method.getModifiers()), pattern, method.getParameterAnnotations(), methodOptions);
+.isPublic(method.getModifiers()), pattern,
+		method.getParameterAnnotations(), methodOptions, grammar,
+		typeHandler);
 	}
 
 	// TODO: check if caching would speed up this method
@@ -402,8 +543,11 @@ public class GrammarBuilder {
 				Pattern.compile("\\Q" + methodWhitespaceEscape + "\\E{1,2}") };
 	}
 
-    private void handleNonLiteral(Method method, String methodProduction, Type returnType, Type[] parameters,
-			boolean isPublic, Pattern[] pattern, Annotation[][] parameterAnnotations, Map<String, String> methodOptions) {
+    private void handleNonLiteral(Method method, String methodProduction,
+	    Type returnType, Type[] parameters, boolean isPublic,
+	    Pattern[] pattern, Annotation[][] parameterAnnotations,
+	    Map<ParameterOptions, String> methodOptions, Grammar grammar,
+	    HandlingDispatcher typeHandler) {
 		Matcher matcher = pattern[0].matcher(methodProduction);
 
 		LinkedList<ICategory<String>> categories = new LinkedList<ICategory<String>>();
@@ -430,22 +574,22 @@ public class GrammarBuilder {
 		if (isWhitespace) {
 		    if (keyword.length() == 1) {
 			categories.add(GrammarBuilderHelper
-				.getOptionalWhitespace(this.grammar));
+				.getAndSetOptionalWhitespace(grammar));
 		    } else {
 			categories.add(GrammarBuilderHelper
-				.getRWhitespace(this.grammar));
+				.getAndSetRWhitespace(grammar));
 		    }
 				} else {
 
 		    String uniChar = unicodeLookupTable.nameToUnicode(keyword);
 
 		    if (uniChar == null) {
-			logger.debug(
+			logger.trace(
 				"No unicode representation for [{}] found. Assuming this is a literal keyword.",
 				keyword);
 			uniChar = keyword;
 		    } else {
-			logger.debug(
+			logger.trace(
 				"found unicode representation [{}] for [{}]",
 				uniChar, keyword);
 		    }
@@ -483,18 +627,22 @@ public class GrammarBuilder {
 					}
 				}
 
-				Map<String, String> parameterOptions = getOptions(parameterDSLAnnotation, methodOptions);
+		Map<ParameterOptions, String> parameterOptions = getAnnotationParameterOptionsOverInitialMap(
+			parameterDSLAnnotation, methodOptions);
 
-				ICategory<String> parameterMapping = this.typeHandler.handle(parameterType, parameterOptions);
-				Rule rule = new Rule(parameterCategory, parameterMapping);
+		ICategory<String> parameterMapping = typeHandler.handle(
+			parameterType, parameterOptions);
+		Rule rule = new Rule(parameterCategory,
+			ListBuilder.single(parameterMapping));
 
 		ICategory<String> typeCategory = new Category(
 			CategoryNames.PTYPE_CATEGORY, false);
-				Rule typeRule = new Rule(parameterMapping, typeCategory);
+		Rule typeRule = new Rule(parameterMapping,
+			ListBuilder.single(typeCategory));
 
-				this.grammar.addRule(rule);
-				this.grammar.addRule(typeRule);
-				this.grammar.addCategory(parameterMapping);
+		grammar.addRule(rule);
+		grammar.addRule(typeRule);
+		grammar.addCategory(parameterMapping);
 
 				// sb.append(parameterMapping.toString().toUpperCase());
 				sb.append(param);
@@ -513,45 +661,40 @@ public class GrammarBuilder {
 				.getDeclaringClass());
 		this.methodAliases.put(indexedMethodProduction, value);
 
-		Category methodCategory = new Category(indexedMethodProduction, false);
-		this.grammar.addCategory(methodCategory);
+	ICategory<String> methodCategory = new Category(
+		indexedMethodProduction, false);
+	grammar.addCategory(methodCategory);
 
 		DSLMethod annotation = method.getAnnotation(DSLMethod.class);
 
 		if (isPublic && (annotation == null || annotation.topLevel())) {
-			Rule methodRule = new Rule(this.statement, methodCategory);
-			this.grammar.addRule(methodRule);
+	    Rule methodRule = new Rule(this.statement,
+		    ListBuilder.single(methodCategory));
+	    grammar.addRule(methodRule);
 		}
 
 		Rule rule = new Rule(methodCategory, categories);
-		this.grammar.addRule(rule);
+	grammar.addRule(rule);
 
 		for (ICategory<String> c : categories) {
-			this.grammar.addCategory(c);
+	    grammar.addCategory(c);
 		}
 
 		if (returnType != void.class && returnType != Void.class) {
-			ICategory<String> returnTypeCategory = this.typeHandler.handle(returnType, methodOptions);
-			this.grammar.addCategory(returnTypeCategory);
+	    ICategory<String> returnTypeCategory = typeHandler.handle(
+		    returnType, methodOptions);
+	    grammar.addCategory(returnTypeCategory);
 
 	    ICategory<String> typeCategory = new Category(
 		    CategoryNames.RTYPE_CATEGORY, false);
-			Rule typeToMethod = new Rule(typeCategory, methodCategory);
-			this.grammar.addRule(typeToMethod);
+	    Rule typeToMethod = new Rule(typeCategory,
+		    ListBuilder.single(methodCategory));
+	    grammar.addRule(typeToMethod);
 
-			Rule returnTypeToMethod = new Rule(returnTypeCategory, methodCategory);
-			this.grammar.addRule(returnTypeToMethod);
+	    Rule returnTypeToMethod = new Rule(returnTypeCategory,
+		    ListBuilder.single(methodCategory));
+	    grammar.addRule(returnTypeToMethod);
 		}
-	}
-
-    // (Leo Roos; Jun 27, 2011): Never used; plus this information is also
-    // available via the generated IGrammar
-    // public IRule<String> getStartRule() {
-    // return this.startRule;
-    // }
-
-    private IGrammar<String> getGrammar() {
-		return this.grammar;
 	}
 
     public Map<String, MethodOptions> getMethodOptions() {
@@ -563,14 +706,13 @@ public class GrammarBuilder {
      * public Set<String> getKeywords() { return this.keywords; }
      */
 
-	public Map<String, String> getDefaultOptions() {
-		Map<String, String> defaultOptions = new HashMap<String, String>();
-		defaultOptions.put(ParameterOptions.PARAMETER_ESCAPE, DEFAULT_PARAMETER_ESCAPE);
-		defaultOptions.put(ParameterOptions.WHITESPACE_ESCAPE, DEFAULT_WHITESPACE_ESCAPE);
-	defaultOptions.put(ParameterOptions.ARRAY_DELIMITER, DEFAULT_ARRAY_DELIMITER);
-	defaultOptions.put(ParameterOptions.STRING_QUOTATION, DEFAULT_STRING_QUOTATION);
-		return defaultOptions;
+    private Map<ParameterOptions, String> getDefaultOptions() {
+	Map<ParameterOptions, String> defaultOptions = new HashMap<ParameterOptions, String>();
+	for (ParameterOptions parop : ParameterOptions.values()) {
+	    defaultOptions.put(parop, parop.defaultValue);
 	}
+	return defaultOptions;
+    }
 
 	// public static void main(String[] args) {
 	//

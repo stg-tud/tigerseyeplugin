@@ -57,7 +57,7 @@ public class GrammarBuilderTest {
 	
 	@Test
 	public void testToString() throws Exception {
-		Class<?>[] classes = new Class<?>[] { MathDSL4GrammarBuilderTest.class };
+		Class[] classes =  { MathDSL4GrammarBuilderTest.class };
 		IGrammar<String> grammar = gb.buildGrammar(classes);
 		String string = grammar.toString();
 		

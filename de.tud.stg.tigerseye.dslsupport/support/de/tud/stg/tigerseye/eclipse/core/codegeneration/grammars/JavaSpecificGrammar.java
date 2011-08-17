@@ -33,8 +33,8 @@ public class JavaSpecificGrammar implements HostLanguageGrammar {
 	
 	@Override
 	public void applySpecificGrammar(IGrammar<String> grammar) {
-		ICategory<String> optionalWS = GrammarBuilderHelper.getOptionalWhitespace(grammar);
-		ICategory<String> WS = GrammarBuilderHelper.getRWhitespace(grammar);
+		ICategory<String> optionalWS = GrammarBuilderHelper.getAndSetOptionalWhitespace(grammar);
+		ICategory<String> WS = GrammarBuilderHelper.getAndSetRWhitespace(grammar);
 
 		Category pType = new Category(CategoryNames.PTYPE_CATEGORY, false);
 		Category rType = new Category(CategoryNames.RTYPE_CATEGORY, false);
@@ -92,8 +92,8 @@ public class JavaSpecificGrammar implements HostLanguageGrammar {
 		Category statement = new Category(CategoryNames.STATEMENT_CATEGORY, false);
 		Category statements = new Category(CategoryNames.STATEMENTS_CATEGORY, false);
 
-		Rule groupStatement = new Rule(statement, new Category(LCUB_CATEGORY, true), GrammarBuilderHelper.getOptionalWhitespace(
-				grammar), statements, GrammarBuilderHelper.getOptionalWhitespace(grammar),
+		Rule groupStatement = new Rule(statement, new Category(LCUB_CATEGORY, true), GrammarBuilderHelper.getAndSetOptionalWhitespace(
+				grammar), statements, GrammarBuilderHelper.getAndSetOptionalWhitespace(grammar),
 				new Category(RCUB_CATEGORY, true));
 
 		// Rule emptyGroupStatement = new Rule(statement, new Category("{", true), optionalWS, new Category("}", true));

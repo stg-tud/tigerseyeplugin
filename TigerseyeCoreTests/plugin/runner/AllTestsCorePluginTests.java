@@ -1,4 +1,4 @@
-package de.tud.stg.tigerseye.test;
+package runner;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

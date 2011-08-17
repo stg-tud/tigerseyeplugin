@@ -3,7 +3,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import de.tud.stg.tigerseye.test.AllTestsCorePluginTests;
+import runner.AllTestsCorePluginTests;
+
 
 
 

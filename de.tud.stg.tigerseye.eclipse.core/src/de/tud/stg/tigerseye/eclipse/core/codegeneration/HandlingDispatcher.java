@@ -62,7 +62,8 @@ public class HandlingDispatcher {
 		initHandlers();
 	}
 
-	public ICategory<String> handle(Type type, Map<String, String> parameterOptions) {
+    public ICategory<String> handle(Type type,
+	    Map<ParameterOptions, String> parameterOptions) {
 
 		if (type instanceof Class) {
 			return this.handleClass(type, parameterOptions);
@@ -77,11 +78,13 @@ public class HandlingDispatcher {
 		}
 	}
 
-	private ICategory<String> handleTypeVariable(Type type, Map<String, String> parameterOptions) {
+    private ICategory<String> handleTypeVariable(Type type,
+	    Map<ParameterOptions, String> parameterOptions) {
 		return this.handleClass(Object.class, parameterOptions);
 	}
 
-	private ICategory<String> handleGenericArrayType(Type type, Map<String, String> parameterOptions) {
+    private ICategory<String> handleGenericArrayType(Type type,
+	    Map<ParameterOptions, String> parameterOptions) {
 	// GenericArrayType gat = (GenericArrayType) type;
 
 		Type componentType = ((GenericArrayType) type).getGenericComponentType();
@@ -111,12 +114,14 @@ public class HandlingDispatcher {
 		throw new IllegalArgumentException("type " + componentType.getClass() + " not supported");
 	}
 
-	private ICategory<String> handleParameterizedType(Type type, Map<String, String> parameterOptions) {
+    private ICategory<String> handleParameterizedType(Type type,
+	    Map<ParameterOptions, String> parameterOptions) {
 		ParameterizedType t = (ParameterizedType) type;
 		return this.handleClass((t.getRawType()), parameterOptions);
 	}
 
-	private ICategory<String> handleClass(Type type, Map<String, String> parameterOptions) {
+    private ICategory<String> handleClass(Type type,
+	    Map<ParameterOptions, String> parameterOptions) {
 
 		Class<?> clazz = (Class<?>) type;
 
@@ -132,7 +137,8 @@ public class HandlingDispatcher {
 		}
 	}
 
-	private ICategory<String> handleObjectArray(Class<?> clazz, Map<String, String> parameterOptions) {
+    private ICategory<String> handleObjectArray(Class<?> clazz,
+	    Map<ParameterOptions, String> parameterOptions) {
 		ICategory<String> objects = HandlingDispatcherHelper.getObjectHierarchy(this.grammar, clazz);
 	logger.debug(
 		"Objects in array are {} for class {} with parameterOptions {}",
@@ -152,13 +158,13 @@ public class HandlingDispatcher {
 		Rule r1 = null;
 		if (parameterOptions.get(ParameterOptions.ARRAY_DELIMITER).matches("\\s+")) {
 	    r1 = new Rule(objects, objects,
-		    GrammarBuilderHelper.getRWhitespace(this.grammar), objects);
+		    GrammarBuilderHelper.getAndSetRWhitespace(this.grammar), objects);
 		} else if (parameterOptions.get(ParameterOptions.ARRAY_DELIMITER).isEmpty()) {
 			r1 = new Rule(objects, objects, objects);
 		} else {
 			Category ad = new Category(parameterOptions.get(ParameterOptions.ARRAY_DELIMITER), true);
 			this.grammar.addCategory(ad);
-	    ICategory<String> WS = GrammarBuilderHelper.getOptionalWhitespace(
+	    ICategory<String> WS = GrammarBuilderHelper.getAndSetOptionalWhitespace(
 this.grammar);
 			r1 = new Rule(objects, objects, WS, ad, WS, objects);
 	    // Rule r1a = new Rule(objects, objects, ad, WS, objects);
@@ -189,7 +195,7 @@ this.grammar);
 	}
 
 
-    public void handleDefaults(Map<String, String> methodOptions) {
+    public void handleDefaults(Map<ParameterOptions, String> methodOptions) {
 		for (Entry<Class<?>, ClassTypeHandler> e : classHandlers.entrySet()) {
 			e.getValue().handle(this.grammar, e.getKey(), methodOptions);
 		}

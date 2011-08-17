@@ -11,15 +11,29 @@ new DSLInvoker(MathDSL.class).eval() {
 		10] as int[])
 	
  	int x = 10 ;
- 		∑ x, 10
+ 	sum__p0(
+		[x,
+		10] as int[])
 	
-	∑ Math.abs(-10), 10
-	
-	∑ new Integer(10), 10
-	
-	∑ buildString("hello"), 10
-	∑ new String("hello"), 10
-	String s = "hello";
-	∑ s, 10
+ 	sum__p0(
+		[Math.abs(-10),
+		10] as int[])
+		
+ 	sum__p0(
+		[new Integer ( 10 ),
+		10] as int[])
+		
+ 	sum__p0(
+		[buildString ( "hello" ),
+		10] as int[])
+		
+	sum__p0(
+		[new String ( "hello" ),
+		10] as int[])
+		
+ 	String s = "hello" ;
+ 	sum__p0(
+		[s,
+		10] as int[])
  
 } 

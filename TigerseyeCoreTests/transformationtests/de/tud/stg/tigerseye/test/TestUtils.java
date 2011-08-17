@@ -87,7 +87,7 @@ public class TestUtils {
 		}
 	}
 	
-	public static GrammarResult newGrammar(Class<?>... classes) {
+	public static GrammarResult newGrammar(Class<? extends DSL>... classes) {
 	
 		GrammarBuilder grammarBuilder = new GrammarBuilder(
 				getDefaultLookupTable());
@@ -110,8 +110,9 @@ public class TestUtils {
 
 	public static void assertContainsAllLines(String doesContain, String isContained) {
 		Scanner expScanner = new Scanner(isContained);
+		String trimmedDoesContain = doesContain.trim();
 		while(expScanner.hasNextLine()){
-			assertThat(doesContain, containsString(expScanner.nextLine()));
+			assertThat(trimmedDoesContain, containsString(expScanner.nextLine().trim()));
 		}
 	}
 
@@ -154,6 +155,11 @@ public class TestUtils {
 	public static ListBuilder<Class<? extends DSL>> dslsList(Class<? extends DSL> element){
 		ListBuilder<Class<? extends DSL>> listGen = new ListBuilder<Class<?extends DSL>>(element);
 		return listGen;
+	}
+	
+	public static List<Class<? extends DSL>> dslSingle(Class<? extends DSL> element){
+		ListBuilder<Class<? extends DSL>> listGen = new ListBuilder<Class<?extends DSL>>(element);
+		return listGen.toList();
 	}
 
 }

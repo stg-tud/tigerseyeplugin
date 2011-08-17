@@ -11,25 +11,25 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.JavaSpecificGra
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.TypeHandler;
 
 /**
- * An Annotation to configure a DSL. Elements that have {@code [unassigned]} as
- * their default values are defined in
- * {@link de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder}
+ * An Annotation to configure a DSL. Unassigned parameter options have the
+ * {@link AnnotationConstants#UNASSIGNED} value
  */
 @Inherited
 @Target({ ElementType.TYPE, ElementType.METHOD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DSL {
-	String parameterEscape() default "[unassigned]";
+	String parameterEscape() default AnnotationConstants.UNASSIGNED;
 
-	String whitespaceEscape() default "[unassigned]";
+	String whitespaceEscape() default AnnotationConstants.UNASSIGNED;
 
-	String arrayDelimiter() default "[unassigned]";
+	String arrayDelimiter() default AnnotationConstants.UNASSIGNED;
 
-	String stringQuotation() default "[unassigned]";
+	String stringQuotation() default AnnotationConstants.UNASSIGNED;
 
 	Class<? extends TypeHandler>[] typeRules() default {};
 
 	Class<? extends HostLanguageGrammar>[] hostLanguageRules() default { JavaSpecificGrammar.class };
 
 	boolean waterSupported() default true;
+
 }
