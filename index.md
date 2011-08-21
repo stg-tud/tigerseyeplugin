@@ -1,6 +1,5 @@
 # Tigerseye Index
 
-Documentation can be found at
-[documentation.html]
+The [Users Manual](build/documentation.html) describes how to use Tigerseye Plug-in
 
 
