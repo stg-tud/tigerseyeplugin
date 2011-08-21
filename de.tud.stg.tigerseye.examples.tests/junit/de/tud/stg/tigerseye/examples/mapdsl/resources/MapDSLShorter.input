@@ -1,1 +1,0 @@
-def m2 = [Integer,String: 1="hans"]

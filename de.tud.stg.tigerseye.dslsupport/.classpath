@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<classpath>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry excluding="de/tud/stg/popart/dslsupport/analysis/|de/tud/stg/popart/dslsupport/atx/|de/tud/stg/popart/dslsupport/bool/|de/tud/stg/popart/dslsupport/listsets/|de/tud/stg/popart/dslsupport/logo/|de/tud/stg/popart/dslsupport/modulo/|de/tud/stg/popart/dslsupport/policy/|de/tud/stg/popart/dslsupport/sql/|de/tud/stg/popart/dslsupport/trivalent/|de/tud/stg/popart/dslsupport/DSLCreator.java|de/tud/stg/popart/dslsupport/ContextDSL.java" kind="src" path="src"/>
-	<classpathentry kind="src" output="bin-support" path="support"/>
-	<classpathentry kind="output" path="bin"/>
-</classpath>

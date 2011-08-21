@@ -11,8 +11,8 @@ The plug-in itself consists of multiple separate plug-ins and has
 further dependencies to third party plug-ins and libraries. It uses
 classes and extensions from the Groovy Plug-in and Eclipse's JDT
 plug-ins, makes some use of different `apache.commons` libraries and
-uses further libraries to process code. It's core dependency is an
-*Earley* parser and the $\tiger$ builder. The builder is currently
+uses further libraries to process code. The transformation is performed via 
+the *Earley Parser* implementation `parlex` and the $\tiger$ builder. The builder is currently
 included in the core plug-in. The following table shows the necessary
 plug-ins and the required versions, if any.
 
@@ -44,17 +44,18 @@ further Eclipse projects relevant for the $\tiger$ development.
 To set up an Eclipse workspace in order to run the $\tiger$ IDE the
 following steps must be performed.
 
-1.  Install the Groovy Feature into your Eclipse.
+1.  Install the Groovy Plug-in for your Eclipse.
 2.  Copy all other plug-ins into your Eclipse workspace (usually you
     will check them out from a repository).
 3.  Perform a complete build of your workspace. It might be necessary to
     clean all projects before an error free build will be performed.
 
-Once all plug-ins have been set up, $\tiger$ can be started using the
-predefined `Tigerseye_IDE` launch configuration. The configuration is
-located in the TigerseyeConfiguration project. It is possible that
-depending on the used operating system this launch configuration has to
-be adjusted. Alternatively a new Eclipse Plug-in configuration can be
+Once all plug-ins have been set up, $\tiger$ can be started using one of the
+predefined `Tigerseye_IDE` launch configurations.
+They are contained in the TigerseyeConfiguration plug-in and end with the 
+operating system name they are defined for. In order to use them they first have 
+to be renamed to a file ending with `.launch`.
+Alternatively a new Eclipse Plug-in configuration can be
 started with all available plug-ins active.
 
 ## Installing a Language
@@ -132,7 +133,8 @@ at [Andrew Eisenberg's Blog][andrewsblog].
 
 ### Additional Remarks
 
-Currently the $\tiger$ implementation (Version 0.0.1) assumes
-that languages can be found in an accessible folder. So the exported
-language has to be unpacked into the `plugins` folder of the target
-Eclipse installation before it is usable.
+If the exported language uses libraries it has to be in an exported state
+when installed in the plug-ins folder. Doing that 
+$\tiger$ can determin the necessary libraries and load them 
+on the classpath.
+

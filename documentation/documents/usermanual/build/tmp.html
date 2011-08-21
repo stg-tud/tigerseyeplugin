@@ -1,0 +1,241 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="author" content="Leo Roos" />
+  <meta name="author" content="
+                               '+''+e+''+'');
+                               // -->
+                               &#108;&#x65;&#x6f;&#x5f;&#114;&#x6f;&#x6f;&#x73;&#32;&#x61;&#116;&#32;&#114;&#98;&#x67;&#32;&#100;&#x6f;&#116;&#32;&#x69;&#110;&#102;&#x6f;&#114;&#x6d;&#x61;&#116;&#x69;&#x6b;&#32;&#100;&#x6f;&#116;&#32;&#116;&#x75;&#x2d;&#100;&#x61;&#114;&#x6d;&#x73;&#116;&#x61;&#100;&#116;&#32;&#100;&#x6f;&#116;&#32;&#100;&#x65;" />
+  <meta name="date" content="$Date:: $" />
+  <title>Tigerseye User Manual Version 0.0.1</title>
+</head>
+<body>
+<h1 class="title">Tigerseye User Manual Version 0.0.1</h1>
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#installation">Installation</a><ul>
+<li><a href="#installation-for-development">Installation for Development</a></li>
+<li><a href="#installing-a-language">Installing a Language</a><ul>
+<li><a href="#using-class-files-compiled-in-the-workspace">Using class Files Compiled in the Workspace</a></li>
+<li><a href="#using-groovy-specific-build-properties">Using Groovy-specific Build Properties</a></li>
+<li><a href="#additional-remarks">Additional Remarks</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#examples">Examples</a><ul>
+<li><a href="#creating-a-new-language-definition">Creating a new Language Definition</a></li>
+<li><a href="#deployment-of-a-language">Deployment of a Language</a></li>
+</ul></li>
+<li><a href="#features">Features</a><ul>
+<li><a href="#preferences">Preferences</a></li>
+<li><a href="#add-and-remove-nature">Add and Remove Nature</a></li>
+<li><a href="#language-definition-wizard">Language Definition Wizard</a></li>
+<li><a href="#new-tigerseye-class-wizard">New Tigerseye Class Wizard</a></li>
+<li><a href="#launch-tigerseye-dsl">Launch Tigerseye DSL</a></li>
+</ul></li>
+</ul>
+</div>
+<!--latex style macros, can be referenced using the macro inside two dollar signs, 
+e.g. $\tiger$-->
+
+<!--don't forget to end the file with a new line-->
+
+
+<h1 id="introduction"><a href="#TOC">Introduction</a></h1>
+<p>The <span class="math"><em>TigersEye</em></span> Eclipse Plug-in is an IDE that strives to support easy creation of EDSLs. This guide describes how to install <span class="math"><em>TigersEye</em></span> for development, it shows the currently implemented features and showcases how to create and install a new language. <span class="math"><em>TigersEye</em></span> has been previously known as <span class="math"><em>P</em><em>o</em><em>p</em><em>a</em><em>r</em><em>t</em></span>, which has been developed by Yevgen Fanshil, Leonid Melnyk, Thorsten Peter, David Marx, Kamil Erhard and Tom Dinkelaker. The used examples are adjusted versions of their prior work.</p>
+<h1 id="installation"><a href="#TOC">Installation</a></h1>
+<p>This section describes the installation process for multiple use cases. One subsection describes the installation for the <span class="math"><em>TigersEye</em></span> plug-in for development. A further subsection describes the installation process of a language designed with <span class="math"><em>TigersEye</em></span>.</p>
+<h2 id="installation-for-development"><a href="#TOC">Installation for Development</a></h2>
+<p>The plug-in itself consists of multiple separate plug-ins and has further dependencies to third party plug-ins and libraries. It uses classes and extensions from the Groovy Plug-in and Eclipse's JDT plug-ins, makes some use of different <code>apache.commons</code> libraries and uses further libraries to process code. The transformation is performed via the <em>Earley Parser</em> implementation <code>parlex</code> and the <span class="math"><em>TigersEye</em></span> builder. The builder is currently included in the core plug-in. The following table shows the necessary plug-ins and the required versions, if any.</p>
+<table>
+<caption>Necessary Plug-ins</caption>
+<thead>
+<tr class="header">
+<th align="left">Plug-in name</th>
+<th align="left">Version</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">de.tud.stg.tigerseye.eclipse.core</td>
+<td align="left"><span class="math">0. 0. 1</span></td>
+<td align="left">Core functionality.</td>
+</tr>
+<tr class="even">
+<td align="left">de.tud.stg.tigerseye.eclipse.ui</td>
+<td align="left"><span class="math">0. 0. 1</span></td>
+<td align="left">User Interface functionality.</td>
+</tr>
+<tr class="odd">
+<td align="left">de.tud.stg.tigerseye.eclipse</td>
+<td align="left"><span class="math">0. 0. 1</span></td>
+<td align="left">Contains libraries and plug-ins used by multiple <span class="math"><em>TigersEye</em></span> plug-ins.</td>
+</tr>
+<tr class="even">
+<td align="left">Groovy Eclipse Feature</td>
+<td align="left">2.1.1</td>
+<td align="left">Groovy Eclipse Plug-ins.</td>
+</tr>
+<tr class="odd">
+<td align="left">org.apache.commons.collections</td>
+<td align="left">-</td>
+<td align="left">Apache utility classes for collection handling.</td>
+</tr>
+<tr class="even">
+<td align="left">org.apache.commons.io</td>
+<td align="left">-</td>
+<td align="left">Apache IO utility classes.</td>
+</tr>
+<tr class="odd">
+<td align="left">org.apache.commons.lang</td>
+<td align="left">-</td>
+<td align="left">Apache general language utility classes.</td>
+</tr>
+<tr class="even">
+<td align="left">org.apache.log4j</td>
+<td align="left">[1.2 - 1.3)</td>
+<td align="left">Employed logging framework.</td>
+</tr>
+<tr class="odd">
+<td align="left">parlex</td>
+<td align="left">-</td>
+<td align="left">Earley parser, performs transformations.</td>
+</tr>
+<tr class="even">
+<td align="left">slf4j-log4j12</td>
+<td align="left">-</td>
+<td align="left">Employed logging facade with log4j binding.</td>
+</tr>
+</tbody>
+</table>
+<p>The next table lists further Eclipse projects relevant for the <span class="math"><em>TigersEye</em></span> development.</p>
+<table>
+<caption>Further <span class="math"><em>TigersEye</em></span> related Eclipse projects</caption>
+<thead>
+<tr class="header">
+<th align="left">Project name</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">TigerseyeConfiguration</td>
+<td align="left">Contains configuration related data.</td>
+</tr>
+<tr class="even">
+<td align="left">documentation</td>
+<td align="left">Contains documentation resources.</td>
+</tr>
+</tbody>
+</table>
+<p>To set up an Eclipse workspace in order to run the <span class="math"><em>TigersEye</em></span> IDE the following steps must be performed.</p>
+<ol style="list-style-type: decimal">
+<li>Install the Groovy Plug-in for your Eclipse.</li>
+<li>Copy all other plug-ins into your Eclipse workspace (usually you will check them out from a repository).</li>
+<li>Perform a complete build of your workspace. It might be necessary to clean all projects before an error free build will be performed.</li>
+</ol>
+<p>Once all plug-ins have been set up, <span class="math"><em>TigersEye</em></span> can be started using one of the predefined <code>Tigerseye_IDE</code> launch configurations. They are contained in the TigerseyeConfiguration plug-in and end with the operating system name they are defined for. In order to use them they first have to be renamed to a file ending with <code>.launch</code>. Alternatively a new Eclipse Plug-in configuration can be started with all available plug-ins active.</p>
+<h2 id="installing-a-language"><a href="#TOC">Installing a Language</a></h2>
+<p>To install a newly created language it is currently necessary to export it as a plug-in. As in the <a href="#examples">Examples</a> section described the project can be converted into a plug-in project using the Eclipse PDE tools. It is than necessary to add the <code>de.tud.stg.tigerseye.eclipse</code> and the <code>de.tud.stg.tigerseye.eclipse.core</code> plug-ins as dependencies. The core plug-in provides the <code>dslLanguages</code> extension point. This point has to be extended by declaring what the language class of the exported language is. Optionally a user friendly name and a default file extension can be defined.</p>
+<p>Since the language definition will typically be a Groovy file, of which the PDE Builder is not aware of, the default behavior when exporting a plug-in has to be adjusted. Two different approaches can be taken.</p>
+<h3 id="using-class-files-compiled-in-the-workspace"><a href="#TOC">Using class Files Compiled in the Workspace</a></h3>
+<p>Instead of a specific source folder, which would be compiled during an export using the PDE Export Wizard, the binaries created during the development have to be included, so that they are available on the classpath of the exported language. This can be done in different ways:</p>
+<ul>
+<li>Assuming that the output folder for the <code>class</code> files is <code>bin</code>, the <code>bin</code> folder can be added to the <code>build.properties</code> file as value for the <code>build.includes</code> property and the entry <code>bin</code> has to be added to the <code>MANIFEST.MF</code> file as <code>Bundle-Classpath</code> entry (the default classpath is the root of the created jar file).</li>
+<li><p>Alternatively the binary folder can be specified as source folder, in which case the <code>MANIFEST.MF</code> does not have to be modified. The resulting <code>build.properties</code> file will look something like this:</p>
+<pre><code>source.. = src/,\
+           bin/
+bin.includes = META-INF/,\
+               .,\
+               plugin.xml
+output.. = bin/
+</code></pre></li>
+</ul>
+<h3 id="using-groovy-specific-build-properties"><a href="#TOC">Using Groovy-specific Build Properties</a></h3>
+<p>When the Groovy plug-in is installed, additional properties for the <code>build.properties</code> file can be used to tell the PDE to include Groovy files during an export. Simply add the following three lines to your build.properties file:</p>
+<pre><code>sourceFileExtensions=*.java, *.groovy
+compilerAdapter=org.codehaus.groovy.eclipse.ant.GroovyCompilerAdapter
+compilerAdapter.useLog=true
+</code></pre>
+<p>The resulting build.properties file will look similar to this:</p>
+<pre><code>source.. = src/
+bin.includes = META-INF/,\
+               .,\
+               plugin.xml,\
+output.. = bin/
+sourceFileExtensions=*.java, *.groovy
+compilerAdapter=org.codehaus.groovy.eclipse.ant.GroovyCompilerAdapter
+compilerAdapter.useLog=true
+</code></pre>
+<p>The additional entries will cause a compilation of Java <em>and</em> Groovy files. For general information about valid values for the <code>build.properties</code> file check out the Eclipse Help following the path <code>Plug-in Development Environment Guide &gt; Reference &gt; Build Configuration &gt; Feature and Plug-in Build configuration</code>. For more information about the Groovy specific build properties have a look at <a href="http://contraptionsforprogramming.blogspot.com/2010/08/groovy-pde-redux.html">Andrew Eisenberg's Blog</a>.</p>
+<h3 id="additional-remarks"><a href="#TOC">Additional Remarks</a></h3>
+<p>If the exported language uses libraries it has to be in an exported state when installed in the plug-ins folder. Doing that <span class="math"><em>TigersEye</em></span> can determin the necessary libraries and load them on the classpath.</p>
+<h1 id="examples"><a href="#TOC">Examples</a></h1>
+<p>This section showcases typical use cases for the <span class="math"><em>TigersEye</em></span> IDE.</p>
+<h2 id="creating-a-new-language-definition"><a href="#TOC">Creating a new Language Definition</a></h2>
+<p>The usage of the New Tigerseye Language Definition wizard will be explained by creating a Trivalent-DSL. A Trivalent logic DSL adds an unknown value <code>U</code> to the boolean values true <code>T</code> and false <code>F</code>. So that <code>T&amp;U</code> is <code>U</code> and <code>T|U</code> is <code>T</code> and so on.</p>
+<p>First create a new Java Project. This Project will contain the Trivalent language created by the <em>New Tigerseye Language</em> wizard. In this example a project called <code>de.tud.stg.tigerseye.examples.trivalent</code> will be created. In the context menu of the Project choose <code>New &gt; Other</code>. Choose <em>Tigerseye Language Definition</em> in the Tigerseye folder.<br /><img src="../pics/new_tigesreye_language.png" title="Choosing the New Tigerseye Language Wizard" alt="Choosing the New Tigerseye Language Wizard" /></p>
+<p>Each language definition consists of a Groovy class that defines all operations, literals and structured elements of the DSL. Type TrivalentDSL as the class name, de.tud.stg.tigerseye.examples.trivalent as the package and select <code>Next</code>.<br /><img src="../pics/example_newlang_newlangclass.png" title="New TrivalentDSL Language Defintion" alt="New TrivalentDSL Language Defintion" /></p>
+<p>Now add three new literals: <code>T</code> (true), <code>F</code> (false) and <code>U</code> (unknown). Set the type for every literal to <code>Trivalent</code>.<br /><img src="../pics/example_newlang_literalsadded.png" alt="TrivalentDSL Language Definition with Literals added" /></p>
+<p>When finishing the wizard these three classes and their super type Trivalent will be created. Notice that <code>T</code>, <code>F</code> and <code>U</code> extend Trivalent. The only operation will be an enhanced <code>println</code> which takes a String and a Trivalent expression and prints both. For example</p>
+<pre><code>puts(&quot;T|U: &quot;,T|U)
+</code></pre>
+<p>produces</p>
+<pre><code>T|U: T
+</code></pre>
+<p>The return type will be <code>void</code> so we leave the <code>Return type:</code> field empty. For each operation you can choose if setting a breakpoint on a line containing this keyword should be possible. You can define parameters and their types in the <code>Parameter:</code> section. Parameters are added by clicking on the <code>+</code> button.<br /><img src="../pics/example_newlang_operationadded.png" title="TrivalentDSL Language Definition Operation puts added" alt="TrivalentDSL Language Definition Operation puts added" /></p>
+<p>Now add a repeat-statement. The following will simply print <code>T: T</code> ten times to standard out.</p>
+<pre><code>repeat(10) {
+   puts(&quot;T: &quot;,T);
+}
+</code></pre>
+<p>The return type will be void and there is one parameter named n. Select explicit parameters.<br /><img src="../pics/example_newlang_structuredelementadded.png" alt="TrivalentDSL Language Definition Structured Element repeat added" /></p>
+<p>Again, you can choose if it should be possible to set a breakpoint on a line containing this keyword. After you select <code>Finish</code> a dialog will pop up asking you if you want to add the <span class="math"><em>TigersEye</em></span> runtime libraries.<br /><img src="../pics/example_newlang_addruntime.png" alt="Question Dialog to add Runtime Libraries" /></p>
+<p>Usually you should say yes, since language definitions have dependencies to the runtime libraries. The next figure shows the generated classes and project structure.<br /><img src="../pics/example_newlang_generatedcode.png" alt="TrivalentDSL Generated Classes and Code" /></p>
+<p>For the new type <code>Trivalent</code> as well as for the literals <code>T</code>,<code>U</code> and <code>F</code> a separate Groovy class has been created. The language configuration is defined in the <code>TrivalentDSL</code> class.</p>
+<h2 id="deployment-of-a-language"><a href="#TOC">Deployment of a Language</a></h2>
+<p>This section shows how to deploy a <span class="math"><em>TigersEye</em></span> language to a plug-in project. This plug-in project will declare its dependencies to two plug-ins:</p>
+<ul>
+<li>de.tud.stg.tigerseye</li>
+<li>de.tud.stg.tigerseye.eclipse.core</li>
+</ul>
+<p>The <code>de.tud.stg.tigerseye</code> plug-in provides the dependent on runtime libraries and the <code>de.tud.stg.tigerseye.eclipse.core</code> plug-in the extension which declares that this plug-in project actually provides a new language. The following steps have to be performed:</p>
+<ol style="list-style-type: decimal">
+<li><p>Convert the language definition project to a plug-in project.<br /> <img src="../pics/example_deploy_converttoplugin.png" alt="Add Plug-in Project Nature" /></p></li>
+<li><p>In the MANIFEST.MF file add the dependencies to the two Tigerseye plug-ins.<br /> <img src="../pics/example_deploy_addplugindependencies.png" alt="Add Plug-in Dependencies to" /></p></li>
+<li><p>Now open the plugin.xml and go the Extensions tab. Add the <code>de.tud.stg.tigerseye.dslDefinitions</code> extension point. On the extension point select <code>New &gt; language</code>. There you can define the language class to be used. In this example <code>de.tud.stg.tigerseye.examples.trivalent.Trivalent</code> is used. Additionally you should define a user friendly name of your new language, e.g. <em>Trivalent DSL</em>. Optionally you can define the default extension identifying your language, such as <code>tri</code>. The following figure shows the configuration.<br /> <img src="../pics/example_deploy_extensionpoint.png" alt="dslDefinitions Extension Point Configuration" /> The <code>extension</code> field can later also be configured via the preference pages.</p></li>
+<li><p>Currently only the deployment for development is supported. A language can either be copied or linked inside the eclipse instance in which the plug-in is developed. The next time the Eclipse instance is started the language will be visible in the preference pages and can be used.</p></li>
+</ol>
+<h1 id="features"><a href="#TOC">Features</a></h1>
+<p>The current version of <span class="math"><em>TigersEye</em></span> provides the fundamental functionalities in order to be able to use it as a language workbench. New languages can easily be created and deployed. After a restart they can be used in projects that have the <span class="math"><em>TigersEye</em></span> nature. A <span class="math"><em>TigersEye</em></span> nature can easily be added and removed via the context menu. The installed DSLs can be configured through the preference pages, as well as the employed transformations. The editor is an extended version of the Groovy editor and provides keyword coloring for keywords of installed and activated DSLs.</p>
+<h2 id="preferences"><a href="#TOC">Preferences</a></h2>
+<p>The preference pages are an important part of <span class="math"><em>TigersEye</em></span>, since they provide the configuration of registered DSLs. In the main prefrence page<br /><img src="../pics/preferences_main.png" title="Tigerseye Main Preference Page" alt="Tigerseye Main Preference Page" /></p>
+<p>the output source folder can be adjusted. Registered languages can be configured on the languages preference page.<br /><img src="../pics/preferences_languages.png" title="Tigerseye Language Configuration Page" alt="Tigerseye Language Configuration Page" /></p>
+<p>DSLs have to be set into activated state in order to use them. The extensions, that indicate which concrete DSL class is responsible for which files of the according extension can be adjusted in the Extensions column. When a DSL is selected its keywords are shown below in the <em>Declared Keywords of Selected DSL</em> table.<br /> In the transformations preference page used transformations can be configured. A transformation usually only supports a subset of available resources. Its active state for each resource can be modified.<br /><img src="../pics/preferences_transformations.png" title="Tigerseye Transformations Preference Page" alt="Tigerseye Transformations Preference Page" /></p>
+<p>For each resource and DSL different transformations might be available and active. These can be configured using the <em>Select Transformations</em> dialog.<br /><img src="../pics/preferences_transformations_selected.png" title="Tigerseye Transformations Configuration" alt="Tigerseye Transformations Configuration" /></p>
+<p>The dialog also shows additional informations about the currently selected transformation in a tray window that can be opened clicking on the additinal information button. <img src="../pics/additional_information_button.png" title="Additional Information Button" alt="Additional Information Button" /></p>
+<p>The editor provides keyword coloring for active DSLs. The colors can be configured using the <em>Tigerseye Editor</em> preference page, where every DSL can be configured separately and the general keyword coloring can be activated or deactivated.<br /><img src="../pics/preferences_editor.png" title="Tigerseye Editor Preference Page" alt="Tigerseye Editor Preference Page" /></p>
+<h2 id="add-and-remove-nature"><a href="#TOC">Add and Remove Nature</a></h2>
+<p><span class="math"><em>TigersEye</em></span> has additional requirements which will be imported when adding the <span class="math"><em>TigersEye</em></span> nature to a project. The project must have at least the Java nature otherwise the transformation to a <span class="math"><em>TigersEye</em></span> project is not possible. Following figure shows the available context menu to add the nature to a project.<br /><img src="../pics/convert_to_tigerseye.png" title="Add the Nature to a Java Project" alt="Add the Nature to a Java Project" /></p>
+<p>This will do two things:</p>
+<ol style="list-style-type: decimal">
+<li><p>A seperate source folder will be created into which the translated DSL files will be put (here: <code>src-tigerseye</code>).</p></li>
+<li>A new class path container will be added which contains the runtime libraries (popartAnnotations.jar, popart.jar, edslNature.jar) and the libraries of registered DSLs as well as their dependencies. For example <code>de.tud.stg.tigerseye.examples.LogoDSL</code> and <code>de.tud.stg.tigerseye.examples.DSLDefinitions</code>. Additionally the GroovyNature will be added if not already configured.<br /></li>
+</ol>
+<p>Following figure shows a possible resulting configuration.<br /><img src="../pics/tigerseye_dependencies.png" title="Dependencies" alt="Dependencies" /><br /> Removing a <span class="math"><em>TigersEye</em></span> nature can also be accomplished via the context menu of a <span class="math"><em>TigersEye</em></span> project.<br /><img src="../pics/remove_tigerseye_nature.png" title="Remove the Nature from a Project" alt="Remove the Nature from a Project" /></p>
+<h2 id="language-definition-wizard"><a href="#TOC">Language Definition Wizard</a></h2>
+<p>A new language can be created using the <em>Tigerseye Language Wizard</em>. The Wizard can be accessed via <code>File &gt; New &gt; Other</code><br /><img src="../pics/new_tigesreye_language.png" title="Choosing the New Tigerseye Language Wizard" alt="Choosing the New Tigerseye Language Wizard" /><br /> The next figure shows the first page of the Wizard.<br /><img src="../pics/tigerseye_language_definition_page1.png" title="Tigerseye Language Definition Wizard Page 1" alt="Tigerseye Language Definition Wizard Page 1" /></p>
+<p>There the name of the main language class can be defined. As shown the default package is not a valid package for a language definition, since this will cause problems when trying to use the language within a Java class. The next figure shows the actual language definition page.<br /><img src="../pics/tigerseye_language_definition_page2.png" title="Tigerseye Language Definition Wizard Page 2" alt="Tigerseye Language Definition Wizard Page 2" /></p>
+<p>On the language definition page the different literals, operations and structured elements can be added. In Section <a href="#examples">Examples</a> the usage of the wizard is showcased.</p>
+<h2 id="new-tigerseye-class-wizard"><a href="#TOC">New Tigerseye Class Wizard</a></h2>
+<p>The <em>New Tigerseye Class</em> Wizard enables easy creation of new DSL classes.<br /><img src="../pics/new_tigerseye_class_wizard.png" title="New Tigerseye Class Wizard" alt="New Tigerseye Class Wizard" /></p>
+<p>It is basically a version of the <em>Groovy Class</em> Wizard. Not all modifiable areas have influence on the generated code. The useful fields for generation are <code>Source folder</code>, <code>Package</code>, <code>Name</code> and the DSL extension.</p>
+<h2 id="launch-tigerseye-dsl"><a href="#TOC">Launch Tigerseye DSL</a></h2>
+<p>A DSL can be launched using a <em>launch shortcut</em> or via the <em>Run Configurations</em> dialog. The next figure shows a launch using a launch shortcut.<br /><img src="../pics/launch_shortcut.png" title="Launch via Context Menu" alt="Launch via Context Menu" /></p>
+<p>The following figure shows the launch via the Run Configurations Dialog.<br /><img src="../pics/launch_run_configurations_dialog.png" title="Launch via the Run Configurations Dialog" alt="Launch via the Run Configurations Dialog" /></p>
+<p>In the Run Configurations Dialog a new launch can be configured or a previous launch adjusted. On the <code>Tigerseye</code> tab the project from which a DSL will be launched as well as the DSL file to launch can be chosen. When using the launch shortcut the Groovy default launch configuration is assumed, which will set additional classpath properties. Later these can be modified using this dialog.</p>
+</body>
+</html>

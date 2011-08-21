@@ -1,8 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Tigerseye Example DSLs
-Bundle-SymbolicName: de.tud.stg.tigerseye.examples.DSLDefinitions;singleton:=true
-Bundle-Version: 0.0.3.qualifier
-Require-Bundle: de.tud.stg.tigerseye.eclipse;bundle-version="0.0.1",
- de.tud.stg.tigerseye.eclipse.core;bundle-version="0.0.1"
-Bundle-RequiredExecutionEnvironment: J2SE-1.5

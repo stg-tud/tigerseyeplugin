@@ -1,5 +1,0 @@
-math		::= { expression }
-expression	::= plus | minus
-plus		::= number "+" number
-minus		::= number "-" number
-number		::= digit { digit }
