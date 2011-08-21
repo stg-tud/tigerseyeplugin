@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -67,12 +68,10 @@ public class TestDSLTransformation {
 				List<Class<? extends DSL>> classes) throws VisitFailure {
 		GrammarBuilder gb = new GrammarBuilder(ult);
 		
-		Class<? extends DSL>[] array = classes.toArray(new Class[0]);
-		
-		IGrammar<String> grammar = gb.buildGrammar(array);
+		IGrammar<String> grammar = gb.buildGrammar(classes);
 
 		String performTransformation = performTransformation(sb,
-				new GrammarResult(grammar, gb.getMethodOptions(), array));
+				new GrammarResult(grammar, gb.getMethodOptions(), classes));
 
 		return performTransformation;
 	}
@@ -81,10 +80,17 @@ public class TestDSLTransformation {
 
 		public Map<String, MethodOptions> moptions;
 		public IGrammar<String> grammar;
-		public final Class<?>[] classes;
+		public final List<Class<? extends DSL>> classes;
 
 		public GrammarResult(IGrammar<String> buildGrammar,
-				Map<String, MethodOptions> methodOptions, Class<?>... cs) {
+				Map<String, MethodOptions> methodOptions, Class<? extends DSL>... cs) {
+			grammar = buildGrammar;
+			moptions = methodOptions;
+			classes = (List<Class<? extends DSL>>)Arrays.asList(cs);
+		}
+		
+		public GrammarResult(IGrammar<String> buildGrammar,
+				Map<String, MethodOptions> methodOptions, List<Class<? extends DSL>> cs) {
 			grammar = buildGrammar;
 			moptions = methodOptions;
 			classes = cs;
@@ -95,8 +101,8 @@ public class TestDSLTransformation {
 			if(contextName == null)
 				contextName = "no_context_name_given";
 			Context context = new Context(contextName);
-			for (int i = 0; i < classes.length ; i++){				
-				context.addDSL("anyextension"+i, (Class<? extends DSL>) classes[i]);
+			for (int i = 0; i < classes.size() ; i++){				
+				context.addDSL("anyextension"+i, (Class<? extends DSL>) classes.get(i));
 			}
 			context.setFiletype(null);
 			return context;
@@ -117,8 +123,8 @@ public class TestDSLTransformation {
 		logger.debug("Resulting AST is:\n{}", chart.getAST());
 
 		Context context = new Context("dummyFileName");
-		for (Class<?> clazz : gr.classes) {
-			context.addDSL(clazz.getSimpleName(), (Class<? extends DSL>) clazz);
+		for (Class<? extends DSL> clazz : gr.classes) {
+			context.addDSL(clazz.getSimpleName(), clazz);
 		}
 
 		// int cnt = 0;
@@ -135,7 +141,7 @@ public class TestDSLTransformation {
 
 		term = new KeywordChainingTransformation().transform(moptions, term);
 
-		if (gr.classes.length > 1) {
+		if (gr.classes.size() > 1) {
 			// term = new ClosureResultTransformer().transform(context,
 			// term);
 			term = new InvokationDispatcherTransformation().transform(moptions,

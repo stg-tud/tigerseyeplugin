@@ -6,13 +6,14 @@ import org.junit.runners.Suite.SuiteClasses;
 
 import runner.AllTestsCoreJUnitTests;
 import runner.AllTestsCoreTranformationTests;
-import runner.AllTestsExampleDSLs;
 
 
 @RunWith(Suite.class)
 @SuiteClasses({
 	AllTestsCoreTranformationTests.class,//
-	AllTestsExampleDSLs.class,//
+//	AllTestsExampleDSLs.class,
+	/*I don't want a dependency inside the 
+	TigerseyeTestRunner to an optional project set*/
 	AllTestsCoreJUnitTests.class, //
 })
 public class AllJUnitTests {
