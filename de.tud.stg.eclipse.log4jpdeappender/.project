@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>Log4jPDEAppender</name>
+	<name>de.tud.stg.eclipse.log4jpdeappender</name>
 	<comment></comment>
 	<projects>
 	</projects>
