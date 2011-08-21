@@ -13,7 +13,6 @@ import runner.AllTestsCorePluginTests;
 	AllJUnitTests.class, //
 	AllTestsCorePluginTests.class, //
 })
-
 public class AllTests {
 
 }

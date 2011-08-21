@@ -9,12 +9,16 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 
 import org.eclipse.core.runtime.Plugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.tud.stg.tigerseye.eclipse.dslsupport.TigerseyeSupportActivator;
 
 //FIXME refactoring and tests
 public class TigerseyeLibraryProvider extends Plugin {
 
+	private Logger logger = LoggerFactory.getLogger(getClass());
+	
 	public static final String PLUGIN_ID = "de.tud.stg.tigerseye.eclipse";
 
 	private static TigerseyeLibraryProvider plugin;

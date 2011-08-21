@@ -22,7 +22,6 @@ import org.junit.Test;
 
 import de.tud.stg.popart.builder.test.dsls.ForEachSyntaxDSL;
 import de.tud.stg.popart.builder.test.dsls.SetDSL;
-import de.tud.stg.tigerseye.eclipse.core.utils.KeyWordExtractor;
 
 public class KeyWordsExtractorTest {
 
