@@ -535,6 +535,7 @@ public class GrammarBuilder {
 	// TODO: check if caching would speed up this method
 	public  Pattern[] getPattern(String methodParameterEscape, String methodWhitespaceEscape) {
 		return new Pattern[] {
+		// 0: methodproduction
 				Pattern.compile("((?:\\Q" + methodWhitespaceEscape + "\\E{1,2})|(?:\\Q" + methodParameterEscape
 						+ "\\E\\d+)|(?:(?!(?:\\Q" + methodParameterEscape + "\\E\\d+|\\Q" + methodWhitespaceEscape
 						+ "\\E)).)+)"),
@@ -548,21 +549,21 @@ public class GrammarBuilder {
 	    Pattern[] pattern, Annotation[][] parameterAnnotations,
 	    Map<ParameterOptions, String> methodOptions, Grammar grammar,
 	    HandlingDispatcher typeHandler) {
-		Matcher matcher = pattern[0].matcher(methodProduction);
+	Matcher methodProductionmatcher = pattern[0].matcher(methodProduction);
 
-		LinkedList<ICategory<String>> categories = new LinkedList<ICategory<String>>();
 
 		StringBuilder sb = new StringBuilder();
 
-		if (!matcher.find()) {
+	if (!methodProductionmatcher.find()) {
 			return;
 		}
 
 		int index = 0;
 		List<Integer> parameterIndices = new ArrayList<Integer>(method.getParameterTypes().length);
 
+	LinkedList<ICategory<String>> categories = new LinkedList<ICategory<String>>();
 		do {
-			String keyword = matcher.group(1);
+	    String keyword = methodProductionmatcher.group(1);
 
 			Matcher parameterMatcher = pattern[1].matcher(keyword);
 			boolean isParameter = parameterMatcher.find();
@@ -650,7 +651,7 @@ public class GrammarBuilder {
 
 			sb.append('_');
 			index++;
-		} while ((matcher.find()));
+	} while ((methodProductionmatcher.find()));
 
 		sb.deleteCharAt(sb.length() - 1);
 
