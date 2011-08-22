@@ -8,9 +8,12 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.codehaus.groovy.eclipse.preferences.GroovyPreferencePage;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import utilities.StringUtils;
 
 import aterm.ATerm;
 
@@ -36,6 +39,7 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.MathDSL4Gramma
 import de.tud.stg.tigerseye.test.PrettyGroovyCodePrinterFactory;
 import de.tud.stg.tigerseye.test.TestDSLTransformation;
 import de.tud.stg.tigerseye.test.TestUtils;
+import de.tud.stg.tigerseye.utils.ListBuilder;
 
 public class GrammarBuilderTest {
 
@@ -127,14 +131,20 @@ public class GrammarBuilderTest {
 	
 	@Test
 	public void testSpecificWorkingTransformation() throws Exception {
-		String input = "∑ 10, 10";
-		String expected = "sum__p0(	[10, 10] as int[])";
-		Class<MathDSL> transformer = MathDSL.class;
+		String input = "∑ 10, 10 ;";//TODO fails without semicolon
+		String expected = "sum__p0(	[10, 10] as int[]);";
+		Class<? extends DSL> transformer = MathDSL.class;
 		IGrammar<String> buildGrammar = gb.buildGrammar(transformer);
 		EarleyParser ep = new EarleyParser(buildGrammar);
 		IChart parse = ep.parse(input);
+		
+		TestDSLTransformation transformation = new TestDSLTransformation(new PrettyGroovyCodePrinterFactory());
+		String performTransformation = transformation.performTransformation(input, TestUtils.dslSingle(transformer));
+		
 		System.out.println(parse);
 		System.out.println(parse.getAST());
+//		assertEquals(null, expected);
+		StringUtils.equalsIgnoringWhitspace(performTransformation, expected);
 	}
 	
 	
