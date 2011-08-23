@@ -9,3 +9,5 @@ Require-Bundle: de.tud.stg.tigerseye.eclipse.core;bundle-version="0.0.1",
  de.tud.stg.tigerseye.eclipse.dslsupport;bundle-version="0.0.1",
  de.tud.stg.tigerseye.eclipse.ui;bundle-version="0.0.1"
 Export-Package: de.tud.stg.tigesrseye.tests
+Import-Package: org.slf4j,
+ org.slf4j.impl
