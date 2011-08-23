@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: SetDSL
-Bundle-SymbolicName: de.tud.stg.tigerseye.examples.SetDSL;singleton:=true
-Bundle-Version: 0.0.2.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: de.tud.stg.tigerseye.eclipse,
- de.tud.stg.tigerseye.eclipse.core
-Export-Package: de.tud.stg.tigerseye.examples.setdsl

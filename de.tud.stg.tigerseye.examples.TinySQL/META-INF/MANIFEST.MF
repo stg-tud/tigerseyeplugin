@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: TinySQL
-Bundle-SymbolicName: de.tud.stg.tigerseye.examples.TinySQL;singleton:=true
-Bundle-Version: 0.1.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: de.tud.stg.tigerseye.eclipse.core;bundle-version="0.0.1",
- de.tud.stg.tigerseye.eclipse;bundle-version="0.0.1"
-Export-Package: de.tud.stg.tigerseye.examples.tinysql

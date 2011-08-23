@@ -1,8 +1,0 @@
-def q12 = selectFrom(
-[
-"NAME",
-"AGE"
-] as String[],
-[
-"PERSONS"
-] as String[])
