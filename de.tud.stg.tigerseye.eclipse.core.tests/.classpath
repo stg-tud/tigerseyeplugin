@@ -7,6 +7,6 @@
 	<classpathentry kind="src" path="plugin"/>
 	<classpathentry exported="true" kind="lib" path="libs/powermock-mockito-1.4.6-full.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/stateMachineDSL.jar"/>
-	<classpathentry exported="true" kind="con" path="GROOVY_DSL_SUPPORT"/>
+	<classpathentry exported="true" kind="lib" path="libs/mockito-all-1.8.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

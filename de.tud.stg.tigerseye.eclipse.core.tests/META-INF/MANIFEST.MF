@@ -5,16 +5,28 @@ Bundle-SymbolicName: de.tud.stg.tigerseye.eclipse.core.tests
 Bundle-Version: 0.0.0.qualifier
 Fragment-Host: de.tud.stg.tigerseye.eclipse.core;bundle-version="0.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.junit4;bundle-version="4.8.1",
- org.mockito;bundle-version="1.8.4"
+Require-Bundle: org.junit4;bundle-version="4.8.1"
 Bundle-ClassPath: libs/powermock-mockito-1.4.6-full.jar,
  libs/stateMachineDSL.jar,
- .
+ .,
+ libs/mockito-all-1.8.5.jar
 Export-Package: de.tud.stg.popart.builder.test.dsls,
  de.tud.stg.popart.builder.test.junit,
  de.tud.stg.popart.builder.test.statemachine,
  de.tud.stg.tigerseye.test,
  de.tud.stg.tigerseye.test.transformation.utils,
+ org.mockito,
+ org.mockito.configuration,
+ org.mockito.exceptions,
+ org.mockito.exceptions.base,
+ org.mockito.exceptions.misusing,
+ org.mockito.exceptions.verification,
+ org.mockito.exceptions.verification.junit,
+ org.mockito.invocation,
+ org.mockito.runners,
+ org.mockito.stubbing,
+ org.mockito.stubbing.answers,
+ org.mockito.verification,
  runner,
  utilities
 Bundle-Vendor: TUD
