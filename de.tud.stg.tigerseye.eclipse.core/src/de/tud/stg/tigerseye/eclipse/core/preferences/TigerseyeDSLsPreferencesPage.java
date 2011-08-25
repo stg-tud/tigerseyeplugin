@@ -46,6 +46,7 @@ import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.api.ILanguageProvider;
 import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFoundException;
+import de.tud.stg.tigerseye.eclipse.core.internal.DSLActivationState;
 import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntime;
 import de.tud.stg.tigerseye.eclipse.core.utils.KeyWordExtractor;
 
@@ -491,8 +492,7 @@ Composite parent,
 		    getPreferenceStore());
 	    dsl.setExtension(defExt);
 
-	    boolean activeKey = DSLKey.LANGUAGE_ACTIVE.getDefault(
-		    dslDefinition, getPreferenceStore());
+	    boolean activeKey = DSLActivationState.getDefault();
 	    dsl.setIsActiveLocal(activeKey);
 	}
 	rebuildTableItems(dsls);
@@ -558,7 +558,7 @@ Composite parent,
 
 	@Override
 	public void store() {
-	    getDsl().setValue(DSLKey.LANGUAGE_ACTIVE, isActive);
+	    getDsl().setActive(isActive);
 	    getDsl().setValue(DSLKey.EXTENSION, extension);
 	    super.store();
 	}
@@ -584,7 +584,7 @@ Composite parent,
 	}
 
 	public Boolean getIsActiveFromStore() throws NoLegalPropertyFoundException {
-	    return getDsl().getValue(DSLKey.LANGUAGE_ACTIVE);
+	    return getDsl().isActive();
 	}
 
 	public Boolean isActiveLocal() {

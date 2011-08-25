@@ -50,6 +50,7 @@ public class DSLClasspathResolver {
     public @CheckForNull
     File[] resolveCPEntriesForBundle(Bundle bundle) {
 
+
 	File bundleFile = null;
 	try {
 	    bundleFile = fileHelper.getBundleFile(bundle);
@@ -77,13 +78,10 @@ public class DSLClasspathResolver {
 	 * IF has .classpath and .project file get development classpath
 	 */
 
-	File buildProps = new File(bundleFile, "build.properties");
-	if (buildProps.exists()) {
-	    JDTClasspathResolver jdtresolver = new JDTClasspathResolver();
-	    return jdtresolver.resolveClasspath(bundle);
-	}
-
-
+	// IPluginModelBase findEntry =
+	// PluginRegistry.findModel(bundle.getSymbolicName());
+	// IResource workspaceResource = findEntry.getUnderlyingResource();
+	// Should be sufficient to check for workspaceResource != null
 
 	@SuppressWarnings("unchecked")
 	// guaranteed by documentation

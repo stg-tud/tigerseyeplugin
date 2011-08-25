@@ -6,9 +6,10 @@ import org.junit.runners.Suite.SuiteClasses;
 
 import de.tud.stg.tigerseye.eclipse.core.internal.LanguageProviderImplPluginTest;
 import de.tud.stg.tigerseye.eclipse.core.runtime.DSLClasspathResolverTest;
+import de.tud.stg.tigerseye.eclipse.core.runtime.SuperficialConfigurationTest;
 
 /**
- * All <i>run as plug-in</i> tests 
+ * Plug-in tests 
  * 
  * @author Leo Roos
  *
@@ -18,6 +19,7 @@ import de.tud.stg.tigerseye.eclipse.core.runtime.DSLClasspathResolverTest;
 	//TODO this test depends on local test environment configuration
 	LanguageProviderImplPluginTest.class, //
 	DSLClasspathResolverTest.class, //
+	SuperficialConfigurationTest.class, //
 })
 public class AllTestsCorePluginTests {
 

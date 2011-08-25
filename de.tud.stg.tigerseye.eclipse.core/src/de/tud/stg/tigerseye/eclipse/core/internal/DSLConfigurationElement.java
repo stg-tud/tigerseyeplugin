@@ -12,4 +12,6 @@ public interface DSLConfigurationElement {
 
     DSLContributor getContributor();
 
+    String getId();
+
 }

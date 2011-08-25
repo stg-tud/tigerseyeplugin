@@ -22,12 +22,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tud.stg.popart.dslsupport.DSL;
-import de.tud.stg.tigerseye.eclipse.core.api.DSLContributor;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.api.ILanguageProvider;
 import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFoundException;
-import de.tud.stg.tigerseye.eclipse.core.api.TigerseyeDefaultConstants;
 import de.tud.stg.tigerseye.eclipse.core.api.TigerseyeRuntimeException;
 import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeCoreConstants.DSLDefinitionsAttribute;
 
@@ -91,12 +89,13 @@ public class LanguageProviderImpl implements ILanguageProvider {
 
     private DSLDefinitionImpl createDSLDefinition(DSLConfigurationElement confEl) {
 	String className = confEl.getAttribute(DSLDefinitionsAttribute.Class);
-	String prettyName = confEl.getAttribute(DSLDefinitionsAttribute.Name);
-	DSLContributor contributor = confEl.getContributor();
-	String languageKey = makeLanguageKey(className, contributor);
+	String prettyName = confEl
+		.getAttribute(DSLDefinitionsAttribute.PrettyName);
 	DSLDefinitionImpl dslDefinitionImpl = new DSLDefinitionImpl(className,
-		contributor, prettyName, languageKey);
-	return validatedDSLorNull(dslDefinitionImpl);
+		confEl, prettyName);
+	// FIXME(Leo_Roos;Aug 25, 2011) too costly can causes loop
+	// return validatedDSLorNull(dslDefinitionImpl);
+	return dslDefinitionImpl;
     }
 
     void setValidActivationState(Collection<DSLDefinition> registeredDefinitions) {
@@ -122,24 +121,24 @@ public class LanguageProviderImpl implements ILanguageProvider {
 			    "More than one dsl has the extension [{}]. Cannot activate this DSL [{}] since the DSL [{}] has the same extension.",
 			    new Object[] { extension, dsl,
 				    activatedExtensions.get(extension) });
-		    dsl.setValue(DSLKey.LANGUAGE_ACTIVE, false);
+		    dsl.setActive(false);
 		} else {
 		    activatedExtensions.put(extension, dsl);
 		}
 	}
 
-	boolean defaultActivationState = TigerseyeDefaultConstants.DEFAULT_LANGUAGE_ACTIVE_VALUE;
-	// Check newly added languages
-	for (Entry<DSLDefinition, String> entry : dslToKey.entrySet()) {
-	    DSLDefinition dsl = entry.getKey();
-	    String extension = entry.getValue();
-	    if (extension != null
-		    && !activatedExtensions.containsKey(extension)
-		    && !activeStateAlreadySet(dsl)) {
-		dsl.setValue(DSLKey.LANGUAGE_ACTIVE, defaultActivationState);
-		activatedExtensions.put(extension, dsl);
-	    }
-	}
+	// boolean defaultActivationState =
+	// TigerseyeDefaultConstants.DEFAULT_LANGUAGE_ACTIVE_VALUE;
+	// // Check newly added languages
+	// for (Entry<DSLDefinition, String> entry : dslToKey.entrySet()) {
+	// DSLDefinition dsl = entry.getKey();
+	// String extension = entry.getValue();
+	// if (extension != null
+	// && !activatedExtensions.containsKey(extension)
+	// && !activeStateAlreadySet(dsl)) {
+	// activatedExtensions.put(extension, dsl);
+	// }
+	// }
     }
 
     private @CheckForNull
@@ -152,13 +151,7 @@ public class LanguageProviderImpl implements ILanguageProvider {
     }
 
     private boolean activeStateAlreadySet(DSLDefinition dsl) {
-	String dslIsActiveKey = dsl.getKeyFor(DSLKey.LANGUAGE_ACTIVE);
-	return getStore().contains(dslIsActiveKey);
-    }
-
-    String makeLanguageKey(String dslClassAttribute,
-	    DSLContributor dslContributorPlugin) {
-	return dslContributorPlugin.getId() + dslClassAttribute;
+	return getStore().contains(DSLActivationState.getKeyFor(dsl));
     }
 
     private @CheckForNull
@@ -185,9 +178,19 @@ public class LanguageProviderImpl implements ILanguageProvider {
 			    dsl.getContributor().getId(), e });
 	    return null;
 	}
-	ModelEntry findEntry = PluginRegistry.findEntry(dsl.getContributor()
-		.getId());
-	IPluginModelBase model = findEntry.getModel();
+	ModelEntry findEntry;
+	findEntry = PluginRegistry.findEntry(dsl.getContributor().getId());
+
+	// FIXME(Leo Roos;Aug 24, 2011) haven't seen this problem before debug
+	// change clean up afterwards
+	IPluginModelBase model = null;
+	if (findEntry == null) {
+	    // dsl not yet loaded
+	    return dsl;
+	} else {
+	    model = findEntry.getModel();
+	}
+
 	if (model != null) {
 	    String installLocation = model.getInstallLocation();
 	    File file = new File(installLocation);

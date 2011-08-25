@@ -7,13 +7,13 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLContributor;
 import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeCoreConstants.DSLDefinitionsAttribute;
 
-public class PluginDSLConfigurationElement implements DSLConfigurationElement {
+public class PluginDSLConfigurationElement extends
+	AbstractDSLConfigurationElement {
 
     private final String contributorName;
     private final HashMap<String, String> attributes;
 
-    public PluginDSLConfigurationElement(
-IConfigurationElement confEl) {
+    public PluginDSLConfigurationElement(IConfigurationElement confEl) {
 	contributorName = confEl.getContributor().getName();
 	String[] attributeNames = confEl.getAttributeNames();
 	attributes = new HashMap<String, String>();
@@ -30,7 +30,7 @@ IConfigurationElement confEl) {
 
     @Override
     public String getAttribute(DSLDefinitionsAttribute attrName) {
-	String attribute = attributes.get(attrName.attributeName);
+	String attribute = attributes.get(attrName.value);
 	return attribute;
     }
 

@@ -16,14 +16,17 @@ public class ProjectLinker {
 	    .getLogger(ProjectLinker.class);
 
     /**
-     * Creates a project in the workspace according to passed arguments. The
-     * returned project is still closed.
+     * Creates a project in the workspace from the location {@code location}
+     * with the name {@code projectName}. The returned project will still
+     * closed.
      * 
      * @param location
      *            location of the project to which to link
      * @param projectName
      *            name of the project
-     * @return the created project
+     * @return the created project or <code>null</code> if project can either
+     *         not be linked or the workspace project with given name already
+     *         exists and has a different locationURI
      * @throws CoreException
      *             when project could not be created
      */
@@ -36,6 +39,7 @@ public class ProjectLinker {
 		    .newProjectDescription(projectName);
 	    projDesc.setLocationURI(location);
 	    project.create(projDesc, null);
+	    return project;
 	} else {
 	    URI locationURI = project.getLocationURI();
 	    String path = location.getPath();
@@ -45,12 +49,12 @@ public class ProjectLinker {
 		logger.trace(
 			"project {} with location {} already exists; assuming this is the project you need.",
 			project, locationURI);
+		return project;
 	    } else
 		logger.error(
 			"project {} already exists but its location [{}] does not fit the expected location: [{}].\nThis means probably you already have a different project in your workspace which has the same name as the project to be linked.\nCannot link to the project.",
 			new Object[] { project, locationURI, location });
 	}
-	return project;
+	return null;
     }
-
 }

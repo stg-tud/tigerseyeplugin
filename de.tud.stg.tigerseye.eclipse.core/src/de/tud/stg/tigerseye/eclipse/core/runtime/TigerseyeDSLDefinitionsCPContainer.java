@@ -2,9 +2,12 @@ package de.tud.stg.tigerseye.eclipse.core.runtime;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
@@ -15,12 +18,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jdt.core.IClasspathContainer;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.pde.core.plugin.IPluginModelBase;
+import org.eclipse.pde.core.plugin.ModelEntry;
 import org.eclipse.pde.core.plugin.PluginRegistry;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
@@ -29,8 +31,9 @@ import org.slf4j.LoggerFactory;
 
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
+import de.tud.stg.tigerseye.eclipse.core.internal.DSLConfigurationElementResolver;
 
-public class TigerseyeDSLDefinitionsCPContainer implements IClasspathContainer {
+public class TigerseyeDSLDefinitionsCPContainer {
 
     public static final IPath CONTAINER_ID = new Path(
 	    "TIGERSEYE_DSL_DEFINITIONS_SUPPORT");
@@ -46,10 +49,9 @@ public class TigerseyeDSLDefinitionsCPContainer implements IClasspathContainer {
     public TigerseyeDSLDefinitionsCPContainer(IProject project) {
 	logger.trace("Adding DSL specific classpath for {}", project.getName());
 	this.hostProject = project;
-	reset();
     }
 
-    public void reset() {
+    public Set<IClasspathEntry> recomputeClassPathEntries() {
 	Collection<DSLDefinition> dslDefinitions = TigerseyeCore
 		.getLanguageProvider().getDSLDefinitions();
 	Set<String> iteratedContributor = new HashSet<String>();
@@ -73,6 +75,7 @@ public class TigerseyeDSLDefinitionsCPContainer implements IClasspathContainer {
 	}
 
 	logger.trace("added classpathentries: {}", this.cpEntries);
+	return this.cpEntries;
     }
 
     private void logFail(DSLDefinition dslDefinition, Exception e) {
@@ -81,53 +84,27 @@ public class TigerseyeDSLDefinitionsCPContainer implements IClasspathContainer {
 
     private void addProjectPathForDSL(DSLDefinition dslDefinition)
 	    throws IOException, CoreException, BundleException {
-
 	String id = dslDefinition.getContributor().getId();
-	IPluginModelBase model = PluginRegistry.findEntry(id).getModel();
+	ModelEntry findEntry = PluginRegistry.findEntry(id);
+	if (findEntry == null) {
+	    logger.error("Did not even find one plug-in for the id {}", id);
+	    return;
+	}
+	IPluginModelBase model = findEntry.getModel();
 	if (model == null) {
 	    logger.error("Could not determine a plug-in representation for {}",
 		    id);
 	    return;
 	}
 	Set<IClasspathEntry> newEntryCandidates;
-	IResource underlyingResource = model.getUnderlyingResource();
-	if (underlyingResource == null) {
+	IResource underlyingWorkspaceResource = model.getUnderlyingResource();
+	if (underlyingWorkspaceResource == null) {
 	    newEntryCandidates = calculateUncompleteBundleClassPath(dslDefinition);
-	    // FIXME(Leo Roos;Jul 3, 2011) could calculate every dependency, but
-	    // this still produces some problems.
-	    // newEntryCandidates = calculateBundleClassPath(id);
 	} else {
 	    newEntryCandidates = computeClassPathForWorkspaceDependencies(model);
 	}
-	HashSet<IClasspathEntry> finalEntriesToAdd = filterDuplicates(newEntryCandidates);
+	Set<IClasspathEntry> finalEntriesToAdd = newEntryCandidates;
 	this.cpEntries.addAll(finalEntriesToAdd);
-    }
-
-    private HashSet<IClasspathEntry> filterDuplicates(
-	    Set<IClasspathEntry> newEntryCandidates) {
-	HashSet<File> entryPaths = new HashSet<File>();
-	for (IClasspathEntry iClasspathEntry : this.cpEntries) {
-	    IPath path = iClasspathEntry.getPath();
-	    File file = path.toFile();
-	    entryPaths.add(file);
-	}
-
-	Set<IClasspathEntry> alreadyOnPath = new HashSet<IClasspathEntry>(
-		this.cpEntries);
-	HashSet<IClasspathEntry> finalEntriesToAdd = new HashSet<IClasspathEntry>();
-	for (IClasspathEntry icp : newEntryCandidates) {
-	    if (!alreadyOnPath.contains(icp)) {
-		int entryKind = icp.getEntryKind();
-		if (entryKind == IClasspathEntry.CPE_LIBRARY
-			|| entryKind == IClasspathEntry.CPE_PROJECT) {
-		    File file = icp.getPath().toFile();
-		    if (!entryPaths.contains(file))
-			finalEntriesToAdd.add(icp);
-		}
-	    } else
-		logger.trace("Ignoring {} is already on classpath", icp);
-	}
-	return finalEntriesToAdd;
     }
 
     // @SuppressWarnings("restriction")
@@ -140,47 +117,104 @@ public class TigerseyeDSLDefinitionsCPContainer implements IClasspathContainer {
 	String installLocation = model.getInstallLocation();
 	IProject project = root.getProject(new File(installLocation).getName());
 	IJavaProject javaProject = JavaCore.create(project);
-	String[] computeDefaultRuntimeClassPath = JavaRuntime
-		.computeDefaultRuntimeClassPath(javaProject);
-
-	Set<IClasspathEntry> newEntryCandidates = new HashSet<IClasspathEntry>();
-	// RequiredPluginsClasspathContainer rpcc = new
-	// RequiredPluginsClasspathContainer(
-	// model);
-	// IClasspathEntry[] externalEntries = RequiredPluginsClasspathContainer
-	// .getExternalEntries(model);
-	// IClasspathEntry[] requiredPlugins = rpcc.getClasspathEntries();
-	// Collections.addAll(newEntryCandidates, requiredPlugins);
-	// Collections.addAll(newEntryCandidates, externalEntries);
-	for (String string : computeDefaultRuntimeClassPath) {
-	    IClasspathEntry newLibraryEntry = JavaCore.newLibraryEntry(
-		    new Path(string), null, null);
-	    newEntryCandidates.add(newLibraryEntry);
-	}
+	Set<IClasspathEntry> newEntryCandidates = computeDefaultRuntimeClassPath(javaProject);
 	return newEntryCandidates;
+    }
+
+    private Set<IClasspathEntry> computeDefaultRuntimeClassPath(
+	    IJavaProject javaProject) throws CoreException {
+	// String[] computeDefaultRuntimeClassPath = JavaRuntime
+	// .computeDefaultRuntimeClassPath(javaProject);
+	// Set<IClasspathEntry> newEntryCandidates = new
+	// HashSet<IClasspathEntry>();
+	// for (String string : computeDefaultRuntimeClassPath) {
+	// IClasspathEntry newLibraryEntry = JavaCore.newLibraryEntry(
+	// new Path(string), null, null);
+	// newEntryCandidates.add(newLibraryEntry);
+	// }
+	// return newEntryCandidates;
+
+	IClasspathEntry[] entries = javaProject.getRawClasspath();
+
+	List<IClasspathEntry> addCandidates = new ArrayList<IClasspathEntry>(
+		Arrays.asList(entries));
+
+	IPath outputLocation = javaProject.getOutputLocation();
+	IClasspathEntry outputLoc = JavaCore.newLibraryEntry(outputLocation,
+		null, null);
+
+	addCandidates.add(outputLoc);
+
+	List<IClasspathEntry> asList = new ArrayList<IClasspathEntry>();
+
+	for (IClasspathEntry entry : addCandidates) {
+	    int entryKind = entry.getEntryKind();
+	    switch (entryKind) {
+	    case IClasspathEntry.CPE_LIBRARY:
+	    case IClasspathEntry.CPE_PROJECT:
+		asList.add(entry);
+		break;
+	    case IClasspathEntry.CPE_SOURCE:
+	    case IClasspathEntry.CPE_VARIABLE:
+	    case IClasspathEntry.CPE_CONTAINER:
+	    default:
+		logger.info("Can not add {} to classpath container", entry);
+	    }
+	}
+
+	// IRuntimeClasspathEntry[] entries = JavaRuntime
+	// .computeUnresolvedRuntimeClasspath(javaProject);
+
+	// ClassPathDetector classPathDetector = new ClassPathDetector(
+	// javaProject.getProject(), null);
+	// IClasspathEntry[] classpath = classPathDetector.getClasspath();
+
+
+	HashSet<IClasspathEntry> hashSet = new HashSet<IClasspathEntry>();
+	for (IClasspathEntry iRuntimeClasspathEntry : asList) {
+	    hashSet.add(iRuntimeClasspathEntry);
+	    // IClasspathEntry classpathEntry = iRuntimeClasspathEntry
+	    // .getClasspathEntry();
+	    // IClasspathEntry resolvedClasspathEntry = JavaCore
+	    // .getResolvedClasspathEntry(classpathEntry);
+	    // if (classpathEntry != null)
+	    // hashSet.add(classpathEntry);
+	}
+	return hashSet;
     }
 
     private Set<IClasspathEntry> calculateUncompleteBundleClassPath(
 	    DSLDefinition dslDefinition) throws CoreException {
+	HashSet<IClasspathEntry> finalEntries = new HashSet<IClasspathEntry>();
 	String contributorSymbolicName = dslDefinition.getContributor().getId();
 	Bundle bundle = Platform.getBundle(contributorSymbolicName);
 	Set<File> cpEntriesToAdd = new HashSet<File>();
 	if (bundle != null) {
-	    DSLClasspathResolver resolver = new DSLClasspathResolver();
-	    File[] resolveCPEntriesForBundle = resolver
-		    .resolveCPEntriesForBundle(bundle);
-	    if (resolveCPEntriesForBundle == null) {
-		logger.error("Failed to resolve ClassPath for contriburo {}",
-			contributorSymbolicName);
-		cpEntriesToAdd = Collections.emptySet();
+	    boolean bundleWorkspaceProject = DSLConfigurationElementResolver
+		    .isBundleWorkspaceProject(bundle);
+	    if (bundleWorkspaceProject) {
+		Set<IClasspathEntry> result = resolveWorkspaceClasspath(bundle);
+		finalEntries.addAll(result);
 	    } else {
-		Collections.addAll(cpEntriesToAdd, resolveCPEntriesForBundle);
+
+		DSLClasspathResolver resolver = new DSLClasspathResolver();
+		File[] resolveCPEntriesForBundle = resolver
+			.resolveCPEntriesForBundle(bundle);
+		if (resolveCPEntriesForBundle == null) {
+		    logger.error(
+			    "Failed to resolve ClassPath for contributor {}",
+			    contributorSymbolicName);
+		    cpEntriesToAdd = Collections.emptySet();
+		} else {
+		    Collections.addAll(cpEntriesToAdd,
+			    resolveCPEntriesForBundle);
+		}
 	    }
 	} else {
-	    throw new IllegalStateException("Cannot handle workspace plug-ins");
+	    throw new IllegalStateException(
+		    "Cannot handle bundle {} probably workspace plug-in");
 	}
 
-	HashSet<IClasspathEntry> finalEntries = new HashSet<IClasspathEntry>();
 	for (File file : cpEntriesToAdd) {
 	    IClasspathEntry newLibraryEntry = JavaCore.newLibraryEntry(
 		    new Path(file.getPath()), null, null);
@@ -190,24 +224,16 @@ public class TigerseyeDSLDefinitionsCPContainer implements IClasspathContainer {
 	return finalEntries;
     }
 
-    @Override
-    public IClasspathEntry[] getClasspathEntries() {
-	return this.cpEntries.toArray(new IClasspathEntry[cpEntries.size()]);
-    }
-
-    @Override
-    public String getDescription() {
-	return "Tigerseye DSL Definitions";
-    }
-
-    @Override
-    public int getKind() {
-	return IClasspathContainer.K_APPLICATION;
-    }
-
-    @Override
-    public IPath getPath() {
-	return CONTAINER_ID;
+    private Set<IClasspathEntry> resolveWorkspaceClasspath(Bundle bundle) {
+	// IPluginModelBase findModel = PluginRegistry.findModel(bundle
+	// .getSymbolicName());
+	// IResource underlyingResource = findModel.getUnderlyingResource();
+	JDTClasspathResolver jdtresolver = new JDTClasspathResolver();
+	IClasspathEntry[] resolveClasspath = jdtresolver
+		.resolveClasspathAndLinkProject(bundle);
+	HashSet<IClasspathEntry> hashSet = new HashSet<IClasspathEntry>();
+	Collections.addAll(hashSet, resolveClasspath);
+	return hashSet;
     }
 
     // FIXME(Leo Roos;Jul 4, 2011) Currently not used until some problems

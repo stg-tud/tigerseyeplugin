@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
  * ><i>The Unicode Consortium</i> home page</a>. The implementation has been
  * tested with <i>MathClassEx-11.txt</i> and <i>MathClassEx-12.txt</i>.
  * 
- * @author Kamil Erhard
  * @author Leo Roos
  * 
  */
@@ -52,7 +51,7 @@ public class UnicodeLookupTable {
      * </pre>
      */
     public UnicodeLookupTable() {
-
+	// For documentation purposes
     }
 
     /**

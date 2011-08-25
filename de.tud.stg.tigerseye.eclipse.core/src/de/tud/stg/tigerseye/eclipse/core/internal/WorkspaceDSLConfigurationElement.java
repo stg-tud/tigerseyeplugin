@@ -4,8 +4,8 @@ import de.tud.stg.tigerseye.eclipse.core.api.DSLContributor;
 import de.tud.stg.tigerseye.eclipse.core.internal.WorkspaceDSLDefintionsResolver.WorkspaceDSL;
 import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeCoreConstants.DSLDefinitionsAttribute;
 
-public class WorkspaceDSLConfigurationElement implements
-	DSLConfigurationElement {
+public class WorkspaceDSLConfigurationElement extends
+	AbstractDSLConfigurationElement {
 
     private final WorkspaceDSL workspaceDSL;
 

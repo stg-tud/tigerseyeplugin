@@ -125,11 +125,10 @@ public class LanguageProviderImplPluginTest {
 	private DSLDefinitionImpl makeDSLDefinition(String dslName,
 			String contributorSymbolicName, String classPath) {
 
-		DSLContributor contribMock = mock(DSLContributor.class);
-		when(contribMock.getId()).thenReturn(contributorSymbolicName);
-		String languageKey = provider.makeLanguageKey(classPath, contribMock);
+		DSLConfigurationElement contribMock = mock(DSLConfigurationElement.class);
+		when(contribMock.getId()).thenReturn(contributorSymbolicName+"somelanguagekey");
 		DSLDefinitionImpl expectedDSL = new DSLDefinitionImpl(classPath,
-				contribMock, dslName, languageKey);
+				contribMock, dslName);
 		return expectedDSL;
 	}
 
@@ -151,7 +150,7 @@ public class LanguageProviderImplPluginTest {
 		boolean defaultActiveState = tigerseyeCoreStore
 				.getBoolean(TigerseyePreferenceConstants.DEFAULT_LANGUAGE_ACTIVE_KEY);
 		for (DSLDefinition dsl : dslDefinitions) {
-			Boolean active = dsl.getValue(DSLKey.LANGUAGE_ACTIVE);
+			Boolean active = dsl.isActive();
 			if (active != defaultActiveState) {
 				wrongActive.add(dsl);
 			}

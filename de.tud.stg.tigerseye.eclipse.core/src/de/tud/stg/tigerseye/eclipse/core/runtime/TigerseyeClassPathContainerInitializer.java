@@ -21,14 +21,6 @@ public class TigerseyeClassPathContainerInitializer extends
 	JavaCore.setClasspathContainer(containerPath,
 		new IJavaProject[] { project },
 		new IClasspathContainer[] { tigerseyeContainer }, null);
-	// TigerseyeDSLDefinitionsCPContainer tigerseyeDSLDefinitionsCPContainer
-	// = new TigerseyeDSLDefinitionsCPContainer(
-	// project.getProject());
-	// JavaCore.setClasspathContainer(
-	// TigerseyeDSLDefinitionsCPContainer.CONTAINER_ID,
-	// new IJavaProject[] { project },
-	// new IClasspathContainer[] { tigerseyeDSLDefinitionsCPContainer },
-	// null);
     }
 
     @Override

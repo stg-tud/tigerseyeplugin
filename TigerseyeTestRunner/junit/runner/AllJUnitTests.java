@@ -1,4 +1,4 @@
-package de.tud.stg.tigesrseye.tests;
+package runner;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

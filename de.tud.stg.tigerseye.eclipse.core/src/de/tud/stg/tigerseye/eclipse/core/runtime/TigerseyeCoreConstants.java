@@ -26,13 +26,13 @@ public class TigerseyeCoreConstants {
      */
     public enum DSLDefinitionsAttribute {
 	Extension(DSLDEFINITIONS_EXTENSION_ATTRIBUTE), Class(
-		DSLDEFINITIONS_CLASS_ATTRIBUTE), Name(
+		DSLDEFINITIONS_CLASS_ATTRIBUTE), PrettyName(
 		DSLDEFINITIONS_NAME_ATTRIBUTE);
 
-	public final String attributeName;
+	public final String value;
 
 	private DSLDefinitionsAttribute(String value) {
-	    this.attributeName = value;
+	    this.value = value;
 	}
     }
 

@@ -9,6 +9,7 @@ import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.ILanguageProvider;
 import de.tud.stg.tigerseye.eclipse.core.api.ITransformationProvider;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationHandler;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.UnicodeLookupTable;
 import de.tud.stg.tigerseye.eclipse.core.internal.LanguageProviderFactory;
 import de.tud.stg.tigerseye.eclipse.core.internal.TransformationProviderImpl;
 
@@ -22,6 +23,11 @@ import de.tud.stg.tigerseye.eclipse.core.internal.TransformationProviderImpl;
  */
 public class TigerseyeCore {
 
+    /**
+     * Cached lookup table, since its computation is costly
+     */
+    private static UnicodeLookupTable unicodeLookupTable;
+
     public static IPreferenceStore getPreferences() {
 	return TigerseyeCoreActivator.getDefault().getPreferenceStore();
     }
@@ -34,6 +40,9 @@ public class TigerseyeCore {
      * @return an updated language provider
      */
     public static ILanguageProvider getLanguageProvider() {
+	if (!TigerseyeCoreActivator.getDefault().isActiveDSLsLinked()) {
+	    TigerseyeCoreActivator.getDefault().linkActiveDSLProjectsIntoWorkspace();
+	}
 	return new LanguageProviderFactory()
 		.createLanguageProvider(getPreferences());
     }
@@ -58,6 +67,15 @@ public class TigerseyeCore {
 	    return new TransformationProviderImpl(getPreferences(),
 		    new IConfigurationElement[0]);
 	}
+    }
+
+    public static UnicodeLookupTable getUnicodeLookupTable() {
+	if (unicodeLookupTable == null) {
+	    unicodeLookupTable = new UnicodeLookupTable()
+		    .load(TigerseyeCoreActivator
+			    .getUnicodeLookupTableResource());
+	}
+	return unicodeLookupTable;
     }
 
 }

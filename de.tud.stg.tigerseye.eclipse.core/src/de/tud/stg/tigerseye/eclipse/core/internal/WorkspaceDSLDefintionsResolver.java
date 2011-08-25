@@ -33,8 +33,8 @@ import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeCoreConstants.DSLDefin
  */
 public class WorkspaceDSLDefintionsResolver {
 
-    public static class WorkspaceDSL {
 
+    public static class WorkspaceDSL {
 	public IPluginElement dslLanguageDefinition;
 	public IProject workspaceProject;
 	private final HashMap<DSLDefinitionsAttribute, String> attributes = new HashMap<DSLDefinitionsAttribute, String>();
@@ -150,7 +150,7 @@ public class WorkspaceDSLDefintionsResolver {
 	DSLDefinitionsAttribute[] atts = TigerseyeCoreConstants.DSLDefinitionsAttribute
 		.values();
 	for (DSLDefinitionsAttribute attr : atts) {
-	    IPluginAttribute attribute = pe.getAttribute(attr.attributeName);
+	    IPluginAttribute attribute = pe.getAttribute(attr.value);
 	    if (attribute != null) {
 		wdsl.addAttribute(attr, attribute.getValue());
 	    } else

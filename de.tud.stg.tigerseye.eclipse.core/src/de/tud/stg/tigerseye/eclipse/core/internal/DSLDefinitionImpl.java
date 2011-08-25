@@ -1,6 +1,7 @@
 package de.tud.stg.tigerseye.eclipse.core.internal;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -17,19 +18,19 @@ import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFoundException;
 import de.tud.stg.tigerseye.eclipse.core.api.TigerseyeRuntimeException;
 
 public class DSLDefinitionImpl implements DSLDefinition {
-    
+
     private static final Logger logger = LoggerFactory
 	    .getLogger(DSLDefinitionImpl.class);
 
     private final String classPath;
     // private final String contributorSymbolicName;
-    private final String languageKey;
     private final String dslName;
     private IPreferenceStore store;
 
-    private final ClassLoaderStrategy classloaderStrategy;
+    @Nullable
+    private ClassLoaderStrategy classloaderStrategy;
 
-    private final DSLContributor contributor;
+    private final DSLConfigurationElement configurationElement;
 
     /**
      * Constructs a {@link DSLDefinition} for given values, <code>null</code> is
@@ -38,16 +39,13 @@ public class DSLDefinitionImpl implements DSLDefinition {
      * @param classPath
      * @param dslName
      * @param classloaderStrategy
-     * @param languageKey
      */
     @Nonnull
-    public DSLDefinitionImpl(String classPath, DSLContributor contributor,
-	    String dslName, String languageKey) {
+    public DSLDefinitionImpl(String classPath,
+	    DSLConfigurationElement dslconfel, String dslName) {
 	this.classPath = classPath;
 	this.dslName = dslName;
-	this.languageKey = languageKey;
-	this.contributor = contributor;
-	this.classloaderStrategy = contributor.createClassLoaderStrategy();
+	this.configurationElement = dslconfel;
     }
 
     @Override
@@ -57,12 +55,12 @@ public class DSLDefinitionImpl implements DSLDefinition {
 
     @Override
     public String getContributorSymbolicName() {
-	return this.contributor.getId();
+	return this.configurationElement.getContributor().getId();
     }
 
     @Override
     public String getLanguageKey() {
-	return languageKey;
+	return this.configurationElement.getId();
     }
 
     @Override
@@ -77,24 +75,26 @@ public class DSLDefinitionImpl implements DSLDefinition {
 
     @Override
     public boolean equals(Object obj) {
-	if (obj == null)
+	if (obj == null) {
 	    return false;
-	if (obj instanceof DSLDefinitionImpl) {
+	}
+	if (obj == this) {
+	    return true;
+	}
+	if (obj.getClass() == this.getClass()) {
 	    DSLDefinitionImpl other = (DSLDefinitionImpl) obj;
 	    return new EqualsBuilder()//
-		    .append(this.classPath, other.classPath)//
-		    .append(getContributor().getId(),
-			    other.getContributor().getId())//
+		    .append(getLanguageKey(), other.getLanguageKey())//
 		    .isEquals();
+	} else {
+	    return false;
 	}
-	return false;
     }
 
     @Override
     public int hashCode() {
 	HashCodeBuilder hashCodeBuilder = new HashCodeBuilder(345, 13)//
-		.append(this.classPath)//
-		.append(this.contributor.getId());
+		.append(getLanguageKey());
 	return hashCodeBuilder.toHashCode();
     }
 
@@ -120,8 +120,9 @@ public class DSLDefinitionImpl implements DSLDefinition {
     }
 
     private IPreferenceStore getStore() {
-	if (this.store == null)
+	if (this.store == null) {
 	    throw new IllegalStateException("Store not set yet");
+	}
 	return this.store;
     }
 
@@ -131,18 +132,19 @@ public class DSLDefinitionImpl implements DSLDefinition {
 
     @Override
     public boolean isActive() {
-	try {
-	    return getValue(DSLKey.LANGUAGE_ACTIVE);
-	} catch (NoLegalPropertyFoundException e) {
-	    logger.error("DSL should always have an active state.", e);
-	    return false;
-	}
+	return DSLActivationState.getValue(this, getStore());
+    }
+
+    @Override
+    public void setActive(boolean active) {
+	DSLActivationState.setValue(this, getStore(), active);
     }
 
     @Override
     public Class<? extends DSL> loadClass() {
 	try {
-	    Class<?> loadClass = classloaderStrategy.loadClass(getClassPath());
+	    Class<?> loadClass = getClassLoaderStrategy().loadClass(
+		    getClassPath());
 	    /*
 	     * The cast must be successful or else the DSL language is erroneous
 	     * and an exception appropriate
@@ -156,9 +158,16 @@ public class DSLDefinitionImpl implements DSLDefinition {
 	}
     }
 
+    private ClassLoaderStrategy getClassLoaderStrategy() {
+	if (classloaderStrategy == null) {
+	    classloaderStrategy = getContributor().createClassLoaderStrategy();
+	}
+	return classloaderStrategy;
+    }
+
     @Override
     public DSLContributor getContributor() {
-	return this.contributor;
+	return this.configurationElement.getContributor();
     }
 
     @Override

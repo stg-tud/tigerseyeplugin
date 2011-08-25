@@ -1,4 +1,4 @@
-package de.tud.stg.tigesrseye.tests;
+package runner;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -10,9 +10,8 @@ import runner.AllTestsCorePluginTests;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	AllJUnitTests.class, //
 	AllTestsCorePluginTests.class, //
 })
-public class AllTests {
+public class AllPluginTests {
 
 }

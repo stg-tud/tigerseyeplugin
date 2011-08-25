@@ -130,6 +130,8 @@ public interface DSLDefinition extends TransformationType {
      */
     <T> T getValue(DSLKey<T> key) throws NoLegalPropertyFoundException;
 
+    void setActive(boolean active);
+
     static class NULLDSL implements DSLDefinition {
 	private NULLDSL() {
 	}
@@ -191,6 +193,10 @@ public interface DSLDefinition extends TransformationType {
 	@Override
 	public DSLContributor getContributor() {
 	    return null;
+	}
+
+	@Override
+	public void setActive(boolean active) {
 	}
 
     }

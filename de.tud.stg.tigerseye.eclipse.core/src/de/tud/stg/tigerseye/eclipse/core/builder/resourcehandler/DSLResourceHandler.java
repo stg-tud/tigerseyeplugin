@@ -35,7 +35,6 @@ import de.tud.stg.parlex.lexer.KeywordSeperator;
 import de.tud.stg.parlex.parser.IChart;
 import de.tud.stg.parlex.parser.earley.EarleyParser;
 import de.tud.stg.popart.builder.eclipse.EDSL;
-import de.tud.stg.tigerseye.eclipse.TigerseyeLibraryProvider;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLKey;
@@ -71,6 +70,8 @@ public class DSLResourceHandler implements ResourceHandler {
 
     private OutputPathHandler outputPathHandler;
 
+    private UnicodeLookupTable ult;
+
     // private IPreferenceStore tigerseyePreferenceStore;
 
     public DSLResourceHandler(FileType fileType, CodePrinter prettyPrinter) {
@@ -82,6 +83,7 @@ public class DSLResourceHandler implements ResourceHandler {
 
     private void init() {
 	this.languageProvider = TigerseyeCore.getLanguageProvider();
+	this.ult = TigerseyeCore.getUnicodeLookupTable();
 	this.transformerProvider = new TransformerConfigurationProvider(
 		TigerseyeCore.getTransformationProvider());
 	this.outputPathHandler = new OutputPathHandler();
@@ -160,8 +162,6 @@ public class DSLResourceHandler implements ResourceHandler {
 
 	List<DSLDefinition> dsls = context.getDsls();
 
-	UnicodeLookupTable ult = new UnicodeLookupTable()
-		.load(TigerseyeLibraryProvider.getUnicodeMathClassFileInUTF8());
 	GrammarBuilder grammarBuilder = new GrammarBuilder(ult);
 	IGrammar<String> grammar = grammarBuilder.buildGrammarFromDefinitions(dsls);
 

@@ -12,10 +12,15 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.launching.JavaRuntime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.tud.stg.tigerseye.eclipse.core.api.ClassLoaderStrategy;
 
 public class WorkspaceProjectClassLoaderStrategy implements ClassLoaderStrategy {
+
+    private static final Logger logger = LoggerFactory
+	    .getLogger(WorkspaceProjectClassLoaderStrategy.class);
 
     private final IProject workspaceProject;
 
@@ -78,7 +83,18 @@ public class WorkspaceProjectClassLoaderStrategy implements ClassLoaderStrategy 
 	URLClassLoader classLoader = URLClassLoader.newInstance(urls,
 		getClass().getClassLoader());
 
-	return classLoader.loadClass(className);
+	Class<?> loadedClass = classLoader.loadClass(className);
+
+	try {
+	    Class<?> loadClass = getClass().getClassLoader().loadClass(
+		    className);
+	    if (loadClass != null)
+		System.out.println("did not expected class to be loadable :(");
+	} catch (ClassNotFoundException e) {
+	    // expected
+	}
+
+	return loadedClass;
 
     }
 

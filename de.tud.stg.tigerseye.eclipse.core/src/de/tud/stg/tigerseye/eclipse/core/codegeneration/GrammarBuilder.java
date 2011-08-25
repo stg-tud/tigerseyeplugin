@@ -1,5 +1,7 @@
 package de.tud.stg.tigerseye.eclipse.core.codegeneration;
 
+import groovy.lang.GroovyObjectSupport;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.InvocationHandler;
@@ -7,15 +9,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -247,6 +241,7 @@ public class GrammarBuilder {
 
 		// TODO check cyclic Dependency between Grammar and
 		// HandlingDispatcher
+		// xxx
 		typeHandler.addAdditionalTypeRules(classInfo.classDslAnnotation
 			.typeRules());
 		this.setupHostLanguageRules(hostLanguageRules, grammar);
@@ -306,6 +301,15 @@ public class GrammarBuilder {
 	methods.addAll(Arrays.asList(clazz.getMethods()));
 	methods.addAll(Arrays.asList(clazz.getDeclaredMethods()));
 	methods.removeAll(Arrays.asList(Object.class.getDeclaredMethods()));
+	methods.removeAll(Arrays.asList(GroovyObjectSupport.class
+		.getDeclaredMethods()));
+	Iterator<Method> iterator = methods.iterator();
+	while (iterator.hasNext()) {
+	    Method next = iterator.next();
+	    boolean specialMethod = next.getName().contains("$");
+	    if (specialMethod)
+		iterator.remove();
+	}
 	return methods;
     }
 
@@ -365,6 +369,7 @@ public class GrammarBuilder {
 		}
 	}
 
+    // FIXME(Leo Roos;Aug 25, 2011) belongs to extraction part
 	public String getMethodProduction(AnnotatedElement element, String defaultName) {
 		DSLMethod dslAnnotation = element.getAnnotation(DSLMethod.class);
 

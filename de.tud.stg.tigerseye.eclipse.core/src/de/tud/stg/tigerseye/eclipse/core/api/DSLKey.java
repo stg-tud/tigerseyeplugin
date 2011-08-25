@@ -1,8 +1,8 @@
 package de.tud.stg.tigerseye.eclipse.core.api;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import de.tud.stg.tigerseye.eclipse.core.internal.DSLActivationState;
 import de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyePreferenceConstants;
 
 
@@ -29,7 +29,8 @@ public abstract class DSLKey<T> {
     /**
      * Key to access the configured active state of a DSL
      */
-    public static final DSLKey<Boolean> LANGUAGE_ACTIVE = new LanguageDSLKey();
+    // public static final DSLKey<Boolean> LANGUAGE_ACTIVE = new
+    // ActivatedDSLKey();
 
     /**
      * Not representing any kind of key to anything. Can be used instead of
@@ -161,69 +162,42 @@ public abstract class DSLKey<T> {
 
     }
 
-    /*
-     * The values are deliberately saved as strings instead of booleans. When
-     * saved as boolean, the keys are deleted when they equal the default value,
-     * i.e. IPreferenceStore#contains(String) returns false although the key was
-     * manually set/changed.
-     * 
-     * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=22533
-     */
-    private final static class LanguageDSLKey extends DSLKey<Boolean> {
+
+    private final static class ActivatedDSLKey extends DSLKey<Boolean> {
 
 	private static final String TRUE = "MYTRUE";
 	private static final String FALSE = "MYFALSE";
 
-	protected LanguageDSLKey() {
-	    super(SUFFIX_LANGUAGE);// The only key without a suffix
+	protected ActivatedDSLKey() {
+	    super(SUFFIX_LANGUAGE);
 	}
 
 	@Override
 	public Boolean getValue(DSLDefinition dsl, IPreferenceStore store)
 		throws NoLegalPropertyFoundException {
-	    String key = key(dsl);
-	    if (!store.contains(key)) {
-		return TigerseyeDefaultConstants.DEFAULT_LANGUAGE_ACTIVE_VALUE;
-	    }
-	    String bool = store.getString(key(dsl));
-	    return parseMyBool(bool);
-	}
-
-	private Boolean parseMyBool(String bool) {
-	    if (bool.equals(TRUE))
-		return true;
-	    else if (bool.equals(FALSE))
-		return false;
-	    else
-		throw new IllegalArgumentException("Found unexpected value: ["
-			+ bool + "] where one of: "
-			+ ArrayUtils.toString(new String[] { TRUE, FALSE })
-			+ " was expected.");
+	    String key = dsl.getLanguageKey();
+	    return DSLActivationState.getValue(key, store);
 	}
 
 	@Override
 	public void setValue(DSLDefinition dsl, IPreferenceStore store,
 		Boolean value) {
-	    String key = key(dsl);
-	    String bool = null;
-	    if (value)
-		bool = TRUE;
-	    else
-		bool = FALSE;
-	    store.setValue(key, bool);
+	    String key = dsl.getLanguageKey();
+	    DSLActivationState.setValue(key, store, value);
 	}
 
 	/**
 	 * This implementation only forwards to
-	 * {@link #getDefaultLanguageActiveValue(IPreferenceStore)}
+	 * {@link DSLActivationState#getDefault()}
 	 * 
 	 * @see de.tud.stg.tigerseye.eclipse.core.api.DSLKey#getDefault(de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition,
 	 *      org.eclipse.jface.preference.IPreferenceStore)
 	 */
 	@Override
 	public Boolean getDefault(DSLDefinition dsl, IPreferenceStore store) {
-	    return DSLKey.getDefaultLanguageActiveValue(store);
+	    return DSLActivationState.getDefault();
 	}
+
     }
 
     private static final class NullDSLKey extends DSLKey<Object> {
