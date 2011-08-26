@@ -64,6 +64,7 @@ public class ProjectLinker {
 	}
 	return null;
     }
+
     /**
      * Tries to determine bundle install location and will link the project into
      * the workspace
@@ -84,8 +85,10 @@ public class ProjectLinker {
 		    bundleFile.toURI(), bundle.getSymbolicName());
 	    if (linkProject == null)
 		logger.warn("unexpected problem");
-	    else
-		linkProject.open(null);
+	    else {
+		if (linkProject.isAccessible())
+		    linkProject.open(null);
+	    }
 	    return linkProject;
 	} catch (CoreException e) {
 	    logger.error("linking failed", e);

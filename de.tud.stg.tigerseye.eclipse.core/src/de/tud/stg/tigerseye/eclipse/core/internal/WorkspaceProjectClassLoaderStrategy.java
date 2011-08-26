@@ -88,8 +88,12 @@ public class WorkspaceProjectClassLoaderStrategy implements ClassLoaderStrategy 
 	try {
 	    Class<?> loadClass = getClass().getClassLoader().loadClass(
 		    className);
-	    if (loadClass != null)
-		System.out.println("did not expected class to be loadable :(");
+	    if (loadClass != null) {
+		logger.info(
+			"did not expected class {} to be loadable by plugin."
+				+ "This means the class can not be updated and no changes of that class can be considered by the transformation process.",
+			className);
+	    }
 	} catch (ClassNotFoundException e) {
 	    // expected
 	}

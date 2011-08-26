@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.time.StopWatch;
 import org.codehaus.groovy.eclipse.core.model.GroovyRuntime;
 import org.codehaus.jdt.groovy.model.GroovyNature;
 import org.eclipse.core.resources.ICommand;
@@ -56,6 +57,12 @@ public class TigerseyeRuntime {
      * classpath containers according to current preferences.
      */
     public static void updateTigerseyeClassPaths() {
+	StopWatch sw = new StopWatch();
+	sw.start();
+	TigerseyeCore.updateLanguageProvider();
+	sw.split();
+	logger.debug("{}ms took languageprovider update", sw.getSplitTime());
+
 	IProject[] projects = ResourcesPlugin.getWorkspace().getRoot()
 		.getProjects();
 
@@ -76,6 +83,7 @@ public class TigerseyeRuntime {
 	} catch (Exception e) {
 	    logger.error("Classpath update failed", e);
 	}
+	logger.debug("{} ms took complete classpath update", sw.getTime());
     }
 
     public static void setTigerseyeClasspathContainer(IJavaProject... projects)

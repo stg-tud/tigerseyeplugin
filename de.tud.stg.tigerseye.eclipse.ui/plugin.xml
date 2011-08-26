@@ -173,6 +173,11 @@
             id="de.tud.stg.tigerseye.eclipse.ui.switchToTransformedFile"
             name="%opentransformedfile.name">
       </command>
+      <command
+            defaultHandler="de.tud.stg.tigerseye.ui.handler.UpdateTigerseyeClasspathHandler"
+            id="de.tud.stg.tigerseye.eclipse.ui.updateTigerseyeClasspath"
+            name="Update Tigerseye Library">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
@@ -206,6 +211,20 @@
                   checkEnabled="false">
             </visibleWhen>
          </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+         <toolbar
+               id="de.tud.stg.tigerseye.ui.tigerseyeToolbar">
+            <command
+                  commandId="de.tud.stg.tigerseye.eclipse.ui.updateTigerseyeClasspath"
+                  hoverIcon="icons/tigerw16.png"
+                  icon="icons/tiger16.png"
+                  label="Update Tigerseye Library"
+                  style="push"
+                  tooltip="Updates the Tigerseye Library Classpath of all projects. This might be necessary after editing a DSL in a workspace so that the changes are directly applied to all Tigerseye projects. This will force a complete Rebuild of all Tigerseye DSL files (*.dsl).">
+            </command>
+         </toolbar>
       </menuContribution>
    </extension>
    <extension

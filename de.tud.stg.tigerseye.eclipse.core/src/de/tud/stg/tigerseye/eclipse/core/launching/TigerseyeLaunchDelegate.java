@@ -35,9 +35,11 @@ public class TigerseyeLaunchDelegate extends JavaLaunchDelegate implements
 
     private static final Logger logger = LoggerFactory
 	    .getLogger(TigerseyeLaunchDelegate.class);
+
     @Override
     public void launch(ILaunchConfiguration configuration, String mode,
 	    ILaunch launch, IProgressMonitor monitor) throws CoreException {
+
 	IJavaProject javaProject = getJavaProject(configuration);
 	String dslMainType = configuration.getAttribute(
 		IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME,
@@ -56,7 +58,7 @@ public class TigerseyeLaunchDelegate extends JavaLaunchDelegate implements
 	FileType type = null;
 	if (resource != null && resource.exists()) {
 	    type = FileTypeHelper.getTypeForOutputResource(resource
-		.getFullPath().toString());
+		    .getFullPath().toString());
 	}
 	/*
 	 * If _foundType_ did not originate from a java file override default
@@ -100,8 +102,7 @@ public class TigerseyeLaunchDelegate extends JavaLaunchDelegate implements
 	super.launch(configuration, mode, launch, monitor);
     }
 
-    private void logCompleteConfiguration(ILaunchConfiguration configuration)
- {
+    private void logCompleteConfiguration(ILaunchConfiguration configuration) {
 	@SuppressWarnings("rawtypes")
 	Map attributes;
 	try {
@@ -113,10 +114,10 @@ public class TigerseyeLaunchDelegate extends JavaLaunchDelegate implements
 	@SuppressWarnings("rawtypes")
 	Set keySet = attributes.keySet();
 	StringBuilder sb = new StringBuilder(
-	    "Final launch configuration before delegating to Java:\n");
+		"Final launch configuration before delegating to Java:\n");
 	for (Object key : keySet) {
-	sb.append(key).append("\t").append(attributes.get(key))
-		.append("\n");
+	    sb.append(key).append("\t").append(attributes.get(key))
+		    .append("\n");
 	}
 	logger.debug(sb.toString());
     }

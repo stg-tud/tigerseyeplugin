@@ -53,8 +53,9 @@ public class Builder extends IncrementalProjectBuilder {
     }
 
     @Override
-    protected void clean(IProgressMonitor monitor)
-	    throws CoreException {
+    protected void clean(IProgressMonitor monitor) throws CoreException {
+	StopWatch sw = new StopWatch();
+	sw.start();
 	if (monitor == null)
 	    monitor = new NullProgressMonitor();
 	try {
@@ -98,6 +99,7 @@ public class Builder extends IncrementalProjectBuilder {
 	} finally {
 	    monitor.done();
 	}
+	logger.debug("{} ms cleaning output directory", sw.getTime());
     }
 
     private void checkCancelAndAct(@Nonnull IProgressMonitor monitor) {
@@ -124,6 +126,7 @@ public class Builder extends IncrementalProjectBuilder {
 	}
 	StopWatch sw = new StopWatch();
 	sw.start();
+
 	try {
 	    monitor.beginTask("Start build", 100);
 	    if (kind == IncrementalProjectBuilder.CLEAN_BUILD) {
@@ -175,8 +178,7 @@ public class Builder extends IncrementalProjectBuilder {
     }
 
     private void incrementalBuild(@Nonnull IResourceDelta delta,
-	    @Nonnull IProgressMonitor monitor)
-	    throws CoreException {
+	    @Nonnull IProgressMonitor monitor) throws CoreException {
 	int totalWork = 10000;
 	int work = totalWork / visitors.length;
 	monitor.beginTask("Building", totalWork);
@@ -228,8 +230,8 @@ public class Builder extends IncrementalProjectBuilder {
     }
 
     private void buildResourcesInSourceDirectory(
-	    @Nonnull IProgressMonitor monitor,
-	    IPackageFragmentRoot packRoot) throws JavaModelException {
+	    @Nonnull IProgressMonitor monitor, IPackageFragmentRoot packRoot)
+	    throws JavaModelException {
 	try {
 	    Object[] nonJavaResources = packRoot.getNonJavaResources();
 	    float totalWork = 1000;
@@ -258,4 +260,5 @@ public class Builder extends IncrementalProjectBuilder {
 	}
 
     }
+
 }

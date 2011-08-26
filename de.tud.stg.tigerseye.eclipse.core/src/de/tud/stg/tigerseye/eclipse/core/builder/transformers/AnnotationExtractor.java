@@ -1,7 +1,4 @@
 package de.tud.stg.tigerseye.eclipse.core.builder.transformers;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.lang.annotation.Annotation;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
@@ -17,6 +14,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.tud.stg.popart.builder.eclipse.EDSL;
 
@@ -113,7 +113,7 @@ public class AnnotationExtractor<T extends Annotation> {
 
 			String annotationContent = this.matcher.group(2);
 
-			logger.info("AnnotationContent: " + annotationContent);
+	    logger.debug("AnnotationContent: " + annotationContent);
 
 			Map<Method, Object> map = new HashMap<Method, Object>();
 
@@ -142,7 +142,8 @@ public class AnnotationExtractor<T extends Annotation> {
 					elementHandler = enumElementHandler;
 				}
 
-				logger.info("Method: " + m.getName() + " -> " + elementHandler.getClass());
+		logger.debug("Method: " + m.getName() + " -> "
+			+ elementHandler.getClass());
 
 				Pattern p;
 
@@ -165,7 +166,7 @@ public class AnnotationExtractor<T extends Annotation> {
 				if (matcher2.find()) {
 					String fieldContent = matcher2.group(1);
 
-					logger.info("fieldContent: " + fieldContent);
+		    logger.debug("fieldContent: " + fieldContent);
 
 					Object value = elementHandler.find(m, fieldContent, returnType.isArray());
 
@@ -194,7 +195,7 @@ public class AnnotationExtractor<T extends Annotation> {
 
 		while (matcher.find()) {
 			String group = matcher.group(1);
-			logger.info("found package import: " + group);
+	    logger.debug("found package import: " + group);
 
 			String[] split = group.split("\\.");
 
@@ -223,7 +224,7 @@ public class AnnotationExtractor<T extends Annotation> {
 
 			do {
 				E element = this.handleMatch(matcher);
-				logger.info("[" + m.getName() + "] captured group: " + element);
+		logger.debug("[" + m.getName() + "] captured group: " + element);
 
 				list.add(element);
 			} while (matcher.find());
@@ -444,8 +445,9 @@ public class AnnotationExtractor<T extends Annotation> {
 					new DynamicAnnotationBuilder(map));
 		}
 
+		@Override
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-			logger.info("Invoking {}", this.map);
+	    logger.debug("Invoking {}", this.map);
 
 			Object object = this.map.get(method);
 
@@ -465,6 +467,7 @@ public class AnnotationExtractor<T extends Annotation> {
 					new DynamicEnumBuilder());
 		}
 
+		@Override
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 			return proxy;
 		}
@@ -485,7 +488,7 @@ public class AnnotationExtractor<T extends Annotation> {
 		// AnnotationExtractor<TestAnnotation>(TestAnnotation.class);
 		// extractor.setInput("@TestAnnotation(name=\"Peter\") @TestAnnotation(name=\"Jack\")");
 		// TestAnnotation find = extractor.find();
-		// logger.info(find.name());
+	// logger.debug(find.name());
 
 		AnnotationExtractor<EDSL> extractor = new AnnotationExtractor<EDSL>(EDSL.class);
 		extractor.setInput("@EDSL({\"map\", \"math\"})");
@@ -493,7 +496,7 @@ public class AnnotationExtractor<T extends Annotation> {
 		EDSL annotation = extractor.find();
 
 		for (String dslName : annotation.value()) {
-			logger.info(dslName);
+	    logger.debug(dslName);
 		}
 	}
 }
