@@ -18,6 +18,7 @@ import javax.annotation.Nonnull;
 import jjtraveler.VisitFailure;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.time.StopWatch;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -104,6 +105,8 @@ public class DSLResourceHandler implements ResourceHandler {
 
     @Override
     public void handleResource(IResource resource) {
+	StopWatch sw = new StopWatch();
+	sw.start();
 	logger.debug("handling resource {}", resource);
 	if (!(resource instanceof IFile)) {
 	    logger.debug("Skipping resource {}, since not of type IFile",
@@ -152,7 +155,8 @@ public class DSLResourceHandler implements ResourceHandler {
 		    "Transformation for {} was empty. Will not write any change to file.",
 		    resource);
 	}
-
+	sw.stop();
+	logger.info("{} ms took Transformation of {}", sw.getTime(), resource);
     }
 
     private ByteArrayOutputStream getTransformedContent(StringBuffer input,

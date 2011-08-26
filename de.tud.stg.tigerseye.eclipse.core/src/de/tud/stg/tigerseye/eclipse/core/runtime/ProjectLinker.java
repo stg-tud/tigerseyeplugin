@@ -1,14 +1,21 @@
 package de.tud.stg.tigerseye.eclipse.core.runtime;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
+
+import javax.annotation.CheckForNull;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.FileLocator;
+import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import de.tud.stg.tigerseye.eclipse.core.internal.DSLConfigurationElementResolver;
 
 public class ProjectLinker {
 
@@ -54,6 +61,36 @@ public class ProjectLinker {
 		logger.error(
 			"project {} already exists but its location [{}] does not fit the expected location: [{}].\nThis means probably you already have a different project in your workspace which has the same name as the project to be linked.\nCannot link to the project.",
 			new Object[] { project, locationURI, location });
+	}
+	return null;
+    }
+    /**
+     * Tries to determine bundle install location and will link the project into
+     * the workspace
+     * 
+     * @param bundle
+     * @return the linked and opened project <code>null</code> otherwise
+     */
+    public static @CheckForNull
+    IProject linkOpenedPluginIntoWorkspace(Bundle bundle) {
+	if (!DSLConfigurationElementResolver.isBundleWorkspaceProject(bundle)) {
+	    logger.warn("tried to link non workspace bundle {}"
+		    + bundle.getSymbolicName());
+	    return null;
+	}
+	try {
+	    File bundleFile = FileLocator.getBundleFile(bundle);
+	    IProject linkProject = new ProjectLinker().linkProject(
+		    bundleFile.toURI(), bundle.getSymbolicName());
+	    if (linkProject == null)
+		logger.warn("unexpected problem");
+	    else
+		linkProject.open(null);
+	    return linkProject;
+	} catch (CoreException e) {
+	    logger.error("linking failed", e);
+	} catch (IOException e) {
+	    logger.error("linking failed", e);
 	}
 	return null;
     }

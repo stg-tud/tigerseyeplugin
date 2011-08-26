@@ -22,5 +22,14 @@ public class ListMap {
 		}
 		return result;
 	}
+	
+	
+	public static <A, B> List<B> map(Transformer<A, B> t, A ...arrayList ) {
+		ArrayList<B> result = new ArrayList<B>(arrayList.length);
+		for (A a : arrayList) {
+			result.add(t.transform(a));
+		}
+		return result;
+	}
 
 }

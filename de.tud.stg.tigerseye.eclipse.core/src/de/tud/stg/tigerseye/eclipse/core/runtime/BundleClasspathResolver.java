@@ -13,27 +13,25 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Finds the defined classpath entries for DSLs. <br>
- * DSLs can be deployed as jar file or folder. In the latter case the
+ * DSLs can be deployed as a jar file or folder. In the latter case the
  * {@code MANIFEST.MF} file is parsed and its entries added to the found
  * classpath entries. <br>
- * A DSL can also be still in development in some Eclipse instance in which case
- * the {@code .classpath} file contains the correct classpath information.
  * 
  * @author Leo Roos
  * 
  */
-public class DSLClasspathResolver {
+public class BundleClasspathResolver {
 
     private static final Logger logger = LoggerFactory
-	    .getLogger(DSLClasspathResolver.class);
+	    .getLogger(BundleClasspathResolver.class);
 
     private final FileLocatorWrapper fileHelper;
 
-    public DSLClasspathResolver() {
+    public BundleClasspathResolver() {
 	this(new FileLocatorWrapper());
     }
 
-    public DSLClasspathResolver(FileLocatorWrapper fileLocator) {
+    public BundleClasspathResolver(FileLocatorWrapper fileLocator) {
 	this.fileHelper = fileLocator;
     }
 
@@ -58,7 +56,6 @@ public class DSLClasspathResolver {
 	    logger.debug("No classpath for bundle {} could be resolved", bundle);
 	    return null;
 	}
-
 	if (bundleFile.isFile()) {
 	    if (FileHelper.isJar(bundleFile)) {
 		logger.debug(
@@ -73,21 +70,10 @@ public class DSLClasspathResolver {
 	    }
 	}
 
-	// TODO check for .classpathfile instead build properties
-	/*
-	 * IF has .classpath and .project file get development classpath
-	 */
-
-	// IPluginModelBase findEntry =
-	// PluginRegistry.findModel(bundle.getSymbolicName());
-	// IResource workspaceResource = findEntry.getUnderlyingResource();
-	// Should be sufficient to check for workspaceResource != null
-
 	@SuppressWarnings("unchecked")
-	// guaranteed by documentation
+	/* guaranteed by documentation */
 	Dictionary<String, String> headers = bundle.getHeaders();
 	String[] manifestClassPathEntries = getManifestClassPathEntries(headers);
-
 	File[] result = getBundleLocationPrependedClasspathFiles(bundleFile,
 		manifestClassPathEntries);
 	return result; 

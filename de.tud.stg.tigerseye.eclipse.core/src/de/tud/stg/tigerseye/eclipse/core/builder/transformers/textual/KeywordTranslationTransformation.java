@@ -131,7 +131,7 @@ private static final Logger logger = LoggerFactory.getLogger(KeywordTranslationT
 
 		for (int[] b : bounds) {
 			sb.delete(b[0], b[1]);
-			logger.info("deleting " + b[0] + " - " + b[1]);
+	    logger.debug("deleting " + b[0] + " - " + b[1]);
 		}
 
 		storedTranslations.retainAll(currentUsedTranslations);

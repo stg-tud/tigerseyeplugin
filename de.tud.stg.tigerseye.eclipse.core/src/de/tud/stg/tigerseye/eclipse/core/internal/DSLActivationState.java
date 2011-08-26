@@ -2,6 +2,8 @@ package de.tud.stg.tigerseye.eclipse.core.internal;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLKey;
@@ -19,6 +21,9 @@ import de.tud.stg.tigerseye.eclipse.core.api.TigerseyeDefaultConstants;
  * 
  */
 public class DSLActivationState {
+
+    private static final Logger logger = LoggerFactory
+	    .getLogger(DSLActivationState.class);
 
     /*
      * The values are deliberately saved as strings instead of booleans. When
@@ -47,13 +52,13 @@ public class DSLActivationState {
     }
 
     public static void setValue(String key, IPreferenceStore store,
-            Boolean value) {
-        String bool;
-        if (value)
-            bool = TRUE;
-        else
-            bool = FALSE;
-        store.setValue(key, bool);
+	    Boolean value) {
+	String bool;
+	if (value)
+	    bool = TRUE;
+	else
+	    bool = FALSE;
+	store.setValue(key, bool);
     }
 
     private static Boolean parseMyBool(String bool) {
@@ -61,11 +66,15 @@ public class DSLActivationState {
 	    return true;
 	else if (bool.equals(FALSE))
 	    return false;
-	else
-	    throw new IllegalArgumentException("Found unexpected value: ["
-		    + bool + "] where one of: "
-		    + ArrayUtils.toString(new String[] { TRUE, FALSE })
-		    + " was expected.");
+	else {
+	    boolean def = getDefault();
+	    logger.error(
+		    "Found unexpected value: [{}] where one of: {} was expected. Will return default {}",
+		    new Object[] { bool,
+			    ArrayUtils.toString(new String[] { TRUE, FALSE }),
+			    def });
+	    return def;
+	}
     }
 
     public static Boolean getDefault() {

@@ -27,6 +27,7 @@ public class TigerseyeCore {
      * Cached lookup table, since its computation is costly
      */
     private static UnicodeLookupTable unicodeLookupTable;
+    private static ILanguageProvider langaugeProvider;
 
     public static IPreferenceStore getPreferences() {
 	return TigerseyeCoreActivator.getDefault().getPreferenceStore();
@@ -43,7 +44,14 @@ public class TigerseyeCore {
 	if (!TigerseyeCoreActivator.getDefault().isActiveDSLsLinked()) {
 	    TigerseyeCoreActivator.getDefault().linkActiveDSLProjectsIntoWorkspace();
 	}
-	return new LanguageProviderFactory()
+	if (langaugeProvider == null) {
+	    updateLanguageProvider();
+	}
+	return langaugeProvider;
+    }
+
+    public static void updateLanguageProvider() {
+	langaugeProvider = new LanguageProviderFactory()
 		.createLanguageProvider(getPreferences());
     }
 

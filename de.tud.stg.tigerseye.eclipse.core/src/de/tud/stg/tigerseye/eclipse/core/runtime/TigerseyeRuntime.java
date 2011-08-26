@@ -16,11 +16,8 @@ import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jdt.core.IClasspathContainer;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
@@ -29,9 +26,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
-import de.tud.stg.tigerseye.eclipse.core.TigerseyeCoreActivator;
 import de.tud.stg.tigerseye.eclipse.core.api.TigerseyeRuntimeException;
 import de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyePreferenceConstants;
+import de.tud.stg.tigerseye.utils.ListMap;
+import de.tud.stg.tigerseye.utils.Transformer;
 
 /**
  * Provides static functions for configuration of Tigerseye nature Projects.
@@ -60,30 +58,47 @@ public class TigerseyeRuntime {
     public static void updateTigerseyeClassPaths() {
 	IProject[] projects = ResourcesPlugin.getWorkspace().getRoot()
 		.getProjects();
+
+	ArrayList<IProject> tigerProjects = new ArrayList<IProject>();
 	for (final IProject iProject : projects) {
 	    if (isTigerseyeNature(iProject)) {
-		final IJavaProject jp = JavaCore.create(iProject);
-		Job job = new Job("Update project '" + iProject.getName() + "'") {
-		    @Override
-		    protected IStatus run(IProgressMonitor monitor) {
-			try {
-			    updateTigerseyeCPContainerofProject(jp);
-			} catch (Exception e) {
-			    return new Status(IStatus.ERROR,
-				    TigerseyeCoreActivator.PLUGIN_ID,
-				    "Failed to update classpath for project"
-					    + iProject.getName(), e);
-			}
-			return new Status(IStatus.OK,
-				TigerseyeCoreActivator.PLUGIN_ID,
-				"Successfully updated classpath for project"
-					+ iProject.getName());
-		    }
-
-		};
-		job.schedule();
+		tigerProjects.add(iProject);
 	    }
 	}
+
+	IJavaProject[] ps = new IJavaProject[tigerProjects.size()];
+	for (int i = 0; i < tigerProjects.size(); i++) {
+	    ps[i] = JavaCore.create(tigerProjects.get(i));
+	}
+
+	try {
+	    setTigerseyeClasspathContainer(ps);
+	} catch (Exception e) {
+	    logger.error("Classpath update failed", e);
+	}
+    }
+
+    public static void setTigerseyeClasspathContainer(IJavaProject... projects)
+	    throws JavaModelException {
+	final TigerseyeLibraryClasspathResolver resolver = new TigerseyeLibraryClasspathResolver();
+	resolver.recomputeClassPathEntries();
+	List<TigerseyeClasspathContainer> container = ListMap.map(
+		new Transformer<IJavaProject, TigerseyeClasspathContainer>() {
+
+		    @Override
+		    public TigerseyeClasspathContainer transform(
+			    IJavaProject input) {
+			TigerseyeClasspathContainer container = new TigerseyeClasspathContainer(
+				input.getProject());
+			container
+				.setTigerseyeLibraryClasspathResolver(resolver);
+			return container;
+		    }
+		}, projects);
+
+	JavaCore.setClasspathContainer(
+		TigerseyeClasspathContainer.CONTAINER_ID, projects,
+		container.toArray(new IClasspathContainer[0]), null);
     }
 
     static void updateTigerseyeCPContainerofProject(IJavaProject jp) {

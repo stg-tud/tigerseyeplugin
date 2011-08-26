@@ -53,13 +53,13 @@ public class DSLClasspathResolverTest {
 	@Mock
 	private FileLocatorWrapper fileLocator;
 
-	private DSLClasspathResolver resolver;
+	private BundleClasspathResolver resolver;
 
 	@Before
 	public void setUp() throws Exception {
 		assertPlatformRunning();
 		MockitoAnnotations.initMocks(this);
-		resolver = new DSLClasspathResolver();
+		resolver = new BundleClasspathResolver();
 
 	}
 
@@ -131,7 +131,7 @@ public class DSLClasspathResolverTest {
 	private void mockResolverForBundleResource(Resources resource) throws Exception {
 		when(fileLocator.getBundleFile(Mockito.any(Bundle.class))).thenReturn(
 				resource.getFileInPluginRun());
-		resolver = new DSLClasspathResolver(fileLocator);
+		resolver = new BundleClasspathResolver(fileLocator);
 	}
 
 	@Test
@@ -170,7 +170,7 @@ public class DSLClasspathResolverTest {
 	@Test
 	public void testBundleNotAccessible() throws Exception {
 		when(fileLocator.getBundleFile(Mockito.any(Bundle.class))).thenThrow(new IOException());
-		resolver = new DSLClasspathResolver(fileLocator);		
+		resolver = new BundleClasspathResolver(fileLocator);		
 		
 		File[] executeResolveWithBundleMock = executeResolveWithBundleMock();
 		

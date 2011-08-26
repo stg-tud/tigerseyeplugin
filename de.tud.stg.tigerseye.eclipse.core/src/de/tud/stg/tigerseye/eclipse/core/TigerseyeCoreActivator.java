@@ -1,6 +1,5 @@
 package de.tud.stg.tigerseye.eclipse.core;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -8,21 +7,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
 import java.net.URL;
 import java.util.Set;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.pde.core.plugin.IPluginModelBase;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.tud.stg.tigerseye.eclipse.core.internal.DSLActivationState;
 import de.tud.stg.tigerseye.eclipse.core.internal.DSLConfigurationElementResolver;
@@ -31,21 +23,16 @@ import de.tud.stg.tigerseye.eclipse.core.runtime.ProjectLinker;
 
 /**
  * The activator class controls the plug-in life cycle
- * 
- * @author Leo_Roos
  */
 public class TigerseyeCoreActivator extends AbstractUIPlugin {
-
-    private static final Logger logger = LoggerFactory
-	    .getLogger(TigerseyeCoreActivator.class);
 
     // The plug-in ID
     public static final String PLUGIN_ID = "de.tud.stg.tigerseye.eclipse.core"; //$NON-NLS-1$ // NO_UCD
 
-    private static final String unicodeLookupTablePath = "UnicodeLookupTable.txt";
-
     // The shared instance
     private static TigerseyeCoreActivator plugin;
+
+    private static final String unicodeLookupTablePath = "UnicodeLookupTable.txt";
 
     private boolean activeDSLslinked = false;
 
@@ -86,8 +73,8 @@ public class TigerseyeCoreActivator extends AbstractUIPlugin {
      * @return predefined icon from the default image store.
      */
     public static ImageDescriptor getTigerseyeImage(TigerseyeImage imageName) {
-	String imagePath = "/icons/" + imageName.imageName;
-	return getImageDescriptor(imagePath);
+        String imagePath = "/icons/" + imageName.imageName;
+        return getImageDescriptor(imagePath);
     }
 
     /**
@@ -153,42 +140,15 @@ public class TigerseyeCoreActivator extends AbstractUIPlugin {
 		    getDefault().getPreferenceStore());
 	    String id = confEl.getContributor().getId();
 	    if (active) {
-		Bundle bundle2 = Platform.getBundle(id);
+		Bundle bundle = Platform.getBundle(id);
 		if (DSLConfigurationElementResolver
-			.isBundleWorkspaceProject(bundle2)) {
+			.isBundleWorkspaceProject(bundle)) {
 		    // is linked in this workspace
-
-		    try {
-			File bundleFile = FileLocator.getBundleFile(bundle2);
-			IProject linkProject = new ProjectLinker().linkProject(
-				bundleFile.toURI(), id);
-			if (linkProject == null)
-			    logger.warn("unexpected problem");
-			else
-			    linkProject.open(null);
-		    } catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		    } catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		    }
+		    ProjectLinker.linkOpenedPluginIntoWorkspace(bundle);
 		}
 	    }
 	}
 	this.activeDSLslinked = true;
-    }
-
-    private void linkPluginIntoWorkspace(IPluginModelBase findModel) {
-	String installLocation = findModel.getInstallLocation();
-	URI uri = new File(installLocation).toURI();
-	String id2 = findModel.getPluginBase().getId();
-	try {
-	    new ProjectLinker().linkProject(uri, id2);
-	} catch (CoreException e) {
-	    logger.error("Failed to link project " + id2
-		    + " from install location" + installLocation);
-	}
     }
 
 }

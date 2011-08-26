@@ -69,36 +69,6 @@ public class JDTClasspathResolver {
 	    logger.error("resolving problem", e);
 	}
 	return new IClasspathEntry[0];
-
-	// IClasspathEntry[] detectedClasspath = detector
-	// .getClasspath(project);
-
-	// URI projectLocationURI = project.getLocationURI();
-	// IPath outputLocation = javaProject.getOutputLocation();
-	//
-	// File absoluteOutputFolder = new File(new File(projectLocationURI),
-	// outputLocation.removeFirstSegments(1).toOSString());
-	//
-	// IPath projectLoc = project.getLocation();
-	// String projectName = projectLoc.lastSegment();
-	//
-	// ArrayList<File> resultClassPath = new ArrayList<File>();
-	// resultClassPath.add(absoluteOutputFolder);
-	// for (int i = 0; i < detectedClasspath.length; i++) {
-	// IPath cpPath = detectedClasspath[i].getPath();
-	// String cpAsString = cpPath.toString();
-	// // boolean isSource = IPackageFragmentRoot.K_SOURCE ==
-	// // detectedClasspath[i].getContentKind();
-	// int entryKind = detectedClasspath[i].getEntryKind();
-	// boolean isSource = IClasspathEntry.CPE_SOURCE == entryKind;
-	//
-	// if (!isSource && projectName.equals(cpPath.segment(0)))
-	// resultClassPath.add(new File(new File(projectLocationURI),
-	// cpPath.removeFirstSegments(1).toOSString()));
-	// }
-	// // project.close(null);
-	// // project.delete(false, true, null);
-	// return resultClassPath.toArray(new File[0]);
     }
 
 

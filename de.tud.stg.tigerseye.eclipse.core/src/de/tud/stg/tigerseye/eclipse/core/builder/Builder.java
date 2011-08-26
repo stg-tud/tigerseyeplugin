@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
+import org.apache.commons.lang.time.StopWatch;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -92,8 +93,8 @@ public class Builder extends IncrementalProjectBuilder {
 		}
 
 	    }
-	    this.fullBuild(new SubProgressMonitor(monitor, totalWork
-		    - cleanwork));
+	    // this.fullBuild(new SubProgressMonitor(monitor, totalWork
+	    // - cleanwork));
 	} finally {
 	    monitor.done();
 	}
@@ -121,13 +122,16 @@ public class Builder extends IncrementalProjectBuilder {
 	if (monitor == null) {
 	    monitor = new NullProgressMonitor();
 	}
+	StopWatch sw = new StopWatch();
+	sw.start();
 	try {
+	    monitor.beginTask("Start build", 100);
 	    if (kind == IncrementalProjectBuilder.CLEAN_BUILD) {
 		// never accessed?
 		this.clean(new SubProgressMonitor(monitor, 10));
 		this.fullBuild(new SubProgressMonitor(monitor, 90));
 	    } else if (kind == IncrementalProjectBuilder.FULL_BUILD) {
-		this.fullBuild(monitor);
+		this.fullBuild(new SubProgressMonitor(monitor, 1));
 	    } else if (kind == INCREMENTAL_BUILD || kind == AUTO_BUILD) {
 		IResourceDelta delta = this.getDelta(this.getProject());
 		if (delta == null) {
@@ -145,7 +149,29 @@ public class Builder extends IncrementalProjectBuilder {
 	} finally {
 	    monitor.done();
 	}
+	sw.stop();
+	logger.info("{} ms took build process of kind {}", sw.getTime(),
+		getStringKind(kind));
 	return null;
+    }
+
+    private String getStringKind(int kind) {
+	switch (kind) {
+	case FULL_BUILD:
+	    return format("FULL_BUILD", kind);
+	case AUTO_BUILD:
+	    return format("AUTO_BUILD", kind);
+	case CLEAN_BUILD:
+	    return format("CLEAN_BUILD", kind);
+	case INCREMENTAL_BUILD:
+	    return format("INCREMENTAL_BUILD", kind);
+	default:
+	    return format("Unknown", kind);
+	}
+    }
+
+    private String format(String string, int kind) {
+	return string + " kind[" + kind + "]";
     }
 
     private void incrementalBuild(@Nonnull IResourceDelta delta,
@@ -158,7 +184,7 @@ public class Builder extends IncrementalProjectBuilder {
 	if (delta != null) {
 	    for (ResourceVisitor visitor : visitors) {
 		checkCancelAndAct(monitor);
-		monitor.subTask("Delta:" + delta.getResource()
+		monitor.subTask("Delta:" + delta.getFullPath()
 			+ " with Visitor:" + visitor.getClass().getSimpleName());
 		logger.trace("Starting build with visitor {}", visitor);
 		delta.accept(visitor);
@@ -191,7 +217,7 @@ public class Builder extends IncrementalProjectBuilder {
 		}
 	    }
 
-	    int sourceDirWorked = totalWork / sourcesToBuild.size();
+	    int sourceDirWorked = totalWork / (1 + sourcesToBuild.size());
 	    for (IPackageFragmentRoot sourceDirRoot : sourcesToBuild) {
 		buildResourcesInSourceDirectory(new SubProgressMonitor(monitor,
 			sourceDirWorked), sourceDirRoot);
@@ -217,8 +243,9 @@ public class Builder extends IncrementalProjectBuilder {
 		for (ResourceVisitor visitor : visitors) {
 		    checkCancelAndAct(monitor);
 		    if (visitor.isInteresstedIn(resource)) {
-			monitor.subTask("resource:" + object + " with Visitor:"
-				+ visitor.getClass().getSimpleName());
+			monitor.subTask("Handler "
+				+ visitor.getClass().getSimpleName()
+				+ " on resource:" + object);
 			ResourceHandler newResourceHandler = visitor
 				.newResourceHandler();
 			newResourceHandler.handleResource(resource);
