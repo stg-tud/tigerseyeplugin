@@ -5,7 +5,7 @@ import de.tud.stg.parlex.core.ICategory;
 import de.tud.stg.parlex.core.IGrammar;
 import de.tud.stg.parlex.core.Rule;
 import de.tud.stg.parlex.core.groupcategories.StringCategory;
-import de.tud.stg.tigerseye.utils.ListBuilder;
+import de.tud.stg.tigerseye.util.ListBuilder;
 
 /**
  * A class containing extracted methods from

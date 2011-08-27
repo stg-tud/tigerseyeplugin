@@ -20,7 +20,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.team.core;bundle-version="3.5.101";resolution:=optional,
  org.eclipse.pde.core;bundle-version="3.6.2",
  org.eclipse.pde.core.source;bundle-version="3.6.2";resolution:=optional,
- de.tud.stg.tigerseye.eclipse;bundle-version="0.0.1"
+ de.tud.stg.tigerseye.eclipse;bundle-version="0.0.1",
+ de.tud.stg.tigerseye.util;bundle-version="0.0.1";visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Import-Package: org.eclipse.jdt.internal.debug.core.breakpoints,

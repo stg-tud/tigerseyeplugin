@@ -1,4 +1,4 @@
-package de.tud.stg.tigerseye.utils;
+package de.tud.stg.tigerseye.util;
 
 /**
  * Transformer class used by {@link ListMap}. This interface is implemented by

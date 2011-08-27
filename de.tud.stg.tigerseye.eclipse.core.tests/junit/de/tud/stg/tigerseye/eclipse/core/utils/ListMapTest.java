@@ -11,9 +11,9 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import de.tud.stg.tigerseye.utils.Transformer;
-import de.tud.stg.tigerseye.utils.ListBuilder;
-import de.tud.stg.tigerseye.utils.ListMap;
+import de.tud.stg.tigerseye.util.ListBuilder;
+import de.tud.stg.tigerseye.util.ListMap;
+import de.tud.stg.tigerseye.util.Transformer;
 import static junit.framework.Assert.*;
 
 public class ListMapTest {

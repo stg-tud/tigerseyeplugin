@@ -1,4 +1,4 @@
-package de.tud.stg.tigerseye.utils;
+package de.tud.stg.tigerseye.util;
 
 import java.util.ArrayList;
 import java.util.Collection;

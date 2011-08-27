@@ -29,8 +29,8 @@ import org.slf4j.LoggerFactory;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 import de.tud.stg.tigerseye.eclipse.core.api.TigerseyeRuntimeException;
 import de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyePreferenceConstants;
-import de.tud.stg.tigerseye.utils.ListMap;
-import de.tud.stg.tigerseye.utils.Transformer;
+import de.tud.stg.tigerseye.util.ListMap;
+import de.tud.stg.tigerseye.util.Transformer;
 
 /**
  * Provides static functions for configuration of Tigerseye nature Projects.

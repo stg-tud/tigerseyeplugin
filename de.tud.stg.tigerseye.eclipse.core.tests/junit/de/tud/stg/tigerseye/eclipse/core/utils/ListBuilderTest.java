@@ -7,7 +7,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.tud.stg.tigerseye.utils.ListBuilder;
+import de.tud.stg.tigerseye.util.ListBuilder;
 
 public class ListBuilderTest {
 

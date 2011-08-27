@@ -37,9 +37,9 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.CategoryNames;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.HostLanguageGrammar;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ParameterOptions;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.GrammarBuilderHelper;
-import de.tud.stg.tigerseye.utils.ListBuilder;
-import de.tud.stg.tigerseye.utils.ListMap;
-import de.tud.stg.tigerseye.utils.Transformer;
+import de.tud.stg.tigerseye.util.ListBuilder;
+import de.tud.stg.tigerseye.util.ListMap;
+import de.tud.stg.tigerseye.util.Transformer;
 
 /**
  * {@link GrammarBuilder} builds the grammar for given classes implementing the

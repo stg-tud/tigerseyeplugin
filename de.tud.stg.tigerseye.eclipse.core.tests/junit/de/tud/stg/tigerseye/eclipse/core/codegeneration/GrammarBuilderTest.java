@@ -39,7 +39,7 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.MathDSL4Gramma
 import de.tud.stg.tigerseye.test.PrettyGroovyCodePrinterFactory;
 import de.tud.stg.tigerseye.test.TestDSLTransformation;
 import de.tud.stg.tigerseye.test.TestUtils;
-import de.tud.stg.tigerseye.utils.ListBuilder;
+import de.tud.stg.tigerseye.util.ListBuilder;
 
 public class GrammarBuilderTest {
 

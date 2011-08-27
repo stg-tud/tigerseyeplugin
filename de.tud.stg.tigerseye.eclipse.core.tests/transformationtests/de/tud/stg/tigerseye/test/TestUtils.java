@@ -28,7 +28,7 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.UnicodeLookupTable;
 import de.tud.stg.tigerseye.test.TestDSLTransformation.GrammarResult;
 import de.tud.stg.tigerseye.test.transformation.utils.DefaultDSLTransformationTester;
-import de.tud.stg.tigerseye.utils.ListBuilder;
+import de.tud.stg.tigerseye.util.ListBuilder;
 
 
 public class TestUtils {
