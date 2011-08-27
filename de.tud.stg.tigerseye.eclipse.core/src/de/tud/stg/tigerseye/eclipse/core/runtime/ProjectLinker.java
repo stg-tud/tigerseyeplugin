@@ -79,22 +79,35 @@ public class ProjectLinker {
 		    + bundle.getSymbolicName());
 	    return null;
 	}
+	IProject linkProject = linkBundleGetProject(bundle);
+	if (linkProject == null) {
+	    // linking failed
+	    return null;
+	}
+
+	try {
+	    if (!linkProject.isOpen()) {
+		linkProject.open(null);
+	    }
+	} catch (CoreException e) {
+	    logger.error("Failed to open project {}", linkProject, e);
+	}
+
+	return linkProject;
+    }
+
+    private static @CheckForNull
+    IProject linkBundleGetProject(Bundle bundle) {
+	IProject linkProject = null;
 	try {
 	    File bundleFile = FileLocator.getBundleFile(bundle);
-	    IProject linkProject = new ProjectLinker().linkProject(
-		    bundleFile.toURI(), bundle.getSymbolicName());
-	    if (linkProject == null)
-		logger.warn("unexpected problem");
-	    else {
-		if (linkProject.isAccessible())
-		    linkProject.open(null);
-	    }
-	    return linkProject;
+	    linkProject = new ProjectLinker().linkProject(bundleFile.toURI(),
+		    bundle.getSymbolicName());
 	} catch (CoreException e) {
 	    logger.error("linking failed", e);
 	} catch (IOException e) {
 	    logger.error("linking failed", e);
 	}
-	return null;
+	return linkProject;
     }
 }

@@ -1,8 +1,10 @@
 package de.tud.stg.tigerseye.eclipse.core.builder;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.Nonnull;
 
@@ -13,6 +15,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IPath;
@@ -20,6 +23,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.core.runtime.jobs.MultiRule;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
@@ -42,8 +47,38 @@ public class Builder extends IncrementalProjectBuilder {
     private final ResourceVisitor[] visitors = { new DSLResourceVisitor(),
 	    new GroovyResourceVisitor(), new JavaResourceVisitor() };
 
-    public Builder() {
-	// Must be provided see Javadoc
+    private final AtomicBoolean mustRecomputeSourcesForFullBuild = new AtomicBoolean();
+
+    private @Nonnull
+    List<IResource> actualResourcesToBuildCache = Collections.emptyList();
+
+    enum BuildKind {
+	FULL_BUILD(IncrementalProjectBuilder.FULL_BUILD), //
+	AUTO_BUILD(IncrementalProjectBuilder.AUTO_BUILD), //
+	CLEAN_BUILD(IncrementalProjectBuilder.CLEAN_BUILD), //
+	INCREMENTAL_BUILD(IncrementalProjectBuilder.INCREMENTAL_BUILD), //
+	;
+	public final int kind;
+
+	private BuildKind(int kind) {
+	    this.kind = kind;
+	}
+
+	public static BuildKind parseBuildKind(int kind) {
+	    BuildKind[] values = BuildKind.values();
+	    for (BuildKind v : values) {
+		if (v.kind == kind)
+		    return v;
+	    }
+	    throw new IllegalArgumentException("Received unknown build kind: "
+		    + kind);
+	}
+
+	@Override
+	public String toString() {
+	    return this.name() + "[" + kind + "]";
+	}
+
     }
 
     @Override
@@ -54,8 +89,7 @@ public class Builder extends IncrementalProjectBuilder {
 
     @Override
     protected void clean(IProgressMonitor monitor) throws CoreException {
-	StopWatch sw = new StopWatch();
-	sw.start();
+	StopWatch sw = startedStopWatch();
 	if (monitor == null)
 	    monitor = new NullProgressMonitor();
 	try {
@@ -103,7 +137,7 @@ public class Builder extends IncrementalProjectBuilder {
     }
 
     private void checkCancelAndAct(@Nonnull IProgressMonitor monitor) {
-	if (monitor.isCanceled()) {
+	if (monitor.isCanceled() || isInterrupted()) {
 	    throw new OperationCanceledException();
 	}
     }
@@ -124,57 +158,58 @@ public class Builder extends IncrementalProjectBuilder {
 	if (monitor == null) {
 	    monitor = new NullProgressMonitor();
 	}
-	StopWatch sw = new StopWatch();
-	sw.start();
-
+	this.mustRecomputeSourcesForFullBuild.compareAndSet(false, true);
+	BuildKind buildKind = BuildKind.parseBuildKind(kind);
+	StopWatch sw = startedStopWatch();
 	try {
+	    buildSources(buildKind, monitor);
 	    monitor.beginTask("Start build", 100);
-	    if (kind == IncrementalProjectBuilder.CLEAN_BUILD) {
-		// never accessed?
-		this.clean(new SubProgressMonitor(monitor, 10));
-		this.fullBuild(new SubProgressMonitor(monitor, 90));
-	    } else if (kind == IncrementalProjectBuilder.FULL_BUILD) {
-		this.fullBuild(new SubProgressMonitor(monitor, 1));
-	    } else if (kind == INCREMENTAL_BUILD || kind == AUTO_BUILD) {
-		IResourceDelta delta = this.getDelta(this.getProject());
-		if (delta == null) {
-		    throw new IllegalStateException(
-			    "Received Incremental or Auto kind: " + kind
-				    + " but delta was null");
-		} else {
-		    this.incrementalBuild(delta, monitor);
-		}
-	    } else
-		throw new IllegalArgumentException("Unexpected build kind "
-			+ kind);
+
 	} catch (CoreException e) {
 	    logger.warn("Build failed because ", e);
 	} finally {
 	    monitor.done();
 	}
 	sw.stop();
-	logger.info("{} ms took build process of kind {}", sw.getTime(),
-		getStringKind(kind));
+	logger.info(
+		"{} ms took build process of kind {} for project {}",
+		new Object[] { sw.getTime(), buildKind.toString(), getProject() });
 	return null;
     }
 
-    private String getStringKind(int kind) {
-	switch (kind) {
-	case FULL_BUILD:
-	    return format("FULL_BUILD", kind);
-	case AUTO_BUILD:
-	    return format("AUTO_BUILD", kind);
-	case CLEAN_BUILD:
-	    return format("CLEAN_BUILD", kind);
-	case INCREMENTAL_BUILD:
-	    return format("INCREMENTAL_BUILD", kind);
-	default:
-	    return format("Unknown", kind);
-	}
+    public StopWatch startedStopWatch() {
+	StopWatch sw = new StopWatch();
+	sw.start();
+	return sw;
     }
 
-    private String format(String string, int kind) {
-	return string + " kind[" + kind + "]";
+    private void buildSources(BuildKind buildKind, IProgressMonitor monitor)
+	    throws CoreException {
+	switch (buildKind) {
+	case INCREMENTAL_BUILD:
+	    //$FALL-THROUGH$
+	case AUTO_BUILD:
+	    IResourceDelta delta = getAssertedDelta();
+	    this.incrementalBuild(delta, monitor);
+	    break;
+	case CLEAN_BUILD:
+	    this.clean(new SubProgressMonitor(monitor, 10));
+	    this.fullBuild(new SubProgressMonitor(monitor, 90));
+	    break;
+	case FULL_BUILD:
+	    this.fullBuild(new SubProgressMonitor(monitor, 1));
+	    break;
+	default:
+	    throw new IllegalArgumentException("Forgot to add enum to switch?");
+	}
+
+    }
+
+    public @Nonnull
+    IResourceDelta getAssertedDelta() {
+	IResourceDelta delta = this.getDelta(this.getProject());
+	Assert.isNotNull(delta);
+	return delta;
     }
 
     private void incrementalBuild(@Nonnull IResourceDelta delta,
@@ -186,8 +221,8 @@ public class Builder extends IncrementalProjectBuilder {
 	if (delta != null) {
 	    for (ResourceVisitor visitor : visitors) {
 		checkCancelAndAct(monitor);
-		monitor.subTask("Delta:" + delta.getFullPath()
-			+ " with Visitor:" + visitor.getClass().getSimpleName());
+		monitor.subTask("Building " + delta.getFullPath()
+		/* + " with Visitor:" + visitor.getClass().getSimpleName() */);
 		logger.trace("Starting build with visitor {}", visitor);
 		delta.accept(visitor);
 		monitor.worked(work);
@@ -202,54 +237,75 @@ public class Builder extends IncrementalProjectBuilder {
 	try {
 	    int totalWork = 10000;
 	    monitor.beginTask("Building", totalWork);
-	    IProject project = this.getProject();
+	    List<IResource> actualResourcesToBuild = getSourcesForFullBuild();
 
-	    IJavaProject jp = JavaCore.create(project);
+	    int sourceDirWorked = totalWork
+		    / (1 + actualResourcesToBuild.size());
+	    buildResourcesInSourceDirectory(new SubProgressMonitor(monitor,
+		    sourceDirWorked), actualResourcesToBuild);
 
-	    IPackageFragmentRoot[] packageFragmentRoots = jp
-		    .getPackageFragmentRoots();
-	    List<IPackageFragmentRoot> sourcesToBuild = new ArrayList<IPackageFragmentRoot>();
-	    for (IPackageFragmentRoot packRoot : packageFragmentRoots) {
-		if (monitor.isCanceled())
-		    return;
-		if (!(packRoot.getKind() == IPackageFragmentRoot.K_SOURCE))
-		    continue;
-		if (!isTigerseyeOutputSourceDirectory(packRoot)) {
-		    sourcesToBuild.add(packRoot);
-		}
-	    }
-
-	    int sourceDirWorked = totalWork / (1 + sourcesToBuild.size());
-	    for (IPackageFragmentRoot sourceDirRoot : sourcesToBuild) {
-		buildResourcesInSourceDirectory(new SubProgressMonitor(monitor,
-			sourceDirWorked), sourceDirRoot);
-	    }
 	} finally {
 	    monitor.done();
 	}
     }
 
+    private List<IResource> getSourcesForFullBuild() {
+	if (mustRecomputeSourcesForFullBuild.get()) {
+	    List<IResource> actualResourcesToBuild = Collections.emptyList();
+	    try {
+		actualResourcesToBuild = recomputeSourceForFullBuild();
+	    } catch (JavaModelException e) {
+		logger.error("Failed to determine which sources to build.", e);
+	    }
+	    actualResourcesToBuildCache = actualResourcesToBuild;
+	    mustRecomputeSourcesForFullBuild.set(false);
+	}
+	return actualResourcesToBuildCache;
+    }
+
+    public ArrayList<IResource> recomputeSourceForFullBuild()
+	    throws JavaModelException {
+	IProject project = this.getProject();
+	IJavaProject jp = JavaCore.create(project);
+	IPackageFragmentRoot[] packageFragmentRoots = jp
+		.getPackageFragmentRoots();
+	List<IPackageFragmentRoot> sourcesToBuild = new ArrayList<IPackageFragmentRoot>();
+	for (IPackageFragmentRoot packRoot : packageFragmentRoots) {
+	    if (!(packRoot.getKind() == IPackageFragmentRoot.K_SOURCE))
+		continue;
+	    if (!isTigerseyeOutputSourceDirectory(packRoot)) {
+		sourcesToBuild.add(packRoot);
+	    }
+	}
+	ArrayList<IResource> actualResourcesToBuild = new ArrayList<IResource>();
+	for (IPackageFragmentRoot sourceDirRoot : sourcesToBuild) {
+	    Object[] nonJavaResources = sourceDirRoot.getNonJavaResources();
+	    for (Object object : nonJavaResources) {
+		if (object instanceof IResource)
+		    actualResourcesToBuild.add((IResource) object);
+	    }
+	}
+	return actualResourcesToBuild;
+    }
+
     private void buildResourcesInSourceDirectory(
-	    @Nonnull IProgressMonitor monitor, IPackageFragmentRoot packRoot)
+	    @Nonnull IProgressMonitor monitor, List<IResource> nonJavaResources)
 	    throws JavaModelException {
 	try {
-	    Object[] nonJavaResources = packRoot.getNonJavaResources();
-	    float totalWork = 1000;
-	    monitor.beginTask(
-		    "Building source directory " + packRoot.getElementName(),
-		    (int) totalWork);
-	    int oneResourceWork = (int) (totalWork / nonJavaResources.length);
+	    int totalWork = Integer.MAX_VALUE;
+	    monitor.beginTask("Building", totalWork);
+	    if (nonJavaResources.isEmpty()) {
+		return;
+	    }
+	    int oneResourceWork = (totalWork / nonJavaResources.size());
 	    int oneVisitorWork = oneResourceWork / visitors.length;
-	    for (Object object : nonJavaResources) {
-		IResource resource = (IResource) object;
+	    for (IResource resource : nonJavaResources) {
 		for (ResourceVisitor visitor : visitors) {
 		    checkCancelAndAct(monitor);
 		    if (visitor.isInteresstedIn(resource)) {
-			monitor.subTask("Handler "
-				+ visitor.getClass().getSimpleName()
-				+ " on resource:" + object);
+			monitor.subTask("Building: " + resource.getName());
 			ResourceHandler newResourceHandler = visitor
-				.newResourceHandler();
+				.getResourceHandler();
 			newResourceHandler.handleResource(resource);
 		    }
 		    monitor.worked(oneVisitorWork);
@@ -261,4 +317,28 @@ public class Builder extends IncrementalProjectBuilder {
 
     }
 
+    @Override
+    public ISchedulingRule getRule(int kind, Map args) {
+	List<IResource> resourcesToLock = new ArrayList<IResource>();
+	BuildKind buildKind = BuildKind.parseBuildKind(kind);
+	switch (buildKind) {
+	case INCREMENTAL_BUILD:
+	    //$FALL-THROUGH$
+	case AUTO_BUILD:
+	    IResourceDelta delta = getDelta(getProject());
+	    if (delta != null)
+		resourcesToLock.add(delta.getResource());
+	    break;
+	case CLEAN_BUILD:
+	    //$FALL-THROUGH$
+	case FULL_BUILD:
+	    resourcesToLock.addAll(getSourcesForFullBuild());
+	    break;
+	default:
+	    throw new IllegalArgumentException("wtf:" + buildKind);
+	}
+	MultiRule multiRule = new MultiRule(
+		resourcesToLock.toArray(new ISchedulingRule[0]));
+	return multiRule;
+    }
 }

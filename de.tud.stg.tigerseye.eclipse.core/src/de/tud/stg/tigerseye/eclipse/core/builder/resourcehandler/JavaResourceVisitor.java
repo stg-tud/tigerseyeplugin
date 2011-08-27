@@ -5,17 +5,16 @@ import org.eclipse.core.resources.IResource;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.PrettyJavaCodePrinter;
 
-public class JavaResourceVisitor extends ResourceVisitor {
+public class JavaResourceVisitor extends DSLResourceHandler {
 
     private static final FileType fileType = FileType.JAVA;
 
-	@Override
-	public DSLResourceHandler newResourceHandler() {
-	return new EDSLResourceHandler(fileType, new PrettyJavaCodePrinter());
-	}
+    public JavaResourceVisitor() {
+	super(fileType, new PrettyJavaCodePrinter());
+    }
 
-	@Override
+    @Override
     public boolean isInteresstedIn(IResource resource) {
 	return resource.getName().endsWith(fileType.srcFileEnding);
-	}
+    }
 }

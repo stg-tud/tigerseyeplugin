@@ -1,7 +1,5 @@
 package de.tud.stg.tigerseye.eclipse.core.internal;
 
-import java.io.File;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -9,19 +7,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.pde.core.plugin.IPluginModelBase;
-import org.eclipse.pde.core.plugin.ModelEntry;
-import org.eclipse.pde.core.plugin.PluginRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.popart.dslsupport.DSL;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.api.ILanguageProvider;
@@ -44,6 +38,12 @@ public class LanguageProviderImpl implements ILanguageProvider {
 
     private final Set<DSLConfigurationElement> dslConfigurationElements;
 
+    /**
+     * Lazy initialized
+     */
+    @Nullable
+    private Set<DSLDefinition> dslDefinitionsCache;
+
     public LanguageProviderImpl(IPreferenceStore store,
 	    Set<DSLConfigurationElement> dslConfs) {
 	this.store = store;
@@ -56,6 +56,13 @@ public class LanguageProviderImpl implements ILanguageProvider {
 
     @Override
     public Set<DSLDefinition> getDSLDefinitions() {
+	if (dslDefinitionsCache == null) {
+	    dslDefinitionsCache = recomputeDSLDefinitions();
+	}
+	return dslDefinitionsCache;
+    }
+
+    private Set<DSLDefinition> recomputeDSLDefinitions() {
 	Set<DSLDefinition> dslDefinitions = getConfiguredDSLDefinitions();
 	setValidActivationState(dslDefinitions);
 	return Collections.unmodifiableSet(dslDefinitions);
@@ -64,15 +71,9 @@ public class LanguageProviderImpl implements ILanguageProvider {
     private Set<DSLDefinition> getConfiguredDSLDefinitions() {
 	HashSet<DSLDefinition> dslDefinitions = new HashSet<DSLDefinition>();
 	for (DSLConfigurationElement confEl : this.dslConfigurationElements) {
-	    // confEl is XML element "language" of xmlElement "dslDefinitions"
 	    DSLDefinitionImpl dsl = createDSLDefinition(confEl);
-	    if (dsl != null) {
-		fillOptionalValues(confEl, dsl);
-		dslDefinitions.add(dsl);
-	    } else
-		logger.warn(
-			"Could not create DSL for dslDefiniton Extension of contributor: {}",
-			confEl.getContributor());
+	    fillOptionalValues(confEl, dsl);
+	    dslDefinitions.add(dsl);
 	}
 	return dslDefinitions;
     }
@@ -93,52 +94,57 @@ public class LanguageProviderImpl implements ILanguageProvider {
 		.getAttribute(DSLDefinitionsAttribute.PrettyName);
 	DSLDefinitionImpl dslDefinitionImpl = new DSLDefinitionImpl(className,
 		confEl, prettyName);
-	// FIXME(Leo_Roos;Aug 25, 2011) too costly can causes loop
-	// return validatedDSLorNull(dslDefinitionImpl);
 	return dslDefinitionImpl;
     }
 
     void setValidActivationState(Collection<DSLDefinition> registeredDefinitions) {
-
-	Map<DSLDefinition, String> dslToKey = new HashMap<DSLDefinition, String>(
-		registeredDefinitions.size());
-	Map<String, DSLDefinition> activatedExtensions = new HashMap<String, DSLDefinition>(
-		registeredDefinitions.size());
-
-	for (DSLDefinition dsl : registeredDefinitions) {
-	    String extension = getExtensionOrNull(dsl);
-	    dslToKey.put(dsl, extension);
+	ArrayList<DSLDefinition> manuallyConfiguredDSLs = new ArrayList<DSLDefinition>();
+	ArrayList<DSLDefinition> notManuallyConfiguredDSLs = new ArrayList<DSLDefinition>();
+	for (DSLDefinition dslDefinition : registeredDefinitions) {
+	    boolean wasManuallySet = activeStateAlreadySet(dslDefinition);
+	    if (wasManuallySet) {
+		manuallyConfiguredDSLs.add(dslDefinition);
+	    } else {
+		notManuallyConfiguredDSLs.add(dslDefinition);
+	    }
+	}
+	Map<String, DSLDefinition> alreadyActivatedExtension = new HashMap<String, DSLDefinition>();
+	/* prefer manual configuration */
+	for (DSLDefinition dsl : manuallyConfiguredDSLs) {
+	    alreadyActivatedExtension = deactivateDSLIfAlreadyActiveDSLOfSameExtensionExists(
+		    dsl, alreadyActivatedExtension);
+	}
+	for (DSLDefinition dslDefinition : notManuallyConfiguredDSLs) {
+	    alreadyActivatedExtension = deactivateDSLIfAlreadyActiveDSLOfSameExtensionExists(
+		    dslDefinition, alreadyActivatedExtension);
 	}
 
-	// Activate manually changed at first
-	for (Entry<DSLDefinition, String> entry : dslToKey.entrySet()) {
-	    DSLDefinition dsl = entry.getKey();
-	    String extension = entry.getValue();
-	    if (extension != null && activeStateAlreadySet(dsl)
-		    && dsl.isActive())
-		if (activatedExtensions.containsKey(extension)) {
-		    logger.error(
-			    "More than one dsl has the extension [{}]. Cannot activate this DSL [{}] since the DSL [{}] has the same extension.",
-			    new Object[] { extension, dsl,
-				    activatedExtensions.get(extension) });
-		    dsl.setActive(false);
-		} else {
-		    activatedExtensions.put(extension, dsl);
-		}
-	}
+    }
 
-	// boolean defaultActivationState =
-	// TigerseyeDefaultConstants.DEFAULT_LANGUAGE_ACTIVE_VALUE;
-	// // Check newly added languages
-	// for (Entry<DSLDefinition, String> entry : dslToKey.entrySet()) {
-	// DSLDefinition dsl = entry.getKey();
-	// String extension = entry.getValue();
-	// if (extension != null
-	// && !activatedExtensions.containsKey(extension)
-	// && !activeStateAlreadySet(dsl)) {
-	// activatedExtensions.put(extension, dsl);
-	// }
-	// }
+    private Map<String, DSLDefinition> deactivateDSLIfAlreadyActiveDSLOfSameExtensionExists(
+	    DSLDefinition dsl,
+	    Map<String, DSLDefinition> alreadyActivatedExtension) {
+	boolean isActive = dsl.isActive();
+	if (!isActive)
+	    return alreadyActivatedExtension;
+
+	String extension = getExtensionOrNull(dsl);
+	boolean hasExtension = extension != null;
+	if (!hasExtension)
+	    return alreadyActivatedExtension;
+
+	boolean otherDSLOfSameExtensionIsActive = alreadyActivatedExtension
+		.containsKey(extension);
+	if (otherDSLOfSameExtensionIsActive) {
+	    logger.info(
+		    "More than one dsl has the extension [{}]. Cannot activate this DSL [{}] since the DSL [{}] has the same extension.",
+		    new Object[] { extension, dsl,
+			    alreadyActivatedExtension.get(extension) });
+	    dsl.setActive(false);
+	} else {
+	    alreadyActivatedExtension.put(extension, dsl);
+	}
+	return alreadyActivatedExtension;
     }
 
     private @CheckForNull
@@ -152,81 +158,6 @@ public class LanguageProviderImpl implements ILanguageProvider {
 
     private boolean activeStateAlreadySet(DSLDefinition dsl) {
 	return getStore().contains(DSLActivationState.getKeyFor(dsl));
-    }
-
-    private @CheckForNull
-    DSLDefinitionImpl validatedDSLorNull(DSLDefinitionImpl dsl) {
-	try {
-	    // Check existence
-	    Class<? extends DSL> loadClass = dsl.loadClass();
-	    if (loadClass == null) {
-		logger.warn(
-			"DSL {} could not be loaded. Possible cause unknown",
-			loadClass);
-		return null;
-	    }
-	    /*
-	     * Cannot do the next check since that would also execute possible
-	     * logic within the constructor
-	     */
-	    // loadClass.newInstance();
-	    logIfClassHasNoZeroArgConstructor(loadClass);
-	} catch (Exception e) {
-	    logger.warn(
-		    "Could not access registered DSL {} with class {} of plug-in {}. It will be ignored. Check your configuration. Is the correct DSL class name given? Is the plug-in accessible?",
-		    new Object[] { dsl.getDslName(), dsl.getClassPath(),
-			    dsl.getContributor().getId(), e });
-	    return null;
-	}
-	ModelEntry findEntry;
-	findEntry = PluginRegistry.findEntry(dsl.getContributor().getId());
-
-	// FIXME(Leo Roos;Aug 24, 2011) haven't seen this problem before debug
-	// change clean up afterwards
-	IPluginModelBase model = null;
-	if (findEntry == null) {
-	    // dsl not yet loaded
-	    return dsl;
-	} else {
-	    model = findEntry.getModel();
-	}
-
-	if (model != null) {
-	    String installLocation = model.getInstallLocation();
-	    File file = new File(installLocation);
-	    if (!file.exists()) {
-		logger.warn(
-			"location of plugin {} not found. Can not add DSL {} to classpath; Consider not to change the location of an active plug-in ;)",
-			dsl.getContributor().getId(), dsl.getDslName());
-		return null;
-	    }
-	}
-	if (model == null) {
-	    logger.error("No plugin definition for given id {} can be found",
-		    dsl.getContributor().getId());
-	    return null;
-	}
-	return dsl;
-    }
-
-    private void logIfClassHasNoZeroArgConstructor(
-	    Class<? extends DSL> loadClass) {
-	Constructor<?>[] constructors = loadClass.getConstructors();
-	if (constructors.length < 1) {
-	    logger.warn("DSL Class has no public contructor. Tigerseye expects a constructor with zero arguments");
-	} else {
-	    boolean hasZeroArgConstructor = false;
-	    for (Constructor<?> constructor : constructors) {
-		Class<?>[] parameterTypes = constructor.getParameterTypes();
-		if (parameterTypes.length < 1) {
-		    hasZeroArgConstructor = true;
-		    break;
-		}
-	    }
-	    if (!hasZeroArgConstructor) {
-		logger.warn("DSL Class has no public contructor with zero arguments. Tigerseye expects a public constructor with zero arguments");
-	    }
-	}
     }
 
     @Override
@@ -259,6 +190,16 @@ public class LanguageProviderImpl implements ILanguageProvider {
 	    return dsl.getValue(DSLKey.EXTENSION);
 	} catch (NoLegalPropertyFoundException e) {
 	    return "";
+	}
+    }
+
+    @Override
+    public void validateDSLDefinitionsState() {
+	Set<DSLDefinition> dslDefinitions = getDSLDefinitions();
+	for (DSLDefinition dslDefinition : dslDefinitions) {
+	    boolean dslClassLoadable = dslDefinition.isDSLClassLoadable();
+	    if (!dslClassLoadable)
+		logger.error("dsl {} not loadable ", dslDefinition);
 	}
     }
 

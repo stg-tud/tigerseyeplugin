@@ -34,4 +34,9 @@ public interface ILanguageProvider {
     public @CheckForNull
     DSLDefinition getActiveDSLForExtension(String extension);
 
+    /**
+     * Validates all accessible dslDefinitions have a loadable class
+     */
+    public void validateDSLDefinitionsState();
+
 }

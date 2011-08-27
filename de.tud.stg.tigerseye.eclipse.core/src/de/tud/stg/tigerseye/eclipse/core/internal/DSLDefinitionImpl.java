@@ -1,11 +1,18 @@
 package de.tud.stg.tigerseye.eclipse.core.internal;
 
+import java.io.File;
+import java.lang.reflect.Constructor;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.pde.core.plugin.IPluginModelBase;
+import org.eclipse.pde.core.plugin.ModelEntry;
+import org.eclipse.pde.core.plugin.PluginRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,10 +34,19 @@ public class DSLDefinitionImpl implements DSLDefinition {
     private final String dslName;
     private IPreferenceStore store;
 
+    /*
+     * lazy initialized
+     */
     @Nullable
     private ClassLoaderStrategy classloaderStrategy;
 
     private final DSLConfigurationElement configurationElement;
+
+    /*
+     * lazy initialized
+     */
+    private @Nullable
+    Class<? extends DSL> dslClass;
 
     /**
      * Constructs a {@link DSLDefinition} for given values, <code>null</code> is
@@ -141,10 +157,19 @@ public class DSLDefinitionImpl implements DSLDefinition {
     }
 
     @Override
-    public Class<? extends DSL> loadClass() {
+    public Class<? extends DSL> getDSLClass() {
+	if (dslClass == null) {
+	    dslClass = loadClass();
+	}
+	return dslClass;
+    }
+
+    private @Nonnull
+    Class<? extends DSL> loadClass() {
 	try {
 	    Class<?> loadClass = getClassLoaderStrategy().loadClass(
 		    getClassPath());
+	    Assert.isNotNull(loadClass);
 	    /*
 	     * The cast must be successful or else the DSL language is erroneous
 	     * and an exception appropriate
@@ -173,6 +198,72 @@ public class DSLDefinitionImpl implements DSLDefinition {
     @Override
     public String getIdentifer() {
 	return getLanguageKey();
+    }
+
+    @Override
+    public boolean isDSLClassLoadable() {
+	DSLDefinitionImpl dsl = this;
+	try {
+	    // Check existence
+	    Class<? extends DSL> loadClass = dsl.getDSLClass();
+	    /*
+	     * Cannot do the next check since that would also execute possible
+	     * logic within the constructor
+	     */
+	    // loadClass.newInstance();
+	    logIfClassHasNoZeroArgConstructor(loadClass);
+	} catch (Exception e) {
+	    logger.warn(
+		    "Could not access registered DSL {} with class {} of plug-in {}. It will be ignored. Check your configuration. Is the correct DSL class name given? Is the plug-in accessible?",
+		    new Object[] { dsl.getDslName(), dsl.getClassPath(),
+			    dsl.getContributor().getId(), e });
+	    return false;
+	}
+	ModelEntry findEntry = PluginRegistry.findEntry(dsl.getContributor()
+		.getId());
+	IPluginModelBase model = null;
+	if (findEntry == null) {
+	    // dsl not yet loaded
+	    return false;
+	} else {
+	    model = findEntry.getModel();
+	}
+
+	if (model == null) {
+	    logger.error("No plugin definition for given id {} can be found",
+		    dsl.getContributor().getId());
+	    return false;
+	} else {
+	    String installLocation = model.getInstallLocation();
+	    File file = new File(installLocation);
+	    if (!file.exists()) {
+		logger.warn(
+			"location of plugin {} not found. Can not add DSL {} to classpath; Consider not to change the location of an active plug-in ;)",
+			dsl.getContributor().getId(), dsl.getDslName());
+		return false;
+	    }
+	}
+	return true;
+    }
+
+    private void logIfClassHasNoZeroArgConstructor(
+	    Class<? extends DSL> loadClass) {
+	Constructor<?>[] constructors = loadClass.getConstructors();
+	if (constructors.length < 1) {
+	    logger.warn("DSL Class has no public contructor. Tigerseye expects a constructor with zero arguments");
+	} else {
+	    boolean hasZeroArgConstructor = false;
+	    for (Constructor<?> constructor : constructors) {
+		Class<?>[] parameterTypes = constructor.getParameterTypes();
+		if (parameterTypes.length < 1) {
+		    hasZeroArgConstructor = true;
+		    break;
+		}
+	    }
+	    if (!hasZeroArgConstructor) {
+		logger.warn("DSL Class has no public contructor with zero arguments. Tigerseye expects a public constructor with zero arguments");
+	    }
+	}
     }
 
 }

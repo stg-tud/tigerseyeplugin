@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -29,14 +31,14 @@ public class TigerseyeClasspathContainer implements IClasspathContainer {
 
     public static final Path CONTAINER_ID = new Path("TIGERSEYE_SUPPORT");
 
-
     private TigerseyeLibraryClasspathResolver dslResolver;
 
     public TigerseyeClasspathContainer(IProject project) {
 	this.project = project;
     }
 
-    private Set<IClasspathEntry> createCPEntries() {
+    private @Nonnull
+    Set<IClasspathEntry> createCPEntries() {
 	Set<IClasspathEntry> cpEntries = new HashSet<IClasspathEntry>();
 	File[] runtimeJars;
 	try {
@@ -59,7 +61,7 @@ public class TigerseyeClasspathContainer implements IClasspathContainer {
 	// filterDuplicates(recomputeClassPathEntries);
 	Set<IClasspathEntry> filterDuplicates = tigerCPEntries;
 	IClasspathEntry[] classpathEntries = filterDuplicates
-		.toArray(new IClasspathEntry[0]);
+		.toArray(new IClasspathEntry[filterDuplicates.size()]);
 
 	Collections.addAll(cpEntries, classpathEntries);
 
@@ -78,12 +80,12 @@ public class TigerseyeClasspathContainer implements IClasspathContainer {
 	this.dslResolver = resolver;
     }
 
-
     @Override
     public IClasspathEntry[] getClasspathEntries() {
-	if (cpEntries == null || cpEntries.isEmpty())
+	if (cpEntries.isEmpty())
 	    cpEntries = createCPEntries();
-	return this.cpEntries.toArray(new IClasspathEntry[0]);
+	return this.cpEntries
+		.toArray(new IClasspathEntry[this.cpEntries.size()]);
     }
 
     @Override
@@ -129,6 +131,5 @@ public class TigerseyeClasspathContainer implements IClasspathContainer {
 	}
 	return finalEntriesToAdd;
     }
-
 
 }

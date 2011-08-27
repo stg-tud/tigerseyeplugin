@@ -151,8 +151,16 @@ public class TigerseyeLibraryClasspathResolver {
 	return project;
     }
 
+    /**
+     * IClasspathEntry of kind CPE_LIBRARY and CPE_PROJECT can be added as is.
+     * Other entry kinds have to be resolved to one of the previous kinds. See
+     * the JavaDoc description of
+     * {@link IClasspathContainer#getClasspathEntries()}.
+     * 
+     */
     private Set<IClasspathEntry> computeProjectRuntimeClassPath(
 	    IJavaProject javaProject) throws CoreException {
+
 	IClasspathEntry[] entries = javaProject.getRawClasspath();
 
 	List<IClasspathEntry> addCandidates = new ArrayList<IClasspathEntry>(

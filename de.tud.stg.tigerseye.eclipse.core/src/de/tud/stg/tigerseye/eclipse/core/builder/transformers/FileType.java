@@ -34,7 +34,11 @@ public enum FileType implements TransformationType {
      * This FileTypes descriptive, unique name.
      */
     public final String name;
-    public static final FileType[] RESOURCE_FILE_TYPES = { JAVA, GROOVY, TIGERSEYE };
+    // FIXME(Leo_Roos;Aug 27, 2011) Filetypes should be changed to separate
+    // enums. Although the array itself is declared final its content can still
+    // be modified
+    public static final FileType[] RESOURCE_FILE_TYPES = { JAVA, GROOVY,
+	    TIGERSEYE };
     public static final FileType[] DSL_FILETYPES = { DSL };
 
     private FileType(String name, String srcFileEnding, String outPutFileEnding) {

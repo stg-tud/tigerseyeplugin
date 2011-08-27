@@ -41,9 +41,6 @@ public class TigerseyeCore {
      * @return an updated language provider
      */
     public static ILanguageProvider getLanguageProvider() {
-	if (!TigerseyeCoreActivator.getDefault().isActiveDSLsLinked()) {
-	    TigerseyeCoreActivator.getDefault().linkActiveDSLProjectsIntoWorkspace();
-	}
 	if (langaugeProvider == null) {
 	    updateLanguageProvider();
 	}

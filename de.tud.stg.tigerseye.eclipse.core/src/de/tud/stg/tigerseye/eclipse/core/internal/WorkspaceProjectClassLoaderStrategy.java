@@ -31,38 +31,35 @@ public class WorkspaceProjectClassLoaderStrategy implements ClassLoaderStrategy 
 
     @Override
     public Class<?> loadClass(String className) throws ClassNotFoundException {
+	URLClassLoader classLoader = getClassLoaderWithIndependentContext();
+	Class<?> loadedClass = classLoader.loadClass(className);
+	assertNotOnPluginClasspath(className);
+	return loadedClass;
+    }
 
-	IJavaProject javaProject = JavaCore.create(workspaceProject);
-	File[] resolveClasspath;
+    private void assertNotOnPluginClasspath(String className) {
 	try {
-	    String[] computeDefaultRuntimeClassPath = JavaRuntime
-		    .computeDefaultRuntimeClassPath(javaProject);
-	    resolveClasspath = new File[computeDefaultRuntimeClassPath.length];
-	    for (int i = 0; i < computeDefaultRuntimeClassPath.length; i++) {
-		resolveClasspath[i] = new File(
-			computeDefaultRuntimeClassPath[i]);
+	    Class<?> loadClass = Class.forName(className, false, getClass()
+		    .getClassLoader());
+	    if (loadClass != null) {
+		logger.info(
+			"did not expect class {} to be loadable by the tigerseye plugin."
+				+ "This means the class can not be updated and consequently no changes of that class can be considered by the transformation process.",
+			loadClass.toString());
 	    }
-	} catch (CoreException e) {
-	    throw new ClassNotFoundException(
-		    "Failed to resolve classpath for project "
-			    + workspaceProject, e);
+	} catch (ClassNotFoundException e) {
+	    // $EXPECTED EXCEPTION$
+	    /*
+	     * I see no possibility to check if a class is actually on the
+	     * classpath other than trying to load it.
+	     */
 	}
+    }
 
-	List<URL> urlList = new ArrayList<URL>();
-	for (int i = 0; i < resolveClasspath.length; i++) {
-	    File entry = resolveClasspath[i];
-	    try {
-		URL url = entry.toURI().toURL();
-		urlList.add(url);
-	    } catch (MalformedURLException e) {
-		throw new ClassNotFoundException(
-			"Failed to transform classpath location file " + entry
-				+ " to an URL.", e);
-	    }
-	}
-
-	URL[] urls = urlList.toArray(new URL[0]);
-
+    private URLClassLoader getClassLoaderWithIndependentContext()
+	    throws ClassNotFoundException {
+	IJavaProject javaProject = JavaCore.create(workspaceProject);
+	URL[] urls = computeDefaultRuntimeClasspathAsURLs(javaProject);
 	/*
 	 * WARNING: When planning to modify the following logic, bear in mind
 	 * some subtleties. The loaded class might easily end up in the
@@ -79,27 +76,41 @@ public class WorkspaceProjectClassLoaderStrategy implements ClassLoaderStrategy 
 	 * environment is usually not of the same context as the classloader of
 	 * this plug-in (=bundle).
 	 */
-
 	URLClassLoader classLoader = URLClassLoader.newInstance(urls,
 		getClass().getClassLoader());
+	return classLoader;
+    }
 
-	Class<?> loadedClass = classLoader.loadClass(className);
-
+    private URL[] computeDefaultRuntimeClasspathAsURLs(IJavaProject javaProject)
+	    throws ClassNotFoundException {
+	File[] resolveClasspath;
 	try {
-	    Class<?> loadClass = getClass().getClassLoader().loadClass(
-		    className);
-	    if (loadClass != null) {
-		logger.info(
-			"did not expected class {} to be loadable by plugin."
-				+ "This means the class can not be updated and no changes of that class can be considered by the transformation process.",
-			className);
+	    String[] computeDefaultRuntimeClassPath = JavaRuntime
+		    .computeDefaultRuntimeClassPath(javaProject);
+	    resolveClasspath = new File[computeDefaultRuntimeClassPath.length];
+	    for (int i = 0; i < computeDefaultRuntimeClassPath.length; i++) {
+		resolveClasspath[i] = new File(
+			computeDefaultRuntimeClassPath[i]);
 	    }
-	} catch (ClassNotFoundException e) {
-	    // expected
+	} catch (CoreException e) {
+	    throw new ClassNotFoundException(
+		    "Failed to resolve classpath for project "
+			    + workspaceProject, e);
 	}
-
-	return loadedClass;
-
+	List<URL> urlList = new ArrayList<URL>();
+	for (int i = 0; i < resolveClasspath.length; i++) {
+	    File entry = resolveClasspath[i];
+	    try {
+		URL url = entry.toURI().toURL();
+		urlList.add(url);
+	    } catch (MalformedURLException e) {
+		throw new ClassNotFoundException(
+			"Failed to transform classpath location file " + entry
+				+ " to an URL.", e);
+	    }
+	}
+	URL[] urls = urlList.toArray(new URL[0]);
+	return urls;
     }
 
 }

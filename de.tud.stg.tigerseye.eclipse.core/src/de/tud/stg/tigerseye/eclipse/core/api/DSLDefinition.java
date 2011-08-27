@@ -1,6 +1,5 @@
 package de.tud.stg.tigerseye.eclipse.core.api;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 /**
@@ -66,19 +65,24 @@ public interface DSLDefinition extends TransformationType {
     String getDslName();
 
     /**
-     * Loads class with fully qualified name {@link #getClassPath()} from bundle
-     * described by {@link #getContributorSymbolicName()}.
+     * Gets the loaded class with fully qualified name {@link #getClassPath()}
+     * from contributor described by {@link #getContributor()}.
      * 
-     * @return the loaded Class of this {@code DSLDefinition} or
-     *         <code>null</code> if class can not be loaded.
+     * @return the loaded Class of this {@code DSLDefinition}.
      * @throws TigerseyeRuntimeException
-     *             if class can not be loaded, which will encapsulate a
+     *             if class could not be loaded, which will encapsulate a
      *             {@link ClassNotFoundException}. This will usually be
      *             prevented because the existence of the class should have been
      *             checked during initialization.
      */
-    @CheckForNull
-    Class<? extends de.tud.stg.popart.dslsupport.DSL> loadClass();
+    @Nonnull
+    Class<? extends de.tud.stg.popart.dslsupport.DSL> getDSLClass();
+
+    /**
+     * @return <code>true</code> if class can be loaded via
+     *         {@link #getDSLClass()}
+     */
+    public boolean isDSLClassLoadable();
 
     /**
      * The unique identifier preference store key for this DSL.
@@ -181,7 +185,7 @@ public interface DSLDefinition extends TransformationType {
 	}
 
 	@Override
-	public Class<? extends de.tud.stg.popart.dslsupport.DSL> loadClass() {
+	public Class<? extends de.tud.stg.popart.dslsupport.DSL> getDSLClass() {
 	    return de.tud.stg.popart.dslsupport.DSL.class;
 	}
 
@@ -197,6 +201,11 @@ public interface DSLDefinition extends TransformationType {
 
 	@Override
 	public void setActive(boolean active) {
+	}
+
+	@Override
+	public boolean isDSLClassLoadable() {
+	    return true;
 	}
 
     }

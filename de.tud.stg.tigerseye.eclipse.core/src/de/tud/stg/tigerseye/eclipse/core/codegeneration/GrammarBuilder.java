@@ -120,7 +120,7 @@ public class GrammarBuilder {
 		dsls.size());
 	for (DSLDefinition dsl : dsls) {
 	    Class<? extends de.tud.stg.popart.dslsupport.DSL> loadClass = dsl
-		    .loadClass();
+		    .getDSLClass();
 	    if (loadClass != null)
 		clazzes.add(loadClass);
 	    else

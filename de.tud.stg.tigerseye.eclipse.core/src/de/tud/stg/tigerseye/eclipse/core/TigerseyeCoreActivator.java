@@ -16,8 +16,10 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
+import de.tud.stg.tigerseye.eclipse.core.api.ILanguageProvider;
 import de.tud.stg.tigerseye.eclipse.core.internal.DSLActivationState;
 import de.tud.stg.tigerseye.eclipse.core.internal.DSLConfigurationElementResolver;
+import de.tud.stg.tigerseye.eclipse.core.internal.LanguageProviderFactory;
 import de.tud.stg.tigerseye.eclipse.core.internal.PluginDSLConfigurationElement;
 import de.tud.stg.tigerseye.eclipse.core.runtime.ProjectLinker;
 
@@ -34,7 +36,7 @@ public class TigerseyeCoreActivator extends AbstractUIPlugin {
 
     private static final String unicodeLookupTablePath = "UnicodeLookupTable.txt";
 
-    private boolean activeDSLslinked = false;
+    private boolean haveMadeInitialConsistencyCheck;
 
     /**
      * The constructor
@@ -73,8 +75,8 @@ public class TigerseyeCoreActivator extends AbstractUIPlugin {
      * @return predefined icon from the default image store.
      */
     public static ImageDescriptor getTigerseyeImage(TigerseyeImage imageName) {
-        String imagePath = "/icons/" + imageName.imageName;
-        return getImageDescriptor(imagePath);
+	String imagePath = "/icons/" + imageName.imageName;
+	return getImageDescriptor(imagePath);
     }
 
     /**
@@ -82,8 +84,29 @@ public class TigerseyeCoreActivator extends AbstractUIPlugin {
      * 
      * @return the shared instance
      */
+    /*
+     * don't use this method inside this class to avoid loops
+     */
     public static TigerseyeCoreActivator getDefault() {
+	if (!isRunning())
+	    throw new IllegalStateException(
+		    "Tried to access shared instance, but this plugin has not been activated");
+	makeInitialConsistencyCheckIfNecessary();
 	return plugin;
+    }
+
+    private static void makeInitialConsistencyCheckIfNecessary() {
+	if (!plugin.haveMadeInitialConsistencyCheck) {
+	    plugin.linkActiveDSLProjectsIntoWorkspace();
+	    ILanguageProvider provider = new LanguageProviderFactory()
+		    .createLanguageProvider(plugin.getPreferenceStore());
+	    provider.validateDSLDefinitionsState();
+	    plugin.haveMadeInitialConsistencyCheck = true;
+	}
+    }
+
+    public static boolean isRunning() {
+	return plugin != null;
     }
 
     /**
@@ -103,8 +126,7 @@ public class TigerseyeCoreActivator extends AbstractUIPlugin {
      *         for special character naming.
      */
     public static Reader getUnicodeLookupTableResource() {
-	TigerseyeCoreActivator theInstance = getDefault();
-	if (theInstance == null) {
+	if (!isRunning()) {
 	    // plug-in not activated try to retrieve from project root
 	    try {
 		return new FileReader(unicodeLookupTablePath);
@@ -113,7 +135,7 @@ public class TigerseyeCoreActivator extends AbstractUIPlugin {
 			+ unicodeLookupTablePath);
 	    }
 	}
-	URL entry = theInstance.getBundle().getEntry(unicodeLookupTablePath);
+	URL entry = plugin.getBundle().getEntry(unicodeLookupTablePath);
 	if (entry == null)
 	    throw new IllegalStateException("Could not resolve entry for"
 		    + unicodeLookupTablePath);
@@ -127,17 +149,13 @@ public class TigerseyeCoreActivator extends AbstractUIPlugin {
 	}
     }
 
-    public boolean isActiveDSLsLinked() {
-	return activeDSLslinked;
-    }
-
     // FIXME(Leo_Roos;Aug 25, 2011) should be tested
     public void linkActiveDSLProjectsIntoWorkspace() {
 	Set<PluginDSLConfigurationElement> installedDSLConfigurationElements = DSLConfigurationElementResolver
 		.getInstalledDSLConfigurationElements();
 	for (PluginDSLConfigurationElement confEl : installedDSLConfigurationElements) {
 	    Boolean active = DSLActivationState.getValue(confEl.getId(),
-		    getDefault().getPreferenceStore());
+		    plugin.getPreferenceStore());
 	    String id = confEl.getContributor().getId();
 	    if (active) {
 		Bundle bundle = Platform.getBundle(id);
@@ -148,7 +166,6 @@ public class TigerseyeCoreActivator extends AbstractUIPlugin {
 		}
 	    }
 	}
-	this.activeDSLslinked = true;
     }
 
 }
