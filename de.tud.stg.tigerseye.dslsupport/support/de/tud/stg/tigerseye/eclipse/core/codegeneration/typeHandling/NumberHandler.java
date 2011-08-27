@@ -1,7 +1,5 @@
 	package de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling;
 
-import groovy.lang.Closure;
-
 import java.util.Map;
 
 import de.tud.stg.parlex.core.Category;
@@ -32,11 +30,11 @@ public class NumberHandler implements ClassTypeHandler {
 
 		Category group = new IntegerCategory();
 
-		grammar.addCategories(group);
+		grammar.addCategory(group);
 
 		Rule rule1 = new Rule(numberCategory, group);
 
-		grammar.addRules(rule1);
+		grammar.addRule(rule1);
 
 		// Category rType = new Category("PTYPE", false);
 		// Rule typeRule = new Rule(numberCategory, rType);

@@ -24,7 +24,7 @@ public class HandlingDispatcherHelper {
     
         	Category nodeCategory = new Category(clazz.getSimpleName(), false);
     
-        	grammar.addCategories(nodeCategory);
+        	grammar.addCategory(nodeCategory);
     
         	if (clazz == Object.class) {
         		return nodeCategory;

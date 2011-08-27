@@ -22,7 +22,7 @@ public class MathDSL4GrammarBuilderTest implements de.tud.stg.popart.dslsupport.
 		return cl.call();
 	}
 	
-	@DSLMethod(prettyName="sum__p0")
+	@DSLMethod(production="sum__p0")
 	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
 	public int sum(int[] elements) {
 		int sum = 0;
@@ -32,7 +32,7 @@ public class MathDSL4GrammarBuilderTest implements de.tud.stg.popart.dslsupport.
 		return sum;
 	}
 	
-//	@DSLMethod(prettyName="sum__p0__p1")
+//	@DSLMethod(production="sum__p0__p1")
 //	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
 //	public int sumTwo(int[] elements, int second) {
 //		int sum = 0;

@@ -1,6 +1,5 @@
 package de.tud.stg.tigerseye.eclipse.core.internal;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -8,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -23,14 +21,10 @@ import org.eclipse.pde.core.plugin.PluginRegistry;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
-import de.tud.stg.tigerseye.eclipse.core.api.ClassLoaderStrategy;
-import de.tud.stg.tigerseye.eclipse.core.api.DSLContributor;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
-import de.tud.stg.tigerseye.eclipse.core.api.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.internal.WorkspaceDSLDefintionsResolver.WorkspaceDSL;
 import de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyePreferenceConstants;
 import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeCoreConstants;

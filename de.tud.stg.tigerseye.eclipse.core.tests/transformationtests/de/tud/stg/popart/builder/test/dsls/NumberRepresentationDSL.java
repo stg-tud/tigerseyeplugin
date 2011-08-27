@@ -26,13 +26,13 @@ public class NumberRepresentationDSL implements de.tud.stg.popart.dslsupport.DSL
 	}
 
 	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
-	@DSLMethod(prettyName = "p0 b")
+	@DSLMethod(production = "p0 b")
 	public void booleanNumber(int num) {
 
 	}
 
 	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
-	@DSLMethod(prettyName = "p0 h")
+	@DSLMethod(production = "p0 h")
 	public void hexalNumber(int num) {
 
 	}

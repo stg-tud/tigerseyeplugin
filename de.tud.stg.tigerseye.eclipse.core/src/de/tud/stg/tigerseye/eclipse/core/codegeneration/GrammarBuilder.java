@@ -36,7 +36,7 @@ import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.CategoryNames;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.HostLanguageGrammar;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ParameterOptions;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.GrammarBuilderHelper;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.WhitespaceCategoryDefinition;
 import de.tud.stg.tigerseye.util.ListBuilder;
 import de.tud.stg.tigerseye.util.ListMap;
 import de.tud.stg.tigerseye.util.Transformer;
@@ -81,7 +81,7 @@ public class GrammarBuilder {
 	    grammar.addCategory(anything);
 
 	    Rule rAnyStatement = new Rule(this.statement,
-		    ListBuilder.single(anything));
+		    anything);
 	    grammar.addRule(rAnyStatement);
 
 	    grammar.addWaterRule(rAnyStatement);
@@ -98,8 +98,8 @@ public class GrammarBuilder {
 	Rule startRule = new Rule(program, single);
 
 	Rule rStatements = new Rule(this.statements, ListBuilder
-		.begin(this.statement)
-		.add(GrammarBuilderHelper.getAndSetOptionalWhitespace(grammar))
+		.newList(this.statement)
+		.add(WhitespaceCategoryDefinition.getAndSetOptionalWhitespace(grammar))
 		.add(this.statements).toList());
 
 	Rule rStatement = new Rule(this.statements,
@@ -334,10 +334,6 @@ public class GrammarBuilder {
     }
 
     private void validateClassIsLoadedInSameClassloader(Method method) {
-	// FIXME(Leo Roos;Jul 2, 2011) returns always null for classes
-	// loaded via URLClassloader. Perhaps I should use ByteCode
-	// Analysis Tools, that analyze the code independent from Java
-	// Reflections
 	Annotation[] annotations = method.getAnnotations();
 	for (Annotation anno : annotations) {
 	    Class<? extends Annotation> annotationType = anno.annotationType();
@@ -376,7 +372,7 @@ public class GrammarBuilder {
 		String methodProduction = null;
 
 		if (dslAnnotation != null) {
-			methodProduction = dslAnnotation.prettyName();
+			methodProduction = dslAnnotation.production();
 		}
 
 		return assignFirstStringOrDefault(methodProduction, defaultName);
@@ -457,7 +453,7 @@ public class GrammarBuilder {
 		grammar.addCategory(literalCategory);
 
 		Rule literalRule = new Rule(this.statement,
-			ListBuilder.single(literalCategory));
+			literalCategory);
 		grammar.addRule(literalRule);
 
 		ICategory<String> returnTypeCategory = typeHandler.handle(
@@ -465,7 +461,7 @@ public class GrammarBuilder {
 		grammar.addCategory(returnTypeCategory);
 
 		Rule returnTypeRule = new Rule(returnTypeCategory,
-			ListBuilder.single(literalCategory));
+			literalCategory);
 		grammar.addRule(returnTypeRule);
 
 				this.methodAliases.put(literal, new MethodOptions(method.getName(), new LinkedList<Integer>(), method
@@ -531,8 +527,8 @@ public class GrammarBuilder {
 
 		Type[] parameters = method.getGenericParameterTypes();
 
-		this.handleNonLiteral(method, methodProduction, method.getGenericReturnType(), parameters, Modifier
-.isPublic(method.getModifiers()), pattern,
+	this.handleNonLiteral(method, methodProduction,
+		method.getGenericReturnType(), parameters, pattern,
 		method.getParameterAnnotations(), methodOptions, grammar,
 		typeHandler);
 	}
@@ -550,7 +546,7 @@ public class GrammarBuilder {
 	}
 
     private void handleNonLiteral(Method method, String methodProduction,
-	    Type returnType, Type[] parameters, boolean isPublic,
+	    Type returnType, Type[] parameters,
 	    Pattern[] pattern, Annotation[][] parameterAnnotations,
 	    Map<ParameterOptions, String> methodOptions, Grammar grammar,
 	    HandlingDispatcher typeHandler) {
@@ -579,11 +575,11 @@ public class GrammarBuilder {
 
 		if (isWhitespace) {
 		    if (keyword.length() == 1) {
-			categories.add(GrammarBuilderHelper
+			categories.add(WhitespaceCategoryDefinition
 				.getAndSetOptionalWhitespace(grammar));
 		    } else {
-			categories.add(GrammarBuilderHelper
-				.getAndSetRWhitespace(grammar));
+			categories.add(WhitespaceCategoryDefinition
+				.getAndSetRequiredWhitespace(grammar));
 		    }
 				} else {
 
@@ -639,12 +635,12 @@ public class GrammarBuilder {
 		ICategory<String> parameterMapping = typeHandler.handle(
 			parameterType, parameterOptions);
 		Rule rule = new Rule(parameterCategory,
-			ListBuilder.single(parameterMapping));
+			parameterMapping);
 
 		ICategory<String> typeCategory = new Category(
 			CategoryNames.PTYPE_CATEGORY, false);
 		Rule typeRule = new Rule(parameterMapping,
-			ListBuilder.single(typeCategory));
+			typeCategory);
 
 		grammar.addRule(rule);
 		grammar.addRule(typeRule);
@@ -672,10 +668,10 @@ public class GrammarBuilder {
 	grammar.addCategory(methodCategory);
 
 		DSLMethod annotation = method.getAnnotation(DSLMethod.class);
-
+	boolean isPublic = Modifier.isPublic(method.getModifiers());
 		if (isPublic && (annotation == null || annotation.topLevel())) {
 	    Rule methodRule = new Rule(this.statement,
-		    ListBuilder.single(methodCategory));
+		    methodCategory);
 	    grammar.addRule(methodRule);
 		}
 
@@ -694,11 +690,11 @@ public class GrammarBuilder {
 	    ICategory<String> typeCategory = new Category(
 		    CategoryNames.RTYPE_CATEGORY, false);
 	    Rule typeToMethod = new Rule(typeCategory,
-		    ListBuilder.single(methodCategory));
+		    methodCategory);
 	    grammar.addRule(typeToMethod);
 
 	    Rule returnTypeToMethod = new Rule(returnTypeCategory,
-		    ListBuilder.single(methodCategory));
+		    methodCategory);
 	    grammar.addRule(returnTypeToMethod);
 		}
 	}

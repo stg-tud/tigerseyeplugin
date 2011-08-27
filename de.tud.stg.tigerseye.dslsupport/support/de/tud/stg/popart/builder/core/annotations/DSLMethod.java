@@ -1,15 +1,63 @@
 package de.tud.stg.popart.builder.core.annotations;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ParameterOptionDefaults;
+
+/**
+ * Annotation to define the concrete syntax an embedded DSL element. Elements
+ * shared with {@link DSLClass} are overwritten in the scope of the the
+ * annotated method.
+ * <p>
+ * To define the right-hand-side of the production the element
+ * {@link #production()} is used. <br>
+ * This annotation provides elements to configure the way a production is
+ * interpreted via {@link #parameterEscape()} and {@link #whitespaceEscape()}.<br>
+ * The interpretation of arrays and strings can be adjusted using
+ * {@link #arrayDelimiter()} and {@link #stringQuotation()}.<br>
+ * The default values are defined in {@link ParameterOptionDefaults}. <br>
+ * <p>
+ * A definition can be defined {@link #topLevel()} in which case it can not be
+ * part of another production.
+ * <p>
+ * To avoid ambiguities different types of priorities are supported. They may be
+ * mixed at will but a combination might be ignored if it doesn't make sense. <br>
+ * Priorities can be defined
+ * <ul>
+ * <li>absolute, see {@link #absolutePriority()},
+ * <li>by general preference, see {@link #preferencePriority()},
+ * <li>relative, see {@link #priorityHigherThan()} and
+ * {@link #priorityLowerThan()}.
+ * </ul>
+ * <p>
+ * 
+ * 
+ * @see DSLParameter
+ * @see DSLClass
+ * 
+ * @author Leo_Roos
+ * 
+ */
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DSLMethod {
+
+	String parameterEscape() default AnnotationConstants.UNASSIGNED;
+
+	String whitespaceEscape() default AnnotationConstants.UNASSIGNED;
+
+	String arrayDelimiter() default AnnotationConstants.UNASSIGNED;
+
+	String stringQuotation() default AnnotationConstants.UNASSIGNED;
+
 	/**
 	 * The production name of the describe method. It's default value is
 	 * {@link AnnotationConstants#UNASSIGNED}.
 	 */
-	String prettyName() default AnnotationConstants.UNASSIGNED;
+	String production() default AnnotationConstants.UNASSIGNED;
 
 	/**
 	 * Defines if this method is a top level statement or can only be referenced
@@ -20,4 +68,76 @@ public @interface DSLMethod {
 	 *         <code>false</code> otherwise
 	 */
 	boolean topLevel() default true;
+
+	/**
+	 * Describes the type of an annotated method.
+	 * 
+	 * @author Leo_Roos
+	 * 
+	 */
+	public enum DslMethodType {
+		AbstractionOperator, Literal, Operation
+	};
+
+	/**
+	 * The type of the syntax definition. Default is
+	 * {@link DslMethodType#Operation}
+	 * 
+	 * @return the type of an annotated method.
+	 */
+	DslMethodType type() default DslMethodType.Operation;
+
+	public enum Associativity {
+		LEFT, RIGHT, NONE;
+	}
+
+	Associativity associativity() default Associativity.NONE;
+
+	/**
+	 * Define priority by absolute value. Default is 0. Every integer value is
+	 * valid.
+	 */
+	int absolutePriority() default 0;
+
+	public enum PreferencePriority {
+		Avoid, Reject, Prefer, NONE;
+	}
+
+	/**
+	 * Define priority by general preference. Default is
+	 * {@link PreferencePriority#NONE}.
+	 */
+	PreferencePriority preferencePriority() default PreferencePriority.NONE;
+
+	/**
+	 * defines a priority lower than another syntax definition.
+	 * <p>
+	 * The other definition can be selected via its {@link #uniqueIdentifier()}.
+	 * This will be either the fully qualified name of the annotated method or a
+	 * user defined identifier. The selection is valid using any substring of a
+	 * valid identifier. This might be ambiguous in which case the first found
+	 * definition will be assumed.
+	 * 
+	 * @see #uniqueIdentifier()
+	 */
+	String priorityLowerThan() default AnnotationConstants.UNASSIGNED;
+
+	/**
+	 * defines a priority higher than another syntax definition.
+	 * <p>
+	 * The other definition can be selected via its {@link #uniqueIdentifier()}.
+	 * This will be either the fully qualified name of the annotated method or a
+	 * user defined identifier. The selection is valid using any substring of a
+	 * valid identifier. This might be ambiguous in which case the first found
+	 * definition will be assumed.
+	 * 
+	 * @see #uniqueIdentifier()
+	 */
+	String priorityHigherThan() default AnnotationConstants.UNASSIGNED;
+
+	/**
+	 * Defines the unique identifier of this definition. If not assigned the
+	 * fully qualified name of the annotated method will be used.
+	 */
+	String uniqueIdentifier() default AnnotationConstants.UNASSIGNED;
 }

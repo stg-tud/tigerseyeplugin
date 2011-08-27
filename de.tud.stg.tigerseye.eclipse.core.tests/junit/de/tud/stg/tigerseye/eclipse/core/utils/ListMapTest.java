@@ -60,7 +60,7 @@ public class ListMapTest {
 						return Integer.parseInt(input);
 					}
 				});
-		assertTrue(result.containsAll(ListBuilder.begin(1).add(2).add(3).add(4).toList()));
+		assertTrue(result.containsAll(ListBuilder.newList(1).add(2).add(3).add(4).toList()));
 	}
 
 }

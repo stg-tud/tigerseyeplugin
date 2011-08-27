@@ -21,11 +21,11 @@ public class StringHandler implements ClassTypeHandler {
 
 		Category group = new StringCategory(stringQuotation);
 
-		grammar.addCategories(group);
+		grammar.addCategory(group);
 
 		Rule rule1 = new Rule(stringCategory, group);
 
-		grammar.addRules(rule1);
+		grammar.addRule(rule1);
 
 		Category rType = new Category(CategoryNames.TYPE_CATEGORY, false);
 		Rule typeRule = new Rule(rType, stringCategory);

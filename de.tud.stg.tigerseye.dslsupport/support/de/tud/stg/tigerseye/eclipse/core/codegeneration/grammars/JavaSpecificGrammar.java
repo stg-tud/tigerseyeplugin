@@ -6,7 +6,7 @@ import de.tud.stg.parlex.core.IGrammar;
 import de.tud.stg.parlex.core.IRule;
 import de.tud.stg.parlex.core.Rule;
 import de.tud.stg.parlex.core.groupcategories.StringCategory;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.GrammarBuilderHelper;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.WhitespaceCategoryDefinition;
 
 /**
  * {@link JavaSpecificGrammar} is a host language specific grammar and setups some basic rules for interaction with
@@ -33,8 +33,8 @@ public class JavaSpecificGrammar implements HostLanguageGrammar {
 	
 	@Override
 	public void applySpecificGrammar(IGrammar<String> grammar) {
-		ICategory<String> optionalWS = GrammarBuilderHelper.getAndSetOptionalWhitespace(grammar);
-		ICategory<String> WS = GrammarBuilderHelper.getAndSetRWhitespace(grammar);
+		ICategory<String> optionalWS = WhitespaceCategoryDefinition.getAndSetOptionalWhitespace(grammar);
+		ICategory<String> WS = WhitespaceCategoryDefinition.getAndSetRequiredWhitespace(grammar);
 
 		Category pType = new Category(CategoryNames.PTYPE_CATEGORY, false);
 		Category rType = new Category(CategoryNames.RTYPE_CATEGORY, false);
@@ -92,12 +92,12 @@ public class JavaSpecificGrammar implements HostLanguageGrammar {
 		Category statement = new Category(CategoryNames.STATEMENT_CATEGORY, false);
 		Category statements = new Category(CategoryNames.STATEMENTS_CATEGORY, false);
 
-		Rule groupStatement = new Rule(statement, new Category(LCUB_CATEGORY, true), GrammarBuilderHelper.getAndSetOptionalWhitespace(
-				grammar), statements, GrammarBuilderHelper.getAndSetOptionalWhitespace(grammar),
+		Rule groupStatement = new Rule(statement, new Category(LCUB_CATEGORY, true), WhitespaceCategoryDefinition.getAndSetOptionalWhitespace(
+				grammar), statements, WhitespaceCategoryDefinition.getAndSetOptionalWhitespace(grammar),
 				new Category(RCUB_CATEGORY, true));
 
 		// Rule emptyGroupStatement = new Rule(statement, new Category("{", true), optionalWS, new Category("}", true));
 
-		grammar.addRules(groupStatement);
+		grammar.addRule(groupStatement);
 	}
 }

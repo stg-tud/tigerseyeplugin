@@ -26,10 +26,10 @@ public abstract class TypeHandler implements ClassTypeHandler {
 
 	@Override
 	public ICategory<String> handle(IGrammar<String> grammar, Class<?> clazz, Map<ParameterOptions, String> parameterOptions) {
-		grammar.addCategories(this.group);
+		grammar.addCategory(this.group);
 
 		Rule rule1 = new Rule(this.category, this.group);
-		grammar.addRules(rule1);
+		grammar.addRule(rule1);
 
 		Category rType = new Category(CategoryNames.TYPE_CATEGORY, false);
 		Rule typeRule = new Rule(rType, this.category);
@@ -41,7 +41,7 @@ public abstract class TypeHandler implements ClassTypeHandler {
 	public abstract Class<?> getMainType();
 
 	public Class<?>[] getAdditionalTypes() {
-		return null;
+		return new Class[0];
 	}
 
 	public abstract String getRegularExpression();

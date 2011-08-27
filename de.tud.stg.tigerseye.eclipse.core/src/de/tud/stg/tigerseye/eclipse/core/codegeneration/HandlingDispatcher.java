@@ -25,8 +25,8 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.NumberHandl
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ParameterOptions;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.StringHandler;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.TypeHandler;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.GrammarBuilderHelper;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.HandlingDispatcherHelper;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.WhitespaceCategoryDefinition;
 
 public class HandlingDispatcher {
 
@@ -158,13 +158,13 @@ public class HandlingDispatcher {
 		Rule r1 = null;
 		if (parameterOptions.get(ParameterOptions.ARRAY_DELIMITER).matches("\\s+")) {
 	    r1 = new Rule(objects, objects,
-		    GrammarBuilderHelper.getAndSetRWhitespace(this.grammar), objects);
+		    WhitespaceCategoryDefinition.getAndSetRequiredWhitespace(this.grammar), objects);
 		} else if (parameterOptions.get(ParameterOptions.ARRAY_DELIMITER).isEmpty()) {
 			r1 = new Rule(objects, objects, objects);
 		} else {
 			Category ad = new Category(parameterOptions.get(ParameterOptions.ARRAY_DELIMITER), true);
 			this.grammar.addCategory(ad);
-	    ICategory<String> WS = GrammarBuilderHelper.getAndSetOptionalWhitespace(
+	    ICategory<String> WS = WhitespaceCategoryDefinition.getAndSetOptionalWhitespace(
 this.grammar);
 			r1 = new Rule(objects, objects, WS, ad, WS, objects);
 	    // Rule r1a = new Rule(objects, objects, ad, WS, objects);
@@ -183,7 +183,7 @@ this.grammar);
 	// this.grammar.addRule(water);
 	// }
 
-		this.grammar.addCategories(objects);
+	this.grammar.addCategory(objects);
 
 		return objects;
 	}

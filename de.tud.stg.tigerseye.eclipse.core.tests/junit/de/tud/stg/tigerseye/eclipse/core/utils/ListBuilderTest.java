@@ -32,7 +32,7 @@ public class ListBuilderTest {
 
 	@Test
 	public void testCreateWorksLikeConstructor() {
-		List<Integer> list = ListBuilder.begin(1).toList();
+		List<Integer> list = ListBuilder.newList(1).toList();
 		assertTrue(list.contains(1));
 	}
 	
