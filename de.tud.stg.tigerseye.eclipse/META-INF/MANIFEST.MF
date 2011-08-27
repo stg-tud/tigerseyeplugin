@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Tigerseye Common Libraries, Model
-Bundle-SymbolicName: de.tud.stg.tigerseye.eclipse;singleton:=true
+Bundle-SymbolicName: de.tud.stg.tigerseye;singleton:=true
 Bundle-Version: 0.0.1.qualifier
 Bundle-Activator: de.tud.stg.tigerseye.eclipse.TigerseyeLibraryProvider
 Bundle-Vendor: TUD
@@ -14,7 +14,7 @@ Require-Bundle: org.eclipse.ui,
  org.apache.commons.lang;bundle-version="2.4.0";visibility:=reexport,
  org.apache.commons.collections;bundle-version="3.2.0";visibility:=reexport,
  org.apache.commons.io;bundle-version="1.4.0";visibility:=reexport,
- de.tud.stg.tigerseye.eclipse.dslsupport;bundle-version="0.0.1";visibility:=reexport
+ de.tud.stg.tigerseye.dslsupport;bundle-version="0.0.1";visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Import-Package: org.eclipse.jdt.internal.debug.core.breakpoints,

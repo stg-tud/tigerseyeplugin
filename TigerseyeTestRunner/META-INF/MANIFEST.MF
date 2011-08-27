@@ -4,9 +4,9 @@ Bundle-Name: TigerseyeTestRunner
 Bundle-SymbolicName: TigerseyeTestRunner
 Bundle-Version: 0.0.1.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: de.tud.stg.tigerseye.eclipse.core;bundle-version="0.0.1",
+Require-Bundle: de.tud.stg.tigerseye.core;bundle-version="0.0.1",
  org.junit;bundle-version="4.8.1",
- de.tud.stg.tigerseye.eclipse.dslsupport;bundle-version="0.0.1",
+ de.tud.stg.tigerseye.dslsupport;bundle-version="0.0.1",
  de.tud.stg.tigerseye.eclipse.ui;bundle-version="0.0.1"
 Import-Package: org.slf4j,
  org.slf4j.impl

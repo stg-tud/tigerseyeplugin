@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
-Bundle-SymbolicName: de.tud.stg.tigerseye.eclipse.core;singleton:=true
+Bundle-SymbolicName: de.tud.stg.tigerseye.core;singleton:=true
 Bundle-Version: 0.0.1.qualifier
 Bundle-Activator: de.tud.stg.tigerseye.eclipse.core.TigerseyeCoreActivator
 Bundle-Vendor: %Bundle-Vendor
@@ -20,7 +20,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.team.core;bundle-version="3.5.101";resolution:=optional,
  org.eclipse.pde.core;bundle-version="3.6.2",
  org.eclipse.pde.core.source;bundle-version="3.6.2";resolution:=optional,
- de.tud.stg.tigerseye.eclipse;bundle-version="0.0.1",
+ de.tud.stg.tigerseye;bundle-version="0.0.1",
  de.tud.stg.tigerseye.util;bundle-version="0.0.1";visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy

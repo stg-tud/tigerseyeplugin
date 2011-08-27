@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: TigerseyeCoreTests
-Bundle-SymbolicName: de.tud.stg.tigerseye.eclipse.core.tests
+Bundle-SymbolicName: de.tud.stg.tigerseye.core.tests
 Bundle-Version: 0.0.0.qualifier
-Fragment-Host: de.tud.stg.tigerseye.eclipse.core;bundle-version="0.0.1"
+Fragment-Host: de.tud.stg.tigerseye.core;bundle-version="0.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.junit4;bundle-version="4.8.1"
 Bundle-ClassPath: libs/powermock-mockito-1.4.6-full.jar,
