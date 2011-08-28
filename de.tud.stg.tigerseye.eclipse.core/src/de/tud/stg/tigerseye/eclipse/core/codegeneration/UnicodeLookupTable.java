@@ -143,6 +143,7 @@ public class UnicodeLookupTable {
 
 	String name = "";
 	String element = "";
+	String elementClass = "";
 
 	int elementNumber = 2;
 	while (name.isEmpty()) {
@@ -154,9 +155,24 @@ public class UnicodeLookupTable {
 	    switch (elementNumber) {
 	    case 2: // 2: class, one of: N,A,B,C,D,F,G,L,O,P,R,S,U,V,X
 		    // not a descriptive representation
+		elementClass = element;
 		break;
 	    case 3: // 3: Unicode character (UTF-8)
-		assert element.equals(characterString);
+		    // XXX(leo;Aug 28, 2011) assertions don't really work. Would
+		    // have to assert each special case like non-breaking space
+		    // or characters which representation
+		    // differ when parsed or read from unicode table file
+		    // if (elementClass.equals("S")) {
+		    // // some kind of whitespace
+		    // } else if (";".equals(characterString)) {
+		    // assert "003B".equals(characterCode) :
+		    // formatCharacterString(
+		    // characterString, characterCode);
+		    // } else {
+		    // assert element.equals(characterString) :
+		    // formatCharacterString(
+		    // characterString, characterCode);
+		    // }
 		break;
 	    case 4: // 4: entity name
 		/*
@@ -194,6 +210,12 @@ public class UnicodeLookupTable {
 
 	String trimmedName = name.trim();
 	return new UnicodeNamePair(characterString, trimmedName);
+    }
+
+    private String formatCharacterString(String characterString,
+	    String characterCode) {
+	return "characterString was [" + characterString + "] with code["
+		+ characterCode + "]";
     }
 
     static class UnicodeNamePair {
