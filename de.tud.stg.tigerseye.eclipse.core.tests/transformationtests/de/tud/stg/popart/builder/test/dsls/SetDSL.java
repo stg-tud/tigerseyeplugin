@@ -53,7 +53,7 @@ public class SetDSL implements de.tud.stg.popart.dslsupport.DSL {
 	}
 
 	@DSLMethod(production = "p0 ⋃ p1")
-	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
+	
 	public Set union(Set a, Set b) {
 		HashSet set = new HashSet(a);
 		set.addAll(b);
@@ -61,7 +61,7 @@ public class SetDSL implements de.tud.stg.popart.dslsupport.DSL {
 	}
 
 	@DSLMethod(production = "p0 ⋂ p1")
-	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
+	
 	public Set intersection(Set a, Set b) {
 		HashSet set = new HashSet(a);
 		set.addAll(b);
@@ -69,19 +69,19 @@ public class SetDSL implements de.tud.stg.popart.dslsupport.DSL {
 	}
 
 	@DSLMethod(production = "{ p0 }")
-	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
+	
 	public Set asSet(MyList a) {
 		return new HashSet(Arrays.asList(a.toArray()));
 	}
 
 	@DSLMethod(production = "p0")
-	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
+	
 	private MyList singleElementedList(String head) {
 		return new MyList(head, null);
 	}
 
 	@DSLMethod(production = "p0 , p1")
-	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
+	
 	private MyList multiElementedList(String head, MyList tail) {
 		return new MyList(head, tail);
 	}

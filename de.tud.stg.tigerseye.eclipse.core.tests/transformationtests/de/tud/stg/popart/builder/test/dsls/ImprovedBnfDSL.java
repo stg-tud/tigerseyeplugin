@@ -58,7 +58,7 @@ public class ImprovedBnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 	}
 
 	@DSLMethod(production = "p0")
-	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 1)
+	
 	public Syntax syntax(Rule[] rules) {
 		Syntax syntax = new Syntax(rules);
 
@@ -78,7 +78,7 @@ public class ImprovedBnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 	}
 
 	@DSLMethod(production = "p0 ::= p1", topLevel = false)
-	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 1)
+	
 	public Rule rule(Identifier identifier, Expression expression) {
 
 		Rule rule = new Rule(identifier, expression);
@@ -96,7 +96,7 @@ public class ImprovedBnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 	}
 
 	@DSLMethod(production = "p0", topLevel = false)
-	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 1)
+	
 	public Expression expression(@DSL(arrayDelimiter = "|") Term[] terms) {
 
 		Expression expression = new Expression(terms);
@@ -114,7 +114,7 @@ public class ImprovedBnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 	}
 
 	@DSLMethod(production = "p0", topLevel = false)
-	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 1)
+	
 	public Term termFromFactors(Factor[] factors) {
 
 		Term term = new Term(factors);
@@ -132,7 +132,7 @@ public class ImprovedBnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 	}
 
 	@DSLMethod(production = "p0", topLevel = false)
-	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 1)
+	
 	public Factor factorFromIdentifier(Identifier identifier) {
 
 		Factor factor = new Factor(identifier);
@@ -147,7 +147,7 @@ public class ImprovedBnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 	}
 
 	@DSLMethod(production = "p0", topLevel = false)
-	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 1)
+	
 	public Factor factorFromQuotedSymbol(QuotedSymbol quotedSymbol) {
 
 		Factor factor = new Factor(quotedSymbol);
@@ -162,7 +162,7 @@ public class ImprovedBnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 	}
 
 	@DSLMethod(production = "( p0 )", topLevel = false)
-	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 1)
+	
 	public Factor factorFromExpressionInParanthesis(Expression expression) {
 
 		Factor factor = new Factor(expression);
@@ -180,7 +180,7 @@ public class ImprovedBnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 	}
 
 	@DSLMethod(production = "[ p0 ]", topLevel = false)
-	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 1)
+	
 	public Factor factorFromExpressionInBrackets(Expression expression) {
 		Factor factor = new Factor(expression);
 		// Category factorCategory = new Category(factor.toString(), false);
@@ -197,7 +197,7 @@ public class ImprovedBnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 	}
 
 	@DSLMethod(production = "{ p0 }", topLevel = false)
-	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 1)
+	
 	public Factor factorFromExpressionInBraces(Expression expression) {
 
 		Factor factor = new Factor(expression);

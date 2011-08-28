@@ -27,13 +27,13 @@ public class MapDSL implements de.tud.stg.popart.dslsupport.DSL {
 	}
 
 
-	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
+	
 	@DSLMethod(production = "p0 = p1", topLevel=false)
 	public <K, V> Entry<K, V> buildEntry(K o, V b) {
 		return new Entry<K, V>(o, b);
 	}
 
-	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
+	
 	@DSLMethod(production = "[ p0 , p1 : p2 ]")
 	public <K, V> Map<K, V> buildMap(Class<K> keyClass, Class<V> valueClass, Entry<K, V>... entries) {
 		HashMap<K, V> map = new HashMap<K, V>();

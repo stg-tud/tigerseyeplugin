@@ -7,7 +7,6 @@ import java.util.HashMap;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod.DslMethodType;
 import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
-import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartLiteralKeyword;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeyword;
 
 /**
@@ -24,18 +23,18 @@ public class PrefixDSL implements de.tud.stg.popart.dslsupport.DSL {
 		return cl.call();
 	}
 
-	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
+	
 	public int start__state__p0(int i) {
 		return 0;
 	}
 
-	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
+	
 	public int state__p0(int i) {
 		return 0;
 	}
 
 	@DSLMethod(type=DslMethodType.Literal)
-//	@PopartType(clazz = PopartLiteralKeyword.class, breakpointPossible = 0)
+//	
 	public int getStart() {
 		return 0;
 	}

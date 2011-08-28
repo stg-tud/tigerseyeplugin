@@ -26,12 +26,12 @@ public class StatefulDSL implements de.tud.stg.popart.dslsupport.DSL {
 
 	private Map<String, Object> variables = new HashMap<String, Object>();
 
-	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
+	
 	public void set__p0_equals_p1(String key, Object value) {
 		this.variables.put(key, value);
 	}
 
-	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
+	
 	public Object get__p0(String key) {
 		return this.variables.get(key);
 	}

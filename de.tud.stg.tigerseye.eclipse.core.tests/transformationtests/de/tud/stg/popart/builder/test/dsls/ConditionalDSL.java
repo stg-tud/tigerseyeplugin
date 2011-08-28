@@ -24,7 +24,7 @@ public class ConditionalDSL implements de.tud.stg.popart.dslsupport.DSL {
 		return cl.call();
 	}
 
-	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
+	
 	@DSLMethod(production = "if ( p0 ) then { p1 } else { p2 }")
 	public boolean ifThenElse(boolean check, Closure thenBlock, Closure elseBlock) {
 		if (check) {

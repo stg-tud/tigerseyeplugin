@@ -27,13 +27,13 @@ public class ForEachSyntaxDSL implements de.tud.stg.popart.dslsupport.DSL {
 	}
 
 	@DSLMethod(production = "for ( p0  p1 : p2 ) { p3 }")
-	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
+	
 	public <T> void forEach(Class<T> t, String var, Iterable<T> list, Closure c) {
 		this.iterate(var, list.iterator(), c);
 	}
 
 	@DSLMethod(production = "for ( p0  p1 : p2 ) { p3 }")
-	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
+	
 	public <T> void forEach(Class<T> t, String var, T[] array, Closure c) {
 
 		this.iterate(var, Arrays.asList(array).iterator(), c);
