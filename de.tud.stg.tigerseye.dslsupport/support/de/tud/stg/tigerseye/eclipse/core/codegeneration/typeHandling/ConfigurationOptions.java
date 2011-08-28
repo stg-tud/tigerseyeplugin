@@ -9,7 +9,7 @@ import de.tud.stg.popart.builder.core.annotations.DSL;
  * @author Leo Roos
  * 
  */
-public enum ParameterOptions {
+public enum ConfigurationOptions {
 
 	STRING_QUOTATION(ParameterOptionDefaults.DEFAULT_STRING_QUOTATION), //
 	ARRAY_DELIMITER(ParameterOptionDefaults.DEFAULT_ARRAY_DELIMITER), //
@@ -19,7 +19,7 @@ public enum ParameterOptions {
 	;
 	public final String defaultValue;
 
-	private ParameterOptions(String value) {
+	private ConfigurationOptions(String value) {
 		this.defaultValue = value;
 	}
 

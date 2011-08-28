@@ -22,7 +22,7 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ClassHandle
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ClassTypeHandler;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ClosureHandler;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.NumberHandler;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ParameterOptions;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ConfigurationOptions;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.StringHandler;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.TypeHandler;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.HandlingDispatcherHelper;
@@ -63,7 +63,7 @@ public class HandlingDispatcher {
 	}
 
     public ICategory<String> handle(Type type,
-	    Map<ParameterOptions, String> parameterOptions) {
+	    Map<ConfigurationOptions, String> parameterOptions) {
 
 		if (type instanceof Class) {
 			return this.handleClass(type, parameterOptions);
@@ -79,12 +79,12 @@ public class HandlingDispatcher {
 	}
 
     private ICategory<String> handleTypeVariable(Type type,
-	    Map<ParameterOptions, String> parameterOptions) {
+	    Map<ConfigurationOptions, String> parameterOptions) {
 		return this.handleClass(Object.class, parameterOptions);
 	}
 
     private ICategory<String> handleGenericArrayType(Type type,
-	    Map<ParameterOptions, String> parameterOptions) {
+	    Map<ConfigurationOptions, String> parameterOptions) {
 	// GenericArrayType gat = (GenericArrayType) type;
 
 		Type componentType = ((GenericArrayType) type).getGenericComponentType();
@@ -115,13 +115,13 @@ public class HandlingDispatcher {
 	}
 
     private ICategory<String> handleParameterizedType(Type type,
-	    Map<ParameterOptions, String> parameterOptions) {
+	    Map<ConfigurationOptions, String> parameterOptions) {
 		ParameterizedType t = (ParameterizedType) type;
 		return this.handleClass((t.getRawType()), parameterOptions);
 	}
 
     private ICategory<String> handleClass(Type type,
-	    Map<ParameterOptions, String> parameterOptions) {
+	    Map<ConfigurationOptions, String> parameterOptions) {
 
 		Class<?> clazz = (Class<?>) type;
 
@@ -138,7 +138,7 @@ public class HandlingDispatcher {
 	}
 
     private ICategory<String> handleObjectArray(Class<?> clazz,
-	    Map<ParameterOptions, String> parameterOptions) {
+	    Map<ConfigurationOptions, String> parameterOptions) {
 		ICategory<String> objects = HandlingDispatcherHelper.getObjectHierarchy(this.grammar, clazz);
 	logger.debug(
 		"Objects in array are {} for class {} with parameterOptions {}",
@@ -156,13 +156,13 @@ public class HandlingDispatcher {
 	// GrammarBuilder gb = new GrammarBuilder();
 		
 		Rule r1 = null;
-		if (parameterOptions.get(ParameterOptions.ARRAY_DELIMITER).matches("\\s+")) {
+		if (parameterOptions.get(ConfigurationOptions.ARRAY_DELIMITER).matches("\\s+")) {
 	    r1 = new Rule(objects, objects,
 		    WhitespaceCategoryDefinition.getAndSetRequiredWhitespace(this.grammar), objects);
-		} else if (parameterOptions.get(ParameterOptions.ARRAY_DELIMITER).isEmpty()) {
+		} else if (parameterOptions.get(ConfigurationOptions.ARRAY_DELIMITER).isEmpty()) {
 			r1 = new Rule(objects, objects, objects);
 		} else {
-			Category ad = new Category(parameterOptions.get(ParameterOptions.ARRAY_DELIMITER), true);
+			Category ad = new Category(parameterOptions.get(ConfigurationOptions.ARRAY_DELIMITER), true);
 			this.grammar.addCategory(ad);
 	    ICategory<String> WS = WhitespaceCategoryDefinition.getAndSetOptionalWhitespace(
 this.grammar);
@@ -195,7 +195,7 @@ this.grammar);
 	}
 
 
-    public void handleDefaults(Map<ParameterOptions, String> methodOptions) {
+    public void handleDefaults(Map<ConfigurationOptions, String> methodOptions) {
 		for (Entry<Class<?>, ClassTypeHandler> e : classHandlers.entrySet()) {
 			e.getValue().handle(this.grammar, e.getKey(), methodOptions);
 		}

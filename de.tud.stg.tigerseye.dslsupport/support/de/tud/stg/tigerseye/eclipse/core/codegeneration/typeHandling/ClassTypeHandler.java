@@ -6,5 +6,5 @@ import de.tud.stg.parlex.core.ICategory;
 import de.tud.stg.parlex.core.IGrammar;
 
 public interface ClassTypeHandler {
-	ICategory<String> handle(IGrammar<String> grammar, Class<?> clazz, Map<ParameterOptions, String> parameterOptions);
+	ICategory<String> handle(IGrammar<String> grammar, Class<?> clazz, Map<ConfigurationOptions, String> parameterOptions);
 }

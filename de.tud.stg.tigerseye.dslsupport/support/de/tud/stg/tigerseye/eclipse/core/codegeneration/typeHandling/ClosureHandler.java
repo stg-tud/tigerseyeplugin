@@ -15,7 +15,7 @@ public class ClosureHandler implements ClassTypeHandler {
 	private static final String CLOSURE_CATEGORY = "Closure";
 
 	@Override
-	public ICategory<String> handle(IGrammar<String> grammar, Class<?> clazz, Map<ParameterOptions, String> parameterOptions) {
+	public ICategory<String> handle(IGrammar<String> grammar, Class<?> clazz, Map<ConfigurationOptions, String> parameterOptions) {
 		Category closure = new Category(CLOSURE_CATEGORY, false);
 
 		Category statements = new Category(CategoryNames.STATEMENTS_CATEGORY, false);

@@ -14,10 +14,10 @@ public class StringHandler implements ClassTypeHandler {
 
 
 	@Override
-	public ICategory<String> handle(IGrammar<String> grammar, Class<?> clazz, Map<ParameterOptions, String> parameterOptions) {
+	public ICategory<String> handle(IGrammar<String> grammar, Class<?> clazz, Map<ConfigurationOptions, String> parameterOptions) {
 		ICategory<String> stringCategory = HandlingDispatcherHelper.getObjectHierarchy(grammar, String.class);
 
-		String stringQuotation = parameterOptions.get(ParameterOptions.STRING_QUOTATION);
+		String stringQuotation = parameterOptions.get(ConfigurationOptions.STRING_QUOTATION);
 
 		Category group = new StringCategory(stringQuotation);
 

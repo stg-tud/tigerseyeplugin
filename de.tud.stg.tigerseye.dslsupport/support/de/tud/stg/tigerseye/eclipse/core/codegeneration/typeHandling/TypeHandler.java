@@ -25,7 +25,7 @@ public abstract class TypeHandler implements ClassTypeHandler {
 	}
 
 	@Override
-	public ICategory<String> handle(IGrammar<String> grammar, Class<?> clazz, Map<ParameterOptions, String> parameterOptions) {
+	public ICategory<String> handle(IGrammar<String> grammar, Class<?> clazz, Map<ConfigurationOptions, String> parameterOptions) {
 		grammar.addCategory(this.group);
 
 		Rule rule1 = new Rule(this.category, this.group);

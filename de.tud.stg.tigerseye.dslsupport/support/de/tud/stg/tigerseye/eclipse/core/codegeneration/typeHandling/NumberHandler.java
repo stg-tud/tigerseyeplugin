@@ -14,7 +14,7 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.HandlingDispatcher
 public class NumberHandler implements ClassTypeHandler {
 
 	@Override
-	public ICategory<String> handle(IGrammar<String> grammar, Class<?> clazz, Map<ParameterOptions, String> parameterOptions) {
+	public ICategory<String> handle(IGrammar<String> grammar, Class<?> clazz, Map<ConfigurationOptions, String> parameterOptions) {
 		if (clazz.equals(Integer.class) || clazz.equals(int.class)) {
 			return this.handleInteger(grammar, clazz, parameterOptions);
 		} else if (clazz.equals(Double.class) || clazz.equals(double.class)) {
@@ -25,7 +25,7 @@ public class NumberHandler implements ClassTypeHandler {
 	}
 
 	private ICategory<String> handleInteger(IGrammar<String> grammar, Class<?> clazz,
-			Map<ParameterOptions, String> parameterOptions) {
+			Map<ConfigurationOptions, String> parameterOptions) {
 		ICategory<String> numberCategory = HandlingDispatcherHelper.getObjectHierarchy(grammar, Integer.class);
 
 		Category group = new IntegerCategory();
@@ -43,7 +43,7 @@ public class NumberHandler implements ClassTypeHandler {
 		return numberCategory;
 	}
 
-	private ICategory<String> handleReal(IGrammar<String> grammar, Class<?> clazz, Map<ParameterOptions, String> parameterOptions) {
+	private ICategory<String> handleReal(IGrammar<String> grammar, Class<?> clazz, Map<ConfigurationOptions, String> parameterOptions) {
 		ICategory<String> doubleCategory = HandlingDispatcherHelper.getObjectHierarchy(grammar, Double.class);
 
 		Category group = new DoubleCategory();

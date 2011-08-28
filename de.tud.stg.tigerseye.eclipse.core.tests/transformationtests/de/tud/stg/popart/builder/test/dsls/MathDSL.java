@@ -4,6 +4,7 @@ import groovy.lang.Closure;
 
 import java.util.HashMap;
 
+import de.tud.stg.popart.builder.core.annotations.DSLMethod;
 import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeyword;
 
@@ -21,7 +22,8 @@ public class MathDSL implements de.tud.stg.popart.dslsupport.DSL {
 		return cl.call();
 	}
 	
-	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
+	@DSLMethod()
+//	@PopartType(clazz = PopartOperationKeyword.class, breakpointPossible = 0)
 	public int sum__p0(int[] elements) {
 		int sum = 0;
 		for (int i : elements) {

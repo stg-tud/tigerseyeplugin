@@ -12,7 +12,7 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.HandlingDispatcher
 public class BooleanHandler implements ClassTypeHandler {
 
 	@Override
-	public ICategory<String> handle(IGrammar<String> grammar, Class<?> clazz, Map<ParameterOptions, String> parameterOptions) {
+	public ICategory<String> handle(IGrammar<String> grammar, Class<?> clazz, Map<ConfigurationOptions, String> parameterOptions) {
 		ICategory<String> booleanCategory = HandlingDispatcherHelper.getObjectHierarchy(grammar, Boolean.class);
 
 		Category trueCategory = new Category("true", true);
