@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.projectusus.autotestsuite.ExtendedJUnitLaunchConfiguration">
+<stringAttribute key="ATTR_CHECKED_PROJECTS" value="de.tud.stg.tigerseye.examples.tests/de.tud.stg.tigerseye.dslsupport/parlex/de.tud.stg.tigerseye.core.tests/de.tud.stg.tigerseye.sdfdsl.tests"/>
+<listAttribute key="org.eclipse.debug.ui.favoriteGroups">
+<listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value="de.tud.stg.tigerseye.examples.tests"/>
+<booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
+<stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
+<stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit4"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value=""/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="de.tud.stg.tigerseye.examples.tests"/>
+</launchConfiguration>

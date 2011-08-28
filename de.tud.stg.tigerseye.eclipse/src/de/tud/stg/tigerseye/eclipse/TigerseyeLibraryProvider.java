@@ -9,7 +9,7 @@ import de.tud.stg.tigerseye.eclipse.dslsupport.TigerseyeSupportActivator;
 
 public class TigerseyeLibraryProvider extends Plugin {
 
-	public static final String PLUGIN_ID = "de.tud.stg.tigerseye.eclipse";
+	public static final String PLUGIN_ID = "de.tud.stg.tigerseye";
 
 	private static TigerseyeLibraryProvider plugin;
 

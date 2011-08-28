@@ -6,12 +6,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.core.runtime.Platform;
+import org.junit.Rule;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.packageadmin.PackageAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import utilities.PluginTest;
+import utilities.PluginTestRule;
 
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCoreActivator;
@@ -27,8 +31,13 @@ public class RefreshOSGIBundlesTest {
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(RefreshOSGIBundlesTest.class);
+	
+	
+	@Rule
+	public PluginTestRule ptr = new PluginTestRule();
 
 	@Test
+	@PluginTest
 	public void shouldRefreshBundles() throws Exception {
 		Set<DSLDefinition> dslDefinitions = TigerseyeCore.getLanguageProvider()
 				.getDSLDefinitions();

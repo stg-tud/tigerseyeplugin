@@ -8,7 +8,7 @@ import org.eclipse.core.runtime.Plugin;
 
 public class TigerseyeSupportActivator extends Plugin {
 
-	public static final String PLUGIN_ID = "de.tud.stg.tigerseye.eclipse.dslsupport";
+	public static final String PLUGIN_ID = "de.tud.stg.tigerseye.dslsupport";
 
 	private static final String runtimeSupport = "lib/tigerseye-support.jar";
 

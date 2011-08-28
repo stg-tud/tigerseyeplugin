@@ -13,7 +13,7 @@ import de.tud.stg.tigerseye.ui.preferences.TigerseyeUIPreferenceInitializer;
 public class TigerseyeUIActivator extends AbstractUIPlugin {
 
     // The plug-in ID
-    public static final String PLUGIN_ID = "de.tud.stg.tigerseye.eclipse.ui"; //$NON-NLS-1$
+    public static final String PLUGIN_ID = "de.tud.stg.tigerseye.ui"; //$NON-NLS-1$
 
     // The shared instance
     private static TigerseyeUIActivator plugin;

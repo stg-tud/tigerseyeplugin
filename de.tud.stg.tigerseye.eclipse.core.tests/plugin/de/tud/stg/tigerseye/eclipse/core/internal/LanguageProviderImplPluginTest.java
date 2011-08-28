@@ -15,13 +15,18 @@ import java.util.Scanner;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.RegistryFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.pde.core.plugin.PluginRegistry;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
+
+import utilities.PluginTest;
+import utilities.PluginTestRule;
 
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
@@ -32,6 +37,9 @@ import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeCoreConstants;
 //TODO currently only Happy Paths and using local configuration dependent DSL plug-ins and DSL workspace projects. 
 public class LanguageProviderImplPluginTest {
 
+	@Rule
+	public PluginTestRule ptr = new PluginTestRule();
+
 	private static final String debugLogoClassPath = "de.tud.stg.tigerseye.examples.logo.LogoDSL";
 	private LanguageProviderImpl provider;
 	private IPreferenceStore tigerseyeCoreStore;
@@ -40,11 +48,14 @@ public class LanguageProviderImplPluginTest {
 	public static void bc() throws Exception {
 		// TODO should be changed to an example project that is available from
 		// this plug-ins location
-		PluginTestUtilities.linkExampleProject();
+		if (Platform.isRunning())
+			PluginTestUtilities.linkExampleProject();
 	}
 
 	@Before
 	public void setUp() throws Exception {
+		if(!Platform.isRunning())
+			return;
 		MockitoAnnotations.initMocks(this);
 		IConfigurationElement[] configurationElementsFor = RegistryFactory
 				.getRegistry()
@@ -69,6 +80,7 @@ public class LanguageProviderImplPluginTest {
 	}
 
 	@Test
+	@PluginTest
 	public void testGetDSLDefinitions() {
 		String shouldContain = debugLogoClassPath
 				+ "\n"
@@ -104,6 +116,7 @@ public class LanguageProviderImplPluginTest {
 	}
 
 	@Test
+	@PluginTest
 	public void bundleShouldHaveCorrectAttributes() throws Exception {
 		DSLDefinition activeDSLForExtension = provider
 				.getActiveDSLForExtension("logo");
@@ -120,13 +133,15 @@ public class LanguageProviderImplPluginTest {
 			String contributorSymbolicName, String classPath) {
 
 		DSLConfigurationElement contribMock = mock(DSLConfigurationElement.class);
-		when(contribMock.getId()).thenReturn(contributorSymbolicName+"somelanguagekey");
+		when(contribMock.getId()).thenReturn(
+				contributorSymbolicName + "somelanguagekey");
 		DSLDefinitionImpl expectedDSL = new DSLDefinitionImpl(classPath,
 				contribMock, dslName);
 		return expectedDSL;
 	}
 
 	@Test
+	@PluginTest
 	public void workSpaceDSLShouldHaveCorrectAttributes() throws Exception {
 		DSLDefinition activeDSLForExtension = provider
 				.getActiveDSLForExtension("lambda");
@@ -138,6 +153,7 @@ public class LanguageProviderImplPluginTest {
 	}
 
 	@Test
+	@PluginTest
 	public void shouldHaveDefaultActivationState() throws Exception {
 		List<DSLDefinition> wrongActive = new ArrayList<DSLDefinition>();
 		Collection<DSLDefinition> dslDefinitions = provider.getDSLDefinitions();
@@ -154,6 +170,7 @@ public class LanguageProviderImplPluginTest {
 	}
 
 	@Test
+	@PluginTest
 	public void testGetActiveDSLForExtensionSuccess() {
 		DSLDefinition activeDSLForExtension = provider
 				.getActiveDSLForExtension("logo");
@@ -162,6 +179,7 @@ public class LanguageProviderImplPluginTest {
 	}
 
 	@Test
+	@PluginTest
 	public void testGetActiveDSLForExtensionFailure() {
 		DSLDefinition activeDSLForExtension = provider
 				.getActiveDSLForExtension("noLangWithThisExtension");

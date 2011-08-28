@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Answers;
 import org.mockito.Mock;
@@ -34,6 +35,9 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import utilities.PluginTest;
+import utilities.PluginTestRule;
 
 import de.tud.stg.tigerseye.eclipse.TigerseyeLibraryProvider;
 import de.tud.stg.tigerseye.test.TestUtils;
@@ -46,6 +50,9 @@ import de.tud.stg.tigerseye.test.TestUtils;
  *
  */
 public class DSLClasspathResolverTest {
+	
+	@Rule
+	public PluginTestRule ptr = new PluginTestRule();
 
 	
 	@Mock(answer = Answers.RETURNS_SMART_NULLS)
@@ -57,13 +64,14 @@ public class DSLClasspathResolverTest {
 
 	@Before
 	public void setUp() throws Exception {
-		assertPlatformRunning();
+//		assertPlatformRunning();
 		MockitoAnnotations.initMocks(this);
 		resolver = new BundleClasspathResolver();
 
 	}
 
 	@Test
+	@PluginTest
 	public void testReadManifestFromFolderSmokeTest() throws Exception {		
 		String aBundleIdentifier = "org.eclipse.core.runtime";
 		String tigerBundle = TigerseyeLibraryProvider.PLUGIN_ID;
@@ -85,11 +93,6 @@ public class DSLClasspathResolverTest {
 
 	}
 
-	private void assertPlatformRunning() {
-		if(!Platform.isRunning())
-			fail("Test expects platform to be running.");
-	}
-
 	private void warnTestIgnored() {
 		String ignoredMethod = "_UNKNOWN_METHOD_NAME_";
 		Exception e = new Exception();
@@ -101,7 +104,8 @@ public class DSLClasspathResolverTest {
 		System.err.println("IGNORING test method:" + ignoredMethod);
 	}
 
-	@Test 
+	@Test
+	@PluginTest
 	public void getClasspathFromManifestIfAttributeExists() throws Exception {
 
 		Hashtable<String, String> testData = new Hashtable<String, String>();
@@ -135,6 +139,7 @@ public class DSLClasspathResolverTest {
 	}
 
 	@Test
+	@PluginTest
 	public void getDefaultClasspathIfNoAttributeInManifest() throws Exception {
 		when(bundleMock.getHeaders()).thenReturn(
 				new Hashtable<String, String>());
@@ -148,6 +153,7 @@ public class DSLClasspathResolverTest {
 	}
 
 	@Test
+	@PluginTest
 	public void testGetFileLocationIfJar() throws Exception {
 
 		Resources jarfile = Resources.jarfile;
@@ -160,6 +166,7 @@ public class DSLClasspathResolverTest {
 	}
 	
 	@Test
+	@PluginTest
 	public void testGetFileLocationForUnknownResource() throws Exception {
 		mockResolverForBundleResource(Resources.unknownformatfile);
 
@@ -168,6 +175,7 @@ public class DSLClasspathResolverTest {
 	}
 	
 	@Test
+	@PluginTest
 	public void testBundleNotAccessible() throws Exception {
 		when(fileLocator.getBundleFile(Mockito.any(Bundle.class))).thenThrow(new IOException());
 		resolver = new BundleClasspathResolver(fileLocator);		

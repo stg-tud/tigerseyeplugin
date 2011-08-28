@@ -33,7 +33,7 @@ import de.tud.stg.tigerseye.util.ListBuilder;
 
 public class TestUtils {
 	
-	public static final String PLUGIN_ID_OF_CORE_TESTFRAGMENT = "de.tud.stg.tigerseye.eclipse.core.tests"; 
+	public static final String PLUGIN_ID_OF_CORE_TESTFRAGMENT = "de.tud.stg.tigerseye.core.tests"; 
 	
 	private static final String MATH_CLASS_EX_TXT = "MathClassEx-12.txt";
 

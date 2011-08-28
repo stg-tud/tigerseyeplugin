@@ -29,7 +29,7 @@ import de.tud.stg.tigerseye.eclipse.core.runtime.ProjectLinker;
 public class TigerseyeCoreActivator extends AbstractUIPlugin {
 
     // The plug-in ID
-    public static final String PLUGIN_ID = "de.tud.stg.tigerseye.eclipse.core"; //$NON-NLS-1$ // NO_UCD
+    public static final String PLUGIN_ID = "de.tud.stg.tigerseye.core"; //$NON-NLS-1$ // NO_UCD
 
     // The shared instance
     private static TigerseyeCoreActivator plugin;
