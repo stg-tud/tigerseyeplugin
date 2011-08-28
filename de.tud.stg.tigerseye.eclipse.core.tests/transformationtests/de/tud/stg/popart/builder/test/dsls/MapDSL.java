@@ -5,10 +5,8 @@ import groovy.lang.Closure;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.tud.stg.popart.builder.core.annotations.DSL;
+import de.tud.stg.popart.builder.core.annotations.DSLClass;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod;
-import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
-import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeyword;
 
 /**
  * MapDSL is a DSL with operations to create a map with specified value/key pairs in one single statement
@@ -16,7 +14,7 @@ import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeywor
  * @author Kamil Erhard
  * 
  */
-@DSL(whitespaceEscape = " ")
+@DSLClass(whitespaceEscape = " ")
 public class MapDSL implements de.tud.stg.popart.dslsupport.DSL {
 
 	public Object eval(HashMap map, Closure cl) {

@@ -18,11 +18,12 @@ import org.junit.Test;
 import de.tud.stg.parlex.core.IGrammar;
 import de.tud.stg.popart.builder.test.dsls.MathDSL;
 import de.tud.stg.popart.dslsupport.DSL;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.MathDSL4GrammarBuilderTest;
 import de.tud.stg.tigerseye.test.TestUtils;
 
 public class GrammarTest {
 
-	private Class<? extends DSL> classForTest = de.tud.stg.popart.builder.test.statemachine.StateMachineDSL.class;
+	private Class<? extends DSL> classForTest = MathDSL4GrammarBuilderTest.class;
 	private IGrammar<String> grammar;
 
 	@Before
@@ -88,7 +89,7 @@ public class GrammarTest {
 		return expected;
 	}
 
-	@Ignore("bad test rests specific numberings")
+	@Ignore("bad test. rests on specific numberings")
 	@Test
 	public void testMathDSLGrammarToSTring() throws Exception {
 		assertProducedEqualsExpectedGrammar(MathDSL.class,

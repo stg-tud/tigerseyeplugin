@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import de.tud.stg.popart.builder.core.annotations.DSL;
+import de.tud.stg.popart.builder.core.annotations.DSLClass;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod;
 import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeyword;
@@ -20,7 +21,7 @@ import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeywor
  * @author Kamil Erhard
  *
  */
-@DSL(whitespaceEscape = " ")
+@DSLClass(whitespaceEscape = " ")
 public class SetDSL implements de.tud.stg.popart.dslsupport.DSL {
 
 	public Object eval(HashMap map, Closure cl) {

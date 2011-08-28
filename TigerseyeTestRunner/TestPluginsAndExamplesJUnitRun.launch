@@ -10,4 +10,5 @@
 <stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit4"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value=""/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="de.tud.stg.tigerseye.examples.tests"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-ea&#10;-Dtests.longrunning=false&#10;-Dlog4j.configuration=file:///${resource_loc:/TigerseyeConfiguration/log4jJUnitRun.properties}"/>
 </launchConfiguration>

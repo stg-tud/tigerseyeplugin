@@ -18,7 +18,8 @@ import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeywor
  * @author Kamil Erhard
  * 
  */
-@DSL(whitespaceEscape = " ")
+import de.tud.stg.popart.builder.core.annotations.DSLClass;
+@DSLClass(whitespaceEscape = " ")
 public class ForEachSyntaxDSL implements de.tud.stg.popart.dslsupport.DSL {
 
 	public Object eval(HashMap map, Closure cl) {

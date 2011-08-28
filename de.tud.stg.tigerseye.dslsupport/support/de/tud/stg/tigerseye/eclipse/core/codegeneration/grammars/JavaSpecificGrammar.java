@@ -33,8 +33,9 @@ public class JavaSpecificGrammar implements HostLanguageGrammar {
 	
 	@Override
 	public void applySpecificGrammar(IGrammar<String> grammar) {
-		ICategory<String> optionalWS = WhitespaceCategoryDefinition.getAndSetOptionalWhitespace(grammar);
-		ICategory<String> WS = WhitespaceCategoryDefinition.getAndSetRequiredWhitespace(grammar);
+		WhitespaceCategoryDefinition.setWhitspaceRules(grammar);
+		ICategory<String> optionalWS = WhitespaceCategoryDefinition.getNewOptionalWhitespaceCategory();
+		ICategory<String> WS = WhitespaceCategoryDefinition.getNewRequiredWhitespaceCategory();
 
 		Category pType = new Category(CategoryNames.PTYPE_CATEGORY, false);
 		Category rType = new Category(CategoryNames.RTYPE_CATEGORY, false);

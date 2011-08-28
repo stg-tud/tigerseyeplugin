@@ -11,8 +11,6 @@ import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeywor
 /**
  * {@link MathDSL4GrammarBuilderTest} is a DSL with some mathematical operations in unicode
  * 
- * @author Kamil Erhard
- * 
  */
 public class MathDSL4GrammarBuilderTest implements de.tud.stg.popart.dslsupport.DSL {
 
@@ -23,7 +21,6 @@ public class MathDSL4GrammarBuilderTest implements de.tud.stg.popart.dslsupport.
 	}
 	
 	@DSLMethod(production="sum__p0")
-	
 	public int sum(int[] elements) {
 		int sum = 0;
 		for (int i : elements) {

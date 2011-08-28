@@ -48,33 +48,9 @@ public class HandlingDispatcherHelper {
     public static ICategory<String> getObjectHierarchy(
 	    IGrammar<String> grammar,
         Class<?> clazz) {
-    	// if (clazz == null) {
-    	// return null;
-    	// }
-    	//
-    	// Category nodeCategory = new Category(clazz.getSimpleName(), false);
-    	//
-    	// grammar.addCategories(nodeCategory);
-    	//
-    	// if (clazz == Object.class) {
-    	// return nodeCategory;
-    	// }
-    	//
-    	// ICategory<String> superCategory = getObjectHierarchy(grammar, clazz.getSuperclass());
-    	// if (superCategory != null) {
-    	// grammar.addRule(new Rule(superCategory, nodeCategory));
-    	// }
-    	//
-    	// for (Class<?> c : clazz.getInterfaces()) {
-    	// ICategory<String> interfaceCategory = getObjectHierarchy(grammar, c);
-    	// if (interfaceCategory != null) {
-    	// grammar.addRule(new Rule(interfaceCategory, nodeCategory));
-    	// }
-    	// }
     	Category objectCategory = new Category("Object", false);
     	Category nodeCategory = new Category(clazz.getSimpleName(), false);
-    	grammar.addRule(new Rule(objectCategory, nodeCategory));
-    
+    	grammar.addRule(new Rule(objectCategory, nodeCategory));    
     	return nodeCategory;
     }
 

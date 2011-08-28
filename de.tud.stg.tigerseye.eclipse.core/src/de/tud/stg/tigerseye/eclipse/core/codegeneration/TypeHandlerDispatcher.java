@@ -6,7 +6,9 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -21,35 +23,43 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.BooleanHand
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ClassHandler;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ClassTypeHandler;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ClosureHandler;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.NumberHandler;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ConfigurationOptions;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.NumberHandler;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.StringHandler;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.TypeHandler;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.HandlingDispatcherHelper;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.WhitespaceCategoryDefinition;
 
-public class HandlingDispatcher {
+public class TypeHandlerDispatcher {
 
-    private static final Logger logger = LoggerFactory.getLogger(HandlingDispatcher.class);
+    private static final Logger logger = LoggerFactory.getLogger(TypeHandlerDispatcher.class);
+
+    private static final Map<Class<?>, ClassTypeHandler> initialClassHandlers = initHandlers();
+
+    private static Map<Class<?>, ClassTypeHandler> initHandlers() {
+	Hashtable<Class<?>, ClassTypeHandler> classHandlerMap = new Hashtable<Class<?>, ClassTypeHandler>();
+	registerTypeHandler(classHandlerMap, new StringHandler(), String.class);
+	registerTypeHandler(classHandlerMap, new BooleanHandler(),
+		Boolean.class, boolean.class);
+	registerTypeHandler(classHandlerMap, new NumberHandler(),
+		Integer.class, int.class, Double.class, double.class,
+		Float.class, float.class);
+	registerTypeHandler(classHandlerMap, new ClosureHandler(),
+		Closure.class);
+	registerTypeHandler(classHandlerMap, new ClassHandler(), Class.class);
+	return Collections.unmodifiableMap(classHandlerMap);
+    }
+
+    private final IGrammar<String> grammar;
+	
+    private final Map<Class<?>, ClassTypeHandler> classHandlers = new HashMap<Class<?>, ClassTypeHandler>(
+	    initialClassHandlers);
 
 
-// TODO check cyclic Dependency between Grammar and HandlingDispatcher
-	private final IGrammar<String> grammar;
-	private final Map<Class<?>, ClassTypeHandler> classHandlers = new HashMap<Class<?>, ClassTypeHandler>();
-
-	private void initHandlers() {
-		registerTypeHandler(new StringHandler(), String.class);
-		registerTypeHandler(new BooleanHandler(), Boolean.class, boolean.class);
-		registerTypeHandler(new NumberHandler(), Integer.class, int.class, Double.class, double.class, Float.class,
-				float.class);
-		registerTypeHandler(new ClosureHandler(), Closure.class);
-		registerTypeHandler(new ClassHandler(), Class.class);
-	}
-
-	private void registerTypeHandler(ClassTypeHandler handler, Class<?>... types) {
+	private static void registerTypeHandler(Map<Class<?>, ClassTypeHandler> classHandlerMap, ClassTypeHandler handler, Class<?>... types) {
 		if (types != null) {
 			for (Class<?> type : types) {
-				classHandlers.put(type, handler);
+			    classHandlerMap.put(type, handler);
 			}
 		}
 	}
@@ -57,9 +67,8 @@ public class HandlingDispatcher {
 	/**
 	 * @param grammar
 	 */
-	public HandlingDispatcher(IGrammar<String> grammar) {
+	public TypeHandlerDispatcher(IGrammar<String> grammar) {
 		this.grammar = grammar;
-		initHandlers();
 	}
 
     public ICategory<String> handle(Type type,
@@ -120,6 +129,7 @@ public class HandlingDispatcher {
 		return this.handleClass((t.getRawType()), parameterOptions);
 	}
 
+    
     private ICategory<String> handleClass(Type type,
 	    Map<ConfigurationOptions, String> parameterOptions) {
 
@@ -196,21 +206,24 @@ this.grammar);
 
 
     public void handleDefaults(Map<ConfigurationOptions, String> methodOptions) {
-		for (Entry<Class<?>, ClassTypeHandler> e : classHandlers.entrySet()) {
-			e.getValue().handle(this.grammar, e.getKey(), methodOptions);
-		}
+	for (Entry<Class<?>, ClassTypeHandler> e : classHandlers.entrySet()) {
+	    ClassTypeHandler handler = e.getValue();
+	    Class<?> classToHandle = e.getKey();
+	    handler.handle(this.grammar, classToHandle, methodOptions);
 	}
+    }
 
 	public void addAdditionalTypeRules(Class<? extends TypeHandler>[] typeRules) {
 		for (Class<? extends TypeHandler> handler : typeRules) {
-			TypeHandler newInstance;
-
+	    TypeHandler newHandler;
 			try {
-				newInstance = handler.newInstance();
-				newInstance.setGrammar(this.grammar);
+		newHandler = handler.newInstance();
+		newHandler.setGrammar(this.grammar);
 
-				registerTypeHandler(newInstance, newInstance.getMainType());
-				registerTypeHandler(newInstance, newInstance.getAdditionalTypes());
+		registerTypeHandler(this.classHandlers, newHandler,
+			newHandler.getMainType());
+		registerTypeHandler(this.classHandlers, newHandler,
+			newHandler.getAdditionalTypes());
 			} catch (InstantiationException e) {
 				// TODO Auto-generated catch block
 				logger.warn("Generated log statement",e);

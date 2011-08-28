@@ -56,7 +56,7 @@ public class DSLTransformationTester {
 		String transformation = new TestDSLTransformation(
 				new PrettyGroovyCodePrinterFactory()).performTransformation(
 				getInputDSL(filePrefix), classes);
-	
+	System.out.println(transformation);
 		if(this.genWriter != null)
 			this.genWriter.write(filePrefix, transformation);
 	

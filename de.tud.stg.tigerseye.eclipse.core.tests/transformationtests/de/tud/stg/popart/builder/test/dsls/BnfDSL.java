@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import de.tud.stg.parlex.core.Category;
 import de.tud.stg.parlex.core.Grammar;
 import de.tud.stg.popart.builder.core.annotations.DSL;
+import de.tud.stg.popart.builder.core.annotations.DSLClass;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod;
 import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeyword;
@@ -19,7 +20,7 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.TypeHandler
  * @author Kamil Erhard
  * 
  */
-@DSL(whitespaceEscape = " ", typeRules = { BnfDSL.LetterType.class, BnfDSL.LetterType.class,
+@DSLClass(whitespaceEscape = " ", typeRules = { BnfDSL.LetterType.class, BnfDSL.LetterType.class,
 		BnfDSL.AnyCharacterType.class }, arrayDelimiter = " ")
 public class BnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 

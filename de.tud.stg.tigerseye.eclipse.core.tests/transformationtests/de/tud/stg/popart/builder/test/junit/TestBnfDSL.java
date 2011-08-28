@@ -2,17 +2,24 @@ package de.tud.stg.popart.builder.test.junit;
 
 import static de.tud.stg.tigerseye.test.TestUtils.test;
 
-import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
+import utilities.LongrunningTest;
+import utilities.LongrunningTestRule;
 
 import de.tud.stg.popart.builder.test.dsls.BnfDSL;
-import de.tud.stg.popart.builder.test.dsls.ConditionalDSL;
-import de.tud.stg.popart.builder.test.dsls.ImprovedBnfDSL;
+import de.tud.stg.tigerseye.test.TestUtils;
 
-@Ignore("Too long, about 5 seconds")
 public class TestBnfDSL {
+
+	@Rule
+	public LongrunningTestRule ptr = new LongrunningTestRule();
+
 	@Test
+	@LongrunningTest(24081)
 	public void testBnfDSL() {
-		test(false, "BnfDSLTest", BnfDSL.class);
+		test(false, "BnfDSLTest", TestUtils.dslSingle(BnfDSL.class));
 	}
 }

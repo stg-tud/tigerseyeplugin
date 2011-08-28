@@ -55,11 +55,6 @@ public class GrammarBuilderTest {
 	}
 
 	@Test
-	public void testGrammarBuilder() {
-		IGrammar<String> buildGrammar = gb.buildGrammar(StateMachineDSL.class);
-	}
-	
-	@Test
 	public void testToString() throws Exception {
 		Class[] classes =  { MathDSL4GrammarBuilderTest.class };
 		IGrammar<String> grammar = gb.buildGrammar(classes);
