@@ -157,30 +157,39 @@ public class DSLDefinitionImpl implements DSLDefinition {
     }
 
     @Override
-    public Class<? extends DSL> getDSLClass() {
+    public Class<? extends DSL> getDSLClassChecked() {
 	if (dslClass == null) {
-	    dslClass = loadClass();
+	    if (isDSLClassLoadable()) {
+		try {
+		    dslClass = loadClassRaw();
+		} catch (Exception e) {
+		    throw new TigerseyeRuntimeException(
+			    "Catched unexpected exception while trying to load "
+				    + this
+				    + ". Unexpected because a prior loadability check has been made.");
+		}
+	    }
 	}
 	return dslClass;
     }
 
-    private @Nonnull
-    Class<? extends DSL> loadClass() {
-	try {
-	    Class<?> loadClass = getClassLoaderStrategy().loadClass(
-		    getClassPath());
-	    Assert.isNotNull(loadClass);
-	    /*
-	     * The cast must be successful or else the DSL language is erroneous
-	     * and an exception appropriate
-	     */
-	    @SuppressWarnings("unchecked")
-	    Class<? extends DSL> dslClass = (Class<? extends DSL>) loadClass;
-	    return dslClass;
-	} catch (ClassNotFoundException e) {
-	    throw new TigerseyeRuntimeException("DSLDefinition "
-		    + this.toString() + " is not loadable", e);
-	}
+    /**
+     * @return loaded class
+     * 
+     * @throws Exception
+     *             if class could not be loaded
+     */
+    public @Nonnull
+    Class<? extends DSL> loadClassRaw() throws Exception {
+	Class<?> loadClass = getClassLoaderStrategy().loadClass(getClassPath());
+	Assert.isNotNull(loadClass);
+	/*
+	 * The cast must be successful or else the DSL language is erroneous and
+	 * an exception appropriate
+	 */
+	@SuppressWarnings("unchecked")
+	Class<? extends DSL> dslClass = (Class<? extends DSL>) loadClass;
+	return dslClass;
     }
 
     private ClassLoaderStrategy getClassLoaderStrategy() {
@@ -205,7 +214,9 @@ public class DSLDefinitionImpl implements DSLDefinition {
 	DSLDefinitionImpl dsl = this;
 	try {
 	    // Check existence
-	    Class<? extends DSL> loadClass = dsl.getDSLClass();
+	    @SuppressWarnings("unchecked")
+	    Class<? extends DSL> loadClass = (Class<? extends DSL>) getClassLoaderStrategy()
+		    .loadClass(getClassPath());
 	    /*
 	     * Cannot do the next check since that would also execute possible
 	     * logic within the constructor

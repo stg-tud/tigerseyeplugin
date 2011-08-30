@@ -8,14 +8,30 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.ILanguageProvider;
 import de.tud.stg.tigerseye.eclipse.core.internal.DSLActivationState;
 import de.tud.stg.tigerseye.eclipse.core.internal.DSLConfigurationElementResolver;
@@ -28,6 +44,9 @@ import de.tud.stg.tigerseye.eclipse.core.runtime.ProjectLinker;
  */
 public class TigerseyeCoreActivator extends AbstractUIPlugin {
 
+    private static final Logger logger = LoggerFactory
+	    .getLogger(TigerseyeCoreActivator.class);
+
     // The plug-in ID
     public static final String PLUGIN_ID = "de.tud.stg.tigerseye.core"; //$NON-NLS-1$ // NO_UCD
 
@@ -36,7 +55,8 @@ public class TigerseyeCoreActivator extends AbstractUIPlugin {
 
     private static final String unicodeLookupTablePath = "UnicodeLookupTable.txt";
 
-    private boolean haveMadeInitialConsistencyCheck;
+    private final AtomicBoolean haveMadeInitialConsistencyCheck = new AtomicBoolean(
+	    false);
 
     /**
      * The constructor
@@ -96,13 +116,59 @@ public class TigerseyeCoreActivator extends AbstractUIPlugin {
     }
 
     private static void makeInitialConsistencyCheckIfNecessary() {
-	if (!plugin.haveMadeInitialConsistencyCheck) {
+	if (!plugin.haveMadeInitialConsistencyCheck.getAndSet(true)) {
 	    plugin.linkActiveDSLProjectsIntoWorkspace();
 	    ILanguageProvider provider = new LanguageProviderFactory()
 		    .createLanguageProvider(plugin.getPreferenceStore());
-	    provider.validateDSLDefinitionsState();
-	    plugin.haveMadeInitialConsistencyCheck = true;
+	    Map<DSLDefinition, Throwable> validateDSLDefinitionsState = provider
+		    .validateDSLDefinitionsState();
+	    if (validateDSLDefinitionsState.size() > 0) {
+		logDSLsNotloadable(validateDSLDefinitionsState);
+	    }
 	}
+    }
+
+    public static void logDSLsNotloadable(
+	    Map<DSLDefinition, Throwable> validateDSLDefinitionsState) {
+	final Shell shell = getWorkbenchWindowOrNull();
+	ArrayList<IStatus> stati = new ArrayList<IStatus>();
+	for (Entry<DSLDefinition, Throwable> dslDefinition : validateDSLDefinitionsState
+		.entrySet()) {
+	    Status status = new Status(IStatus.WARNING, PLUGIN_ID,
+		    dslDefinition.getKey().toString()
+			    + " not loadable because: "
+			    + dslDefinition.getValue());
+	    stati.add(status);
+	}
+	final MultiStatus status = new MultiStatus(
+		PLUGIN_ID,
+		IStatus.WARNING,
+		stati.toArray(new IStatus[stati.size()]),
+		"See Details and Error log (To see errors in log you might have to configure it).",
+		null);
+
+	Display.getDefault().asyncExec(new Runnable() {
+
+	    @Override
+	    public void run() {
+		ErrorDialog.openError(shell, "Tigerseye Error",
+			"Not all DSLs could be loaded", status);
+	    }
+	});
+
+	logger.error("Following DSLs not loadable {}",
+		validateDSLDefinitionsState.entrySet());
+    }
+
+    private static Shell getWorkbenchWindowOrNull() {
+	IWorkbench workbench = PlatformUI.getWorkbench();
+	if (workbench != null) {
+	    IWorkbenchWindow activeWorkbenchWindow = workbench
+		    .getActiveWorkbenchWindow();
+	    if (activeWorkbenchWindow != null)
+		return activeWorkbenchWindow.getShell();
+	}
+	return null;
     }
 
     public static boolean isRunning() {

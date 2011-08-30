@@ -63,13 +63,17 @@ public class LanguageProviderImpl implements ILanguageProvider {
     }
 
     private Set<DSLDefinition> recomputeDSLDefinitions() {
-	Set<DSLDefinition> dslDefinitions = getConfiguredDSLDefinitions();
-	setValidActivationState(dslDefinitions);
-	return Collections.unmodifiableSet(dslDefinitions);
+	Set<DSLDefinitionImpl> dslDefinitions = getConfiguredDSLDefinitions();
+	Set<DSLDefinition> result = new HashSet<DSLDefinition>();
+	for (DSLDefinitionImpl dslDefinition : dslDefinitions) {
+	    result.add(dslDefinition);
+	}
+	setValidActivationState(result);
+	return Collections.unmodifiableSet(result);
     }
 
-    private Set<DSLDefinition> getConfiguredDSLDefinitions() {
-	HashSet<DSLDefinition> dslDefinitions = new HashSet<DSLDefinition>();
+    private Set<DSLDefinitionImpl> getConfiguredDSLDefinitions() {
+	HashSet<DSLDefinitionImpl> dslDefinitions = new HashSet<DSLDefinitionImpl>();
 	for (DSLConfigurationElement confEl : this.dslConfigurationElements) {
 	    DSLDefinitionImpl dsl = createDSLDefinition(confEl);
 	    fillOptionalValues(confEl, dsl);
@@ -97,7 +101,8 @@ public class LanguageProviderImpl implements ILanguageProvider {
 	return dslDefinitionImpl;
     }
 
-    void setValidActivationState(Collection<DSLDefinition> registeredDefinitions) {
+    void setValidActivationState(
+Collection<DSLDefinition> registeredDefinitions) {
 	ArrayList<DSLDefinition> manuallyConfiguredDSLs = new ArrayList<DSLDefinition>();
 	ArrayList<DSLDefinition> notManuallyConfiguredDSLs = new ArrayList<DSLDefinition>();
 	for (DSLDefinition dslDefinition : registeredDefinitions) {
@@ -194,13 +199,17 @@ public class LanguageProviderImpl implements ILanguageProvider {
     }
 
     @Override
-    public void validateDSLDefinitionsState() {
-	Set<DSLDefinition> dslDefinitions = getDSLDefinitions();
-	for (DSLDefinition dslDefinition : dslDefinitions) {
-	    boolean dslClassLoadable = dslDefinition.isDSLClassLoadable();
-	    if (!dslClassLoadable)
-		logger.error("dsl {} not loadable ", dslDefinition);
+    public Map<DSLDefinition, Throwable> validateDSLDefinitionsState() {
+	HashMap<DSLDefinition, Throwable> notLoadable = new HashMap<DSLDefinition, Throwable>();
+	Set<DSLDefinitionImpl> dslDefinitions = getConfiguredDSLDefinitions();
+	for (DSLDefinitionImpl dslDefinition : dslDefinitions) {
+	    try {
+		dslDefinition.loadClassRaw();
+	    } catch (Exception e) {
+		notLoadable.put(dslDefinition, e);
+	    }
 	}
+	return Collections.unmodifiableMap(notLoadable);
     }
 
 }

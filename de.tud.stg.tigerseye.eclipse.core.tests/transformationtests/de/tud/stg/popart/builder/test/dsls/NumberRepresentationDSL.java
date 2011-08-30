@@ -24,13 +24,13 @@ public class NumberRepresentationDSL implements de.tud.stg.popart.dslsupport.DSL
 	}
 
 	
-	@DSLMethod(production = "p0 b")
+	@DSLMethod(production = "p0  b")
 	public void booleanNumber(int num) {
 
 	}
 
 	
-	@DSLMethod(production = "p0 h")
+	@DSLMethod(production = "p0  h")
 	public void hexalNumber(int num) {
 
 	}

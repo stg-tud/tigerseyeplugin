@@ -1,10 +1,10 @@
 package de.tud.stg.tigerseye.eclipse.core.api;
 
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-
 
 @Nonnull
 public interface ILanguageProvider {
@@ -35,8 +35,10 @@ public interface ILanguageProvider {
     DSLDefinition getActiveDSLForExtension(String extension);
 
     /**
-     * Validates all accessible dslDefinitions have a loadable class
+     * Validates that all accessible dslDefinitions have a loadable class.
+     * Returns a Map of those classes that can not be loaded and the problematic
+     * Exception.
      */
-    public void validateDSLDefinitionsState();
+    public Map<DSLDefinition, Throwable> validateDSLDefinitionsState();
 
 }

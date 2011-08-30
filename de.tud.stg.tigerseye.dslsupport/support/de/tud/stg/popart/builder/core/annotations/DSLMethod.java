@@ -140,4 +140,5 @@ public @interface DSLMethod {
 	 * fully qualified name of the annotated method will be used.
 	 */
 	String uniqueIdentifier() default AnnotationConstants.UNASSIGNED;
+	
 }

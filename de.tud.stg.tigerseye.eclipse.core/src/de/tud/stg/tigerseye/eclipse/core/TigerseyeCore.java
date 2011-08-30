@@ -47,9 +47,16 @@ public class TigerseyeCore {
 	return langaugeProvider;
     }
 
-    public static void updateLanguageProvider() {
+    /**
+     * creates an updated language provider and updates the cached instance. The
+     * provider reflects possibly changed extension point configurations.
+     * 
+     * @return a new language provider
+     */
+    public static ILanguageProvider updateLanguageProvider() {
 	langaugeProvider = new LanguageProviderFactory()
 		.createLanguageProvider(getPreferences());
+	return langaugeProvider;
     }
 
     /**

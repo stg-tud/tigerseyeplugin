@@ -34,8 +34,9 @@ import de.tud.stg.popart.builder.core.annotations.AnnotationConstants;
 import de.tud.stg.popart.builder.core.annotations.DSL;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.Extractor.ExtractedClassInforamtion;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.Extractor.ExtractedMethodsInformation;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.ExtractedClassInforamtion;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.ExtractedMethodInformation;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.ExtractorDefaults;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.CategoryNames;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.HostLanguageGrammar;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ConfigurationOptions;
@@ -127,7 +128,7 @@ public class GrammarBuilder {
 		dsls.size());
 	for (DSLDefinition dsl : dsls) {
 	    Class<? extends de.tud.stg.popart.dslsupport.DSL> loadClass = dsl
-		    .getDSLClass();
+		    .getDSLClassChecked();
 	    clazzes.add(loadClass);
 	}
 	return buildGrammar(clazzes);
@@ -182,11 +183,12 @@ public class GrammarBuilder {
 	this.setWaterEnabled(waterSupported, grammar);
 
 	for (ExtractedClassInforamtion classInfo : exannos) {
-	    Class<? extends HostLanguageGrammar>[] hostLanguageRules = classInfo
+	    Set<Class<? extends HostLanguageGrammar>> hostLanguageRules = classInfo
 		    .getHostLanguageRules();
-	    Class<? extends TypeHandler>[] typeRules = classInfo.getTypeRules();
+	    Set<Class<? extends TypeHandler>> typeRules = classInfo
+		    .getTypeRules();
 	    Map<ConfigurationOptions, String> classOptions = classInfo
-		    .getConfiguratinoOptions();
+		    .getConfigurationOptions();
 
 	    typeHandler.addAdditionalTypeRules(typeRules);
 	    this.setupHostLanguageRules(hostLanguageRules, grammar);
@@ -194,11 +196,8 @@ public class GrammarBuilder {
 	    // XXX(Leo_Roos;Aug 28, 2011) can be deleted now?
 	    typeHandler.handleDefaults(classOptions);
 
-	    for (Extractor.ExtractedMethodsInformation methodInfo : classInfo
+	    for (ExtractedMethodInformation methodInfo : classInfo
 		    .getMethodsInformation()) {
-
-		Map<ConfigurationOptions, String> methodOptions = methodInfo.methodOptions;
-		Method method = methodInfo.method;
 
 		switch (methodInfo.getDSLType()) {
 		case Literal:
@@ -243,26 +242,13 @@ public class GrammarBuilder {
     private ExtractedClassInforamtion extractClassInformation(Class<?> clazz) {
 	ExtractedClassInforamtion classInfo = new ExtractedClassInforamtion(
 		clazz);
-	classInfo.load();
+	classInfo.load(ExtractorDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP);
 	return classInfo;
     }
 
 
 
 
-
-    private Extractor.ExtractedMethodsInformation extractMethodInformation(
-	    Method method,
-	    Map<ConfigurationOptions, String> defaultParameterOptions) {
-
-
-
-	Extractor.ExtractedMethodsInformation extMethAnnos = new Extractor.ExtractedMethodsInformation(
-		method);
-	extMethAnnos.load(defaultParameterOptions);
-
-	return extMethAnnos;
-    }
 
     /**
      * A similar thing now happens also in the
@@ -288,7 +274,7 @@ public class GrammarBuilder {
     }
 
     private void setupHostLanguageRules(
-	    Class<? extends HostLanguageGrammar>[] hostLanguageRules,
+	    Set<Class<? extends HostLanguageGrammar>> hostLanguageRules,
 	    Grammar grammar) {
 	for (Class<? extends HostLanguageGrammar> clazz : hostLanguageRules) {
 	    try {
@@ -334,7 +320,7 @@ public class GrammarBuilder {
 
     private final static Pattern literalPattern = Pattern.compile("^get(\\S+)");
 
-    private boolean handleLiteral(ExtractedMethodsInformation extractedMethod,
+    private boolean handleLiteral(ExtractedMethodInformation extractedMethod,
 	    Grammar grammar,
 	    TypeHandlerDispatcher typeHandler) {
 
@@ -424,11 +410,9 @@ public class GrammarBuilder {
     // parameters, pattern);
     // }
 
-    private void handleMethod(ExtractedMethodsInformation method,
+    private void handleMethod(ExtractedMethodInformation method,
 	    Grammar grammar,
 	    TypeHandlerDispatcher typeHandler) {
-
-
 	this.handleNonLiteral(method, grammar,
 		typeHandler);
     }
@@ -462,7 +446,7 @@ public class GrammarBuilder {
 		+ "\\E\\d+|\\Q" + methodWhitespaceEscape + "\\E)).)+)");
     }
 
-    private void handleNonLiteral(ExtractedMethodsInformation methodInfo,
+    private void handleNonLiteral(ExtractedMethodInformation methodInfo,
 	    Grammar grammar,
 	    TypeHandlerDispatcher typeHandler) {
 
@@ -509,13 +493,13 @@ public class GrammarBuilder {
 		if (isWhitespace) {
 		    if (keyword.length() == 1) {
 			categories.add(WhitespaceCategoryDefinition
-				.getAndSetOptionalWhitespace(grammar));
+				.getAndSetRequiredWhitespace(grammar));
 		    } else {
 			categories.add(WhitespaceCategoryDefinition
-				.getAndSetRequiredWhitespace(grammar));
+				.getAndSetOptionalWhitespace(grammar));
 		    }
 		} else {
-
+		    // neither parameter nor whitespace
 		    String uniChar = unicodeLookupTable.nameToUnicode(keyword);
 
 		    if (uniChar == null) {
@@ -603,11 +587,11 @@ public class GrammarBuilder {
 	grammar.addCategory(methodCategory);
 
 	boolean isPublic = Modifier.isPublic(method.getModifiers());
-	if (isPublic && methodInfo.isToplevel()) {
+	boolean toplevel = methodInfo.isToplevel();
+	if (isPublic && toplevel) {
 	    Rule methodRule = new Rule(this.statement, methodCategory);
 	    grammar.addRule(methodRule);
 	}
-
 	Rule rule = new Rule(methodCategory, categories);
 	grammar.addRule(rule);
 

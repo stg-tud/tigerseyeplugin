@@ -66,7 +66,6 @@ public class BnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 	private final HashMap<Object, Identifier> objectToIdentifier = new HashMap<Object, Identifier>();
 
 	@DSLMethod(production = "p0")
-	
 	public Syntax syntax(Rule[] rules) {
 		Syntax syntax = new Syntax(rules);
 
@@ -93,8 +92,7 @@ public class BnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 		return syntax;
 	}
 
-	@DSLMethod(production = "p0 ::= p1", topLevel = false)
-	
+	@DSLMethod(production = "p0  ::=  p1", topLevel = false)
 	public Rule rule(Identifier identifier, Expression expression) {
 
 		Rule rule = new Rule(identifier, expression);
@@ -112,8 +110,7 @@ public class BnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 		return rule;
 	}
 
-	@DSLMethod(production = "p0", topLevel = false)
-	
+	@DSLMethod(production = "p0", topLevel = false)	
 	public Expression expression(@DSL(arrayDelimiter = "|") Term[] terms) {
 
 		Expression expression = new Expression(terms);
@@ -131,8 +128,7 @@ public class BnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 		return expression;
 	}
 
-	@DSLMethod(production = "p0", topLevel = false)
-	
+	@DSLMethod(production = "p0", topLevel = false)	
 	public Term termFromFactors(Factor[] factors) {
 
 		Term term = new Term(factors);
@@ -150,8 +146,7 @@ public class BnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 		return term;
 	}
 
-	@DSLMethod(production = "p0", topLevel = false)
-	
+	@DSLMethod(production = "p0", topLevel = false)	
 	public Factor factorFromIdentifier(Identifier identifier) {
 
 		Factor factor = new Factor(identifier);
@@ -166,8 +161,7 @@ public class BnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 		return factor;
 	}
 
-	@DSLMethod(production = "p0", topLevel = false)
-	
+	@DSLMethod(production = "p0", topLevel = false)	
 	public Factor factorFromQuotedSymbol(QuotedSymbol quotedSymbol) {
 
 		Factor factor = new Factor(quotedSymbol);
@@ -215,8 +209,7 @@ public class BnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 	// return factor;
 	// }
 
-	@DSLMethod(production = "{ p0 }", topLevel = false)
-	
+	@DSLMethod(production = "{  p0  }", topLevel = false)	
 	public Factor factorFromExpressionInBraces(Expression expression) {
 		Factor factor = new Factor(expression);
 		// Category factorCategory = new Category(factor.toString(), false);
@@ -238,8 +231,7 @@ public class BnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 	// return new Identifier(letter);
 	// }
 
-	@DSLMethod(production = "p0", topLevel = false)
-	
+	@DSLMethod(production = "p0", topLevel = false)	
 	public Identifier identifierFromLetters(@DSL(arrayDelimiter = "") LetterOrDigit[] letterOrDigit) {
 
 		Identifier identifier = new Identifier(letterOrDigit);
@@ -253,7 +245,7 @@ public class BnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 		return identifier;
 	}
 
-	@DSLMethod(production = "\" p0 \"", topLevel = false)
+	@DSLMethod(production = "\"  p0  \"", topLevel = false)
 	
 	public QuotedSymbol quotedSymbolFromAnyCharacters(@DSL(arrayDelimiter = "") AnyCharacter[] ac) {
 		QuotedSymbol quotedSymol = new QuotedSymbol(ac);

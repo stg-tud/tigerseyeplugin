@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -213,7 +214,8 @@ this.grammar);
 	}
     }
 
-	public void addAdditionalTypeRules(Class<? extends TypeHandler>[] typeRules) {
+    public void addAdditionalTypeRules(
+	    Set<Class<? extends TypeHandler>> typeRules) {
 		for (Class<? extends TypeHandler> handler : typeRules) {
 	    TypeHandler newHandler;
 			try {
@@ -238,7 +240,6 @@ this.grammar);
 				logger.warn("Generated log statement",e);
 			}
 		}
-
 	}
 
 }

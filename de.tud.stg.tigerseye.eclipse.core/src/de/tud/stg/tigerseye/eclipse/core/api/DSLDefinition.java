@@ -66,21 +66,20 @@ public interface DSLDefinition extends TransformationType {
 
     /**
      * Gets the loaded class with fully qualified name {@link #getClassPath()}
-     * from contributor described by {@link #getContributor()}.
+     * from contributor described by {@link #getContributor()}. If the class is
+     * not load-able as defined by {@link #isDSLClassLoadable()}
+     * <code>null</code> will be returned instead. When
+     * {@link #isDSLClassLoadable()} is <code>true</code> the loaded class must
+     * be returned
      * 
-     * @return the loaded Class of this {@code DSLDefinition}.
-     * @throws TigerseyeRuntimeException
-     *             if class could not be loaded, which will encapsulate a
-     *             {@link ClassNotFoundException}. This will usually be
-     *             prevented because the existence of the class should have been
-     *             checked during initialization.
+     * @return the loaded Class of this {@code DSLDefinition} or
+     *         <code>null</code> is it's not load-able.
      */
-    @Nonnull
-    Class<? extends de.tud.stg.popart.dslsupport.DSL> getDSLClass();
+    Class<? extends de.tud.stg.popart.dslsupport.DSL> getDSLClassChecked();
 
     /**
      * @return <code>true</code> if class can be loaded via
-     *         {@link #getDSLClass()}
+     *         {@link #getDSLClassChecked()}
      */
     public boolean isDSLClassLoadable();
 
@@ -185,7 +184,7 @@ public interface DSLDefinition extends TransformationType {
 	}
 
 	@Override
-	public Class<? extends de.tud.stg.popart.dslsupport.DSL> getDSLClass() {
+	public Class<? extends de.tud.stg.popart.dslsupport.DSL> getDSLClassChecked() {
 	    return de.tud.stg.popart.dslsupport.DSL.class;
 	}
 

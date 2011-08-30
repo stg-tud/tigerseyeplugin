@@ -75,7 +75,7 @@ public class Context {
     }
 
     public void addDSL(DSLDefinition dsl) throws NoLegalPropertyFoundException {
-	addDSL(dsl.getValue(DSLKey.EXTENSION), dsl.getDSLClass());
+	addDSL(dsl.getValue(DSLKey.EXTENSION), dsl.getDSLClassChecked());
 	this.dsls.add(dsl);
     }
 

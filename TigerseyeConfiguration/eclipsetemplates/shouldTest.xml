@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><templates><template autoinsert="true" context="java" deleted="false" description="should write JUnit 4 tests" enabled="true" name="shouldtest">@${testType:newType(org.junit.Test)}
+public void should${testname}() throws Exception {
+	${staticImport:importStatic('org.junit.Assert.*')}${cursor} 
+}</template></templates>

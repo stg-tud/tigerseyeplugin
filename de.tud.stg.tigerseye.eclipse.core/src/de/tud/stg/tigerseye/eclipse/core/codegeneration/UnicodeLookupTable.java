@@ -143,7 +143,6 @@ public class UnicodeLookupTable {
 
 	String name = "";
 	String element = "";
-	String elementClass = "";
 
 	int elementNumber = 2;
 	while (name.isEmpty()) {
@@ -155,24 +154,12 @@ public class UnicodeLookupTable {
 	    switch (elementNumber) {
 	    case 2: // 2: class, one of: N,A,B,C,D,F,G,L,O,P,R,S,U,V,X
 		    // not a descriptive representation
-		elementClass = element;
 		break;
 	    case 3: // 3: Unicode character (UTF-8)
-		    // XXX(leo;Aug 28, 2011) assertions don't really work. Would
-		    // have to assert each special case like non-breaking space
-		    // or characters which representation
-		    // differ when parsed or read from unicode table file
-		    // if (elementClass.equals("S")) {
-		    // // some kind of whitespace
-		    // } else if (";".equals(characterString)) {
-		    // assert "003B".equals(characterCode) :
-		    // formatCharacterString(
-		    // characterString, characterCode);
-		    // } else {
-		    // assert element.equals(characterString) :
-		    // formatCharacterString(
-		    // characterString, characterCode);
-		    // }
+		/*
+		 * might be not directly encoded in file. Characters of type S
+		 * for example are omitted here.
+		 */
 		break;
 	    case 4: // 4: entity name
 		/*
@@ -180,11 +167,18 @@ public class UnicodeLookupTable {
 		 * and undefined otherwise.
 		 */
 		if (splitString.equals(characterString) && element.isEmpty()) {
-		    elementNumber--; /*
-				      * Have to try next element to support both
-				      * versions, i.e. 11 and 12, of
-				      * MatchClassEx.
-				      */
+		    elementNumber--;
+		    /**
+		     * Have to try next element to support both versions, i.e.
+		     * 11 and 12, of MatchClassEx, which differ in that 11 just
+		     * emits the semicolon, i.e.
+		     * <code>003B;P;;semi;ISONUM;;SEMICOLON</code> (between the
+		     * semicolons ;; would usually be the unicode character
+		     * representation) and 12 actually represents the semicolon
+		     * <code>
+		     * 003B;P;;;semi;ISONUM;;SEMICOLONv
+		     * </code>.
+		     */
 		}
 		name = element;
 		break;
@@ -196,8 +190,8 @@ public class UnicodeLookupTable {
 		break;
 	    case 7: /*
 		     * 7: Unicode 'name' (or name range), in all caps. They are
-		     * not normative and may not always match the official
-		     * character names.
+		     * not normative and may not match the official character
+		     * names.
 		     */
 		name = element;
 		break;
@@ -210,12 +204,6 @@ public class UnicodeLookupTable {
 
 	String trimmedName = name.trim();
 	return new UnicodeNamePair(characterString, trimmedName);
-    }
-
-    private String formatCharacterString(String characterString,
-	    String characterCode) {
-	return "characterString was [" + characterString + "] with code["
-		+ characterCode + "]";
     }
 
     static class UnicodeNamePair {

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.time.StopWatch;
@@ -27,6 +28,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeCoreActivator;
+import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
+import de.tud.stg.tigerseye.eclipse.core.api.ILanguageProvider;
 import de.tud.stg.tigerseye.eclipse.core.api.TigerseyeRuntimeException;
 import de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyePreferenceConstants;
 import de.tud.stg.tigerseye.util.ListMap;
@@ -59,7 +63,14 @@ public class TigerseyeRuntime {
     public static void updateTigerseyeClassPaths() {
 	StopWatch sw = new StopWatch();
 	sw.start();
-	TigerseyeCore.updateLanguageProvider();
+	ILanguageProvider updateLanguageProvider = TigerseyeCore
+		.updateLanguageProvider();
+	Map<DSLDefinition, Throwable> validateDSLDefinitionsState = updateLanguageProvider
+		.validateDSLDefinitionsState();
+	if (validateDSLDefinitionsState.size() > 0) {
+	    TigerseyeCoreActivator
+		    .logDSLsNotloadable(validateDSLDefinitionsState);
+	}
 	sw.split();
 	logger.debug("{}ms took languageprovider update", sw.getSplitTime());
 

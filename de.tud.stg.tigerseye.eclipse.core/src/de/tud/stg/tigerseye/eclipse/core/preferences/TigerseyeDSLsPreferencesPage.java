@@ -625,7 +625,7 @@ Composite parent,
 	declaredKeywordsTable.removeAll();
 
 	// Read all public declared Fields from external class
-	Class<? extends DSL> loadClass = language.getDSLClass();
+	Class<? extends DSL> loadClass = language.getDSLClassChecked();
 	if (loadClass == null) {
 	    TableItem tableItem = new TableItem(declaredKeywordsTable,
 		    SWT.BORDER);

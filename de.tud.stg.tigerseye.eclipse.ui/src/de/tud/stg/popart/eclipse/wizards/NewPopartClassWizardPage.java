@@ -313,7 +313,7 @@ public class NewPopartClassWizardPage extends NewClassWizardPage {
 	codeGenerator.addCode(" * Declared keywords:");
 
 	// Read all public declared fields from external class
-	KeyWordExtractor keyWordExtractor = new KeyWordExtractor(dsl.getDSLClass());
+	KeyWordExtractor keyWordExtractor = new KeyWordExtractor(dsl.getDSLClassChecked());
 	Field[] declaredFields = keyWordExtractor
 		.getDeclaredLiteralKeywords();
 	if (declaredFields != null) {
