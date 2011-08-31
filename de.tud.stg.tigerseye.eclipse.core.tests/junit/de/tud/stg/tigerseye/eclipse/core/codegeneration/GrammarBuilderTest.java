@@ -38,7 +38,7 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.PrettyGroovyCodePr
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.MathDSL4GrammarBuilderTest;
 import de.tud.stg.tigerseye.test.PrettyGroovyCodePrinterFactory;
 import de.tud.stg.tigerseye.test.TestDSLTransformation;
-import de.tud.stg.tigerseye.test.TestUtils;
+import de.tud.stg.tigerseye.test.TransformationUtils;
 import de.tud.stg.tigerseye.util.ListBuilder;
 
 public class GrammarBuilderTest {
@@ -51,7 +51,7 @@ public class GrammarBuilderTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gb = new GrammarBuilder(TestUtils.getDefaultLookupTable());
+		gb = new GrammarBuilder(TransformationUtils.getDefaultLookupTable());
 	}
 
 	@Test
@@ -134,7 +134,7 @@ public class GrammarBuilderTest {
 		IChart parse = ep.parse(input);
 		
 		TestDSLTransformation transformation = new TestDSLTransformation(new PrettyGroovyCodePrinterFactory());
-		String performTransformation = transformation.performTransformation(input, TestUtils.dslSingle(transformer));
+		String performTransformation = transformation.performTransformation(input, TransformationUtils.dslSingle(transformer));
 		
 		System.out.println(parse);
 		System.out.println(parse.getAST());

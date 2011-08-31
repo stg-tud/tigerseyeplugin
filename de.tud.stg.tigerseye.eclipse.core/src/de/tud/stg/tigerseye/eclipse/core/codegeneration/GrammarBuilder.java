@@ -34,9 +34,9 @@ import de.tud.stg.popart.builder.core.annotations.AnnotationConstants;
 import de.tud.stg.popart.builder.core.annotations.DSL;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.ExtractedClassInforamtion;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.ExtractedMethodInformation;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.ExtractorDefaults;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.ClassDSLInformation;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.MethodDSLInformation;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.DSLAnnotationDefaults;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.CategoryNames;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.HostLanguageGrammar;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ConfigurationOptions;
@@ -152,20 +152,20 @@ public class GrammarBuilder {
     public IGrammar<String> buildGrammar(
 	    List<Class<? extends de.tud.stg.popart.dslsupport.DSL>> clazzes) {
 
-	List<ExtractedClassInforamtion> exInfos = extractClassesInformation(clazzes);
+	List<ClassDSLInformation> exInfos = extractClassesInformation(clazzes);
 
 	Grammar grammar = createCombinedGrammar(exInfos);
 
 	return grammar;
     }
 
-    private List<ExtractedClassInforamtion> extractClassesInformation(
+    private List<ClassDSLInformation> extractClassesInformation(
 	    List<Class<? extends de.tud.stg.popart.dslsupport.DSL>> clazzes) {
-	List<ExtractedClassInforamtion> exannos = ListMap
+	List<ClassDSLInformation> exannos = ListMap
 		.map(clazzes,
-			new Transformer<Class<? extends de.tud.stg.popart.dslsupport.DSL>, ExtractedClassInforamtion>() {
+			new Transformer<Class<? extends de.tud.stg.popart.dslsupport.DSL>, ClassDSLInformation>() {
 			    @Override
-			    public ExtractedClassInforamtion transform(
+			    public ClassDSLInformation transform(
 				    Class<? extends de.tud.stg.popart.dslsupport.DSL> input) {
 				return extractClassInformation(input);
 			    }
@@ -174,7 +174,7 @@ public class GrammarBuilder {
     }
 
     private Grammar createCombinedGrammar(
-	    List<ExtractedClassInforamtion> exannos) {
+	    List<ClassDSLInformation> exannos) {
 	Grammar grammar = new Grammar();
 	TypeHandlerDispatcher typeHandler = new TypeHandlerDispatcher(grammar);
 	this.setupGeneralGrammar(grammar);
@@ -182,7 +182,7 @@ public class GrammarBuilder {
 	boolean waterSupported = isWaterSupported(exannos);
 	this.setWaterEnabled(waterSupported, grammar);
 
-	for (ExtractedClassInforamtion classInfo : exannos) {
+	for (ClassDSLInformation classInfo : exannos) {
 	    Set<Class<? extends HostLanguageGrammar>> hostLanguageRules = classInfo
 		    .getHostLanguageRules();
 	    Set<Class<? extends TypeHandler>> typeRules = classInfo
@@ -196,7 +196,7 @@ public class GrammarBuilder {
 	    // XXX(Leo_Roos;Aug 28, 2011) can be deleted now?
 	    typeHandler.handleDefaults(classOptions);
 
-	    for (ExtractedMethodInformation methodInfo : classInfo
+	    for (MethodDSLInformation methodInfo : classInfo
 		    .getMethodsInformation()) {
 
 		switch (methodInfo.getDSLType()) {
@@ -225,8 +225,8 @@ public class GrammarBuilder {
      * Water is supported as long as every involved DSL supports water.
      * Otherwise it is not supported
      */
-    private boolean isWaterSupported(List<ExtractedClassInforamtion> exannos) {
-	for (ExtractedClassInforamtion annos : exannos) {
+    private boolean isWaterSupported(List<ClassDSLInformation> exannos) {
+	for (ClassDSLInformation annos : exannos) {
 	    if (!annos.isWaterSupported()) {
 		return false;
 	    }
@@ -239,10 +239,10 @@ public class GrammarBuilder {
 		+ dslType.toString() + "].");
     }
 
-    private ExtractedClassInforamtion extractClassInformation(Class<?> clazz) {
-	ExtractedClassInforamtion classInfo = new ExtractedClassInforamtion(
+    private ClassDSLInformation extractClassInformation(Class<?> clazz) {
+	ClassDSLInformation classInfo = new ClassDSLInformation(
 		clazz);
-	classInfo.load(ExtractorDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP);
+	classInfo.load(DSLAnnotationDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP);
 	return classInfo;
     }
 
@@ -320,7 +320,7 @@ public class GrammarBuilder {
 
     private final static Pattern literalPattern = Pattern.compile("^get(\\S+)");
 
-    private boolean handleLiteral(ExtractedMethodInformation extractedMethod,
+    private boolean handleLiteral(MethodDSLInformation extractedMethod,
 	    Grammar grammar,
 	    TypeHandlerDispatcher typeHandler) {
 
@@ -410,7 +410,7 @@ public class GrammarBuilder {
     // parameters, pattern);
     // }
 
-    private void handleMethod(ExtractedMethodInformation method,
+    private void handleMethod(MethodDSLInformation method,
 	    Grammar grammar,
 	    TypeHandlerDispatcher typeHandler) {
 	this.handleNonLiteral(method, grammar,
@@ -446,7 +446,7 @@ public class GrammarBuilder {
 		+ "\\E\\d+|\\Q" + methodWhitespaceEscape + "\\E)).)+)");
     }
 
-    private void handleNonLiteral(ExtractedMethodInformation methodInfo,
+    private void handleNonLiteral(MethodDSLInformation methodInfo,
 	    Grammar grammar,
 	    TypeHandlerDispatcher typeHandler) {
 

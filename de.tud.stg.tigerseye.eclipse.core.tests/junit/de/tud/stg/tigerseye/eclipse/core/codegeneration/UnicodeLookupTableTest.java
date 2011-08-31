@@ -19,7 +19,7 @@ import org.apache.commons.lang.UnhandledException;
 import org.junit.Test;
 
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.UnicodeLookupTable.UnicodeNamePair;
-import de.tud.stg.tigerseye.test.TestUtils;
+import de.tud.stg.tigerseye.test.TransformationUtils;
 
 public class UnicodeLookupTableTest {
 
@@ -27,7 +27,7 @@ public class UnicodeLookupTableTest {
 	private UnicodeLookupTable cut = getUnicodeTable();
 
 	private static UnicodeLookupTable getUnicodeTable() {
-		UnicodeLookupTable cut = TestUtils.getDefaultLookupTable();
+		UnicodeLookupTable cut = TransformationUtils.getDefaultLookupTable();
 		return cut;
 	}
 

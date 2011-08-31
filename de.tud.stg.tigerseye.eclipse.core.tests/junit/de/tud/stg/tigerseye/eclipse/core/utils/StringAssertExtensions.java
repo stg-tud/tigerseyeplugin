@@ -5,7 +5,9 @@ import java.util.Arrays;
 
 import org.fest.assertions.StringAssert;
 
-public class StringAssertExtensions extends StringAssert{
+public class StringAssertExtensions extends StringAssert {
+
+	private boolean ignoreCase = false;
 
 	protected StringAssertExtensions(String actual) {
 		super(actual);
@@ -14,12 +16,7 @@ public class StringAssertExtensions extends StringAssert{
 	public StringAssertExtensions containsAllSubstrings(String... substrings) {
 		isNotNull();
 
-		ArrayList<String> notContained = new ArrayList<String>();
-		for (String string : substrings) {
-			boolean contains = actual.contains(string);
-			if (!contains)
-				notContained.add(string);
-		}
+		ArrayList<String> notContained = getAllNoteContained(substrings);
 
 		if (notContained.isEmpty()) {
 			return this;
@@ -29,6 +26,27 @@ public class StringAssertExtensions extends StringAssert{
 			fail(reason);
 		}
 		return this;
+	}
+
+	private ArrayList<String> getAllNoteContained(String... substrings) {
+		ArrayList<String> notContained = new ArrayList<String>();
+		for (String string : substrings) {
+			boolean contains;
+			if (ignoreCase) {
+				contains = actual.toLowerCase().contains(string.toLowerCase());
+			} else {
+				contains = actual.contains(string);
+			}
+			if (!contains) {
+				notContained.add(string);
+			}
+		}
+		return notContained;
+	}
+
+	public StringAssertExtensions containsAllSubstringsIgnoreCase(String... substrings) {
+		this.ignoreCase = true;
+		return containsAllSubstrings(substrings);
 	}
 
 }

@@ -10,13 +10,27 @@ import de.tud.stg.popart.builder.core.annotations.AnnotationConstants;
 import de.tud.stg.popart.builder.core.annotations.DSL;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ConfigurationOptions;
 
-public abstract class ExtractorBase {
+public abstract class DSLInformation {
 
-    public ExtractorBase() {
+    public DSLInformation() {
 	super();
     }
 
-    public abstract void load(Map<ConfigurationOptions, String> defaultConfigurationOptions);
+    /**
+     * load constructor class with
+     * {@link DSLAnnotationDefaults#DEFAULT_CONFIGURATIONOPTIONS_MAP} configuration.
+     */
+    public void load() {
+	this.load(DSLAnnotationDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP);
+    }
+
+    /**
+     * load Extractor class with given map as default configuration
+     * 
+     * @param defaultConfigurationOptions
+     */
+    public abstract void load(
+	    Map<ConfigurationOptions, String> defaultConfigurationOptions);
 
     public abstract boolean isAnnotated();
 

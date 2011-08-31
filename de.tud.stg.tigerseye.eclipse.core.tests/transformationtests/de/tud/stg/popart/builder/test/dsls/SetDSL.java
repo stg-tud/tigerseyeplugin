@@ -30,7 +30,7 @@ public class SetDSL implements de.tud.stg.popart.dslsupport.DSL {
 		return cl.call();
 	}
 
-	private static class MyList {
+	public static class MyList {
 		String head;
 		MyList tail;
 

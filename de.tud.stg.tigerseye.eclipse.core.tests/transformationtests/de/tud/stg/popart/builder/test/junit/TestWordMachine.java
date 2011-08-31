@@ -39,7 +39,7 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.UnicodeLookupTable;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.ATermBuilder;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.PrettyGroovyCodePrinter;
 import de.tud.stg.tigerseye.test.GroovyScript;
-import de.tud.stg.tigerseye.test.TestUtils;
+import de.tud.stg.tigerseye.test.TransformationUtils;
 
 public class TestWordMachine {
 private static final Logger logger = LoggerFactory.getLogger(TestWordMachine.class);
@@ -48,7 +48,7 @@ private static final Logger logger = LoggerFactory.getLogger(TestWordMachine.cla
 	public String testWordMaschine(InputStreamReader inputFile) {
 		try {
 
-			UnicodeLookupTable ult = TestUtils.getDefaultLookupTable();
+			UnicodeLookupTable ult = TransformationUtils.getDefaultLookupTable();
 			
 			GrammarBuilder gb = new GrammarBuilder(ult);
 
@@ -114,7 +114,7 @@ private static final Logger logger = LoggerFactory.getLogger(TestWordMachine.cla
 		sb.append(header);
 
 		
-		InputStream loadTestResource = TestUtils.loadTestResource(inputStateMachine);
+		InputStream loadTestResource = TransformationUtils.loadTestResource(inputStateMachine);
 //		long start = System.nanoTime();
 		String testWordMaschine = new TestWordMachine().testWordMaschine(new InputStreamReader(loadTestResource));
 		

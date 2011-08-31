@@ -31,7 +31,7 @@ import de.tud.stg.tigerseye.test.transformation.utils.DefaultDSLTransformationTe
 import de.tud.stg.tigerseye.util.ListBuilder;
 
 
-public class TestUtils {
+public class TransformationUtils {
 	
 	public static final String PLUGIN_ID_OF_CORE_TESTFRAGMENT = "de.tud.stg.tigerseye.core.tests"; 
 	
@@ -39,7 +39,7 @@ public class TestUtils {
 
 	private static final File generatedFilesFolder = DefaultDSLTransformationTester.GENERATED_OUTPUT_FOLDER;
 
-	private static DefaultDSLTransformationTester dtt = new DefaultDSLTransformationTester(TestUtils.class, generatedFilesFolder, "resources" );
+	private static DefaultDSLTransformationTester dtt = new DefaultDSLTransformationTester(TransformationUtils.class, generatedFilesFolder, "resources" );
 	public static OutputStream out = System.out;
 
 	public static void test(String file, Class<? extends DSL> ... classes) {
@@ -47,7 +47,7 @@ public class TestUtils {
 	}
 
 	public static void setOutputStream(OutputStream out) {
-		TestUtils.out = out;
+		TransformationUtils.out = out;
 	}
 	
 	public static void test(String file,
@@ -117,7 +117,7 @@ public class TestUtils {
 	}
 
 	private static Reader getMathClassEx11(){
-		InputStream resourceAsStream = TestUtils.class.getResourceAsStream(MATH_CLASS_EX_TXT);
+		InputStream resourceAsStream = TransformationUtils.class.getResourceAsStream(MATH_CLASS_EX_TXT);
 		try {
 			InputStreamReader reader = new InputStreamReader(resourceAsStream, "UTF-8");
 			BufferedReader bufferedReader = new BufferedReader(reader);
@@ -140,7 +140,7 @@ public class TestUtils {
 	}
 	
 	public static InputStream loadTestResource(String resourceName){
-		InputStream resourceAsStream = TestUtils.class.getResourceAsStream("resources" + "/" + resourceName);
+		InputStream resourceAsStream = TransformationUtils.class.getResourceAsStream("resources" + "/" + resourceName);
 		return resourceAsStream;
 	}
 	

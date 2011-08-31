@@ -19,7 +19,7 @@ import de.tud.stg.parlex.core.IGrammar;
 import de.tud.stg.popart.builder.test.dsls.MathDSL;
 import de.tud.stg.popart.dslsupport.DSL;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.MathDSL4GrammarBuilderTest;
-import de.tud.stg.tigerseye.test.TestUtils;
+import de.tud.stg.tigerseye.test.TransformationUtils;
 
 public class GrammarTest {
 
@@ -28,7 +28,7 @@ public class GrammarTest {
 
 	@Before
 	public void setUp() throws Exception {
-		grammar = new GrammarBuilder(TestUtils.getDefaultLookupTable())
+		grammar = new GrammarBuilder(TransformationUtils.getDefaultLookupTable())
 				.buildGrammar(classForTest);
 	}
 
@@ -36,7 +36,7 @@ public class GrammarTest {
 	public void testEqualsHashcode() throws Exception {
 
 		IGrammar<String> grammar2 = new GrammarBuilder(
-				TestUtils.getDefaultLookupTable()).buildGrammar(classForTest);
+				TransformationUtils.getDefaultLookupTable()).buildGrammar(classForTest);
 		assertEquals(grammar, grammar2);
 		assertEquals(grammar.hashCode(), grammar2.hashCode());
 		assertNotSame(grammar, grammar2);
@@ -47,7 +47,7 @@ public class GrammarTest {
 	@Test
 	public void testEqualsHashcodeNotEqual() throws Exception {
 		IGrammar<String> grammarDifferent = new GrammarBuilder(
-				TestUtils.getDefaultLookupTable()).buildGrammar(classForTest);
+				TransformationUtils.getDefaultLookupTable()).buildGrammar(classForTest);
 		grammarDifferent.addRule(grammarDifferent.getStartRule());
 		assertFalse(grammar.equals(grammarDifferent));
 	}
@@ -66,7 +66,7 @@ public class GrammarTest {
 		System.out.println(grammar);
 		String actual = removeMethodOrderSpecificStrings(grammar.toString());
 		expected = removeMethodOrderSpecificStrings(expected);
-		TestUtils.assertContainsAllLines(actual, expected);
+		TransformationUtils.assertContainsAllLines(actual, expected);
 	}
 
 	Pattern compile = Pattern.compile("(M\\d+)(?=\\(.*\\))");
@@ -79,7 +79,7 @@ public class GrammarTest {
 	}
 
 	private IGrammar<String> newGrammar(Class<? extends DSL> classForTest) {
-		return TestUtils.newGrammar(classForTest).grammar;
+		return TransformationUtils.newGrammar(classForTest).grammar;
 	}
 
 	private String loadresource(String name) throws IOException {

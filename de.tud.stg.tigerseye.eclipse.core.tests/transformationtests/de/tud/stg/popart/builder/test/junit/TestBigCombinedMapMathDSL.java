@@ -1,6 +1,6 @@
 package de.tud.stg.popart.builder.test.junit;
 
-import static de.tud.stg.tigerseye.test.TestUtils.test;
+import static de.tud.stg.tigerseye.test.TransformationUtils.test;
 
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -12,7 +12,7 @@ import utilities.LongrunningTestRule;
 import de.tud.stg.popart.builder.test.dsls.MapDSL;
 import de.tud.stg.popart.builder.test.dsls.MathDSL;
 import de.tud.stg.popart.builder.test.dsls.SimpleSqlDSL;
-import de.tud.stg.tigerseye.test.TestUtils;
+import de.tud.stg.tigerseye.test.TransformationUtils;
 
 public class TestBigCombinedMapMathDSL {
 
@@ -23,7 +23,7 @@ public class TestBigCombinedMapMathDSL {
 	@Test
 	@LongrunningTest(193885)
 	public void testBigConditionalDSL() {
-		test(false, "BigCombinedDSL", TestUtils.dslsList(MathDSL.class)
+		test(false, "BigCombinedDSL", TransformationUtils.dslsList(MathDSL.class)
 				.add(MapDSL.class).add(SimpleSqlDSL.class).toList());
 	}
 

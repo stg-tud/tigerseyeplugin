@@ -1,6 +1,6 @@
 package de.tud.stg.popart.builder.test.junit;
 
-import static de.tud.stg.tigerseye.test.TestUtils.test;
+import static de.tud.stg.tigerseye.test.TransformationUtils.test;
 
 import java.util.List;
 
@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import de.tud.stg.popart.builder.test.dsls.MathDSL;
 import de.tud.stg.popart.dslsupport.DSL;
-import de.tud.stg.tigerseye.test.TestUtils;
+import de.tud.stg.tigerseye.test.TransformationUtils;
 
 public class TestMathDSL {
 
@@ -22,7 +22,7 @@ public class TestMathDSL {
 	}
 
 	private List<Class<? extends DSL>> mathClass() {
-		return TestUtils.dslsList(MathDSL.class).toList();
+		return TransformationUtils.dslsList(MathDSL.class).toList();
 	}
 
 	@Test

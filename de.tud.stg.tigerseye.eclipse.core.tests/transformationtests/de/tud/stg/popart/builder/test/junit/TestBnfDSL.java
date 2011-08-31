@@ -1,6 +1,6 @@
 package de.tud.stg.popart.builder.test.junit;
 
-import static de.tud.stg.tigerseye.test.TestUtils.test;
+import static de.tud.stg.tigerseye.test.TransformationUtils.test;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -10,7 +10,7 @@ import utilities.LongrunningTest;
 import utilities.LongrunningTestRule;
 
 import de.tud.stg.popart.builder.test.dsls.BnfDSL;
-import de.tud.stg.tigerseye.test.TestUtils;
+import de.tud.stg.tigerseye.test.TransformationUtils;
 
 public class TestBnfDSL {
 
@@ -20,6 +20,6 @@ public class TestBnfDSL {
 	@Test
 	@LongrunningTest(24081)
 	public void testBnfDSL() {
-		test(false, "BnfDSLTest", TestUtils.dslSingle(BnfDSL.class));
+		test(false, "BnfDSLTest", TransformationUtils.dslSingle(BnfDSL.class));
 	}
 }

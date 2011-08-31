@@ -51,7 +51,7 @@ public class TestDSLTransformation {
 
 	public TestDSLTransformation(CodePrinterFactory cpf)
 			throws FileNotFoundException {
-		this.ult = TestUtils.getDefaultLookupTable();
+		this.ult = TransformationUtils.getDefaultLookupTable();
 		this.cpf = cpf;
 	}
 

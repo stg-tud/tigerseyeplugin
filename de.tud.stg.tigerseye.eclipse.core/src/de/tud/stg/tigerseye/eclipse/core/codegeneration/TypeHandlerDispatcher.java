@@ -206,11 +206,11 @@ this.grammar);
 	}
 
 
-    public void handleDefaults(Map<ConfigurationOptions, String> methodOptions) {
+    public void handleDefaults(Map<ConfigurationOptions, String> configurationOptions) {
 	for (Entry<Class<?>, ClassTypeHandler> e : classHandlers.entrySet()) {
 	    ClassTypeHandler handler = e.getValue();
 	    Class<?> classToHandle = e.getKey();
-	    handler.handle(this.grammar, classToHandle, methodOptions);
+	    handler.handle(this.grammar, classToHandle, configurationOptions);
 	}
     }
 

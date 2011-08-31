@@ -30,7 +30,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.osgi.framework.Bundle;
 
-import de.tud.stg.tigerseye.test.TestUtils;
+import de.tud.stg.tigerseye.test.TransformationUtils;
 
 import utilities.GlobalResourceCollection;
 
@@ -156,7 +156,7 @@ public class JDTClasspathResolverTest {
 	}
 
 	private File[] getFilesFor(File eclipseJavaProjectRoot, String... expected) {
-		return TestUtils.getFilesRelativeToRoot(eclipseJavaProjectRoot,
+		return TransformationUtils.getFilesRelativeToRoot(eclipseJavaProjectRoot,
 				expected);
 	}
 

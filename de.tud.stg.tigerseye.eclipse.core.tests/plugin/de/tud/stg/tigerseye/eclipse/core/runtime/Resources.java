@@ -14,7 +14,7 @@ import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.tigerseye.test.TestUtils;
+import de.tud.stg.tigerseye.test.TransformationUtils;
 
 enum Resources {
 	defaultbundleclasspath("projectwithdefaultbundleclasspath"), //
@@ -49,7 +49,7 @@ enum Resources {
 	public File getFileInPluginRun() throws Exception {
 		assertPlatformRunning();
 		Bundle bundle = Platform
-				.getBundle(TestUtils.PLUGIN_ID_OF_CORE_TESTFRAGMENT);
+				.getBundle(TransformationUtils.PLUGIN_ID_OF_CORE_TESTFRAGMENT);
 		URL entry = bundle.getEntry(new File(bundleRelativeResourcesPath,
 				this.NAME).getPath());
 		URL fileURL = FileLocator.toFileURL(entry);

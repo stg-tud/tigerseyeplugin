@@ -18,20 +18,20 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.HostLanguageGra
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ConfigurationOptions;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.TypeHandler;
 
-public class ExtractedClassInforamtion extends ExtractorBase {
+public class ClassDSLInformation extends DSLInformation {
     private boolean annotated;
 
     @Nonnull
-    private DSLClass classAnnotation = ExtractorDefaults.DEFAULT_DSLClass;
+    private DSLClass classAnnotation = DSLAnnotationDefaults.DEFAULT_DSLClass;
     @Nonnull
-    private Map<ConfigurationOptions, String> classoptions = ExtractorDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP;
+    private Map<ConfigurationOptions, String> classoptions = DSLAnnotationDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP;
     @Nonnull
     private final Class<?> clazz;
 
     @Nonnull
-    private final List<ExtractedMethodInformation> methodsInformation = new ArrayList<ExtractedMethodInformation>();
+    private final List<MethodDSLInformation> methodsInformation = new ArrayList<MethodDSLInformation>();
 
-    public ExtractedClassInforamtion(Class<?> clazz) {
+    public ClassDSLInformation(Class<?> clazz) {
 	this.clazz = clazz;
     }
 
@@ -46,7 +46,7 @@ public class ExtractedClassInforamtion extends ExtractorBase {
 	return hashSet;
     }
 
-    public List<ExtractedMethodInformation> getMethodsInformation() {
+    public List<MethodDSLInformation> getMethodsInformation() {
 	return methodsInformation;
     }
 
@@ -73,14 +73,14 @@ public class ExtractedClassInforamtion extends ExtractorBase {
 	    this.annotated = true;
 	    this.classoptions = getAnnotationParameterOptionsOverInitialMap(
 		    annotation,
-		    ExtractorDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP);
+		    DSLAnnotationDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP);
 	    this.classAnnotation = annotation;
 	}
 
 	Set<Method> methods = extractAllRelevantMethods(clazz);
-
+	// FIXME(Leo_Roos;Aug 31, 2011) load annotations from inherited methods
 	for (Method method : methods) {
-	    ExtractedMethodInformation methodInfo = new ExtractedMethodInformation(
+	    MethodDSLInformation methodInfo = new MethodDSLInformation(
 		    method);
 	    methodInfo.load(classoptions);
 	    this.methodsInformation.add(methodInfo);
@@ -92,19 +92,23 @@ public class ExtractedClassInforamtion extends ExtractorBase {
      */
     static Set<Method> extractAllRelevantMethods(Class<?> clazz) {
 	Set<Method> methods = new LinkedHashSet<Method>();
-	// Extract only the public members
-	methods.addAll(Arrays.asList(clazz.getMethods()));
-	// Method[] declaredMethods = clazz.getDeclaredMethods();
-	// methods.addAll(Arrays.asList(declaredMethods));
+	Collections.addAll(methods, clazz.getMethods());
 	methods.removeAll(Arrays.asList(Object.class.getDeclaredMethods()));
-	//
-	// The extended Interpreter class also contains GroovyObjectSupport
-	// also removes eval()
-	// List<Method> interpreterMethodsContainingGroovyObjectSupport = Arrays
-	// .asList(Interpreter.class.getMethods());
-	// getPublicMethodsComparable(declaredMethods)
+	methods = filterSpecialGeneratedMethods(methods);
+	/*
+	 * There is no possibility to check for whether it is groovy class other
+	 * than asking for the methods which could be implemented by the user.
+	 * Instance does not work since Groovy seems to weave the methods
+	 * directly to the class instead of changing its hierarchy.
+	 */
 	methods = filterMethodsByNameAndParameter(methods,
 		groovyObjectSupportMethods);
+	// TODO(Leo_Roos;Aug 30, 2011) consider to also remove the method from
+	// the Interpreter class
+	return methods;
+    }
+
+    private static Set<Method> filterSpecialGeneratedMethods(Set<Method> methods) {
 	/*
 	 * Quick and Dirty approach to filter some of groovy generated methods
 	 * which contains multiple $ signs. Bad luck for the user who actually
@@ -113,15 +117,16 @@ public class ExtractedClassInforamtion extends ExtractorBase {
 	Iterator<Method> iterator = methods.iterator();
 	while (iterator.hasNext()) {
 	    Method next = iterator.next();
-	    boolean specialMethod = next.getName().contains("$");
+	    boolean specialMethod = next.getName().contains(
+		    DSLAnnotationDefaults.SUBSTRING_DEFINING_FILTERED_METHODS);
 	    if (specialMethod)
 		iterator.remove();
 	}
 	return methods;
     }
 
-    static Set<Method> filterMethodsByNameAndParameter(
-	    Set<Method> methods, Set<ComparableMethod> toremove) {
+    static Set<Method> filterMethodsByNameAndParameter(Set<Method> methods,
+	    Set<ComparableMethod> toremove) {
 	Set<ComparableMethod> comparableMethods = getComparableMethods(methods);
 	comparableMethods.removeAll(toremove);
 	Set<Method> hashSet = comparableToNormalMethod(comparableMethods);

@@ -18,9 +18,11 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.Configurati
  * @author Leo_Roos
  * 
  */
-public class ExtractorDefaults {
+public class DSLAnnotationDefaults {
 
-    private ExtractorDefaults() {
+    public static final String SUBSTRING_DEFINING_FILTERED_METHODS = "$";
+
+    private DSLAnnotationDefaults() {
 	// utility class
     }
 

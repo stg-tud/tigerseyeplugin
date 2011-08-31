@@ -40,7 +40,7 @@ import utilities.PluginTest;
 import utilities.PluginTestRule;
 
 import de.tud.stg.tigerseye.eclipse.TigerseyeLibraryProvider;
-import de.tud.stg.tigerseye.test.TestUtils;
+import de.tud.stg.tigerseye.test.TransformationUtils;
 
 
 /**
@@ -125,7 +125,7 @@ public class DSLClasspathResolverTest {
 			throws Exception {
 		File resFile = res.getFileInPluginRun();
 		String[] expected = cpEntries.split(",");		
-		return TestUtils.getFilesRelativeToRoot(resFile, expected);
+		return TransformationUtils.getFilesRelativeToRoot(resFile, expected);
 	}
 
 	private File[] executeResolveWithBundleMock() {
