@@ -17,6 +17,7 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.TypeHandler
 @Inherited
 @Target({ ElementType.TYPE, ElementType.METHOD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
+@Deprecated
 public @interface DSL {
 	String parameterEscape() default AnnotationConstants.UNASSIGNED;
 

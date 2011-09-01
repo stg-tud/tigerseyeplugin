@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.regex.Pattern;
 
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ParameterOptionDefaults;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ConfigurationOptionDefaults;
 
 /**
  * Annotation to define the concrete syntax of an embedded DSL element. Elements
@@ -19,7 +19,7 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ParameterOp
  * interpreted via {@link #parameterEscape()} and {@link #whitespaceEscape()}.<br>
  * The interpretation of arrays and strings can be adjusted using
  * {@link #arrayDelimiter()} and {@link #stringQuotation()}.<br>
- * The default values are defined in {@link ParameterOptionDefaults}. <br>
+ * The default values are defined in {@link ConfigurationOptionDefaults}. <br>
  * <p>
  * A definition can be defined {@link #topLevel()} in which case it can not be
  * part of another production.

@@ -41,14 +41,17 @@ import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ManifestReaderLearningTest {
+
+	private static final Logger logger = LoggerFactory.getLogger(ManifestReaderLearningTest.class);
 
 	private Manifest manifest;
 
 	enum AManifest {
-		dsldefinitions("dsldefinitions_MANIFEST.MF"), logodsl(
-				"logodsl_MANIFEST.MF"), simplesql("simplesql_MANIFEST.MF");
+		dsldefinitions("dsldefinitions_MANIFEST.MF"), logodsl("logodsl_MANIFEST.MF"), simplesql("simplesql_MANIFEST.MF");
 
 		public final String name;
 
@@ -59,8 +62,7 @@ public class ManifestReaderLearningTest {
 	}
 
 	private InputStream getManifest(AManifest aman) {
-		return ManifestReaderLearningTest.class
-				.getResourceAsStream("resources/" + aman.name);
+		return ManifestReaderLearningTest.class.getResourceAsStream("resources/" + aman.name);
 	}
 
 	@Before
@@ -85,10 +87,10 @@ public class ManifestReaderLearningTest {
 		Set entries = manifest.headers.entrySet();
 		assertFalse(entries.isEmpty());
 		for (Object object : entries) {
-			System.out.println(object);
+			logger.info(object.toString());
 		}
 		String classpath = manifest.getValue(Constants.BUNDLE_CLASSPATH);
-		//the manifest under test has no classpath entries
+		// the manifest under test has no classpath entries
 		assertNull(classpath);
 	}
 
@@ -98,8 +100,7 @@ public class ManifestReaderLearningTest {
 		manifest.load(logostream);
 		String value = manifest.getValue(Constants.BUNDLE_CLASSPATH);
 		assertNotNull(value);
-		ManifestElement[] elements = manifest
-				.getElements(Constants.BUNDLE_CLASSPATH);
+		ManifestElement[] elements = manifest.getElements(Constants.BUNDLE_CLASSPATH);
 		List<String> results = new ArrayList<String>();
 		for (ManifestElement mel : elements) {
 			printME(mel);
@@ -112,15 +113,14 @@ public class ManifestReaderLearningTest {
 	}
 
 	private void printME(ManifestElement mel) {
-		System.out.println(ToStringBuilder.reflectionToString(mel));
+		logger.info(ToStringBuilder.reflectionToString(mel));
 	}
 
 	static class Manifest {
 
 		private Map headers;
 
-		public void load(InputStream manifest) throws IOException,
-				BundleException {
+		public void load(InputStream manifest) throws IOException, BundleException {
 			headers = ManifestElement.parseBundleManifest(manifest, null);
 		}
 
@@ -172,23 +172,21 @@ public class ManifestReaderLearningTest {
 	@Test
 	public void testjar() throws Exception {
 
-		URI somejar = ManifestReaderLearningTest.class.getResource(
-				"mockito-all-1.8.5.jar").toURI();
+		URI somejar = ManifestReaderLearningTest.class.getResource("mockito-all-1.8.5.jar").toURI();
 		JarFile jarFile = new JarFile(new File(somejar));
 		Enumeration<JarEntry> entries = jarFile.entries();
 		// while (entries.hasMoreElements()) {
 		// JarEntry jarEntry = (JarEntry) entries.nextElement();
-		// System.out.println(jarEntry);
+		// logger.info(jarEntry);
 		// }
 
 		// String manifest = "META-INF/MANIFEST.MF";
 		// printentry(jarFile, manifest);
 
-		Enumeration<URL> systemResources = ClassLoader.getSystemClassLoader()
-				.getResources("*");
+		Enumeration<URL> systemResources = ClassLoader.getSystemClassLoader().getResources("*");
 		while (systemResources.hasMoreElements()) {
 			URL url = (URL) systemResources.nextElement();
-			System.out.println(url);
+			logger.info(url.toString());
 
 		}
 	}

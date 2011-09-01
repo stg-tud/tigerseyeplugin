@@ -2,6 +2,7 @@ package de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction;
 
 import groovy.lang.GroovyObjectSupport;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -17,6 +18,7 @@ import de.tud.stg.popart.builder.core.annotations.DSLMethod;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.HostLanguageGrammar;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ConfigurationOptions;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.TypeHandler;
+import de.tud.stg.tigerseye.eclipse.core.internal.WorkspaceProjectClassLoaderStrategy;
 
 public class ClassDSLInformation extends DSLInformation {
     private boolean annotated;
@@ -241,6 +243,31 @@ public class ClassDSLInformation extends DSLInformation {
 	    comps.add(cm);
 	}
 	return comps;
+    }
+
+    // TODO(Leo_Roos;Sep 1, 2011) perhaps I should at least build in one such
+    // check here
+    /**
+     * A similar thing now happens also in the
+     * {@link WorkspaceProjectClassLoaderStrategy} could extend it to be used
+     * during an DSLinitialization.
+     * 
+     */
+    private void validateClassIsLoadedInSameClassloader(Method method) {
+	Annotation[] annotations = method.getAnnotations();
+	for (Annotation anno : annotations) {
+	    Class<? extends Annotation> annotationType = anno.annotationType();
+	    if (annotationType.getName().equals(DSLMethod.class.getName())) {
+		boolean isPopartType = anno instanceof DSLMethod;
+		if (!isPopartType)
+		    throw new IllegalStateException(
+			    "Loaded class "
+				    + method.getClass()
+				    + " has as expected a dsl method annotation "
+				    + DSLMethod.class
+				    + ". But the class is not considered equal to it. The problem is probably caused by a faulty class loader configuration where the class is loaded from a different context in which it is here processed.");
+	    }
+	}
     }
 
 }

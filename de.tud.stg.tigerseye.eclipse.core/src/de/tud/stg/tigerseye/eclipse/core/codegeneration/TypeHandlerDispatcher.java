@@ -206,7 +206,7 @@ this.grammar);
 	}
 
 
-    public void handleDefaults(Map<ConfigurationOptions, String> configurationOptions) {
+    public void configurationOptions(Map<ConfigurationOptions, String> configurationOptions) {
 	for (Entry<Class<?>, ClassTypeHandler> e : classHandlers.entrySet()) {
 	    ClassTypeHandler handler = e.getValue();
 	    Class<?> classToHandle = e.getKey();

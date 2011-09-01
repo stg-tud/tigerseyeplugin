@@ -15,13 +15,16 @@ import org.slf4j.LoggerFactory;
  * 
  */
 final class SkipAndLogStatement extends Statement {
-	private static final Logger logger = LoggerFactory
-			.getLogger(PluginTestRule.class);
+	private static final Logger logger = LoggerFactory.getLogger(SkipAndLogStatement.class);
 	private final String methodName;
 	private final String reason;
 
 	public SkipAndLogStatement(@Nonnull String name) {
-		this(name,null);
+		this(name, null);
+	}
+
+	public SkipAndLogStatement(@Nonnull FrameworkMethod fm, String reason) {
+		this(fm.getMethod().toString(), reason);
 	}
 
 	public SkipAndLogStatement(@Nonnull String name, String reason) {
@@ -32,7 +35,7 @@ final class SkipAndLogStatement extends Statement {
 	@Override
 	public void evaluate() throws Throwable {
 		String actualReason = "";
-		if(reason == null)
+		if (reason == null)
 			actualReason = "Only Bog knows why.";
 		else
 			actualReason = reason;

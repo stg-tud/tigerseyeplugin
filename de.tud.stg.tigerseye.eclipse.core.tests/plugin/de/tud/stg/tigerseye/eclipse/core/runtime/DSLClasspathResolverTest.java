@@ -42,19 +42,19 @@ import utilities.PluginTestRule;
 import de.tud.stg.tigerseye.eclipse.TigerseyeLibraryProvider;
 import de.tud.stg.tigerseye.test.TransformationUtils;
 
-
 /**
  * Run as plug-in tests
  * 
  * @author Leo Roos
- *
+ * 
  */
 public class DSLClasspathResolverTest {
-	
+
+	private static final Logger logger = LoggerFactory.getLogger(DSLClasspathResolverTest.class);
+
 	@Rule
 	public PluginTestRule ptr = new PluginTestRule();
 
-	
 	@Mock(answer = Answers.RETURNS_SMART_NULLS)
 	private Bundle bundleMock;
 	@Mock
@@ -64,7 +64,7 @@ public class DSLClasspathResolverTest {
 
 	@Before
 	public void setUp() throws Exception {
-//		assertPlatformRunning();
+		// assertPlatformRunning();
 		MockitoAnnotations.initMocks(this);
 		resolver = new BundleClasspathResolver();
 
@@ -72,7 +72,7 @@ public class DSLClasspathResolverTest {
 
 	@Test
 	@PluginTest
-	public void testReadManifestFromFolderSmokeTest() throws Exception {		
+	public void testReadManifestFromFolderSmokeTest() throws Exception {
 		String aBundleIdentifier = "org.eclipse.core.runtime";
 		String tigerBundle = TigerseyeLibraryProvider.PLUGIN_ID;
 		Bundle eclipseCoreBundle = Platform.getBundle(aBundleIdentifier);
@@ -80,14 +80,13 @@ public class DSLClasspathResolverTest {
 		Bundle tb = Platform.getBundle(tigerBundle);
 
 		@SuppressWarnings("unchecked")
-		Dictionary<String, String> headers = (Dictionary<String, String>) tb
-				.getHeaders();
+		Dictionary<String, String> headers = (Dictionary<String, String>) tb.getHeaders();
 		String tigerCP = headers.get(Constants.BUNDLE_CLASSPATH);
 		assertFalse(tigerCP.trim().isEmpty());
 
 		URL find = FileLocator.find(eclipseCoreBundle, new Path("/"), null);
 		assertEquals("bundleentry", find.getProtocol());
-		
+
 		File bundleFile = FileLocator.getBundleFile(tb);
 		assertTrue(bundleFile.isDirectory());
 
@@ -97,11 +96,11 @@ public class DSLClasspathResolverTest {
 		String ignoredMethod = "_UNKNOWN_METHOD_NAME_";
 		Exception e = new Exception();
 		StackTraceElement[] stackTrace = e.getStackTrace();
-		if(stackTrace.length > 1){
+		if (stackTrace.length > 1) {
 			StackTraceElement callingMethod = stackTrace[1];
 			ignoredMethod = callingMethod.toString();
 		}
-		System.err.println("IGNORING test method:" + ignoredMethod);
+		logger.error("IGNORING test method:{}", ignoredMethod);
 	}
 
 	@Test
@@ -114,17 +113,16 @@ public class DSLClasspathResolverTest {
 		when(bundleMock.getHeaders()).thenReturn(testData);
 		Resources res = Resources.somebundleclasspath;
 		mockResolverForBundleResource(res);
-		
+
 		File[] actualEntries = executeResolveWithBundleMock();
-		
+
 		File[] expectedFiles = getExpectedFilesFor(cpEntries, res);
 		assertThat(Arrays.asList(expectedFiles), hasItems(actualEntries));
 	}
 
-	private File[] getExpectedFilesFor(String cpEntries, Resources res)
-			throws Exception {
+	private File[] getExpectedFilesFor(String cpEntries, Resources res) throws Exception {
 		File resFile = res.getFileInPluginRun();
-		String[] expected = cpEntries.split(",");		
+		String[] expected = cpEntries.split(",");
 		return TransformationUtils.getFilesRelativeToRoot(resFile, expected);
 	}
 
@@ -133,16 +131,14 @@ public class DSLClasspathResolverTest {
 	}
 
 	private void mockResolverForBundleResource(Resources resource) throws Exception {
-		when(fileLocator.getBundleFile(Mockito.any(Bundle.class))).thenReturn(
-				resource.getFileInPluginRun());
+		when(fileLocator.getBundleFile(Mockito.any(Bundle.class))).thenReturn(resource.getFileInPluginRun());
 		resolver = new BundleClasspathResolver(fileLocator);
 	}
 
 	@Test
 	@PluginTest
 	public void getDefaultClasspathIfNoAttributeInManifest() throws Exception {
-		when(bundleMock.getHeaders()).thenReturn(
-				new Hashtable<String, String>());
+		when(bundleMock.getHeaders()).thenReturn(new Hashtable<String, String>());
 
 		Resources res = Resources.defaultbundleclasspath;
 		mockResolverForBundleResource(res);
@@ -160,11 +156,10 @@ public class DSLClasspathResolverTest {
 		mockResolverForBundleResource(jarfile);
 
 		File[] resolveCPEntriesForBundle = executeResolveWithBundleMock();
-		assertEquals("expected only jar file to be a classpath entry", 1,
-				resolveCPEntriesForBundle.length);
+		assertEquals("expected only jar file to be a classpath entry", 1, resolveCPEntriesForBundle.length);
 		assertThat(resolveCPEntriesForBundle[0], equalTo(jarfile.getFileInPluginRun()));
 	}
-	
+
 	@Test
 	@PluginTest
 	public void testGetFileLocationForUnknownResource() throws Exception {
@@ -173,22 +168,21 @@ public class DSLClasspathResolverTest {
 		File[] resolveCPEntriesForBundle = executeResolveWithBundleMock();
 		assertNull(resolveCPEntriesForBundle);
 	}
-	
+
 	@Test
 	@PluginTest
 	public void testBundleNotAccessible() throws Exception {
 		when(fileLocator.getBundleFile(Mockito.any(Bundle.class))).thenThrow(new IOException());
-		resolver = new BundleClasspathResolver(fileLocator);		
-		
+		resolver = new BundleClasspathResolver(fileLocator);
+
 		File[] executeResolveWithBundleMock = executeResolveWithBundleMock();
-		
-		assertNull("exepected result to be null since file could not be returned",executeResolveWithBundleMock);
+
+		assertNull("exepected result to be null since file could not be returned", executeResolveWithBundleMock);
 	}
 
 	private void printVerbose(Object location) {
-		String reflectionToString = ToStringBuilder
-				.reflectionToString(location);
-		System.out.println(reflectionToString);
+		String reflectionToString = ToStringBuilder.reflectionToString(location);
+		logger.info(reflectionToString);
 	}
 
 }

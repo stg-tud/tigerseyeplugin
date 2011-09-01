@@ -5,6 +5,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 
+import org.junit.Assert;
+
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.MethodDSLInformation;
 
 /**
@@ -25,7 +27,8 @@ public class TigerseyeAssert {
 		for (T t : actual) {
 			assertTrue("Collection contains unexpected element \n[" + t + "]", expected.contains(t));
 		}
-		assertEquals("Actual collection contains more elements than expected." + TestUtils.collectionPrettyPrint(actual),
+		assertEquals(
+				"Actual collection contains more elements than expected." + TestUtils.collectionPrettyPrint(actual),
 				expected.size(), actual.size());
 	}
 

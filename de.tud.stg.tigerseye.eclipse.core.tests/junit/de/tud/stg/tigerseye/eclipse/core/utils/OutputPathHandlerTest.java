@@ -115,12 +115,14 @@ public class OutputPathHandlerTest {
 	return rootFolder;
     }
     
+    
+    
     public static void main(String[] args) {
 	File rootFolder = getRootFolder(new Path("src/only/src/matters.any.dsl").toFile());
-	System.out.println(rootFolder);
+logger.info(rootFolder.toString());
 	
 	File rootFolder2 = getRootFolder(new File("other/path/without/"));
-	System.out.println(rootFolder2);
+	logger.info(rootFolder2.toString());
     }
     
     @Test

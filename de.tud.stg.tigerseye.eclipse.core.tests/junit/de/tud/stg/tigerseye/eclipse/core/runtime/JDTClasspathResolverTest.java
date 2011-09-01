@@ -29,12 +29,17 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.osgi.framework.Bundle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.tud.stg.tigerseye.test.TransformationUtils;
 
 import utilities.GlobalResourceCollection;
 
 public class JDTClasspathResolverTest {
+	
+	
+	private static final Logger logger = LoggerFactory.getLogger(JDTClasspathResolverTest.class);
 
 	@Mock(answer = Answers.RETURNS_SMART_NULLS)
 	private Bundle bundleMock;
@@ -85,31 +90,31 @@ public class JDTClasspathResolverTest {
 		project.open(null);
 		// URI rawLocationURI = project.getRawLocationURI();
 		//
-		// System.out.println(rawLocationURI);
+		// logger.info(rawLocationURI);
 
 		IProjectDescription description = project.getDescription();
 
-		System.out.println(ToStringBuilder.reflectionToString(description));
+		logger.info(ToStringBuilder.reflectionToString(description));
 
 		IJavaProject newJavProj = JavaCore.create(project);
 
 		IClasspathEntry[] rawClasspath = newJavProj.getRawClasspath();
 
-		System.out.println("Raw cp");
+		logger.info("Raw cp");
 		for (IClasspathEntry iClasspathEntry : rawClasspath) {
-			System.out.println(ToStringBuilder.reflectionToString(
+			logger.info(ToStringBuilder.reflectionToString(
 					iClasspathEntry, ToStringStyle.SIMPLE_STYLE));
 		}
 
 		@SuppressWarnings("restriction")
 		ClassPathDetector detector = new ClassPathDetector(project, null);
 		IClasspathEntry[] classpath = detector.getClasspath();
-		System.out.println("Detected cp");
+		logger.info("Detected cp");
 		for (IClasspathEntry iClasspathEntry : classpath) {
-			System.out.println(ToStringBuilder.reflectionToString(
+			logger.info(ToStringBuilder.reflectionToString(
 					iClasspathEntry, ToStringStyle.SIMPLE_STYLE));
 		}
-		System.out.println("just change sth");
+		logger.info("just change sth");
 		// new ClassPathDetector(project, monitor)
 
 		// Try that project
@@ -122,7 +127,7 @@ public class JDTClasspathResolverTest {
 		Bundle bundle = Platform.getBundle("de.tud.stg.tigerseye.examples.DSLDefinitions");
 //		File[] resolveClasspath = cut.resolveClasspathAndLinkProject(bundle);
 //		for (File file : resolveClasspath) {
-//			System.out.println(file);
+//			logger.info(file);
 //		}
 	}
 

@@ -1,7 +1,11 @@
 package de.tud.stg.tigerseye.eclipse.core.codegeneration;
 
+import static de.tud.stg.tigerseye.util.Utils.throwIllegalFor;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
@@ -18,6 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import org.eclipse.core.runtime.Assert;
@@ -33,19 +38,21 @@ import de.tud.stg.parlex.core.groupcategories.WaterCategory;
 import de.tud.stg.popart.builder.core.annotations.AnnotationConstants;
 import de.tud.stg.popart.builder.core.annotations.DSL;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod;
+import de.tud.stg.popart.builder.core.annotations.DSLMethod.DslMethodType;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.ClassDSLInformation;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.MethodDSLInformation;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.DSLAnnotationDefaults;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.MethodDSLInformation;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.MethodProductionConstants.ProductionElement;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.MethodProductionElement;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.MethodProductionScanner;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.ParameterElement;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.WhitespaceElement;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.CategoryNames;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.HostLanguageGrammar;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ConfigurationOptions;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.TypeHandler;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.WhitespaceCategoryDefinition;
-import de.tud.stg.tigerseye.eclipse.core.internal.WorkspaceProjectClassLoaderStrategy;
 import de.tud.stg.tigerseye.util.ListBuilder;
-import de.tud.stg.tigerseye.util.ListMap;
-import de.tud.stg.tigerseye.util.Transformer;
 
 /**
  * {@link GrammarBuilder} builds the grammar for given classes implementing the
@@ -56,7 +63,6 @@ import de.tud.stg.tigerseye.util.Transformer;
  * 
  */
 public class GrammarBuilder {
-
 
     private static final Logger logger = LoggerFactory
 	    .getLogger(GrammarBuilder.class);
@@ -147,8 +153,6 @@ public class GrammarBuilder {
 	return buildGrammar(clazzess);
     }
 
-
-
     public IGrammar<String> buildGrammar(
 	    List<Class<? extends de.tud.stg.popart.dslsupport.DSL>> clazzes) {
 
@@ -161,59 +165,59 @@ public class GrammarBuilder {
 
     private List<ClassDSLInformation> extractClassesInformation(
 	    List<Class<? extends de.tud.stg.popart.dslsupport.DSL>> clazzes) {
-	List<ClassDSLInformation> exannos = ListMap
-		.map(clazzes,
-			new Transformer<Class<? extends de.tud.stg.popart.dslsupport.DSL>, ClassDSLInformation>() {
-			    @Override
-			    public ClassDSLInformation transform(
-				    Class<? extends de.tud.stg.popart.dslsupport.DSL> input) {
-				return extractClassInformation(input);
-			    }
-			});
-	return exannos;
+	ArrayList<ClassDSLInformation> result = new ArrayList<ClassDSLInformation>(
+		clazzes.size());
+	for (Class<? extends de.tud.stg.popart.dslsupport.DSL> aClass : clazzes) {
+	    result.add(loadClassInformation(aClass));
+	}
+	return result;
     }
 
-    private Grammar createCombinedGrammar(
-	    List<ClassDSLInformation> exannos) {
+    private ClassDSLInformation loadClassInformation(
+	    Class<? extends de.tud.stg.popart.dslsupport.DSL> aClass) {
+	ClassDSLInformation classInfo = new ClassDSLInformation(aClass);
+	classInfo.load(DSLAnnotationDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP);
+	return classInfo;
+    }
+
+    private Grammar createCombinedGrammar(List<ClassDSLInformation> exannos) {
 	Grammar grammar = new Grammar();
-	TypeHandlerDispatcher typeHandler = new TypeHandlerDispatcher(grammar);
 	this.setupGeneralGrammar(grammar);
 
 	boolean waterSupported = isWaterSupported(exannos);
 	this.setWaterEnabled(waterSupported, grammar);
 
+	TypeHandlerDispatcher typeHandler = new TypeHandlerDispatcher(grammar);
 	for (ClassDSLInformation classInfo : exannos) {
-	    Set<Class<? extends HostLanguageGrammar>> hostLanguageRules = classInfo
-		    .getHostLanguageRules();
-	    Set<Class<? extends TypeHandler>> typeRules = classInfo
-		    .getTypeRules();
-	    Map<ConfigurationOptions, String> classOptions = classInfo
-		    .getConfigurationOptions();
+	    typeHandler.addAdditionalTypeRules(classInfo.getTypeRules());
+	}
+	for (ClassDSLInformation classInfo : exannos) {
+	    this.setupHostLanguageRules(classInfo.getHostLanguageRules(),
+		    grammar);
+	}
 
-	    typeHandler.addAdditionalTypeRules(typeRules);
-	    this.setupHostLanguageRules(hostLanguageRules, grammar);
-
-	    // XXX(Leo_Roos;Aug 28, 2011) can be deleted now?
-	    typeHandler.handleDefaults(classOptions);
-
+	for (ClassDSLInformation classInfo : exannos) {
+	    // possibly additional type rules for each class
+	    // Current host language support
+	    // The configuration options for this class
+	    typeHandler.configurationOptions(classInfo
+		    .getConfigurationOptions());
+	    // Process Methods
 	    for (MethodDSLInformation methodInfo : classInfo
 		    .getMethodsInformation()) {
-
-		switch (methodInfo.getDSLType()) {
+		DslMethodType dslType = methodInfo.getDSLType();
+		switch (dslType) {
 		case Literal:
-		    this.handleLiteral(methodInfo, grammar,
-			    typeHandler);
+		    this.handleLiteral(methodInfo, grammar, typeHandler);
 		    break;
 		case Operation:
-		    this.handleMethod(methodInfo, grammar,
-			    typeHandler);
+		    this.handleMethod(methodInfo, grammar, typeHandler);
 		    break;
 		case AbstractionOperator:
 		    throw new UnsupportedOperationException(
-			    "Functionality not yet implemented for "
-				    + methodInfo.getDSLType());
+			    "Functionality not yet implemented for " + dslType);
 		default:
-		    throwIllegalFor(methodInfo.getDSLType());
+		    throwIllegalFor(dslType);
 		}
 	    }
 
@@ -234,58 +238,52 @@ public class GrammarBuilder {
 	return true;
     }
 
-    private void throwIllegalFor(Object dslType) {
-	throw new IllegalArgumentException("Unknown or unhandled value ["
-		+ dslType.toString() + "].");
-    }
-
-    private ClassDSLInformation extractClassInformation(Class<?> clazz) {
-	ClassDSLInformation classInfo = new ClassDSLInformation(
-		clazz);
-	classInfo.load(DSLAnnotationDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP);
-	return classInfo;
-    }
-
-
-
-
-
-    /**
-     * A similar thing now happens also in the
-     * {@link WorkspaceProjectClassLoaderStrategy} could extend it to be used
-     * during an DSLinitialization.
-     * 
-     */
-    private void validateClassIsLoadedInSameClassloader(Method method) {
-	Annotation[] annotations = method.getAnnotations();
-	for (Annotation anno : annotations) {
-	    Class<? extends Annotation> annotationType = anno.annotationType();
-	    if (annotationType.getName().equals(DSLMethod.class.getName())) {
-		boolean isPopartType = anno instanceof DSLMethod;
-		if (!isPopartType)
-		    throw new IllegalStateException(
-			    "Loaded class "
-				    + method.getClass()
-				    + " has as expected a dsl method annotation "
-				    + DSLMethod.class
-				    + ". But the class is not considered equal to it. The problem is probably caused by a faulty class loader configuration where the class is loaded from a different context in which it is here processed.");
-	    }
-	}
-    }
-
     private void setupHostLanguageRules(
 	    Set<Class<? extends HostLanguageGrammar>> hostLanguageRules,
 	    Grammar grammar) {
 	for (Class<? extends HostLanguageGrammar> clazz : hostLanguageRules) {
-	    try {
-		HostLanguageGrammar newInstance = clazz.newInstance();
-		newInstance.applySpecificGrammar(grammar);
-	    } catch (InstantiationException e) {
-		logger.warn("Generated log statement", e);
-	    } catch (IllegalAccessException e) {
-		logger.warn("Generated log statement", e);
-	    }
+	    setupHostLanguage(grammar, clazz);
 	}
+    }
+
+    private void setupHostLanguage(Grammar grammar,
+	    Class<? extends HostLanguageGrammar> clazz) {
+	Constructor<? extends HostLanguageGrammar> constructor = getNullaryConstructor(clazz);
+	if (constructor == null) {
+	    logger.error("Ignoring host language grammar for {}", clazz);
+	    return;
+	}
+	try {
+	    HostLanguageGrammar newInstance = constructor.newInstance();
+	    newInstance.applySpecificGrammar(grammar);
+	} catch (IllegalArgumentException e) {
+	    logger.error(
+		    "Unexpected Problem, thought I have loaded nullary constructor",
+		    e);
+	} catch (InvocationTargetException e) {
+	    logger.error("Underlying constructor threw exception", e);
+	} catch (InstantiationException e) {
+	    logger.error("Class can not be instantiated", e);
+	} catch (IllegalAccessException e) {
+	    logger.error("Access to class has been denied", e);
+	}
+    }
+
+    private @CheckForNull
+    Constructor<? extends HostLanguageGrammar> getNullaryConstructor(
+	    Class<? extends HostLanguageGrammar> clazz) {
+	try {
+	    Constructor<? extends HostLanguageGrammar> constructor = clazz
+		    .getConstructor();
+	    return constructor;
+	} catch (SecurityException e) {
+	    logger.error("Unexpected Problem. Will not load {}", clazz, e);
+	} catch (NoSuchMethodException e) {
+	    logger.warn(
+		    "Hostlanguage class has no nullary constructor {}. Can not load it",
+		    clazz, e);
+	}
+	return null;
     }
 
     // FIXME(Leo Roos;Aug 25, 2011) belongs to extraction part
@@ -302,10 +300,6 @@ public class GrammarBuilder {
 	return assignFirstStringOrDefault(methodProduction, defaultName);
     }
 
-
-
-   
-
     private String assignFirstStringOrDefault(String stringToCheck,
 	    String defaultString) {
 
@@ -321,8 +315,7 @@ public class GrammarBuilder {
     private final static Pattern literalPattern = Pattern.compile("^get(\\S+)");
 
     private boolean handleLiteral(MethodDSLInformation extractedMethod,
-	    Grammar grammar,
-	    TypeHandlerDispatcher typeHandler) {
+	    Grammar grammar, TypeHandlerDispatcher typeHandler) {
 
 	Method method = extractedMethod.getMethod();
 	Map<ConfigurationOptions, String> methodOptions = extractedMethod
@@ -410,45 +403,14 @@ public class GrammarBuilder {
     // parameters, pattern);
     // }
 
-    private void handleMethod(MethodDSLInformation method,
-	    Grammar grammar,
+    private void handleMethod(MethodDSLInformation method, Grammar grammar,
 	    TypeHandlerDispatcher typeHandler) {
-	this.handleNonLiteral(method, grammar,
-		typeHandler);
-    }
-
-    // TODO: check if caching would speed up this method
-    public Pattern[] getPattern(String methodParameterEscape,
-	    String methodWhitespaceEscape) {
-	return new Pattern[] {
-		// methodproduction
-		getMethodProductionPattern(methodParameterEscape,
-			methodWhitespaceEscape),
-		// match methodParameterEscape literally followed by a digit
-		getProductionParameterPattern(methodParameterEscape),
-		// match methodWhitespaceEscape exactly one or exactly two times
-		getProductionWhitespacePattern(methodWhitespaceEscape) };
-    }
-
-    private Pattern getProductionWhitespacePattern(String methodWhitespaceEscape) {
-	return Pattern.compile("\\Q" + methodWhitespaceEscape + "\\E{1,2}");
-    }
-
-    private Pattern getProductionParameterPattern(String methodParameterEscape) {
-	return Pattern.compile("\\Q" + methodParameterEscape + "\\E(\\d+)");
-    }
-
-    private Pattern getMethodProductionPattern(String methodParameterEscape,
-	    String methodWhitespaceEscape) {
-	return Pattern.compile("((?:\\Q" + methodWhitespaceEscape
-		+ "\\E{1,2})|(?:\\Q" + methodParameterEscape
-		+ "\\E\\d+)|(?:(?!(?:\\Q" + methodParameterEscape
-		+ "\\E\\d+|\\Q" + methodWhitespaceEscape + "\\E)).)+)");
+	// XXX(Leo_Roos;Aug 31, 2011) This method could be inlined now
+	this.handleNonLiteral(method, grammar, typeHandler);
     }
 
     private void handleNonLiteral(MethodDSLInformation methodInfo,
-	    Grammar grammar,
-	    TypeHandlerDispatcher typeHandler) {
+	    Grammar grammar, TypeHandlerDispatcher typeHandler) {
 
 	Method method = methodInfo.getMethod();
 	Type returnType = method.getGenericReturnType();
@@ -464,115 +426,51 @@ public class GrammarBuilder {
 	String whitespaceEscape = methodOptions
 		.get(ConfigurationOptions.WHITESPACE_ESCAPE);
 
-	Matcher methodProductionmatcher = getMethodProductionPattern(
-		parameterEscape, whitespaceEscape).matcher(methodProduction);
+	MethodProductionScanner mps = new MethodProductionScanner();
+	mps.setParameterEscape(parameterEscape);
+	mps.setWhitespaceEscape(whitespaceEscape);
 
-	StringBuilder sb = new StringBuilder();
+	mps.startScan(methodProduction);
 
-	if (!methodProductionmatcher.find()) {
+	if (!mps.hasNext())
 	    return;
-	}
 
 	int index = 0;
 	List<Integer> parameterIndices = new ArrayList<Integer>(
 		parameterTypes.length);
 
 	LinkedList<ICategory<String>> categories = new LinkedList<ICategory<String>>();
-	do {
-	    String keyword = methodProductionmatcher.group(1);
-
-	    Matcher parameterMatcher = getProductionParameterPattern(
-		    parameterEscape).matcher(keyword);
-	    boolean isParameter = parameterMatcher.find();
-
-	    if (!isParameter) {
-		Matcher whitespaceMatcher = getProductionWhitespacePattern(
-			whitespaceEscape).matcher(keyword);
-		boolean isWhitespace = whitespaceMatcher.find();
-
-		if (isWhitespace) {
-		    if (keyword.length() == 1) {
-			categories.add(WhitespaceCategoryDefinition
-				.getAndSetRequiredWhitespace(grammar));
-		    } else {
-			categories.add(WhitespaceCategoryDefinition
-				.getAndSetOptionalWhitespace(grammar));
-		    }
+	while (mps.hasNext()) {
+	    MethodProductionElement next = mps.next();
+	    ProductionElement productionElementType = next
+		    .getProductionElementType();
+	    switch (productionElementType) {
+	    case Keyword:
+		handleKeyword(categories, next.getCapturedString());
+		break;
+	    case Parameter:
+		ParameterElement pe = (ParameterElement) next;
+		handleParameter(grammar, typeHandler, parameters,
+			parameterAnnotations, methodProduction, methodOptions,
+			index, parameterIndices, categories,
+			pe.getParsedParameterNumber());
+		break;
+	    case Whitespace:
+		WhitespaceElement we = (WhitespaceElement) next;
+		if (we.isOptional()) {
+		    categories.add(WhitespaceCategoryDefinition
+			    .getAndSetOptionalWhitespace(grammar));
 		} else {
-		    // neither parameter nor whitespace
-		    String uniChar = unicodeLookupTable.nameToUnicode(keyword);
-
-		    if (uniChar == null) {
-			logger.trace(
-				"No unicode representation for [{}] found. Assuming this is a literal keyword.",
-				keyword);
-			uniChar = keyword;
-		    } else {
-			logger.trace(
-				"found unicode representation [{}] for [{}]",
-				uniChar, keyword);
-		    }
-
-		    sb.append(uniChar);
-
-		    categories.add(new Category(uniChar, true));
-
-		    this.keywords.add(uniChar);
+		    categories.add(WhitespaceCategoryDefinition
+			    .getAndSetRequiredWhitespace(grammar));
 		}
-	    } else {
-		int parameterIndex = Integer
-			.parseInt(parameterMatcher.group(1));
-		parameterIndices.add(index);
-		Type parameterType = null;
-		Annotation[] pAnnotations = null;
-
-		try {
-		    parameterType = parameters[parameterIndex];
-		    pAnnotations = parameterAnnotations[parameterIndex];
-		} catch (IndexOutOfBoundsException e) {
-		    throw new IndexOutOfBoundsException("Grammar for method \""
-			    + methodProduction
-			    + "\" could not be built. Parameter reference $p"
-			    + parameterIndex + " can not be resolved.");
-		}
-
-		String param = "P" + parameterIndex + "{"
-			+ this.parameterCounter.getAndIncrement() + "}";
-		ICategory<String> parameterCategory = new Category(param, false);
-		categories.add(parameterCategory);
-
-		DSL parameterDSLAnnotation = null;
-		for (Annotation a : pAnnotations) {
-		    if (a instanceof DSL) {
-			parameterDSLAnnotation = (DSL) a;
-			break;
-		    }
-		}
-
-		Map<ConfigurationOptions, String> parameterOptions = getAnnotationParameterOptionsOverInitialMap(
-			parameterDSLAnnotation, methodOptions);
-
-		ICategory<String> parameterMapping = typeHandler.handle(
-			parameterType, parameterOptions);
-		Rule rule = new Rule(parameterCategory, parameterMapping);
-
-		ICategory<String> typeCategory = new Category(
-			CategoryNames.PTYPE_CATEGORY, false);
-		Rule typeRule = new Rule(parameterMapping, typeCategory);
-
-		grammar.addRule(rule);
-		grammar.addRule(typeRule);
-		grammar.addCategory(parameterMapping);
-
-		// sb.append(parameterMapping.toString().toUpperCase());
-		sb.append(param);
+		break;
+	    default:
+		throwIllegalFor(productionElementType);
 	    }
-
-	    sb.append('_');
 	    index++;
-	} while ((methodProductionmatcher.find()));
+	}
 
-	sb.deleteCharAt(sb.length() - 1);
 
 	int methodCounter = this.parameterCounter.getAndIncrement();
 
@@ -615,6 +513,81 @@ public class GrammarBuilder {
 	}
     }
 
+
+    private void handleKeyword(
+	    LinkedList<ICategory<String>> categories, String keyword) {
+	String uniChar = unicodeLookupTable.nameToUnicode(keyword);
+
+	if (uniChar == null) {
+	logger.trace(
+		"No unicode representation for [{}] found. Assuming this is a literal keyword.",
+		keyword);
+	uniChar = keyword;
+	} else {
+	logger.trace(
+		"found unicode representation [{}] for [{}]",
+		uniChar, keyword);
+	}
+
+	categories.add(new Category(uniChar, true));
+
+	this.keywords.add(uniChar);
+    }
+
+    private void handleParameter(Grammar grammar,
+	    TypeHandlerDispatcher typeHandler, Type[] parameters,
+	    Annotation[][] parameterAnnotations, String methodProduction,
+	    Map<ConfigurationOptions, String> methodOptions,
+	    int index, List<Integer> parameterIndices,
+	    LinkedList<ICategory<String>> categories, int parameterIndex) {
+	// int parameterIndex = Integer
+	// .parseInt(parameterMatcher.group(1));
+	parameterIndices.add(index);
+	Type parameterType = null;
+	Annotation[] pAnnotations = null;
+
+	try {
+	    parameterType = parameters[parameterIndex];
+	    pAnnotations = parameterAnnotations[parameterIndex];
+	} catch (IndexOutOfBoundsException e) {
+	    throw new IndexOutOfBoundsException("Grammar for method \""
+		    + methodProduction
+		    + "\" could not be built. Parameter reference $p"
+		    + parameterIndex + " can not be resolved.");
+	}
+
+	String param = "P" + parameterIndex + "{"
+		+ this.parameterCounter.getAndIncrement() + "}";
+	ICategory<String> parameterCategory = new Category(param, false);
+	categories.add(parameterCategory);
+
+	DSL parameterDSLAnnotation = null;
+	for (Annotation a : pAnnotations) {
+	    if (a instanceof DSL) {
+		parameterDSLAnnotation = (DSL) a;
+		break;
+	    }
+	}
+
+	Map<ConfigurationOptions, String> parameterOptions = getAnnotationParameterOptionsOverInitialMap(
+		parameterDSLAnnotation, methodOptions);
+
+	ICategory<String> parameterMapping = typeHandler.handle(
+		parameterType, parameterOptions);
+	Rule rule = new Rule(parameterCategory, parameterMapping);
+
+	ICategory<String> typeCategory = new Category(
+		CategoryNames.PTYPE_CATEGORY, false);
+	Rule typeRule = new Rule(parameterMapping, typeCategory);
+
+	grammar.addRule(rule);
+	grammar.addRule(typeRule);
+	grammar.addCategory(parameterMapping);
+
+	// sb.append(parameterMapping.toString().toUpperCase());
+	// sb.append(param);
+    }
+
     /**
      * Extracts the options of the passed {@link DSL} annotation. The method
      * will create a copy of the passed map and overwrite existing values if
@@ -653,7 +626,6 @@ public class GrammarBuilder {
     public Map<String, MethodOptions> getMethodOptions() {
 	return Collections.unmodifiableMap(methodAliases);
     }
-
 
     /*
      * assigns value with key to resultMap if the value is neither null nor

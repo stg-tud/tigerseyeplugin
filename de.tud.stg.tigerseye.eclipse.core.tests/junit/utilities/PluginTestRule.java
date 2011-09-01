@@ -27,7 +27,7 @@ public class PluginTestRule implements MethodRule {
 			if (Platform.isRunning())
 				return s;
 			else {
-				return new SkipAndLogStatement(fm.getName(),
+				return new SkipAndLogStatement(fm,
 						"Eclipse platform is not running.");
 			}
 		}

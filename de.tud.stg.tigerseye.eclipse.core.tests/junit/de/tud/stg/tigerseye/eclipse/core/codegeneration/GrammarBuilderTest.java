@@ -12,6 +12,8 @@ import org.codehaus.groovy.eclipse.preferences.GroovyPreferencePage;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import utilities.StringUtils;
 
@@ -42,6 +44,9 @@ import de.tud.stg.tigerseye.test.TransformationUtils;
 import de.tud.stg.tigerseye.util.ListBuilder;
 
 public class GrammarBuilderTest {
+	
+	
+	private static final Logger logger = LoggerFactory.getLogger(GrammarBuilderTest.class);
 
 	private GrammarBuilder gb;
 
@@ -74,7 +79,7 @@ public class GrammarBuilderTest {
 		// do {
 		IAbstractNode ast = chart.getAST();
 		
-		System.out.println(chart.getAST());
+		logger.info(chart.getAST().toString());
 		// chart.nextAmbiguity();
 		// cnt++;
 		// logger.info("= Ambiguity Index = {}",String.valueOf(cnt));
@@ -99,7 +104,7 @@ public class GrammarBuilderTest {
 		prettyPrinter.write(out);
 
 		
-		System.out.println(out);
+		logger.info(out.toString());
 //		return new String(out.toByteArray());
 	}
 	
@@ -120,8 +125,8 @@ public class GrammarBuilderTest {
 		IGrammar<String> buildGrammar = gb.buildGrammar(transformer);
 		EarleyParser ep = new EarleyParser(buildGrammar);
 		IChart parse = ep.parse(input);
-		System.out.println(parse);
-		System.out.println(parse.getAST());
+		logger.info(parse.toString());
+		logger.info(parse.getAST().toString());
 	}
 	
 	@Test
@@ -136,8 +141,8 @@ public class GrammarBuilderTest {
 		TestDSLTransformation transformation = new TestDSLTransformation(new PrettyGroovyCodePrinterFactory());
 		String performTransformation = transformation.performTransformation(input, TransformationUtils.dslSingle(transformer));
 		
-		System.out.println(parse);
-		System.out.println(parse.getAST());
+		logger.info(parse.toString());
+		logger.info(parse.getAST().toString());
 //		assertEquals(null, expected);
 		StringUtils.equalsIgnoringWhitspace(performTransformation, expected);
 	}

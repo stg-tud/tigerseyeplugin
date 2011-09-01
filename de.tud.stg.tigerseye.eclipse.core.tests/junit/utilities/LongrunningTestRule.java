@@ -46,7 +46,7 @@ public class LongrunningTestRule implements MethodRule {
 		}
 
 		if (FALSE.equals(longRunningTests)) {
-			return new SkipAndLogStatement(fm.getName(),
+			return new SkipAndLogStatement(fm,
 					"Long running Tests have been disabled.");
 		}
 

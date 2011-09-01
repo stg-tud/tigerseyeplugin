@@ -23,6 +23,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.mockito.Mockito;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
  
 //JBoss, Home of Professional Open Source.
  
@@ -32,6 +34,9 @@ import org.mockito.Mockito;
  *
  */
 public final class EclipseMock {
+	
+	
+	private static final Logger logger = LoggerFactory.getLogger(EclipseMock.class);
  
     private final IWorkspace workspace;
     private final IWorkspaceRoot workspaceRoot;
@@ -67,7 +72,7 @@ public final class EclipseMock {
             // Close the output stream
             out.close();
         } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage()); //$NON-NLS-1$
+            logger.error("uknown",e);
         }
     }
  

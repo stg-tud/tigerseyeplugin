@@ -11,10 +11,10 @@ import de.tud.stg.popart.builder.core.annotations.DSL;
  */
 public enum ConfigurationOptions {
 
-	STRING_QUOTATION(ParameterOptionDefaults.DEFAULT_STRING_QUOTATION), //
-	ARRAY_DELIMITER(ParameterOptionDefaults.DEFAULT_ARRAY_DELIMITER), //
-	PARAMETER_ESCAPE(ParameterOptionDefaults.DEFAULT_PARAMETER_ESCAPE), //
-	WHITESPACE_ESCAPE(ParameterOptionDefaults.DEFAULT_WHITESPACE_ESCAPE), //
+	STRING_QUOTATION(ConfigurationOptionDefaults.DEFAULT_STRING_QUOTATION), //
+	ARRAY_DELIMITER(ConfigurationOptionDefaults.DEFAULT_ARRAY_DELIMITER), //
+	PARAMETER_ESCAPE(ConfigurationOptionDefaults.DEFAULT_PARAMETER_ESCAPE), //
+	WHITESPACE_ESCAPE(ConfigurationOptionDefaults.DEFAULT_WHITESPACE_ESCAPE), //
 
 	;
 	public final String defaultValue;

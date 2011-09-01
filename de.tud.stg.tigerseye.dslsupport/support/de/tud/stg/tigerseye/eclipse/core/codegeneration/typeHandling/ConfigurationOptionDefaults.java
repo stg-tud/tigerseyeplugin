@@ -1,6 +1,6 @@
 package de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling;
 
-public interface ParameterOptionDefaults {
+public interface ConfigurationOptionDefaults {
 
 	public static final String DEFAULT_ARRAY_DELIMITER = ",";
 	public static final String DEFAULT_PARAMETER_ESCAPE = "p";

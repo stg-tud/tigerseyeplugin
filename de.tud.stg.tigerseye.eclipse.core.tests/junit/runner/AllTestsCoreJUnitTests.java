@@ -10,6 +10,8 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilderTest;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarTest;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.UnicodeLookupTableTest;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.ClassDSLInformationTest;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.MethodDSLInformationTest;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.MethodProductionScannerTest;
 import de.tud.stg.tigerseye.eclipse.core.preferences.TransformerTableDialogTest;
 import de.tud.stg.tigerseye.eclipse.core.runtime.FileHelperTest;
 import de.tud.stg.tigerseye.eclipse.core.runtime.JDTClasspathResolverTest;
@@ -32,7 +34,9 @@ import de.tud.stg.tigerseye.eclipse.core.utils.OutputPathHandlerTest;
 	GrammarTest.class, //
 	ListBuilderTest.class, //
 	ListMapTest.class, //
-	ClassDSLInformationTest.class, //
+	ClassDSLInformationTest.class,//
+	MethodDSLInformationTest.class,//
+	MethodProductionScannerTest.class,//
 	})
 public class AllTestsCoreJUnitTests {
 
