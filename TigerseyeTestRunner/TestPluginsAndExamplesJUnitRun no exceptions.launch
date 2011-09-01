@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.projectusus.autotestsuite.ExtendedJUnitLaunchConfiguration">
+<stringAttribute key="ATTR_CHECKED_PROJECTS" value="de.tud.stg.tigerseye.examples.tests/de.tud.stg.tigerseye.examples.LogoDSL/de.tud.stg.tigerseye/org.apache.commons.lang_2.4.0/org.apache.commons.collections_3.2.0/org.apache.commons.io_2.0.1/de.tud.stg.tigerseye.dslsupport/parlex/de.tud.stg.tigerseye.util/slf4j-log4j12/org.apache.log4j_1.2.15/de.tud.stg.tigerseye.core/de.tud.stg.tigerseye.core.tests/de.tud.stg.tigerseye.examples.MapDSL/de.tud.stg.tigerseye.examples.SetDSL/de.tud.stg.tigerseye.examples.SimpleSQLDSL/de.tud.stg.tigerseye.examples.StatefulDSL/de.tud.stg.tigerseye.examples.statemachine/de.tud.stg.tigerseye.examples.unitsdsl/de.tud.stg.tigerseye.examples.TinySQL/de.tud.stg.tigerseye.sdfdsl/de.tud.stg.tigerseye.sdfdsl.tests/de.tud.stg.tigerseye.ui"/>
+<listAttribute key="org.eclipse.debug.ui.favoriteGroups">
+<listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value="de.tud.stg.tigerseye.examples.tests"/>
+<booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
+<stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
+<stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit4"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value=""/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="de.tud.stg.tigerseye.examples.tests"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-ea&#10;-Dlog4j.configuration=file:///${resource_loc:/TigerseyeConfiguration/log4jJUnitRun.properties}"/>
+</launchConfiguration>

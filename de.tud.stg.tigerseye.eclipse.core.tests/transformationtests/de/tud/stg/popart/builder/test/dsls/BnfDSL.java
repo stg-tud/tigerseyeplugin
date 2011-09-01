@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import de.tud.stg.parlex.core.Category;
 import de.tud.stg.parlex.core.Grammar;
+import de.tud.stg.popart.builder.core.annotations.DSLMethod.PreferencePriority;
 import de.tud.stg.popart.builder.core.annotations.DSLParameter;
 import de.tud.stg.popart.builder.core.annotations.DSLClass;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod;
@@ -110,7 +111,7 @@ public class BnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 		return rule;
 	}
 
-	@DSLMethod(production = "p0", topLevel = false)	
+	@DSLMethod(production = "p0", topLevel = false ,preferencePriority=PreferencePriority.Reject)	
 	public Expression expression(@DSLParameter(arrayDelimiter = "|") Term[] terms) {
 
 		Expression expression = new Expression(terms);
@@ -231,7 +232,7 @@ public class BnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 	// return new Identifier(letter);
 	// }
 
-	@DSLMethod(production = "p0", topLevel = false)	
+	@DSLMethod(production = "p0 ", topLevel = false ,uniqueIdentifier="fromletters" )	
 	public Identifier identifierFromLetters(@DSLParameter(arrayDelimiter = "") LetterOrDigit[] letterOrDigit) {
 
 		Identifier identifier = new Identifier(letterOrDigit);

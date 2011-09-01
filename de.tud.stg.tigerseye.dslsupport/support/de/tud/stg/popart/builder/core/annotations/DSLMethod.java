@@ -137,11 +137,14 @@ public @interface DSLMethod {
 	 * <p>
 	 * The other definition can be chosen via its {@link #uniqueIdentifier()}.
 	 * This will be either the fully qualified name of the annotated method or a
-	 * user defined identifier. The selection is valid using any substring of a
-	 * valid identifier. This might be ambiguous in which case the first found
-	 * definition will be assumed.
+	 * user defined identifier.
+	 * <p>
+	 * XXX(Leo_Roos;Sep 1, 2011) possible feature: The selection is valid using
+	 * any substring of a valid identifier. This might be ambiguous in which
+	 * case the first found definition will be assumed.
 	 * 
 	 * @see #uniqueIdentifier()
+	 * @see #priorityHigherThan()
 	 */
 	String priorityLowerThan() default AnnotationConstants.UNASSIGNED;
 
@@ -150,11 +153,10 @@ public @interface DSLMethod {
 	 * <p>
 	 * The other definition can be chosen via its {@link #uniqueIdentifier()}.
 	 * This will be either the fully qualified name of the annotated method or a
-	 * user defined identifier. The selection is valid using any substring of a
-	 * valid identifier. This might be ambiguous in which case the first found
-	 * definition will be assumed.
+	 * user defined identifier.
 	 * 
 	 * @see #uniqueIdentifier()
+	 * @see #priorityLowerThan()
 	 */
 	String priorityHigherThan() default AnnotationConstants.UNASSIGNED;
 

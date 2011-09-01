@@ -1,6 +1,10 @@
 package de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction;
 
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -74,6 +78,25 @@ public class ParameterDSLInformation extends DSLInformation {
 		.append("type", type).append("parameterIndex", parameterIndex)
 		.append("annotation", annotation.getClass()).append("configurations", getConfigurationOptions())
 		.toString();
+    }
+
+    public String getSimpleTypeName() {
+	return doGetSimpleName(type);
+    }
+
+    private String doGetSimpleName(Type type) {
+	if (type instanceof Class<?>) {
+	    return ((Class<?>) type).getSimpleName();
+	} else if (type instanceof GenericArrayType) {
+	    return doGetSimpleName(((GenericArrayType) type).getGenericComponentType());
+	} else if (type instanceof ParameterizedType) {
+	    return doGetSimpleName(((ParameterizedType) type).getRawType());
+	} else if (type instanceof TypeVariable<?>) {
+	    return ((TypeVariable<?>) type).getName();
+	} else if (type instanceof WildcardType) {
+	    return type.getClass().getSimpleName();
+	}
+	return type.toString();
     }
 
 }

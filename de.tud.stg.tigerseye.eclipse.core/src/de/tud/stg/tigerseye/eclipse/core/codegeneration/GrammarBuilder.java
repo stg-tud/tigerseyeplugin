@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,9 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
+import org.eclipse.core.runtime.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,9 +27,20 @@ import de.tud.stg.parlex.core.Category;
 import de.tud.stg.parlex.core.Grammar;
 import de.tud.stg.parlex.core.ICategory;
 import de.tud.stg.parlex.core.IGrammar;
+import de.tud.stg.parlex.core.IRule;
+import de.tud.stg.parlex.core.IRuleAnnotation;
 import de.tud.stg.parlex.core.Rule;
 import de.tud.stg.parlex.core.groupcategories.WaterCategory;
+import de.tud.stg.parlex.core.ruleannotations.AbsolutePriorityAnnotation;
+import de.tud.stg.parlex.core.ruleannotations.AssociativityAnnotation;
+import de.tud.stg.parlex.core.ruleannotations.AvoidAnnotation;
+import de.tud.stg.parlex.core.ruleannotations.PreferAnnotation;
+import de.tud.stg.parlex.core.ruleannotations.RejectAnnotation;
+import de.tud.stg.parlex.core.ruleannotations.RelativePriorityAnnotation;
+import de.tud.stg.popart.builder.core.annotations.DSLMethod;
+import de.tud.stg.popart.builder.core.annotations.DSLMethod.Associativity;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod.DslMethodType;
+import de.tud.stg.popart.builder.core.annotations.DSLMethod.PreferencePriority;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.ClassDSLInformation;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.DSLInformationDefaults;
@@ -41,7 +55,6 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.CategoryNames;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.HostLanguageGrammar;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ConfigurationOptions;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.WhitespaceCategoryDefinition;
-import de.tud.stg.tigerseye.util.ListBuilder;
 
 /**
  * {@link GrammarBuilder} builds the grammar for given classes implementing the
@@ -60,8 +73,8 @@ public class GrammarBuilder {
     /*
      * Only used as left hand side rule or grammar category
      */
-    private ICategory<String> statement;
-    private ICategory<String> statements;
+    private final ICategory<String> statement = new Category(CategoryNames.STATEMENT_CATEGORY, false);
+    private final ICategory<String> statements = new Category(CategoryNames.STATEMENTS_CATEGORY, false);
 
     private final UnicodeLookupTable unicodeLookupTable;
 
@@ -84,16 +97,12 @@ public class GrammarBuilder {
     private void setupGeneralGrammar(Grammar grammar) {
 	Category program = new Category(CategoryNames.PROGRAM_CATEGORY, false);
 
-	this.statement = new Category(CategoryNames.STATEMENT_CATEGORY, false);
-	this.statements = new Category(CategoryNames.STATEMENTS_CATEGORY, false);
+	Rule startRule = new Rule(program, this.statements);
 
-	List<ICategory<String>> single = ListBuilder.single(this.statements);
-	Rule startRule = new Rule(program, single);
-
-	Rule rStatements = new Rule(this.statements, ListBuilder.newList(this.statement)
+	Rule rStatements = new Rule(this.statements, newList(this.statement)
 		.add(WhitespaceCategoryDefinition.getAndSetOptionalWhitespace(grammar)).add(this.statements).toList());
 
-	Rule rStatement = new Rule(this.statements, ListBuilder.single(this.statement));
+	Rule rStatement = new Rule(this.statements, this.statement);
 
 	grammar.addCategory(program);
 	grammar.addCategory(this.statement);
@@ -150,62 +159,224 @@ public class GrammarBuilder {
 	return classInfo;
     }
 
-    private Grammar createCombinedGrammar(List<ClassDSLInformation> exannos) {
-	Grammar grammar = new Grammar();
-	this.setupGeneralGrammar(grammar);
+    private Grammar createCombinedGrammar(List<ClassDSLInformation> classesInfos) {
 
-	boolean waterSupported = isWaterSupported(exannos);
-	if (waterSupported) {
-	    this.setWaterEnabled(waterSupported, grammar);
-	}
+	// Collect all Categories and rules from the DSL definitions
 
-	TypeHandlerDispatcher typeHandler = new TypeHandlerDispatcher(grammar);
-	for (ClassDSLInformation classInfo : exannos) {
-	    typeHandler.addAdditionalTypeRules(classInfo.getTypeRules());
-	}
+	LinkedList<GrammarCollectionBox> collectionCollector = new LinkedList<GrammarCollectionBox>();
 
-	for (ClassDSLInformation classInfo : exannos) {
-	    this.setupHostLanguageRules(classInfo.getHostLanguageRules(), grammar);
-	}
-	for (ClassDSLInformation classDSLInformation : exannos) {
-	    typeHandler.configurationOptions(classDSLInformation.getConfigurationOptions());
-	}
+	for (ClassDSLInformation classInfo : classesInfos) {
 
-	for (ClassDSLInformation classInfo : exannos) {
-
-	    List<MethodDSLInformation> validMinfs = new ArrayList<MethodDSLInformation>();
-	    List<MethodDSLInformation> invalidMinfs = new ArrayList<MethodDSLInformation>();
-	    for (MethodDSLInformation minf : classInfo.getMethodsInformation()) {
-		// TODO(Leo_Roos;Sep 1, 2011) should be a functionality of
-		// ClassDSLInformation to provide only the valid ones if queried
-		if (minf.isValid())
-		    validMinfs.add(minf);
-		else
-		    invalidMinfs.add(minf);
-	    }
-
-	    if (invalidMinfs.size() > 0) {
-		logger.info("Ignoring following invalid method configurations: {}", invalidMinfs);
-	    }
+	    List<MethodDSLInformation> validMinfs = filterOnlyValidMethodInformations(classInfo);
 
 	    for (MethodDSLInformation methodInfo : validMinfs) {
+
+		GrammarCollectionBox box = new GrammarCollectionBox(methodInfo);
+
 		DslMethodType dslType = methodInfo.getDSLType();
 		switch (dslType) {
+
 		case Literal:
-		    this.handleLiteral(methodInfo, grammar, typeHandler);
+		    this.handleLiteral(methodInfo, box, getTypeHandlerConfigurationOnGrammar(classesInfos, box));
 		    break;
+
 		case Operation:
-		    this.handleMethod(methodInfo, grammar, typeHandler);
+		    this.handleNonLiteral(methodInfo, box, getTypeHandlerConfigurationOnGrammar(classesInfos, box));
 		    break;
+
 		case AbstractionOperator:
 		    throw new UnsupportedOperationException("Functionality not yet implemented for " + dslType);
 		default:
 		    throw illegalForArg(dslType);
 		}
+		collectionCollector.add(box);
 	    }
 	}
+
+	/* Add rule annotations where necessary */
+
+	// build lookup list for relative priorization lookup
+	Map<String, GrammarCollectionBox> uidLookupList = new HashMap<String, GrammarCollectionBox>();
+	for (GrammarCollectionBox box : collectionCollector) {
+	    uidLookupList.put(box.methodInfo.getUniqueIdentifier(), box);
+	}
+	uidLookupList = Collections.unmodifiableMap(uidLookupList);
+	for (GrammarCollectionBox grammarCollectionBox : collectionCollector) {
+	    addRuleAnnotations(grammarCollectionBox, uidLookupList);
+	}
+
+	/*
+	 * Assemble actual grammar from collected and configured rules and
+	 * categories
+	 */
+	Grammar grammar = new Grammar();
+	this.setupGeneralGrammar(grammar);
+
+	boolean waterSupported = isWaterSupported(classesInfos);
+	if (waterSupported) {
+	    this.setWaterEnabled(waterSupported, grammar);
+	}
+
+	for (ClassDSLInformation classInfo : classesInfos) {
+	    this.setupHostLanguageRules(classInfo.getHostLanguageRules(), grammar);
+	}
+
+	for (GrammarCollectionBox box : collectionCollector) {
+	    addBoxContentToGrammar(box, grammar);
+	}
+
 	return grammar;
     }
+
+    private ITypeHandler getTypeHandlerConfigurationOnGrammar(List<ClassDSLInformation> exannos,
+	    IGrammar<String> grammar) {
+	TypeHandlerDispatcher typeHandler = new TypeHandlerDispatcher(grammar);
+	for (ClassDSLInformation classInfo : exannos) {
+	    typeHandler.addAdditionalTypeRules(classInfo.getTypeRules());
+	}
+	for (ClassDSLInformation classDSLInformation : exannos) {
+	    typeHandler.configurationOptions(classDSLInformation.getConfigurationOptions());
+	}
+	return typeHandler;
+    }
+
+    // TODO(Leo_Roos;Sep 1, 2011) should be a functionality of
+    // ClassDSLInformation to provide only the valid ones if queried
+    private List<MethodDSLInformation> filterOnlyValidMethodInformations(ClassDSLInformation classInfo) {
+	List<MethodDSLInformation> validMinfs = new ArrayList<MethodDSLInformation>();
+	List<MethodDSLInformation> invalidMinfs = new ArrayList<MethodDSLInformation>();
+	for (MethodDSLInformation minf : classInfo.getMethodsInformation()) {
+	    if (minf.isValid())
+		validMinfs.add(minf);
+	    else
+		invalidMinfs.add(minf);
+	}
+
+	if (invalidMinfs.size() > 0) {
+	    logger.info("Ignoring following invalid method configurations: {}", invalidMinfs);
+	}
+	return validMinfs;
+    }
+
+    private void addRuleAnnotations(GrammarCollectionBox box, Map<String, GrammarCollectionBox> lookupList) {
+	addAbsolutePriorityIfNonDefault(box);
+
+	addPreferencePriorityIfNonDefault(box);
+
+	addAssociativityIfNonDefault(box);
+
+	addPriorityHigherThanAnnotationToRulesIfNonDefault(lookupList, box);
+
+	addBoxAslowerPriorityToPriorityLowerThanRulesIfNonDefault(box, lookupList);
+
+    }
+
+    private MethodDSLInformation addAbsolutePriorityIfNonDefault(GrammarCollectionBox box) {
+	MethodDSLInformation context = box.methodInfo;
+	int absolutePriority = context.getAbsolutePriority();
+	if (absolutePriority != defaultDSLM.absolutePriority()) {
+	    IRuleAnnotation absolutePriorityAnnotation = new AbsolutePriorityAnnotation(absolutePriority);
+	    addAnnotationTo(box.rules, absolutePriorityAnnotation);
+	}
+	return context;
+    }
+
+    private void addBoxAslowerPriorityToPriorityLowerThanRulesIfNonDefault(GrammarCollectionBox box,
+	    Map<String, GrammarCollectionBox> lookupList) {
+	String priorityLowerThan = box.methodInfo.getPriorityLowerThan();
+	if (!priorityLowerThan.equals(defaultDSLM.priorityLowerThan())) {
+	    GrammarCollectionBox hasHigherPrio = lookupList.get(priorityLowerThan);
+	    if (hasHigherPrio != null) {
+		RelativePriorityAnnotation relp = newRelativePriorityWithLowerPriorityFor(box);
+		for (IRule<String> iOtherRule : hasHigherPrio.rules) {
+		    iOtherRule.addAnnotation(relp);
+		}
+	    }
+	}
+    }
+
+    private void addPriorityHigherThanAnnotationToRulesIfNonDefault(Map<String, GrammarCollectionBox> lookupList,
+	    GrammarCollectionBox box) {
+	String priorityHigherThan = box.methodInfo.getPriorityHigherThan();
+	if (!priorityHigherThan.equals(defaultDSLM.priorityHigherThan())) {
+	    GrammarCollectionBox hasLowerPrio = lookupList.get(priorityHigherThan);
+	    if (hasLowerPrio != null) {
+		RelativePriorityAnnotation relp = newRelativePriorityWithLowerPriorityFor(hasLowerPrio);
+		addAnnotationTo(box.rules, relp);
+	    }
+	}
+    }
+
+    private void addAnnotationTo(List<IRule<String>> rules, @Nullable IRuleAnnotation annotations) {
+	if (annotations == null)
+	    return;
+	addAnnotationsTo(rules, single(annotations));
+    }
+
+    private void addAnnotationsTo(List<IRule<String>> rules, List<IRuleAnnotation> annotations) {
+	for (IRuleAnnotation iRuleAnnotation : annotations) {
+	    for (IRule<String> rule : rules) {
+		rule.addAnnotation(iRuleAnnotation);
+	    }
+	}
+    }
+
+    private RelativePriorityAnnotation newRelativePriorityWithLowerPriorityFor(GrammarCollectionBox hasLowerPrio) {
+	RelativePriorityAnnotation relp = new RelativePriorityAnnotation();
+	relp.setLowerPriorityRules(new LinkedHashSet<IRule<String>>(hasLowerPrio.rules));
+	return relp;
+    }
+
+    private void addBoxContentToGrammar(GrammarCollectionBox box, Grammar grammar) {
+	for (ICategory<String> iterable_element : box.category) {
+	    grammar.addCategory(iterable_element);
+	}
+	for (IRule<String> rule : box.rules) {
+	    grammar.addRule(rule);
+	}
+    }
+
+    private void addPreferencePriorityIfNonDefault(GrammarCollectionBox box) {
+	PreferencePriority preferencePriority = box.methodInfo.getPreferencePriority();
+	IRuleAnnotation result = null;
+	if (!preferencePriority.equals(defaultDSLM.preferencePriority())) {
+	    switch (preferencePriority) {
+	    case Avoid:
+		result = (new AvoidAnnotation());
+		break;
+	    case Prefer:
+		result = (new PreferAnnotation());
+		break;
+	    case Reject:
+		result = (new RejectAnnotation());
+		break;
+	    default:
+		// nothing
+		break;
+	    }
+	}
+	addAnnotationTo(box.rules, result);
+    }
+
+    private void addAssociativityIfNonDefault(GrammarCollectionBox box) {
+	Associativity associativity = box.methodInfo.getAssociativity();
+	IRuleAnnotation result = null;
+	switch (associativity) {
+	case LEFT:
+	    result = new AssociativityAnnotation(
+		    de.tud.stg.parlex.core.ruleannotations.AssociativityAnnotation.Associativity.LEFT);
+	    break;
+	case RIGHT:
+	    result = new AssociativityAnnotation(
+		    de.tud.stg.parlex.core.ruleannotations.AssociativityAnnotation.Associativity.RIGHT);
+	    break;
+	default:
+	    break;
+	}
+	addAnnotationTo(box.rules, result);
+    }
+
+    private final DSLMethod defaultDSLM = DSLInformationDefaults.DEFAULT_DSLMethod;
 
     /*
      * Water is supported as long as every involved DSL supports water.
@@ -259,14 +430,90 @@ public class GrammarBuilder {
 	return null;
     }
 
-    private static class GrammarBox {
+    /**
+     * collects all rules and categories in order s.t. they can be post
+     * processed in a consistent fashion<br>
+     * 
+     * the rhsMethodCategory is only for type NonLiteral interesting
+     * 
+     * @author Leo_Roos
+     * 
+     */
+    private static class GrammarCollectionBox implements IGrammar<String> {
 
+	List<ICategory<String>> rhsMethodCategory = new LinkedList<ICategory<String>>();
 	List<ICategory<String>> category = new LinkedList<ICategory<String>>();
-	List<Rule> rules = new LinkedList<Rule>();
+	List<IRule<String>> rules = new LinkedList<IRule<String>>();
+	public final MethodDSLInformation methodInfo;
+
+	public GrammarCollectionBox(MethodDSLInformation methodInfo) {
+	    Assert.isNotNull(methodInfo);
+	    this.methodInfo = methodInfo;
+	}
+
+	@Override
+	public void addCategory(ICategory<String> category) {
+	    this.category.add(category);
+	}
+
+	@Override
+	public void addRule(IRule<String> rule) {
+	    this.rules.add(rule);
+	}
+
+	@Override
+	public void addRules(IRule<String>... rules) {
+	    Collections.addAll(this.rules, rules);
+	}
+
+	@Override
+	public void addCategories(ICategory<String>... categories) {
+	    Collections.addAll(this.category, categories);
+	}
+
+	@Override
+	public void setCategories(Set<ICategory<String>> categories) {
+	    throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Set<ICategory<String>> getCategories() {
+	    throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void setRules(Set<IRule<String>> rules) {
+	    throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Set<IRule<String>> getRules() {
+	    throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void setStartRule(IRule<String> startRule) {
+	    throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public IRule<String> getStartRule() {
+	    throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void addWaterRule(IRule<String> rule) {
+	    throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Set<IRule<String>> getWaterRules() {
+	    throw new UnsupportedOperationException();
+	}
 
     }
 
-    private void handleLiteral(MethodDSLInformation extractedMethod, Grammar grammar, TypeHandlerDispatcher typeHandler) {
+    private void handleLiteral(MethodDSLInformation extractedMethod, GrammarCollectionBox box, ITypeHandler iTypeHandler) {
 
 	Method method = extractedMethod.getMethod();
 	Map<ConfigurationOptions, String> methodOptions = extractedMethod.getConfigurationOptions();
@@ -274,17 +521,17 @@ public class GrammarBuilder {
 	String literal = extractedMethod.getProduction();
 
 	ICategory<String> literalCategory = new Category(literal, true);
-	grammar.addCategory(literalCategory);
+	box.addCategory(literalCategory);
 
 	Rule literalRule = new Rule(this.statement, literalCategory);
-	grammar.addRule(literalRule);
+	box.addRule(literalRule);
 
 	Class<?> returnType = method.getReturnType();
-	ICategory<String> returnTypeCategory = typeHandler.handle(returnType, methodOptions);
-	grammar.addCategory(returnTypeCategory);
+	ICategory<String> returnTypeCategory = iTypeHandler.handle(returnType, methodOptions);
+	box.addCategory(returnTypeCategory);
 
 	Rule returnTypeRule = new Rule(returnTypeCategory, literalCategory);
-	grammar.addRule(returnTypeRule);
+	box.addRule(returnTypeRule);
 
 	this.methodAliases.put(literal,
 		new MethodOptions(method.getName(), new LinkedList<Integer>(), method.getDeclaringClass()));
@@ -315,22 +562,16 @@ public class GrammarBuilder {
 	}
     }
 
-    private void handleMethod(MethodDSLInformation method, Grammar grammar, TypeHandlerDispatcher typeHandler) {
-	// XXX(Leo_Roos;Aug 31, 2011) This method could be inlined now
-	this.handleNonLiteral(method, grammar, typeHandler);
-    }
-
-    private void handleNonLiteral(MethodDSLInformation methodInfo, Grammar grammar, TypeHandlerDispatcher typeHandler) {
+    private void handleNonLiteral(MethodDSLInformation methodInfo, GrammarCollectionBox box, ITypeHandler typeHandler) {
 
 	Method method = methodInfo.getMethod();
 
-	String methodProduction = methodInfo.getProduction();// getMethodProduction(method,
-							     // method.getName());
+	String methodProduction = methodInfo.getProduction();
 
-	Map<ConfigurationOptions, String> methodOptions = methodInfo.getConfigurationOptions();
+	Map<ConfigurationOptions, String> configurationOptions = methodInfo.getConfigurationOptions();
 
-	String parameterEscape = methodOptions.get(ConfigurationOptions.PARAMETER_ESCAPE);
-	String whitespaceEscape = methodOptions.get(ConfigurationOptions.WHITESPACE_ESCAPE);
+	String parameterEscape = configurationOptions.get(ConfigurationOptions.PARAMETER_ESCAPE);
+	String whitespaceEscape = configurationOptions.get(ConfigurationOptions.WHITESPACE_ESCAPE);
 
 	MethodProductionScanner mps = new MethodProductionScanner();
 	mps.setParameterEscape(parameterEscape);
@@ -344,13 +585,12 @@ public class GrammarBuilder {
 	int index = 0;
 	List<Integer> parameterIndices = new ArrayList<Integer>();
 
-	LinkedList<ICategory<String>> categories = new LinkedList<ICategory<String>>();
 	while (mps.hasNext()) {
 	    MethodProductionElement next = mps.next();
 	    ProductionElement productionElementType = next.getProductionElementType();
 	    switch (productionElementType) {
 	    case Keyword:
-		handleProductionElementKeyword(categories, next);
+		handleProductionElementKeyword(box, next);
 		break;
 	    case Parameter:
 		ParameterElement pe = (ParameterElement) next;
@@ -358,15 +598,15 @@ public class GrammarBuilder {
 		if (parameterInfo == null) {
 		    logger.error("Could not determine parameter of index {}. Will ignore it and build grammar without it"
 			    + index);
-		    // TODO(Leo_Roos;Sep 1, 2011) perhaps better throw
+		    // TODO(Leo_Roos;Sep 1, 2011) perhaps better to throw
 		    // exception?
 		    break;
 		}
-		handleProductionElementParameter(grammar, typeHandler, categories, parameterInfo);
+		handleProductionElementParameter(box, typeHandler, parameterInfo);
 		parameterIndices.add(index);
 		break;
 	    case Whitespace:
-		handleProductionElementWhitespace(grammar, categories, (WhitespaceElement) next);
+		handleProductionElementWhitespace(box, (WhitespaceElement) next);
 		break;
 	    default:
 		throwIllegalArgFor(productionElementType);
@@ -376,58 +616,61 @@ public class GrammarBuilder {
 
 	int methodCounter = this.parameterCounter.getAndIncrement();
 
-	String indexedMethodProduction = "M" + methodCounter + "(" + methodProduction + ")";
+	String indexedMethodProduction = "M" + methodCounter + "{[" + methodProduction + "]" + method.getName() + "}";
 	MethodOptions value = new MethodOptions(method.getName(), parameterIndices, method.getDeclaringClass());
 	this.methodAliases.put(indexedMethodProduction, value);
 
 	ICategory<String> methodCategory = new Category(indexedMethodProduction, false);
-	grammar.addCategory(methodCategory);
+	box.addCategory(methodCategory);
 
 	boolean toplevel = methodInfo.isToplevel();
 	if (toplevel) {
 	    Rule methodRule = new Rule(this.statement, methodCategory);
-	    grammar.addRule(methodRule);
+	    box.addRule(methodRule);
 	}
 
-	Rule rule = new Rule(methodCategory, categories);
-	grammar.addRule(rule);
+	Rule rule = new Rule(methodCategory, box.rhsMethodCategory);
+	box.addRule(rule);
 
-	for (ICategory<String> c : categories) {
-	    grammar.addCategory(c);
+	// XXX(Leo_Roos;Sep 1, 2011) i leave it shortly to see if it all works
+	for (ICategory<String> c : box.rhsMethodCategory) {
+	    box.addCategory(c);
 	}
 
 	if (methodInfo.hasReturnValue()) {
-	    ICategory<String> returnTypeCategory = typeHandler.handle(method.getReturnType(), methodOptions);
-	    grammar.addCategory(returnTypeCategory);
+	    ICategory<String> returnTypeCategory = typeHandler.handle(method.getReturnType(), configurationOptions);
+	    box.addCategory(returnTypeCategory);
 
 	    ICategory<String> typeCategory = new Category(CategoryNames.RETURNTYPE_CATEGORY, false);
 	    Rule typeToMethod = new Rule(typeCategory, methodCategory);
-	    grammar.addRule(typeToMethod);
+	    box.addRule(typeToMethod);
 
 	    Rule returnTypeToMethod = new Rule(returnTypeCategory, methodCategory);
-	    grammar.addRule(returnTypeToMethod);
+	    box.addRule(returnTypeToMethod);
 	}
 
     }
 
-    private void handleProductionElementKeyword(LinkedList<ICategory<String>> categories, MethodProductionElement next) {
+    private void handleProductionElementKeyword(GrammarCollectionBox box, MethodProductionElement next) {
 	String keyword = next.getCapturedString();
 	keyword = getUnicodeRepresentationOrKeyword(keyword);
-	categories.add(new Category(keyword, true));
+	box.rhsMethodCategory.add(new Category(keyword, true));
 	// this.keywords.add(keyword);
     }
 
-    private void handleProductionElementWhitespace(Grammar grammar, LinkedList<ICategory<String>> categories,
-	    WhitespaceElement we) {
+    private void handleProductionElementWhitespace(GrammarCollectionBox box, WhitespaceElement we) {
+	ICategory<String> whitespaceCategory;
+	List<Rule> wsRules;
 	if (we.isOptional()) {
-	    categories.add(WhitespaceCategoryDefinition.getAndSetOptionalWhitespace(grammar));
+	    whitespaceCategory = WhitespaceCategoryDefinition.getNewOptionalWhitespaceCategory();
+	    wsRules = WhitespaceCategoryDefinition.getOptionalWhitespaceRules();
 	} else {
-	    categories.add(WhitespaceCategoryDefinition.getAndSetRequiredWhitespace(grammar));
+	    whitespaceCategory = WhitespaceCategoryDefinition.getNewRequiredWhitespaceCategory();
+	    wsRules = WhitespaceCategoryDefinition.getRequiredWhitespaceRules();
 	}
-    }
-
-    private boolean isReturnTypeNotVoid(Class<?> returnType) {
-	return returnType != void.class && returnType != Void.class;
+	box.rhsMethodCategory.add(whitespaceCategory);
+	box.category.add(whitespaceCategory);
+	box.rules.addAll(wsRules);
     }
 
     private String getUnicodeRepresentationOrKeyword(String keyword) {
@@ -440,12 +683,13 @@ public class GrammarBuilder {
 	}
     }
 
-    private void handleProductionElementParameter(Grammar grammar, TypeHandlerDispatcher typeHandler,
-	    LinkedList<ICategory<String>> categories, ParameterDSLInformation parameterInfo) {
+    private void handleProductionElementParameter(GrammarCollectionBox box, ITypeHandler typeHandler,
+	    ParameterDSLInformation parameterInfo) {
 
+	// The following string is actually built for use in the ATerm framework
 	String param = "P" + parameterInfo.getIndex() + "{" + this.parameterCounter.getAndIncrement() + "}";
 	ICategory<String> parameterCategory = new Category(param, false);
-	categories.add(parameterCategory);
+	box.rhsMethodCategory.add(parameterCategory);
 
 	Map<ConfigurationOptions, String> parameterOptions = parameterInfo.getConfigurationOptions();
 	ICategory<String> parameterMapping = typeHandler.handle(parameterInfo.getType(), parameterOptions);
@@ -454,9 +698,9 @@ public class GrammarBuilder {
 	ICategory<String> typeCategory = new Category(CategoryNames.PARAMETERTYPE_CATEGORY, false);
 	Rule typeRule = new Rule(parameterMapping, typeCategory);
 
-	grammar.addRule(rule);
-	grammar.addRule(typeRule);
-	grammar.addCategory(parameterMapping);
+	box.addRule(rule);
+	box.addRule(typeRule);
+	box.addCategory(parameterMapping);
 
     }
 
@@ -465,10 +709,8 @@ public class GrammarBuilder {
     }
 
 //@formatter:off
-// TODO(Leo_Roos;Sep 1, 2011) delete when sure that no lost treasure is buried somewhere donw there ...
+// TODO(Leo_Roos;Sep 1, 2011) delete when sure that no lost treasure is buried somewhere down there ...
 // ======================================================================================================
-// 0000000000000000234523453205432452845927869026405927z----Yee Old Gravyard
-// ---- Abandon all Hope
 /*
     // private void handleConstructor(Constructor<?> constructor, String
     // methodParameterEscape,

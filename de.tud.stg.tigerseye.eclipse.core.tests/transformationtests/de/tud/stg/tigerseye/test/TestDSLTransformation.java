@@ -121,7 +121,7 @@ public class TestDSLTransformation {
 		// logger.info("= Parsing input stream = {}", inputStream);
 
 		Chart chart = (Chart) earleyParser.parse(sb.trim());
-		logger.debug("Resulting AST is:\n{}", chart.getAST());
+		logger.debug("Resulting AST for classes {} is:\n{}", gr.classes, chart.getAST());
 
 		Context context = new Context("dummyFileName");
 		for (Class<? extends DSL> clazz : gr.classes) {

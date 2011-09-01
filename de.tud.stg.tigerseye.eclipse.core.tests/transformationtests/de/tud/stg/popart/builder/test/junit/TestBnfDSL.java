@@ -47,9 +47,18 @@ public class TestBnfDSL {
 				"] as Rule[])");
 	}
 	
-//	@Test
+	@Test
 	public void shouldTransformsSimpleExample2() throws Exception {
-		assertInputExpected("expression	::= plus | minus","");
+		assertInputExpected("expression	::= plus | minus","syntax(\n" + 
+				"[\n" + 
+				"rule(\n" + 
+				"expression,\n" + 
+				"expression(\n" + 
+				"[\n" + 
+				"plus,\n" + 
+				"minus\n" + 
+				"] as Term[]))\n" + 
+				"] as Rule[])");
 	}
 //	@Test
 	public void shouldTransformsSimpleExample3() throws Exception {
@@ -64,14 +73,24 @@ public class TestBnfDSL {
 		assertInputExpected("number		::= digit { digit }", "");
 	}
 	
-//	@Test
+	@Test
 	public void shouldTransformsSimpleExampleIdentifier() throws Exception {
-		assertInputExpected("identifier", "");
+		assertInputExpected("identifier ::= expression", "syntax(\n" + 
+				"[\n" + 
+				"rule(\n" + 
+				"identifier,\n" + 
+				"expression)\n" + 
+				"] as Rule[])");
 	}
 	
-//	@Test
+	@Test
 	public void shouldTransformsSimpleExampleAssignment() throws Exception {
-		assertInputExpected("a ::= b", "");
+		assertInputExpected("a ::= b", "syntax(\n" + 
+				"[\n" + 
+				"rule(\n" + 
+				"a,\n" + 
+				"b)\n" + 
+				"] as Rule[])");
 	}
 	
 	

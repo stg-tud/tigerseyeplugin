@@ -41,13 +41,22 @@ public class DSLInformationDefaults {
 	}
     }
 
-    static final DSLClass DEFAULT_DSLClass = DefaultedAnnotation
+    /**
+     * don't use in collections does not support hashcode()
+     */
+    static public final DSLClass DEFAULT_DSLClass = DefaultedAnnotation
 	    .of(DSLClass.class);
 
-    static final DSLMethod DEFAULT_DSLMethod = DefaultedAnnotation
+    /**
+     * don't use in collections does not support hashcode()
+     */
+    static public final DSLMethod DEFAULT_DSLMethod = DefaultedAnnotation
 	    .of(DSLMethod.class);
 
-    static final DSLParameter DEFAULT_DSLParameter = DefaultedAnnotation
+    /**
+     * don't use in collections does not support hashcode()
+     */
+    static public final DSLParameter DEFAULT_DSLParameter = DefaultedAnnotation
 	    .of(DSLParameter.class);
 
     /**

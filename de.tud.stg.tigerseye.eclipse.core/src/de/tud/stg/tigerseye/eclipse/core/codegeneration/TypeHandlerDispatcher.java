@@ -33,7 +33,7 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.TypeHandler
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.HandlingDispatcherHelper;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.utils.WhitespaceCategoryDefinition;
 
-public class TypeHandlerDispatcher {
+public class TypeHandlerDispatcher implements ITypeHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(TypeHandlerDispatcher.class);
 
@@ -71,6 +71,7 @@ public class TypeHandlerDispatcher {
 	this.grammar = grammar;
     }
 
+    @Override
     public ICategory<String> handle(Type type, Map<ConfigurationOptions, String> parameterOptions) {
 
 	if (type instanceof Class) {

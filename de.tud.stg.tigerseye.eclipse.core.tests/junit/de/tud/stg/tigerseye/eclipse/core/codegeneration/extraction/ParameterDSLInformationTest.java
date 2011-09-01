@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 
+import org.fest.assertions.StringAssert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -89,6 +90,18 @@ public class ParameterDSLInformationTest {
 		ParameterDSLInformation pinf = getParameterOfClassInMethodAtIndex(BnfDSL.class, "quotedSymbolFromAnyCharacters", 0);
 		assertThat(pinf.isAnnotated()).isTrue();
 		assertThat(pinf.getConfigurationOption(ConfigurationOptions.ARRAY_DELIMITER)).isEqualTo("");
+	}
+	
+	@Test
+	public void shouldProvideHumanReadableTypeName() throws Exception {
+		String expected = "ModuleId";
+		ParameterDSLInformation p0 = moduleWithoutParameters.get(0);
+		assertThat(p0.getSimpleTypeName()).isEqualTo(expected);
+	}
+	
+	@Test
+	public void shouldProvideHumandReadableNameForArray() throws Exception {
+		assertThat(moduleWithoutParameters.get(1).getSimpleTypeName()).isEqualTo("Imports[]");
 	}
 
 }
