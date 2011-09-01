@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,11 +19,11 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.Configurati
  * @author Leo_Roos
  * 
  */
-public class DSLAnnotationDefaults {
+public class DSLInformationDefaults {
 
     public static final String SUBSTRING_DEFINING_FILTERED_METHODS = "$";
 
-    private DSLAnnotationDefaults() {
+    private DSLInformationDefaults() {
 	// utility class
     }
 
@@ -49,6 +50,9 @@ public class DSLAnnotationDefaults {
     static final DSLParameter DEFAULT_DSLParameter = DefaultedAnnotation
 	    .of(DSLParameter.class);
 
+    /**
+     * not modifiable
+     */
     public static final Map<ConfigurationOptions, String> DEFAULT_CONFIGURATIONOPTIONS_MAP = getDefaultOptions();
 
     private static Map<ConfigurationOptions, String> getDefaultOptions() {
@@ -56,7 +60,7 @@ public class DSLAnnotationDefaults {
 	for (ConfigurationOptions parop : ConfigurationOptions.values()) {
 	    defaultOptions.put(parop, parop.defaultValue);
 	}
-	return defaultOptions;
+	return Collections.unmodifiableMap(defaultOptions);
     }
 
     // private static Map<ConfigurationOptions, String>

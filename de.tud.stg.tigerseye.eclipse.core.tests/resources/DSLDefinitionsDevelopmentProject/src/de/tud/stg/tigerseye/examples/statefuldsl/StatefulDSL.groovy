@@ -5,7 +5,7 @@ import groovy.lang.Closure;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.tud.stg.popart.builder.core.annotations.DSL;
+import de.tud.stg.popart.builder.core.annotations.DSLParameter;
 import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeyword;
 

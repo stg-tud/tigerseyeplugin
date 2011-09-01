@@ -144,7 +144,7 @@ public class GrammarBuilderTest {
 		logger.info(parse.toString());
 		logger.info(parse.getAST().toString());
 //		assertEquals(null, expected);
-		StringUtils.equalsIgnoringWhitspace(performTransformation, expected);
+		StringUtils.equalsIgnoringWhitspace(expected, performTransformation);
 	}
 	
 	

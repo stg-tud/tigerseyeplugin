@@ -1,12 +1,14 @@
 package de.tud.stg.tigerseye.test;
 
-
+import static de.tud.stg.tigerseye.eclipse.core.utils.CustomFESTAssertions.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.junit.matchers.JUnitMatchers.containsString;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -18,11 +20,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
+import jjtraveler.VisitFailure;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.junit.Test;
 
+import utilities.TestUtils;
+
 import de.tud.stg.parlex.core.IGrammar;
+import de.tud.stg.popart.builder.test.dsls.LiteralsDSL;
 import de.tud.stg.popart.dslsupport.DSL;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.UnicodeLookupTable;
@@ -30,55 +37,51 @@ import de.tud.stg.tigerseye.test.TestDSLTransformation.GrammarResult;
 import de.tud.stg.tigerseye.test.transformation.utils.DefaultDSLTransformationTester;
 import de.tud.stg.tigerseye.util.ListBuilder;
 
-
 public class TransformationUtils {
-	
-	public static final String PLUGIN_ID_OF_CORE_TESTFRAGMENT = "de.tud.stg.tigerseye.core.tests"; 
-	
+
+	public static final String PLUGIN_ID_OF_CORE_TESTFRAGMENT = "de.tud.stg.tigerseye.core.tests";
+
 	private static final String MATH_CLASS_EX_TXT = "MathClassEx-12.txt";
 
 	private static final File generatedFilesFolder = DefaultDSLTransformationTester.GENERATED_OUTPUT_FOLDER;
 
-	private static DefaultDSLTransformationTester dtt = new DefaultDSLTransformationTester(TransformationUtils.class, generatedFilesFolder, "resources" );
+	private static DefaultDSLTransformationTester dtt = new DefaultDSLTransformationTester(TransformationUtils.class,
+			generatedFilesFolder, "resources");
 	public static OutputStream out = System.out;
 
-	public static void test(String file, Class<? extends DSL> ... classes) {
+	public static void test(String file, Class<? extends DSL>... classes) {
 		test(true, file, classes);
 	}
 
 	public static void setOutputStream(OutputStream out) {
 		TransformationUtils.out = out;
 	}
-	
-	public static void test(String file,
-			List<Class<? extends DSL>> classes) {
+
+	public static void test(String file, List<Class<? extends DSL>> classes) {
 		test(true, file, classes);
 	}
-	
-	public static void test(boolean validate, String file,
-			List<Class<? extends DSL>> classes) {
+
+	public static void test(boolean validate, String file, List<Class<? extends DSL>> classes) {
 		try {
 
 			dtt.assertTransformedDSLEqualsExpectedUnchecked(file, classes);
-					
+
 		} catch (Exception e) {
 			throw new UnhandledException(e);
 		}
 	}
 
-	public static void test(boolean validate, String file,
-			Class<? extends DSL>... classes) {	
+	public static void test(boolean validate, String file, Class<? extends DSL>... classes) {
 		List<Class<? extends DSL>> asList = Arrays.asList(classes);
 		test(validate, file, asList);
 	}
-	
+
 	@Test
 	public void testAccessibleInputFiles() throws Exception {
 
 		FileOutputStream out = null;
 		try {
-			String string = new File(generatedFilesFolder
-					+ "GroovyBigCombinedDSL.groovy").toString();
+			String string = new File(generatedFilesFolder + "GroovyBigCombinedDSL.groovy").toString();
 			out = new FileOutputStream(string);
 			out.write(new byte[0]);
 			assertNotNull(out);
@@ -86,23 +89,21 @@ public class TransformationUtils {
 			IOUtils.closeQuietly(out);
 		}
 	}
-	
+
 	public static GrammarResult newGrammar(Class<? extends DSL>... classes) {
-	
-		GrammarBuilder grammarBuilder = new GrammarBuilder(
-				getDefaultLookupTable());
-	
+
+		GrammarBuilder grammarBuilder = new GrammarBuilder(getDefaultLookupTable());
+
 		IGrammar<String> buildGrammar = grammarBuilder.buildGrammar(classes);
-	
-		GrammarResult grammarResult = new GrammarResult(buildGrammar,
-				grammarBuilder.getMethodOptions(), classes);
-	
+
+		GrammarResult grammarResult = new GrammarResult(buildGrammar, grammarBuilder.getMethodOptions(), classes);
+
 		return grammarResult;
 	}
 
-	public static File[] getFilesRelativeToRoot(File resFile, String ... expected) {
+	public static File[] getFilesRelativeToRoot(File resFile, String... expected) {
 		File[] expectedFiles = new File[expected.length];
-		for (int i = 0 ; i < expected.length; i ++) {
+		for (int i = 0; i < expected.length; i++) {
 			expectedFiles[i] = new File(resFile, expected[i]);
 		}
 		return expectedFiles;
@@ -111,12 +112,12 @@ public class TransformationUtils {
 	public static void assertContainsAllLines(String doesContain, String isContained) {
 		Scanner expScanner = new Scanner(isContained);
 		String trimmedDoesContain = doesContain.trim();
-		while(expScanner.hasNextLine()){
+		while (expScanner.hasNextLine()) {
 			assertThat(trimmedDoesContain, containsString(expScanner.nextLine().trim()));
 		}
 	}
 
-	private static Reader getMathClassEx11(){
+	private static Reader getMathClassEx11() {
 		InputStream resourceAsStream = TransformationUtils.class.getResourceAsStream(MATH_CLASS_EX_TXT);
 		try {
 			InputStreamReader reader = new InputStreamReader(resourceAsStream, "UTF-8");
@@ -124,42 +125,53 @@ public class TransformationUtils {
 			return bufferedReader;
 		} catch (UnsupportedEncodingException e) {
 			throw new UnhandledException(e);
-		} 
+		}
 	}
-	
-	public static UnicodeLookupTable getDefaultLookupTable(){
+
+	public static UnicodeLookupTable getDefaultLookupTable() {
 		Reader reader = getMathClassEx11();
 		UnicodeLookupTable ult = new UnicodeLookupTable().load(reader);
 		return ult;
 	}
 
-	public static void assertContainsAllLinesMutually(String s1,
-			String s2) {
-		assertContainsAllLines(s1,s2);
-		assertContainsAllLines(s2,s1);		
+	public static void assertContainsAllLinesMutually(String s1, String s2) {
+		assertContainsAllLines(s1, s2);
+		assertContainsAllLines(s2, s1);
 	}
-	
-	public static InputStream loadTestResource(String resourceName){
+
+	public static InputStream loadTestResource(String resourceName) {
 		InputStream resourceAsStream = TransformationUtils.class.getResourceAsStream("resources" + "/" + resourceName);
 		return resourceAsStream;
 	}
-	
-	public static <T extends DSL>  List<Class<T>> newList(Class<T> ...classes){
+
+	public static <T extends DSL> List<Class<T>> newList(Class<T>... classes) {
 		ArrayList<Class<T>> asList = new ArrayList<Class<T>>(classes.length);
 		for (Class<T> c : classes) {
 			asList.add(c);
 		}
 		return asList;
 	}
-	
-	public static ListBuilder<Class<? extends DSL>> dslsList(Class<? extends DSL> element){
-		ListBuilder<Class<? extends DSL>> listGen = new ListBuilder<Class<?extends DSL>>(element);
+
+	public static ListBuilder<Class<? extends DSL>> dslsList(Class<? extends DSL> element) {
+		ListBuilder<Class<? extends DSL>> listGen = new ListBuilder<Class<? extends DSL>>(element);
 		return listGen;
 	}
-	
-	public static List<Class<? extends DSL>> dslSingle(Class<? extends DSL> element){
-		ListBuilder<Class<? extends DSL>> listGen = new ListBuilder<Class<?extends DSL>>(element);
+
+	public static List<Class<? extends DSL>> dslSingle(Class<? extends DSL> element) {
+		ListBuilder<Class<? extends DSL>> listGen = new ListBuilder<Class<? extends DSL>>(element);
 		return listGen.toList();
+	}
+
+	static public void assertExpectedForInputTransformation(String input, String expectedTransformation,
+			List<Class<? extends DSL>> classes) throws Exception {
+		TestDSLTransformation tdt = new TestDSLTransformation();
+		String performTransformation = tdt.performTransformation(input, classes);
+		assertThat(performTransformation).isEqualToIgnoringWhitespace(expectedTransformation);
+	}
+
+	static public void assertExpectedForInputTransformation(String input, String expectedTransformation,
+			Class<? extends DSL> classes) throws Exception {
+		assertExpectedForInputTransformation(input, expectedTransformation, dslSingle(classes));
 	}
 
 }

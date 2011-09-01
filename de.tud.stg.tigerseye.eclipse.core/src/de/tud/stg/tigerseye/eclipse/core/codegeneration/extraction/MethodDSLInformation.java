@@ -1,6 +1,11 @@
 package de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction;
 
+import static de.tud.stg.tigerseye.util.Utils.illegalForArg;
+
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,12 +19,17 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.eclipse.core.runtime.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.tud.stg.popart.builder.core.annotations.AnnotationConstants;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod.Associativity;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod.DslMethodType;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod.PreferencePriority;
+import de.tud.stg.popart.builder.core.annotations.DSLParameter;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.MethodProductionConstants.ProductionElement;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ConfigurationOptions;
 
 /**
@@ -30,24 +40,20 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.Configurati
  * 
  */
 public class MethodDSLInformation extends DSLInformation {
+
+    private static final Logger logger = LoggerFactory.getLogger(MethodDSLInformation.class);
     private static final String LITERAL_IDENTIFER_ON_METHOD_NAME = "get";
 
     @Nullable
-    private DSLMethod dslMethodAnnotation = DSLAnnotationDefaults.DEFAULT_DSLMethod;
+    private DSLMethod dslMethodAnnotation = DSLInformationDefaults.DEFAULT_DSLMethod;
 
     private boolean hasDSLMethodAnnotation = false;
     @Nonnull
     final Method method;
-    @Nonnull
-    Map<ConfigurationOptions, String> methodOptions = DSLAnnotationDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP;
+    private List<ParameterDSLInformation> parameterInfos;
 
     public MethodDSLInformation(Method method) {
 	this.method = method;
-    }
-
-    @Override
-    public Map<ConfigurationOptions, String> getConfigurationOptions() {
-	return this.methodOptions;
     }
 
     public DslMethodType getDSLType() {
@@ -94,17 +100,16 @@ public class MethodDSLInformation extends DSLInformation {
      */
     @Override
     public void load(Map<ConfigurationOptions, String> defaultParameterOptions) {
-	assertAvoidanceOfDSLAnnotation(method, DSLMethod.class);
 	DSLMethod annotation = method.getAnnotation(DSLMethod.class);
 	if (annotation == null) {
 	    hasDSLMethodAnnotation = false;
 	} else {
 	    hasDSLMethodAnnotation = true;
 	    this.dslMethodAnnotation = annotation;
-	    this.methodOptions = getAnnotationParameterOptionsOverInitialMap(
-		    this.dslMethodAnnotation, defaultParameterOptions);
+	    setConfigurationOptions(getAnnotationParameterOptionsOverInitialMap(this.dslMethodAnnotation,
+		    defaultParameterOptions));
 	}
-	String definedWS = getConfiguratinoOption(ConfigurationOptions.WHITESPACE_ESCAPE);
+	String definedWS = getConfigurationOption(ConfigurationOptions.WHITESPACE_ESCAPE);
 	if (definedWS.isEmpty()) {
 	    setDefaultWSE();
 	} else if (!hasProductionInAnnotationdDefined()) {
@@ -114,11 +119,40 @@ public class MethodDSLInformation extends DSLInformation {
 		setDefaultWSE();
 	    }
 	}
+	Type[] typeParameters = getMethod().getGenericParameterTypes();
+	Annotation[][] parameterAnnotations = getMethod().getParameterAnnotations();
+	this.parameterInfos = createParameterInfosList(typeParameters, parameterAnnotations);
+    }
+
+    private List<ParameterDSLInformation> createParameterInfosList(Type[] typeParameters,
+	    Annotation[][] parameterAnnotations) {
+	Assert.isTrue(typeParameters.length == parameterAnnotations.length);
+
+	List<ParameterDSLInformation> result = new ArrayList<ParameterDSLInformation>();
+	for (int i = 0; i < typeParameters.length; i++) {
+	    Type nextType = typeParameters[i];
+	    DSLParameter maybeDSLParameter = findDSLParameterOrNull(parameterAnnotations[i]);
+
+	    ParameterDSLInformation newPI = new ParameterDSLInformation(nextType, maybeDSLParameter, i);
+	    newPI.load(getConfigurationOptions());
+
+	    result.add(newPI);
+	}
+
+	return result;
+    }
+
+    private DSLParameter findDSLParameterOrNull(Annotation[] nextAnnotations) {
+	for (Annotation annotation : nextAnnotations) {
+	    if (annotation instanceof DSLParameter) {
+		return (DSLParameter) annotation;
+	    }
+	}
+	return null;
     }
 
     private boolean hasProductionInAnnotationdDefined() {
-	if (AnnotationConstants.UNASSIGNED.equals(this.dslMethodAnnotation
-		.production())) {
+	if (AnnotationConstants.UNASSIGNED.equals(this.dslMethodAnnotation.production())) {
 	    return false;
 	} else {
 	    return true;
@@ -127,48 +161,41 @@ public class MethodDSLInformation extends DSLInformation {
 
     private void setDefaultWSE() {
 	String defaultWSE = ConfigurationOptions.WHITESPACE_ESCAPE.defaultValue;
-	this.methodOptions.put(ConfigurationOptions.WHITESPACE_ESCAPE,
-		defaultWSE);
+	getConfigurationOptions().put(ConfigurationOptions.WHITESPACE_ESCAPE, defaultWSE);
     }
 
-    static Map<ConfigurationOptions, String> getAnnotationParameterOptionsOverInitialMap(
-	    DSLMethod dslAnnotation,
+    static Map<ConfigurationOptions, String> getAnnotationParameterOptionsOverInitialMap(DSLMethod dslAnnotation,
 	    Map<ConfigurationOptions, String> initialMap) {
-	Map<ConfigurationOptions, String> resultMap = new HashMap<ConfigurationOptions, String>(
-		initialMap);
+	Map<ConfigurationOptions, String> resultMap = new HashMap<ConfigurationOptions, String>(initialMap);
 	if (dslAnnotation != null) {
-	    putIfValid(resultMap, ConfigurationOptions.PARAMETER_ESCAPE,
-		    dslAnnotation.parameterEscape());
-	    putIfValid(resultMap, ConfigurationOptions.WHITESPACE_ESCAPE,
-		    dslAnnotation.whitespaceEscape());
-	    putIfValid(resultMap, ConfigurationOptions.ARRAY_DELIMITER,
-		    dslAnnotation.arrayDelimiter());
-	    putIfValid(resultMap, ConfigurationOptions.STRING_QUOTATION,
-		    dslAnnotation.stringQuotation());
+	    putIfValid(resultMap, ConfigurationOptions.PARAMETER_ESCAPE, dslAnnotation.parameterEscape());
+	    putIfValid(resultMap, ConfigurationOptions.WHITESPACE_ESCAPE, dslAnnotation.whitespaceEscape());
+	    putIfValid(resultMap, ConfigurationOptions.ARRAY_DELIMITER, dslAnnotation.arrayDelimiter());
+	    putIfValid(resultMap, ConfigurationOptions.STRING_QUOTATION, dslAnnotation.stringQuotation());
 	}
 	return resultMap;
     }
 
     @Override
     public String toString() {
-	ToStringBuilder append = new ToStringBuilder(this,
-		ToStringStyle.SHORT_PREFIX_STYLE)
-		.append("annotation", dslMethodAnnotation.getClass())
-		.append("isannotated", hasDSLMethodAnnotation)
-		.append("configurationoptions", methodOptions)
-		.append("underlyingmethod", method)
-		.append("production", getProductionRaw());
+	ToStringBuilder append = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+		.append("production", getProduction()).append("uniqueIdentifier", getUniqueIdentifier())
+		.append("annotation", dslMethodAnnotation.getClass()).append("isannotated", hasDSLMethodAnnotation)
+		.append("configurationoptions", getConfigurationOptions()).append("underlyingmethod", method)
+		.append("parameterInfos", this.parameterInfos);
 	return append.toString();
     }
 
     /**
-     * @return the {@link DSLMethod#production()} element. If it is the default
-     *         value, i.e. either the method has not been annotated or
-     *         production has not been used in annotation <code>null</code> will
-     *         be returned.
+     * If production element in the annotation has been used that value will be
+     * returned. If the annotations production element has not been used the
+     * method name will be returned for dsls of type
+     * {@link DslMethodType#Operation}. For {@link DslMethodType#Literal} get
+     * prefix will be subtracted.
+     * 
+     * @return the computed production.
      */
-    public @CheckForNull
-    String getProductionRaw() {
+    public String getProduction() {
 	String production;
 	if (hasProductionInAnnotationdDefined())
 	    production = this.dslMethodAnnotation.production();
@@ -180,28 +207,27 @@ public class MethodDSLInformation extends DSLInformation {
 
     private String getProductionFromMethodName() {
 	String methodNameRaw = getMethod().getName();
-	String methodName;
+	String fromMethodName;
 	DslMethodType dslType = getDSLType();
 	switch (dslType) {
 	case Literal:
 	    String tosubtractString = LITERAL_IDENTIFER_ON_METHOD_NAME;
 	    if (methodNameRaw.length() <= tosubtractString.length())
-		methodName = methodNameRaw;
+		fromMethodName = methodNameRaw;
 	    else {
-		String removePrecedingString = removePrecedingString(
-			methodNameRaw, tosubtractString);
-		methodName = firstCharToLowercase(removePrecedingString);
+		String removePrecedingString = removePrecedingString(methodNameRaw, tosubtractString);
+		fromMethodName = firstCharToLowercase(removePrecedingString);
 	    }
 	    break;
 	case AbstractionOperator:
 	    //$FALL-THROUGH$
 	case Operation:
-	    methodName = methodNameRaw;
+	    fromMethodName = methodNameRaw;
 	    break;
 	default:
-	    throw new IllegalArgumentException("unhandled type: " + dslType);
+	    throw illegalForArg(dslType);
 	}
-	return methodName;
+	return fromMethodName;
     }
 
     /**
@@ -211,8 +237,7 @@ public class MethodDSLInformation extends DSLInformation {
      *         subtracted from it. if the name is just {@code get}. the first
      *         character of the resulting string will be made to lowercase.
      */
-    private String removePrecedingString(String methodNameRaw,
-	    String tosubtractString) {
+    private String removePrecedingString(String methodNameRaw, String tosubtractString) {
 	if (methodNameRaw.startsWith(tosubtractString)) {
 	    return methodNameRaw.substring(tosubtractString.length());
 	} else
@@ -222,8 +247,7 @@ public class MethodDSLInformation extends DSLInformation {
     private String firstCharToLowercase(String substring) {
 	if (substring.isEmpty())
 	    return substring;
-	String firstChar = substring.substring(0, 1)
-		.toLowerCase(Locale.ENGLISH);
+	String firstChar = substring.substring(0, 1).toLowerCase(Locale.ENGLISH);
 	return firstChar + substring.substring(1);
     }
 
@@ -257,10 +281,8 @@ public class MethodDSLInformation extends DSLInformation {
 
     String crateUniqueIdentifierFromMethod() {
 	String uniqueIdentifier;
-	String parameters = buildParametersString(getMethod()
-		.getParameterTypes());
-	uniqueIdentifier = getMethod().getDeclaringClass().getName()
-		+ getMethod().getName() + parameters;
+	String parameters = buildParametersString(getMethod().getParameterTypes());
+	uniqueIdentifier = getMethod().getDeclaringClass().getName() + getMethod().getName() + parameters;
 	return uniqueIdentifier;
     }
 
@@ -277,5 +299,80 @@ public class MethodDSLInformation extends DSLInformation {
 	}
 	pts.append(")");
 	return pts.toString();
+    }
+
+    /**
+     * TODO(Leo_Roos;Sep 1, 2011) still looking for more assertion to be made.
+     * currently only whether literal has return type
+     * 
+     * @return whether this information and annotated method are actually valid
+     *         in their current form.
+     */
+    public boolean isValid() {
+	switch (getDSLType()) {
+	case Literal:
+	    Class<?> returnType = getMethod().getReturnType();
+	    if (isVoid(returnType))
+		return false;
+	    break;
+
+	default:
+	    break;
+	}
+	return true;
+    }
+
+    private boolean isVoid(Class<?> returnType) {
+	return returnType == void.class || returnType == Void.class;
+    }
+
+    // TODO(Leo_Roos;Sep 1, 2011) Untested
+    public List<String> getKeywordList() {
+	ArrayList<String> result = new ArrayList<String>();
+	switch (getDSLType()) {
+	case Literal:
+	    result.add(getProduction());
+	    break;
+	case Operation:
+	    getProduction();
+	    MethodProductionScanner mps = new MethodProductionScanner(
+		    getConfigurationOption(ConfigurationOptions.WHITESPACE_ESCAPE),
+		    getConfigurationOption(ConfigurationOptions.PARAMETER_ESCAPE));
+	    for (MethodProductionElement mpe : mps) {
+		if (mpe.getProductionElementType().equals(ProductionElement.Keyword)) {
+		    result.add(mpe.getCapturedString());
+		}
+	    }
+	    break;
+	default:
+	    logger.info("unknown handling for type {}", getDSLType());
+	    break;
+	}
+	return result;
+    }
+
+    public List<ParameterDSLInformation> getParameterInfos() {
+	return this.parameterInfos;
+    }
+
+    /**
+     * Get the parameter info of the {@code i}th parameter of the wrapped
+     * method. Will return <code>null</code> if i is out of bounds.
+     * 
+     * @param i
+     * @return
+     */
+    public @CheckForNull
+    ParameterDSLInformation getParameterInfo(int i) {
+	if (this.parameterInfos.size() > i && i >= 0) {
+	    return this.parameterInfos.get(i);
+	} else {
+	    logger.warn("tried to access parameter out of range. {}", i);
+	    return null;
+	}
+    }
+
+    public boolean hasReturnValue() {
+	return !isVoid(getMethod().getReturnType());
     }
 }

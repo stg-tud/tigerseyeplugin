@@ -17,6 +17,8 @@ import org.apache.bsf.util.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import utilities.TestUtils;
+
 import aterm.ATerm;
 import de.tud.stg.parlex.ast.IAbstractNode;
 import de.tud.stg.parlex.core.IGrammar;
@@ -36,10 +38,8 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.ATermBuilder;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.CodePrinter;
 
 public class TestDSLTransformation {
-	
-	
-	private static final Logger logger = LoggerFactory
-			.getLogger(TestDSLTransformation.class);
+
+	private static final Logger logger = LoggerFactory.getLogger(TestDSLTransformation.class);
 
 	private final UnicodeLookupTable ult;
 	private CodePrinterFactory cpf;
@@ -49,29 +49,32 @@ public class TestDSLTransformation {
 		this.cpf = cpf;
 	}
 
-	public TestDSLTransformation(CodePrinterFactory cpf)
-			throws FileNotFoundException {
-		this.ult = TransformationUtils.getDefaultLookupTable();
-		this.cpf = cpf;
+	public TestDSLTransformation(CodePrinterFactory cpf) throws FileNotFoundException {
+		this(TransformationUtils.getDefaultLookupTable(), cpf);
 	}
 
-	public String performTransformation(InputStream inputStream,
-			List<Class<? extends DSL>> classes) throws IOException, VisitFailure,
-			FileNotFoundException {
-		String sb = IOUtils.getStringFromReader(new InputStreamReader(
-				inputStream));
+	public TestDSLTransformation() throws FileNotFoundException {
+		this(TransformationUtils.getDefaultLookupTable(), new PrettyGroovyCodePrinterFactory());
+	}
+
+	public String performTransformation(InputStream inputStream, List<Class<? extends DSL>> classes)
+			throws IOException, VisitFailure, FileNotFoundException {
+		String sb = IOUtils.getStringFromReader(new InputStreamReader(inputStream));
 
 		return performTransformation(sb, classes);
 	}
+	
+	public String performTransformation(String sb, Class<? extends DSL> clazz) throws VisitFailure {
+		return performTransformation(sb, TransformationUtils.dslSingle(clazz));
+	}
 
-	public String performTransformation(String sb,
-				List<Class<? extends DSL>> classes) throws VisitFailure {
+	public String performTransformation(String sb, List<Class<? extends DSL>> classes) throws VisitFailure {
 		GrammarBuilder gb = new GrammarBuilder(ult);
-		
+
 		IGrammar<String> grammar = gb.buildGrammar(classes);
 
-		String performTransformation = performTransformation(sb,
-				new GrammarResult(grammar, gb.getMethodOptions(), classes));
+		String performTransformation = performTransformation(sb, new GrammarResult(grammar, gb.getMethodOptions(),
+				classes));
 
 		return performTransformation;
 	}
@@ -82,27 +85,27 @@ public class TestDSLTransformation {
 		public IGrammar<String> grammar;
 		public final List<Class<? extends DSL>> classes;
 
-		public GrammarResult(IGrammar<String> buildGrammar,
-				Map<String, MethodOptions> methodOptions, Class<? extends DSL>... cs) {
+		public GrammarResult(IGrammar<String> buildGrammar, Map<String, MethodOptions> methodOptions,
+				Class<? extends DSL>... cs) {
 			grammar = buildGrammar;
 			moptions = methodOptions;
-			classes = (List<Class<? extends DSL>>)Arrays.asList(cs);
+			classes = (List<Class<? extends DSL>>) Arrays.asList(cs);
 		}
-		
-		public GrammarResult(IGrammar<String> buildGrammar,
-				Map<String, MethodOptions> methodOptions, List<Class<? extends DSL>> cs) {
+
+		public GrammarResult(IGrammar<String> buildGrammar, Map<String, MethodOptions> methodOptions,
+				List<Class<? extends DSL>> cs) {
 			grammar = buildGrammar;
 			moptions = methodOptions;
 			classes = cs;
 		}
-		
+
 		@Deprecated
-		public Context generateContext(@Nullable String contextName){
-			if(contextName == null)
+		public Context generateContext(@Nullable String contextName) {
+			if (contextName == null)
 				contextName = "no_context_name_given";
 			Context context = new Context(contextName);
-			for (int i = 0; i < classes.size() ; i++){				
-				context.addDSL("anyextension"+i, (Class<? extends DSL>) classes.get(i));
+			for (int i = 0; i < classes.size(); i++) {
+				context.addDSL("anyextension" + i, (Class<? extends DSL>) classes.get(i));
 			}
 			context.setFiletype(null);
 			return context;
@@ -110,13 +113,11 @@ public class TestDSLTransformation {
 
 	}
 
-	public String performTransformation(String sb, GrammarResult gr)
-			throws VisitFailure {
+	public String performTransformation(String sb, GrammarResult gr) throws VisitFailure {
 
 		ILexer lexer = new KeywordSensitiveLexer(new KeywordSeperator());
 		EarleyParser earleyParser = new EarleyParser(lexer, gr.grammar);
 
-		
 		// logger.info("= Parsing input stream = {}", inputStream);
 
 		Chart chart = (Chart) earleyParser.parse(sb.trim());
@@ -144,8 +145,7 @@ public class TestDSLTransformation {
 		if (gr.classes.size() > 1) {
 			// term = new ClosureResultTransformer().transform(context,
 			// term);
-			term = new InvokationDispatcherTransformation().transform(moptions,
-					term);
+			term = new InvokationDispatcherTransformation().transform(moptions, term);
 		}
 		CodePrinter prettyPrinter = this.cpf.createCodePrinter();
 
@@ -156,7 +156,5 @@ public class TestDSLTransformation {
 
 		return new String(out.toByteArray());
 	}
-	
-	
 
 }

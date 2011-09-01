@@ -69,7 +69,7 @@ public interface DSLDefinition extends TransformationType {
      * from contributor described by {@link #getContributor()}. If the class is
      * not load-able as defined by {@link #isDSLClassLoadable()}
      * <code>null</code> will be returned instead. When
-     * {@link #isDSLClassLoadable()} is <code>true</code> the loaded class must
+     * {@link #isDSLClassLoadable()} is <code>true</code> the loaded class will
      * be returned
      * 
      * @return the loaded Class of this {@code DSLDefinition} or

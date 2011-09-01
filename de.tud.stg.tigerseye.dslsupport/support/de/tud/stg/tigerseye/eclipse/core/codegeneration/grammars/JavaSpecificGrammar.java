@@ -37,8 +37,8 @@ public class JavaSpecificGrammar implements HostLanguageGrammar {
 		ICategory<String> optionalWS = WhitespaceCategoryDefinition.getNewOptionalWhitespaceCategory();
 		ICategory<String> WS = WhitespaceCategoryDefinition.getNewRequiredWhitespaceCategory();
 
-		Category pType = new Category(CategoryNames.PTYPE_CATEGORY, false);
-		Category rType = new Category(CategoryNames.RTYPE_CATEGORY, false);
+		Category pType = new Category(CategoryNames.PARAMETERTYPE_CATEGORY, false);
+		Category rType = new Category(CategoryNames.RETURNTYPE_CATEGORY, false);
 		Category type = new Category(CategoryNames.TYPE_CATEGORY, false);
 
 		IRule<String> typeRule1 = new Rule(type, pType);

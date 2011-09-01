@@ -1,10 +1,13 @@
 package de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling;
 
-import de.tud.stg.popart.builder.core.annotations.DSL;
+import de.tud.stg.popart.builder.core.annotations.DSLClass;
+import de.tud.stg.popart.builder.core.annotations.DSLMethod;
+import de.tud.stg.popart.builder.core.annotations.DSLParameter;
 
 /**
  * Valid parameter options and corresponding default values. These options
- * identify the four parameter options in the {@link DSL} annotation.
+ * identify the four parameter options in the {@link DSLClass},
+ * {@link DSLMethod} and {@link DSLParameter} annotations.
  * 
  * @author Leo Roos
  * 

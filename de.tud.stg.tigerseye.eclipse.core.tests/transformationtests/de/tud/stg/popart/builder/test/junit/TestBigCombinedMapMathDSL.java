@@ -7,7 +7,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import utilities.LongrunningTest;
-import utilities.LongrunningTestRule;
+import utilities.SystemPropertyRule;
 
 import de.tud.stg.popart.builder.test.dsls.MapDSL;
 import de.tud.stg.popart.builder.test.dsls.MathDSL;
@@ -18,10 +18,10 @@ public class TestBigCombinedMapMathDSL {
 
 	
 	@Rule
-	public LongrunningTestRule ptr = new LongrunningTestRule();
+	public SystemPropertyRule ptr = new SystemPropertyRule();
 
 	@Test
-	@LongrunningTest(193885)
+	@LongrunningTest(186906)
 	public void testBigConditionalDSL() {
 		test(false, "BigCombinedDSL", TransformationUtils.dslsList(MathDSL.class)
 				.add(MapDSL.class).add(SimpleSqlDSL.class).toList());

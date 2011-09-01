@@ -22,6 +22,10 @@ public @interface DSLParameter {
 
 	String arrayDelimiter() default AnnotationConstants.UNASSIGNED;
 
+	/**
+	 * TODO(Leo_Roos;Sep 1, 2011) how can this element on a parameter have
+	 * impact on the transformation? Delete?
+	 */
 	String stringQuotation() default AnnotationConstants.UNASSIGNED;
 
 }

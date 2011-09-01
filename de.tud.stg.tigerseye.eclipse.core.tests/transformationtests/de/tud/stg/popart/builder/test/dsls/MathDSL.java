@@ -23,7 +23,6 @@ public class MathDSL implements de.tud.stg.popart.dslsupport.DSL {
 	}
 	
 	@DSLMethod()
-//	
 	public int sum__p0(int[] elements) {
 		int sum = 0;
 		for (int i : elements) {

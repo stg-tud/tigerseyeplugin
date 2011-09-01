@@ -21,4 +21,9 @@ public @interface LongrunningTest {
 	 * this annotation is used with.
 	 */
 	int value() default -1;
+	
+	/**
+	 * System property to control annotated tests 
+	 */
+	public static final String PROPERTY_KEY_TESTS_LONGRUNNING = "runtests.long";
 }

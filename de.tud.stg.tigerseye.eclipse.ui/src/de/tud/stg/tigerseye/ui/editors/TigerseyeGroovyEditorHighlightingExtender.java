@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -21,15 +22,22 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import de.tud.stg.popart.dslsupport.DSL;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFoundException;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.ClassDSLInformation;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.MethodDSLInformation;
 import de.tud.stg.tigerseye.eclipse.core.utils.KeyWordExtractor;
 import de.tud.stg.tigerseye.ui.preferences.DSLUIKey;
 
 public class TigerseyeGroovyEditorHighlightingExtender implements
 	IHighlightingExtender {
+
+    private static final Logger logger = LoggerFactory.getLogger(TigerseyeGroovyEditorHighlightingExtender.class);
 
     private final ColorManager cmanager = new ColorManager();
 
@@ -83,10 +91,29 @@ public class TigerseyeGroovyEditorHighlightingExtender implements
 	    for (String keyWord : getMethodKeyWordsForDSL(dsl)) {
 		keywordsRule.addWord(keyWord, token);
 	    }
+	    List<String> keywords = getKeyWordsFor(dsl);
+	    for (String string : keywords) {
+		keywordsRule.addWord(string, token);
+	    }
+
 	    tokenMap.put(dsl, token);
 	    additionalRules.add(keywordsRule);
 	}
 	return additionalRules;
+    }
+
+    private List<String> getKeyWordsFor(DSLDefinition dsl) {
+	if (dsl.isDSLClassLoadable()) {
+	    Class<? extends DSL> dslClassChecked = dsl.getDSLClassChecked();
+	    ClassDSLInformation classDSLInformation = new ClassDSLInformation(dslClassChecked);
+	    List<MethodDSLInformation> methodsInformation = classDSLInformation.getMethodsInformation();
+	    ArrayList<String> result = new ArrayList<String>();
+	    for (MethodDSLInformation methodDSLInformation : methodsInformation) {
+		result.addAll(methodDSLInformation.getKeywordList());
+	    }
+	    return result;
+	}
+	return Collections.emptyList();
     }
 
     // FIXME refactor keywordextractor: so that it takes class in constructor

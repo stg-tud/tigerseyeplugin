@@ -3,22 +3,25 @@ package de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction;
 import static de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ConfigurationOptions.WHITESPACE_ESCAPE;
 import static de.tud.stg.tigerseye.eclipse.core.utils.CustomFESTAssertions.assertThat;
 import static org.fest.assertions.Assertions.assertThat;
-import static org.junit.Assert.*;
 import static org.junit.Assert.fail;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-import org.eclipse.jdt.internal.ui.typehierarchy.MethodsLabelProvider;
+import org.eclipse.core.commands.ParameterType;
 import org.junit.Before;
 import org.junit.Test;
 
 import utilities.TestUtils;
+import de.tud.stg.popart.builder.core.annotations.DSLParameter;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod;
+import de.tud.stg.popart.builder.core.annotations.DSLMethod.Associativity;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod.DslMethodType;
+import de.tud.stg.popart.builder.core.annotations.DSLMethod.PreferencePriority;
 import de.tud.stg.popart.builder.test.dsls.SetDSL;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.GroovyClassWithSomeAnnotatedMethodsForExtractorTest;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.MixedAnnotatedMethodsForExtractionTest;
@@ -27,8 +30,12 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.NoProductionAn
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.SdfDSLForExtractingTest;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.SpecialMethodNamesClassForDSLInformationTestJava;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.WaterSupportedFalseAnnotatedForExtractorTest;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.SdfDSLForExtractingTest.ExportOrHiddenSection;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.SdfDSLForExtractingTest.Imports;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.SdfDSLForExtractingTest.Module;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.SdfDSLForExtractingTest.ModuleId;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.SdfDSLForExtractingTest.SortSymbol;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ConfigurationOptions;
-import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeCoreConstants.DSLDefinitionsAttribute;
 
 public class MethodDSLInformationTest {
 
@@ -38,17 +45,9 @@ public class MethodDSLInformationTest {
 	 */
 	private MethodDSLInformation getGrammar_MethodInfo;
 	/**
-	 * Operation DSLType annotated method
-	 */
-	private MethodDSLInformation getAnything_MethodInfo;
-	/**
 	 * no annotated of name "notAnnotated"
 	 */
 	private MethodDSLInformation notAnnotated_MethodInfo;
-	/**
-	 * annotated with @DSLMethod
-	 */
-	private MethodDSLInformation emptyDSLMethodAnnotation_MethodInfo;
 	/**
 	 * annotated with @DSLMethod(type=Literal)
 	 */
@@ -92,12 +91,8 @@ public class MethodDSLInformationTest {
 		ClassDSLInformation extractedClassInforamtion = loadDefaulted(clazz);
 		setDSLMethodlisting = extractedClassInforamtion.getMethodsInformation();
 		getGrammar_MethodInfo = getFirstMethodInfoInClass(SdfDSLForExtractingTest.class, "getGrammar");
-		getAnything_MethodInfo = getFirstMethodInfoInClass(WaterSupportedFalseAnnotatedForExtractorTest.class,
-				"getAnything");
 		notAnnotated_MethodInfo = getFirstMethodInfoInClass(MixedAnnotatedMethodsForExtractionTest.class,
 				"notAnnotated");
-		emptyDSLMethodAnnotation_MethodInfo = getFirstMethodInfoInClass(MixedAnnotatedMethodsForExtractionTest.class,
-				"emptyDSLMethodAnnotation");
 		someliteral_MethodInfo = getFirstMethodInfoInClass(MixedAnnotatedMethodsForExtractionTest.class, "someliteral");
 		getSomeliteral_MethodInfo = getFirstMethodInfoInClass(MixedAnnotatedMethodsForExtractionTest.class,
 				"getSomeliteral");
@@ -117,7 +112,7 @@ public class MethodDSLInformationTest {
 		return extractedClassInforamtion;
 	}
 
-	public MethodDSLInformation getFirstMethodInfoForName(List<MethodDSLInformation> mis, String methodname) {
+	private MethodDSLInformation getFirstMethodInfoFromListForName(List<MethodDSLInformation> mis, String methodname) {
 		for (MethodDSLInformation e : mis) {
 			if (e.getMethod().getName().contains(methodname)) {
 				return e;
@@ -126,7 +121,7 @@ public class MethodDSLInformationTest {
 		throw new IllegalArgumentException(methodname + "not found in " + TestUtils.collectionPrettyPrint(mis));
 	}
 
-	public Method getFirstMethod(Class<?> c, String methodname) {
+	static Method getFirstMethod(Class<?> c, String methodname) {
 		Method[] methods = c.getMethods();
 		for (Method e : methods) {
 			if (e.getName().contains(methodname)) {
@@ -137,7 +132,7 @@ public class MethodDSLInformationTest {
 				+ TestUtils.collectionPrettyPrint(Arrays.asList(methods)));
 	}
 
-	private MethodDSLInformation getFirstMethodInfoInClass(Class<?> c, String methodname) {
+	static MethodDSLInformation getFirstMethodInfoInClass(Class<?> c, String methodname) {
 		Method firstMethod = getFirstMethod(c, methodname);
 		MethodDSLInformation minf = new MethodDSLInformation(firstMethod);
 		minf.load();
@@ -148,40 +143,42 @@ public class MethodDSLInformationTest {
 	public void shouldBeDefaultBeforeLoad() {
 		// @DSLMethod(production = "lexical  start-symbols  p0", topLevel =
 		// false)
-		// public LexicalStartSymbols lexicalStartSymbols(@DSL(arrayDelimiter =
+		// public LexicalStartSymbols
+		// lexicalStartSymbols(@DSLParameter(arrayDelimiter =
 		// " ") Symbol[] symbols) {
 		Method m = getFirstMethod(SdfDSLForExtractingTest.class, "lexicalStartSymbols");
 		MethodDSLInformation minfs = new MethodDSLInformation(m);
 		assertThat(minfs.isAnnotated()).isEqualTo(false);
-		assertThat(minfs.isToplevel()).isEqualTo(DSLAnnotationDefaults.DEFAULT_DSLMethod.topLevel());
+		assertThat(minfs.isToplevel()).isEqualTo(DSLInformationDefaults.DEFAULT_DSLMethod.topLevel());
 	}
 
 	@Test
 	public void shouldBeAnnotatedAfterLoad() {
 		// @DSLMethod(production = "lexical  start-symbols  p0", topLevel =
 		// false)
-		// public LexicalStartSymbols lexicalStartSymbols(@DSL(arrayDelimiter =
+		// public LexicalStartSymbols
+		// lexicalStartSymbols(@DSLParameter(arrayDelimiter =
 		// " ") Symbol[] symbols) {
 		Method m = getFirstMethod(SdfDSLForExtractingTest.class, "lexicalStartSymbols");
 		MethodDSLInformation minfs = new MethodDSLInformation(m);
-		minfs.load(DSLAnnotationDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP);
+		minfs.load(DSLInformationDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP);
 		assertThat(minfs.isAnnotated()).isEqualTo(true);
 		assertThat(minfs.isToplevel()).isEqualTo(false);
-		assertThat(minfs.getProductionRaw()).isEqualTo("lexical  start-symbols  p0");
+		assertThat(minfs.getProduction()).isEqualTo("lexical  start-symbols  p0");
 	}
 
 	@Test
 	public void shouldHaveMethodNameWithoutGetAsProductionIfNotAnnotatedIfBeginningWithGet() throws Exception {
 		// public Grammar getGrammar(String topLevelModuleName, boolean
 		// cleanGrammar) {
-		assertThat(getGrammar_MethodInfo.getProductionRaw()).isEqualTo("grammar");
+		assertThat(getGrammar_MethodInfo.getProduction()).isEqualTo("grammar");
 	}
 
 	@Test
 	public void shouldReturnGetOfTypeOperationForMethodNameGet() throws Exception {
 		// public void get(){
 		MethodDSLInformation mi = getFirstMethodInfoInClass(MixedAnnotatedProductionForMethodDSLInfoTest.class, "get");
-		assertThat(mi.getProductionRaw()).isEqualTo("get");
+		assertThat(mi.getProduction()).isEqualTo("get");
 		assertThat(mi.getDSLType()).isEqualTo(DslMethodType.Operation);
 	}
 
@@ -191,22 +188,15 @@ public class MethodDSLInformationTest {
 		// public void get(){
 		MethodDSLInformation mi = getFirstMethodInfoInClass(SpecialMethodNamesClassForDSLInformationTestJava.class,
 				"get");
-		assertThat(mi.getProductionRaw()).isEqualTo("get");
+		assertThat(mi.getProduction()).isEqualTo("get");
 		assertThat(mi.getDSLType()).isEqualTo(DslMethodType.Literal);
 	}
 
 	@Test
 	public void shouldUseMethodNameUntransformedIfNameTooShort() throws Exception {
 		MethodDSLInformation mi = getFirstMethodInfoInClass(SpecialMethodNamesClassForDSLInformationTestJava.class, "y");
-		assertThat(mi.getProductionRaw()).isEqualTo("y");
+		assertThat(mi.getProduction()).isEqualTo("y");
 		assertThat(mi.getDSLType()).isEqualTo(DslMethodType.Operation);
-	}
-
-	@Test
-	public void shouldUseMethodNameUntransformedIfNameTooShortLiteral() throws Exception {
-		MethodDSLInformation mi = getFirstMethodInfoInClass(SpecialMethodNamesClassForDSLInformationTestJava.class, "z");
-		assertThat(mi.getProductionRaw()).isEqualTo("z");
-		assertThat(mi.getDSLType()).isEqualTo(DslMethodType.Literal);
 	}
 
 	@Test
@@ -216,10 +206,10 @@ public class MethodDSLInformationTest {
 		MethodDSLInformation firstMethodInfoForName = getFirstMethodInfoInClass(
 				NoProductionAnnotationOnMethodNoProduction.class, "noproduction");
 		// verify
-		assertThat(firstMethodInfoForName.getProductionRaw()).isEqualTo("noproduction");
+		assertThat(firstMethodInfoForName.getProduction()).isEqualTo("noproduction");
 		// redundant sanity check
 		assertThat(firstMethodInfoForName.isAnnotated()).isTrue();
-		assertThat(firstMethodInfoForName.getConfiguratinoOption(ConfigurationOptions.ARRAY_DELIMITER)).isEqualTo(":");
+		assertThat(firstMethodInfoForName.getConfigurationOption(ConfigurationOptions.ARRAY_DELIMITER)).isEqualTo(":");
 	}
 
 	@Test
@@ -232,7 +222,7 @@ public class MethodDSLInformationTest {
 	private void assertMethodHasExpectedProduction(String methodname, String expectedProduction) {
 		MethodDSLInformation mi = getFirstMethodInfoInClass(MixedAnnotatedProductionForMethodDSLInfoTest.class,
 				methodname);
-		assertThat(mi.getProductionRaw()).isEqualTo(expectedProduction);
+		assertThat(mi.getProduction()).isEqualTo(expectedProduction);
 	}
 
 	@Test
@@ -345,7 +335,7 @@ public class MethodDSLInformationTest {
 	private void assertForMethodForConfOpValue(String methodName, ConfigurationOptions confop, String expectedValue) {
 		MethodDSLInformation mi = getFirstMethodInfoInClass(MixedAnnotatedProductionForMethodDSLInfoTest.class,
 				methodName);
-		assertThat(mi.getConfiguratinoOption(confop)).isEqualTo(expectedValue);
+		assertThat(mi.getConfigurationOption(confop)).isEqualTo(expectedValue);
 	}
 
 	@Test
@@ -369,13 +359,21 @@ public class MethodDSLInformationTest {
 
 	@Test
 	public void shouldGetDefaultConfigurationOptionsForNotAnnotatedMethod() {
-		Collection<String> defaultValues = DSLAnnotationDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP.values();
+		Collection<String> defaultValues = DSLInformationDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP.values();
 		assertThat(getGrammar_MethodInfo.getConfigurationOptions().values()).containsOnly(defaultValues);
 	}
 
 	// DSLtype handling
 
-	// Not annotated
+	// Literals
+
+	@Test
+	public void shouldUseMethodNameUntransformedIfNameTooShortLiteral() throws Exception {
+		MethodDSLInformation mi = getFirstMethodInfoInClass(SpecialMethodNamesClassForDSLInformationTestJava.class, "z");
+		assertThat(mi.getProduction()).isEqualTo("z");
+		assertThat(mi.getDSLType()).isEqualTo(DslMethodType.Literal);
+	}
+
 	@Test
 	public void shouldGetDSLTypeOperationForNotAnnotatedMethodNotBeginningWithGet() {
 		assertThat(notAnnotated_MethodInfo.getDSLType()).isEqualTo(DslMethodType.Operation);
@@ -386,7 +384,6 @@ public class MethodDSLInformationTest {
 		assertThat(getGrammar_MethodInfo.getDSLType()).isEqualTo(DslMethodType.Literal);
 	}
 
-	// Annotated
 	@Test
 	public void shouldGetDSLTypeLiteralForAnnotatedWithItNotBeginningWithGet() {
 		assertThat(someliteral_MethodInfo.getDSLType()).isEqualTo(DslMethodType.Literal);
@@ -396,6 +393,35 @@ public class MethodDSLInformationTest {
 	public void shouldGetDSLTypeLiteralForAnnotatedWithItBeginningWithGet() {
 		assertThat(getSomeliteral_MethodInfo.getDSLType()).isEqualTo(DslMethodType.Literal);
 	}
+
+	@Test
+	public void shouldBeValidLiteral_notAnnotated_GetGrammarWithReturnType() throws Exception {
+		assertThat(getGrammar_MethodInfo.isValid()).isTrue();
+	}
+
+	@Test
+	public void shouldBeValidLiteral_annotated_GetGrammarWithReturnType() throws Exception {
+		// @DSLMethod(type = DslMethodType.Literal) public Object validLiteral()
+		// {
+		getFirstMethodInfoInClass(MixedAnnotatedProductionForMethodDSLInfoTest.class, "validLiteral");
+		assertThat(getGrammar_MethodInfo.isValid()).isTrue();
+	}
+
+	@Test
+	public void shouldBeInvalidIfLiteralHasNoReturntype_notannotated() throws Exception {
+		// public void getInvalidLiteral(){
+		MethodDSLInformation mi = getFirstMethodInfoInClass(MixedAnnotatedProductionForMethodDSLInfoTest.class,
+				"getInvalidLiteral");
+		assertThat(mi.isValid()).isFalse();
+	}
+
+	@Test
+	public void shouldBeInvalidIfLiteralHasNoReturntype_annotated() throws Exception {
+		MethodDSLInformation mi = getFirstMethodInfoInClass(SpecialMethodNamesClassForDSLInformationTestJava.class, "z");
+		assertThat(mi.isValid()).isFalse();
+	}
+
+	// Operations
 
 	@Test
 	public void shouldGetDSLTypeOperationForAnnotatedWithItBeginningWithGet() {
@@ -426,20 +452,20 @@ public class MethodDSLInformationTest {
 
 	@Test
 	public void shouldHaveIsToplevelFalse() {
-		MethodDSLInformation info = getFirstMethodInfoForName(setDSLMethodlisting, "multiElementedList");
+		MethodDSLInformation info = getFirstMethodInfoFromListForName(setDSLMethodlisting, "multiElementedList");
 		assertThat(info.isToplevel()).isFalse();
 	}
 
 	@Test
 	public void shouldHaveIsToplevelTrue() {
-		MethodDSLInformation info = getFirstMethodInfoForName(setDSLMethodlisting, "union");
+		MethodDSLInformation info = getFirstMethodInfoFromListForName(setDSLMethodlisting, "union");
 		assertThat(info.isToplevel()).isTrue();
 	}
 
 	@Test
 	public void shouldHaveDefaultIsToplevelIfNotSpecified() {
-		MethodDSLInformation info = getFirstMethodInfoForName(setDSLMethodlisting, "asSet");
-		assertThat(info.isToplevel()).isEqualTo(DSLAnnotationDefaults.DEFAULT_DSLMethod.topLevel());
+		MethodDSLInformation info = getFirstMethodInfoFromListForName(setDSLMethodlisting, "asSet");
+		assertThat(info.isToplevel()).isEqualTo(DSLInformationDefaults.DEFAULT_DSLMethod.topLevel());
 	}
 
 	/*
@@ -460,7 +486,7 @@ public class MethodDSLInformationTest {
 
 	@Test
 	public void shouldHaveExpectedIdentifierForOneParameters() throws Exception {
-		MethodDSLInformation mi = getFirstMethodInfoForName(setDSLMethodlisting, "asSet");
+		MethodDSLInformation mi = getFirstMethodInfoFromListForName(setDSLMethodlisting, "asSet");
 		assertThat(mi.getUniqueIdentifier()).isEqualTo(
 				SetDSL.class.getName() + "asSet(" + SetDSL.MyList.class.getName() + ")");
 	}
@@ -468,7 +494,8 @@ public class MethodDSLInformationTest {
 	@Test
 	public void shouldHaveExpectedIdentifierForTwoParameters() throws Exception {
 		// @DSLMethod(production = "( p0 => p1 )", topLevel = false)
-		// public FunctionSymbol functionSymbol(@DSL(arrayDelimiter = " ")
+		// public FunctionSymbol functionSymbol(@DSLParameter(arrayDelimiter =
+		// " ")
 		// Symbol[] left, Symbol right)
 		Class<?> c = SdfDSLForExtractingTest.class;
 		MethodDSLInformation mi = getFirstMethodInfoInClass(c, "functionSymbol");
@@ -510,8 +537,8 @@ public class MethodDSLInformationTest {
 
 	private void assertHasDefaultsPlusProductionAndIdentifier(MethodDSLInformation mi, String expectedUniqueIdentifier,
 			String expectedProduction, DslMethodType expectedDSLType) {
-		DSLMethod def = DSLAnnotationDefaults.DEFAULT_DSLMethod;
-		assertThat(mi.getConfigurationOptions()).isEqualTo(DSLAnnotationDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP);
+		DSLMethod def = DSLInformationDefaults.DEFAULT_DSLMethod;
+		assertThat(mi.getConfigurationOptions()).isEqualTo(DSLInformationDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP);
 		assertThat(mi.getDSLType()).isEqualTo(expectedDSLType);
 		assertThat(mi.getAbsolutePriority()).isEqualTo(def.absolutePriority());
 		assertThat(mi.getAssociativity()).isEqualTo(def.associativity());
@@ -519,7 +546,7 @@ public class MethodDSLInformationTest {
 		assertThat(mi.getPriorityHigherThan()).isEqualTo(def.priorityHigherThan());
 		assertThat(mi.getPriorityLowerThan()).isEqualTo(def.priorityLowerThan());
 		assertThat(mi.isToplevel()).isEqualTo(def.topLevel());
-		assertThat(mi.getProductionRaw()).isEqualTo(expectedProduction);
+		assertThat(mi.getProduction()).isEqualTo(expectedProduction);
 		assertThat(mi.getUniqueIdentifier()).isEqualTo(expectedUniqueIdentifier);
 	}
 
@@ -532,6 +559,55 @@ public class MethodDSLInformationTest {
 		String expectedProduction = "start_p0_withoutAnnotation";
 		assertHasDefaultsPlusProductionAndIdentifier(mi, expectedUniqueIdentifier, expectedProduction,
 				DslMethodType.Operation);
+	}
+
+	private MethodDSLInformation getMinfFromMixed(String string) {
+		return getFirstMethodInfoInClass(MixedAnnotatedProductionForMethodDSLInfoTest.class, string);
+	}
+
+	@Test
+	public void shouldHaveUserSet_preferencePriority() throws Exception {
+		// @DSLMethod(preferencePriority=PreferencePriority.Avoid) public void
+		// hasprefvoid
+		MethodDSLInformation minf = getMinfFromMixed("hasprefvoid");
+		assertThat(minf.getPreferencePriority()).isEqualTo(PreferencePriority.Avoid);
+	}
+
+	@Test
+	public void shouldHaveUserSet_priorityLowerThan() throws Exception {
+		// @DSLMethod(priorityLowerThan="lowerman") public void haspriolower(){
+		MethodDSLInformation minf = getMinfFromMixed("haspriolower");
+		assertThat(minf.getPriorityLowerThan()).isEqualTo("lowerman");
+	}
+
+	@Test
+	public void shouldHaveUserSet_priorityHigherThan() throws Exception {
+		// @DSLMethod(priorityHigherThan="uberman") public void haspriohigher()
+		MethodDSLInformation minf = getMinfFromMixed("haspriohigher");
+		assertThat(minf.getPriorityHigherThan()).isEqualTo("uberman");
+	}
+
+	@Test
+	public void shouldHaveUserSet_absolutePriority_POS() throws Exception {
+		// @DSLMethod(absolutePriority=12)public void hasAbsolutePriorityPos(){
+		MethodDSLInformation minf = getMinfFromMixed("hasAbsolutePriorityPos");
+		assertThat(minf.getAbsolutePriority()).isEqualTo(12);
+	}
+
+	@Test
+	public void shouldHaveUserSet_absolutePriority_NEG() throws Exception {
+		// @DSLMethod(absolutePriority=-3245)public void
+		// hasAbsolutePriorityNeg()
+		MethodDSLInformation minf = getMinfFromMixed("hasAbsolutePriorityNeg");
+		assertThat(minf.getAbsolutePriority()).isEqualTo(-3245);
+	}
+
+	@Test
+	public void shouldHaveUserSet_associativity() throws Exception {
+		// @DSLMethod(associativity=Associativity.LEFT) public void
+		// hasassoleft()
+		MethodDSLInformation minf = getMinfFromMixed("hasassoleft");
+		assertThat(minf.getAssociativity()).isEqualTo(Associativity.LEFT);
 	}
 
 	@Test
@@ -564,30 +640,93 @@ public class MethodDSLInformationTest {
 		MethodDSLInformation mi = getFirstMethodInfoInClass(MixedAnnotatedProductionForMethodDSLInfoTest.class,
 				"annotationWithSomeConfigurationOptions");
 		String toString = mi.toString();
-		String[] toContainIgnoreCase = { "production", "asdf.zuul", "string","Quotation", "\".*?(?<!\\)\"", "whitespace",
-				"escape", ".", "array", "delimiter", ",", "parameter", "escape", "p",
+		String[] toContainIgnoreCase = { "production", "asdf.zuul", "string", "Quotation", "\".*?(?<!\\)\"",
+				"whitespace", "escape", ".", "array", "delimiter", ",", "parameter", "escape", "p",
 				"annotationWithSomeConfigurationOptions", "is", "annotated", };
 		assertThat(toString).containsAllSubstringsIgnoreCase(toContainIgnoreCase);
 	}
 
+	// Parameter Infos check
+
 	@Test
 	public void shouldHaveParameterInfosEmpty() throws Exception {
-		fail("HaveParameterInfos has yet to be written.");
+		// public void hasNoParameter() {
+		MethodDSLInformation mi = getFirstMethodInfoInClass(MixedAnnotatedProductionForMethodDSLInfoTest.class,
+				"hasNoParameter");
+		List<ParameterDSLInformation> parameterInfos = mi.getParameterInfos();
+		assertThat(parameterInfos).isEmpty();
 	}
-	
+
 	@Test
 	public void shouldHaveParameterInfosOne() throws Exception {
-		fail("HaveParameterInfos has yet to be written.");
+		// public SortSymbol sortSymbol(String name) {
+		MethodDSLInformation minf = getFirstMethodInfoInClass(SdfDSLForExtractingTest.class, "sortSymbol");
+		assertThat(minf.getParameterInfos()).hasSize(1);
 	}
-	
+
 	@Test
 	public void shouldHaveParameterInfosTwo() throws Exception {
-		fail("HaveParameterInfos has yet to be written.");
+		assertThat(getGrammar_MethodInfo.getParameterInfos()).hasSize(2);
 	}
-	
+
 	@Test
-	public void shouldHaveParameterInfosArray() throws Exception {
-		fail("HaveParameterInfos has yet to be written.");
+	public void shouldReturnNullIfIndexForParameterInfoOutOfRange() throws Exception {
+		assertThat(getGrammar_MethodInfo.getParameterInfo(2)).isNull();
+	}
+
+	@Test
+	public void shouldReturnNullIfIndexForParameterInfoOutOfRange_BoundaryHigh() throws Exception {
+		assertThat(getGrammar_MethodInfo.getParameterInfo(1)).isNotNull();
+	}
+
+	@Test
+	public void shouldReturnNullIfIndexForParameterInfoOutOfRange_BoundaryLow() throws Exception {
+		assertThat(getGrammar_MethodInfo.getParameterInfo(0)).isNotNull();
+	}
+
+	@Test
+	public void shouldReturnNullIfIndexForParameterInfoOutOfRange_Negative() throws Exception {
+		assertThat(getGrammar_MethodInfo.getParameterInfo(-1)).isNull();
+	}
+
+	@Test
+	public void shouldHaveParameterInfosArray_LittleIntegrationTest() throws Exception {
+		// @DSLMethod(production = "module  p0  p1  p2", topLevel = true)
+		// public Module moduleWithoutParameters(ModuleId name,
+		// @DSLParameter(arrayDelimiter = " ") Imports[] imports,
+		// @DSLParameter(arrayDelimiter = " ") ExportOrHiddenSection[]
+		// exportOrHiddenSections) {
+		MethodDSLInformation firstMethodInfoInClass = getFirstMethodInfoInClass(SdfDSLForExtractingTest.class,
+				"moduleWithoutParameters");
+		List<ParameterDSLInformation> paraInfs = firstMethodInfoInClass.getParameterInfos();
+		assertThat(paraInfs).hasSize(3);
+		ParameterDSLInformation importsArray = paraInfs.get(1);
+		assertThat(importsArray.getType()).isEqualTo(SdfDSLForExtractingTest.Imports[].class);
+		assertThat(importsArray.getConfigurationOption(ConfigurationOptions.ARRAY_DELIMITER)).isEqualTo(" ");
+	}
+
+	@Test
+	public void shouldSupportDirectAccessToAspecificParameter_littleIntegrationtest() throws Exception {
+		// @DSLMethod(production = "module  p0  p1  p2", topLevel = true)
+		MethodDSLInformation firstMethodInfoInClass = getFirstMethodInfoInClass(SdfDSLForExtractingTest.class,
+				"moduleWithoutParameters");
+		Class<?> expected = firstMethodInfoInClass.getMethod().getParameterTypes()[2];
+		ParameterDSLInformation info = firstMethodInfoInClass.getParameterInfo(2);
+		Type ipt = info.getType();
+		assertThat(ipt).isEqualTo(expected);
+
+	}
+
+	@Test
+	public void shouldHaveBooleanWhetherHasNtReturnType() throws Exception {
+		MethodDSLInformation minfFromMixed = getMinfFromMixed("hasNtReturnType");
+		assertThat(minfFromMixed.hasReturnValue()).isFalse();
+	}
+
+	@Test
+	public void shouldHaveBooleanWhetherHasReturnType() throws Exception {
+		MethodDSLInformation minfFromMixed = getMinfFromMixed("hasReturnType");
+		assertThat(minfFromMixed.hasReturnValue()).isTrue();
 	}
 
 }

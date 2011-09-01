@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import de.tud.stg.parlex.core.Category;
 import de.tud.stg.parlex.core.Grammar;
-import de.tud.stg.popart.builder.core.annotations.DSL;
+import de.tud.stg.popart.builder.core.annotations.DSLParameter;
 import de.tud.stg.popart.builder.core.annotations.DSLClass;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.CategoryNames;
@@ -96,7 +96,7 @@ public class ImprovedBnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 
 	@DSLMethod(production = "p0", topLevel = false)
 	
-	public Expression expression(@DSL(arrayDelimiter = "|") Term[] terms) {
+	public Expression expression(@DSLParameter(arrayDelimiter = "|") Term[] terms) {
 
 		Expression expression = new Expression(terms);
 		Category expressionCategory = new Category(expression.toString(), false);

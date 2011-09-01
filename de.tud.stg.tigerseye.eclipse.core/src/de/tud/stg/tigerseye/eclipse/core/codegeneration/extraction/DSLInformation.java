@@ -1,16 +1,20 @@
 package de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
+import static de.tud.stg.tigerseye.util.Utils.illegalForArg;
+
 import java.util.Map;
+
+import javax.annotation.Nonnull;
 
 import org.eclipse.core.runtime.Assert;
 
 import de.tud.stg.popart.builder.core.annotations.AnnotationConstants;
-import de.tud.stg.popart.builder.core.annotations.DSL;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ConfigurationOptions;
 
 public abstract class DSLInformation {
+
+    @Nonnull
+    private Map<ConfigurationOptions, String> configurationOptions = DSLInformationDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP;
 
     public DSLInformation() {
 	super();
@@ -18,10 +22,10 @@ public abstract class DSLInformation {
 
     /**
      * load constructor class with
-     * {@link DSLAnnotationDefaults#DEFAULT_CONFIGURATIONOPTIONS_MAP} configuration.
+     * {@link DSLInformationDefaults#DEFAULT_CONFIGURATIONOPTIONS_MAP} configuration.
      */
     public void load() {
-	this.load(DSLAnnotationDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP);
+	this.load(DSLInformationDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP);
     }
 
     /**
@@ -50,17 +54,7 @@ public abstract class DSLInformation {
 	}
     }
 
-    // XXX(LeoRoos;Aug 28, 2011) delete when appropriate
-    protected static void assertAvoidanceOfDSLAnnotation(AnnotatedElement el,
-	    Class<? extends Annotation> useInstead) {
-	DSL hasDeprecatedAnnotation = el.getAnnotation(DSL.class);
-	if (hasDeprecatedAnnotation != null)
-	    throw new IllegalArgumentException(DSL.class
-		    + " is no longer supported. It was used on " + el
-		    + ". Use " + useInstead + " instead.");
-    }
-
-    public String getConfiguratinoOption(ConfigurationOptions confOp) {
+    public String getConfigurationOption(ConfigurationOptions confOp) {
 	String string = getConfigurationOptions().get(confOp);
 	if (string == null)
 	    throw new IllegalArgumentException(confOp
@@ -68,6 +62,17 @@ public abstract class DSLInformation {
 	return string;
     }
 
-    public abstract Map<ConfigurationOptions, String> getConfigurationOptions();
+    public Map<ConfigurationOptions, String> getConfigurationOptions() {
+	return this.configurationOptions;
+    }
+
+    protected void setConfigurationOptions(Map<ConfigurationOptions, String> configurationOptions) {
+	for (ConfigurationOptions entry : ConfigurationOptions.values()) {
+	    String string = configurationOptions.get(entry);
+	    if (string == null)
+		throw illegalForArg(string);
+	}
+	this.configurationOptions = configurationOptions;
+    }
 
 }

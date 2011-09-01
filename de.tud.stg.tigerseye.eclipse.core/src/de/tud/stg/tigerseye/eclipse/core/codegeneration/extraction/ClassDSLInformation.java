@@ -24,9 +24,7 @@ public class ClassDSLInformation extends DSLInformation {
     private boolean annotated;
 
     @Nonnull
-    private DSLClass classAnnotation = DSLAnnotationDefaults.DEFAULT_DSLClass;
-    @Nonnull
-    private Map<ConfigurationOptions, String> classoptions = DSLAnnotationDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP;
+    private DSLClass classAnnotation = DSLInformationDefaults.DEFAULT_DSLClass;
     @Nonnull
     private final Class<?> clazz;
 
@@ -35,11 +33,6 @@ public class ClassDSLInformation extends DSLInformation {
 
     public ClassDSLInformation(Class<?> clazz) {
 	this.clazz = clazz;
-    }
-
-    @Override
-    public Map<ConfigurationOptions, String> getConfigurationOptions() {
-	return classoptions;
     }
 
     public Set<Class<? extends HostLanguageGrammar>> getHostLanguageRules() {
@@ -69,13 +62,12 @@ public class ClassDSLInformation extends DSLInformation {
 
     @Override
     public void load(Map<ConfigurationOptions, String> defaultParameterOptions) {
-	assertAvoidanceOfDSLAnnotation(clazz, DSLMethod.class);
 	DSLClass annotation = clazz.getAnnotation(DSLClass.class);
 	if (annotation != null) {
 	    this.annotated = true;
-	    this.classoptions = getAnnotationParameterOptionsOverInitialMap(
+	    setConfigurationOptions(getAnnotationParameterOptionsOverInitialMap(
 		    annotation,
-		    DSLAnnotationDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP);
+		    DSLInformationDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP));
 	    this.classAnnotation = annotation;
 	}
 
@@ -84,7 +76,7 @@ public class ClassDSLInformation extends DSLInformation {
 	for (Method method : methods) {
 	    MethodDSLInformation methodInfo = new MethodDSLInformation(
 		    method);
-	    methodInfo.load(classoptions);
+	    methodInfo.load(getConfigurationOptions());
 	    this.methodsInformation.add(methodInfo);
 	}
     }
@@ -120,7 +112,7 @@ public class ClassDSLInformation extends DSLInformation {
 	while (iterator.hasNext()) {
 	    Method next = iterator.next();
 	    boolean specialMethod = next.getName().contains(
-		    DSLAnnotationDefaults.SUBSTRING_DEFINING_FILTERED_METHODS);
+		    DSLInformationDefaults.SUBSTRING_DEFINING_FILTERED_METHODS);
 	    if (specialMethod)
 		iterator.remove();
 	}

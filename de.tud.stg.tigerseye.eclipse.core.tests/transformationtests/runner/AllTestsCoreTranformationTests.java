@@ -4,8 +4,11 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import utilities.SystemPropertyRule;
+
 import de.tud.stg.popart.builder.test.junit.AmbiguityFailuresTest;
 import de.tud.stg.popart.builder.test.junit.ConditionalWithNestingDSL;
+import de.tud.stg.popart.builder.test.junit.LiteralsDSLTest;
 import de.tud.stg.popart.builder.test.junit.SmallCombinedMapMathDSL;
 import de.tud.stg.popart.builder.test.junit.TestBigCombinedMapMathDSL;
 import de.tud.stg.popart.builder.test.junit.TestBnfDSL;
@@ -37,9 +40,8 @@ import de.tud.stg.popart.builder.test.junit.TestWordMachine;
 	TestStatefulDSL.class, //
 	TestStateMaschineDSL.class, //
 	AmbiguityFailuresTest.class, //
-	
-	//TestWordMachine.class, //Too Long
+	LiteralsDSLTest.class, //
+	TestWordMachine.class, //Too Long
 })
 public class AllTestsCoreTranformationTests {
-
 }

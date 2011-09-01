@@ -1,5 +1,7 @@
 package de.tud.stg.tigerseye.test.transformation.utils;
 
+import static de.tud.stg.tigerseye.eclipse.core.utils.CustomFESTAssertions.assertThat;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -64,8 +66,7 @@ public class DSLTransformationTester {
 		if (this.genWriter != null)
 			this.genWriter.write(filePrefix, transformation);
 
-		StringUtils.equalsIgnoringWhitspace(transformation, getExpectedStream(filePrefix));
-
+		assertThat(transformation).isEqualToIgnoringWhitespace(getExpectedStream(filePrefix));
 	}
 
 	private String getExpectedStream(String filePrefix) {

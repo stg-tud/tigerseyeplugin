@@ -4,6 +4,7 @@ import static de.tud.stg.tigerseye.test.TransformationUtils.test;
 import junit.framework.AssertionFailedError;
 
 import org.eclipse.jdt.core.dom.PrimitiveType.Code;
+import org.junit.ComparisonFailure;
 import org.junit.Test;
 
 import de.tud.stg.popart.builder.test.dsls.MapDSL;
@@ -31,7 +32,7 @@ public class AmbiguityFailuresTest {
 	/**
 	 * Fails supposedly because of (1)
 	 */
-	@Test(expected = AssertionFailedError.class)
+	@Test(expected = ComparisonFailure.class)
 	public void testMapDSLMultipleEntries() {
 		test("MapDSLMultipleEntries", MapDSL.class);
 	}
@@ -54,7 +55,7 @@ public class AmbiguityFailuresTest {
 	 * <p>
 	 * Concrete reason unknown.
 	 */
-	@Test(expected = AssertionFailedError.class)
+	@Test(expected = ComparisonFailure.class)
 	public void testSmallCombinedDSL() {
 		test("SmallCombinedDSLAmbiguity", MathDSL.class, SimpleSqlDSL.class);
 	}

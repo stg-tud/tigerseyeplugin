@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import de.tud.stg.parlex.core.Category;
 import de.tud.stg.parlex.core.Grammar;
-import de.tud.stg.popart.builder.core.annotations.DSL;
+import de.tud.stg.popart.builder.core.annotations.DSLParameter;
 import de.tud.stg.popart.builder.core.annotations.DSLClass;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod;
 import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
@@ -20,8 +20,8 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.TypeHandler
  * @author Kamil Erhard
  * 
  */
-@DSLClass(whitespaceEscape = " ", typeRules = { BnfDSL.LetterType.class, BnfDSL.LetterType.class,
-		BnfDSL.AnyCharacterType.class }, arrayDelimiter = " ")
+@DSLClass(whitespaceEscape = " ", typeRules = { BnfDSL.LetterType.class, BnfDSL.DigitType.class,
+		BnfDSL.AnyCharacterType.class }, arrayDelimiter = " ", waterSupported=false)
 public class BnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 
 	public static class LetterType extends TypeHandler {
@@ -111,7 +111,7 @@ public class BnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 	}
 
 	@DSLMethod(production = "p0", topLevel = false)	
-	public Expression expression(@DSL(arrayDelimiter = "|") Term[] terms) {
+	public Expression expression(@DSLParameter(arrayDelimiter = "|") Term[] terms) {
 
 		Expression expression = new Expression(terms);
 
@@ -232,7 +232,7 @@ public class BnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 	// }
 
 	@DSLMethod(production = "p0", topLevel = false)	
-	public Identifier identifierFromLetters(@DSL(arrayDelimiter = "") LetterOrDigit[] letterOrDigit) {
+	public Identifier identifierFromLetters(@DSLParameter(arrayDelimiter = "") LetterOrDigit[] letterOrDigit) {
 
 		Identifier identifier = new Identifier(letterOrDigit);
 		// Category identifierCategory = new Category(identifier.toString(), false);
@@ -245,9 +245,8 @@ public class BnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 		return identifier;
 	}
 
-	@DSLMethod(production = "\"  p0  \"", topLevel = false)
-	
-	public QuotedSymbol quotedSymbolFromAnyCharacters(@DSL(arrayDelimiter = "") AnyCharacter[] ac) {
+	@DSLMethod(production = "\"p0\"", topLevel = false)	
+	public QuotedSymbol quotedSymbolFromAnyCharacters(@DSLParameter(arrayDelimiter = "") AnyCharacter[] ac) {
 		QuotedSymbol quotedSymol = new QuotedSymbol(ac);
 		// Category quotedSymbolCategory = new Category(quotedSymol.toString(), false);
 		//
@@ -388,7 +387,7 @@ public class BnfDSL implements de.tud.stg.popart.dslsupport.DSL {
 		}
 	}
 
-	private static interface Evaluable {
+	public static interface Evaluable {
 		public Category evaluate(Grammar grammar, HashMap<Identifier, Expression> mapping);
 	}
 

@@ -1,32 +1,32 @@
 package de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction;
 
 import static de.tud.stg.tigerseye.eclipse.core.utils.CustomFESTAssertions.assertThat;
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static utilities.TestUtils.collectionPrettyPrint;
-import static utilities.TigerseyeAssert.assertContainsExactly;
-import static utilities.TigerseyeAssert.assertEmpty;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
-import de.tud.stg.popart.builder.core.annotations.DSLMethod;
+import utilities.SystemPropertyRule;
+import utilities.TodoTest;
+
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.ClassDSLInformation.ComparableMethod;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.HostLanguageGrammar;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.ClassWithSameMethodsAsOther1;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.ClassWithSameMethodsAsOther2;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.MathDSL4GrammarBuilderTest;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.NoPublicMethodsGroovyClassForExtractorTest;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.NoPublicMethodsJavaClass;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.NotAnnotatedClassForExtractorTest;
@@ -39,6 +39,9 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.TypeHandler
 import de.tud.stg.tigerseye.util.ListBuilder;
 
 public class ClassDSLInformationTest {
+
+	@Rule
+	public SystemPropertyRule spr = new SystemPropertyRule();
 
 	String[] expectedSDFMethodsToBeExtracted = { //
 	"getGrammar(String,boolean)",//
@@ -172,7 +175,7 @@ public class ClassDSLInformationTest {
 
 	private ClassDSLInformation loadDefault(Class<?> clazz) {
 		ClassDSLInformation extractedClassInforamtion = new ClassDSLInformation(clazz);
-		extractedClassInforamtion.load(DSLAnnotationDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP);
+		extractedClassInforamtion.load(DSLInformationDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP);
 		return extractedClassInforamtion;
 	}
 
@@ -219,7 +222,7 @@ public class ClassDSLInformationTest {
 		Set<Class<? extends HostLanguageGrammar>> typeRules = testee.getHostLanguageRules();
 		List<Class<? extends HostLanguageGrammar>> expected = new ArrayList<Class<? extends HostLanguageGrammar>>();
 		expected.add(SdfDSLForExtractingTest.MyHostLanguage.class);
-		assertContainsExactly(expected, typeRules);
+		assertThat(typeRules).containsOnly(expected);
 	}
 
 	@Test
@@ -230,27 +233,27 @@ public class ClassDSLInformationTest {
 		expected.add(SdfDSLForExtractingTest.CharacterClassSymbolType.class);
 		expected.add(SdfDSLForExtractingTest.CaseInsensitiveLiteralSymbolType.class);
 		Set<Class<? extends TypeHandler>> typeRules = testee.getTypeRules();
-		assertContainsExactly(expected, typeRules);
+		assertThat(expected).containsOnly(typeRules.toArray());
 	}
 
 	@Test
 	public void shouldContainDefaultHostLanguageIfNotAnnotated() throws Exception {
 		Set<Class<? extends HostLanguageGrammar>> expected = notAnnotated.getHostLanguageRules();
-		Class<? extends HostLanguageGrammar>[] typeRules2 = DSLAnnotationDefaults.DEFAULT_DSLClass.hostLanguageRules();
-		assertContainsExactly(expected, Arrays.asList(typeRules2));
+		Class<? extends HostLanguageGrammar>[] typeRules2 = DSLInformationDefaults.DEFAULT_DSLClass.hostLanguageRules();
+		assertThat(expected).containsOnly(Arrays.asList(typeRules2));
 	}
 
 	@Test
 	public void shouldContainDefaultsWhenNotAnnotated() throws Exception {
 		Set<Class<? extends TypeHandler>> typeRules = notAnnotated.getTypeRules();
-		Class<? extends TypeHandler>[] typeRules2 = DSLAnnotationDefaults.DEFAULT_DSLClass.typeRules();
-		assertContainsExactly(Arrays.asList(typeRules2), typeRules);
+		Class<? extends TypeHandler>[] typeRules2 = DSLInformationDefaults.DEFAULT_DSLClass.typeRules();
+		assertThat(typeRules).containsOnly((Object[]) typeRules2);
 	}
 
 	@Test
 	public void shouldDefaultWaterSupportIfNotAnnotated() throws Exception {
 		boolean waterSupported = notAnnotated.isWaterSupported();
-		assertEquals(DSLAnnotationDefaults.DEFAULT_DSLClass.waterSupported(), waterSupported);
+		assertEquals(DSLInformationDefaults.DEFAULT_DSLClass.waterSupported(), waterSupported);
 	}
 
 	@Test
@@ -285,13 +288,13 @@ public class ClassDSLInformationTest {
 	 */
 	@Test
 	public void shouldHaveAnnotatedOptionsAndRestDefault() throws Exception {
-		assertEquals(testee.getConfiguratinoOption(ConfigurationOptions.WHITESPACE_ESCAPE), " ");
+		assertEquals(testee.getConfigurationOption(ConfigurationOptions.WHITESPACE_ESCAPE), " ");
 		List<ConfigurationOptions> confOps = new ArrayList<ConfigurationOptions>(Arrays.asList(ConfigurationOptions
 				.values()));
 		confOps.remove(ConfigurationOptions.WHITESPACE_ESCAPE);
 		for (ConfigurationOptions restshouldbedefault : confOps) {
 			String expected = restshouldbedefault.defaultValue;
-			String actual = testee.getConfiguratinoOption(restshouldbedefault);
+			String actual = testee.getConfigurationOption(restshouldbedefault);
 			assertEquals(expected, actual);
 		}
 	}
@@ -299,7 +302,7 @@ public class ClassDSLInformationTest {
 	@Test
 	public void shouldHaveDefaultsIfNotAnnotated() throws Exception {
 		for (ConfigurationOptions iterable_element : ConfigurationOptions.values()) {
-			String actual = notAnnotated.getConfiguratinoOption(iterable_element);
+			String actual = notAnnotated.getConfigurationOption(iterable_element);
 			assertEquals(iterable_element.defaultValue, actual);
 		}
 	}
@@ -308,14 +311,14 @@ public class ClassDSLInformationTest {
 	public void shouldHaveNoMethodsInformationForNoPublicMethodsGroovyClass() throws Exception {
 		List<MethodDSLInformation> methodsInformation = loadDefault(NoPublicMethodsGroovyClassForExtractorTest.class)
 				.getMethodsInformation();
-		assertEmpty(methodsInformation);
+		assertThat(methodsInformation).isEmpty();
 	}
 
 	@Test
 	public void shouldHaveNoMethodsInformationForNoPublicMethodsJavaClass() throws Exception {
 		List<MethodDSLInformation> methodsInformation = loadDefault(NoPublicMethodsJavaClass.class)
 				.getMethodsInformation();
-		assertEmpty(methodsInformation);
+		assertThat(methodsInformation).isEmpty();
 	}
 
 	@Test
@@ -334,14 +337,14 @@ public class ClassDSLInformationTest {
 	public void shouldNotBeEqualMethodsOfSameNames() throws Exception {
 		Method[] m1s = ClassWithSameMethodsAsOther1.class.getDeclaredMethods();
 		Method[] m2s = ClassWithSameMethodsAsOther2.class.getDeclaredMethods();
-		assertThat(Arrays.asList(m1s)).excludes(Arrays.asList(m2s));
+		assertThat(Arrays.asList(m1s)).excludes((Object[]) m2s);
 	}
 
 	@Test
 	public void shouldNotHaveMethodDSLInformationIfNoMethods() throws Exception {
 		List<MethodDSLInformation> methodsInformation = loadDefault(NoPublicMethodsJavaClass.class)
 				.getMethodsInformation();
-		assertEmpty(methodsInformation);
+		assertThat(methodsInformation).isEmpty();
 	}
 
 	@Test
@@ -440,7 +443,16 @@ public class ClassDSLInformationTest {
 		assertWhetherMethodWithSpecialCharsContained("iget_parseßd_annotated", true);
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void shouldThrowExceptionWhenTryingToSetIncompleteConfigurationOptions() throws Exception {
+		HashMap<ConfigurationOptions, String> hashMap = new HashMap<ConfigurationOptions, String>(
+				DSLInformationDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP);
+		hashMap.remove(ConfigurationOptions.WHITESPACE_ESCAPE);
+		testee.setConfigurationOptions(hashMap);
+	}
+
 	@Test
+	@TodoTest
 	public void shouldHaveInheritedMethods() throws Exception {
 		fail("HaveInheritedMethods has yet to be written.");
 	}

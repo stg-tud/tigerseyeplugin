@@ -37,11 +37,11 @@ Export-Package:
  de.tud.stg.tigerseye.eclipse.core.builder.transformers.textual,
  de.tud.stg.tigerseye.eclipse.core.codegeneration,
  de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm,
+ de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction,
  de.tud.stg.tigerseye.eclipse.core.launching,
  de.tud.stg.tigerseye.eclipse.core.preferences,
  de.tud.stg.tigerseye.eclipse.core.runtime,
  de.tud.stg.tigerseye.eclipse.core.utils
- 
 Eclipse-BuddyPolicy: registered
 Eclipse-ExtensibleAPI: true
  

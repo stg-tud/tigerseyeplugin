@@ -7,7 +7,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import utilities.LongrunningTest;
-import utilities.LongrunningTestRule;
+import utilities.SystemPropertyRule;
 
 import de.tud.stg.popart.builder.test.statemachine.StateMachineDSL;
 

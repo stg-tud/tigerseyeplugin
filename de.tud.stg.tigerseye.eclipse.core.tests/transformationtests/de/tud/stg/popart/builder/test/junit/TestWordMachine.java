@@ -1,4 +1,5 @@
 package de.tud.stg.popart.builder.test.junit;
+
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
@@ -19,9 +20,13 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import utilities.LongrunningTest;
+import utilities.SystemPropertyRule;
 
 import aterm.ATerm;
 import de.tud.stg.parlex.ast.IAbstractNode;
@@ -42,14 +47,16 @@ import de.tud.stg.tigerseye.test.GroovyScript;
 import de.tud.stg.tigerseye.test.TransformationUtils;
 
 public class TestWordMachine {
-private static final Logger logger = LoggerFactory.getLogger(TestWordMachine.class);
+	private static final Logger logger = LoggerFactory.getLogger(TestWordMachine.class);
 
+	@Rule
+	public SystemPropertyRule ltr = new SystemPropertyRule();
 
 	public String testWordMaschine(InputStreamReader inputFile) {
 		try {
 
 			UnicodeLookupTable ult = TransformationUtils.getDefaultLookupTable();
-			
+
 			GrammarBuilder gb = new GrammarBuilder(ult);
 
 			IGrammar<String> grammar = gb.buildGrammar(WordMachine.class);
@@ -78,7 +85,7 @@ private static final Logger logger = LoggerFactory.getLogger(TestWordMachine.cla
 
 			term.accept(prettyPrinter);
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			prettyPrinter.write(out);			
+			prettyPrinter.write(out);
 			return new String(out.toByteArray());
 		} catch (FileNotFoundException e) {
 			throw new UnhandledException(e);
@@ -89,23 +96,26 @@ private static final Logger logger = LoggerFactory.getLogger(TestWordMachine.cla
 		}
 	}
 
-	@Ignore("Takes very long and fails, did the implementation change without adjusting the test?")
-	@Test	
+	@Ignore("Uses old interface depends on only bytecode available StateMachineDSL. could check to move this test to updated version in examples project")
+	@Test
+	@LongrunningTest
 	public void testWordMachine() {
 
-		String inputStateMachine = "WordMaschine_short.input";//args[0];
-//		String inputStateMachine = "WordMaschine_short.input";//args[0];
-//		String inputEvents = "InputEvent?";//args[1];
-		
+		String inputStateMachine = "WordMaschine_short.input";// args[0];
+		// String inputStateMachine = "WordMaschine_short.input";//args[0];
+		// String inputEvents = "InputEvent?";//args[1];
+
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-//		TestUtils.setOutputStream(out);
+		// TestUtils.setOutputStream(out);
 
 		PrintWriter printWriter = new PrintWriter(out);
 
 		StringBuilder sb = new StringBuilder();
-		
-		String header = "import " + DSLInvoker.class.getCanonicalName() + ";\n"// de.tud.stg.popart.builder.utils.DSLInvoker;\n"
+
+		String header = "import "
+				+ DSLInvoker.class.getCanonicalName()
+				+ ";\n"// de.tud.stg.popart.builder.utils.DSLInvoker;\n"
 				+ "import de.tud.stg.popart.builder.test.statemachine.fsm.*;\n"
 				+ "import de.tud.stg.popart.builder.test.statemachine.*;\n"
 				+ "import de.tud.stg.popart.builder.test.dsls.WordMachine;\n"
@@ -113,16 +123,15 @@ private static final Logger logger = LoggerFactory.getLogger(TestWordMachine.cla
 
 		sb.append(header);
 
-		
 		InputStream loadTestResource = TransformationUtils.loadTestResource(inputStateMachine);
-//		long start = System.nanoTime();
+		// long start = System.nanoTime();
 		String testWordMaschine = new TestWordMachine().testWordMaschine(new InputStreamReader(loadTestResource));
-		
+
 		sb.append(testWordMaschine);
 
-//		long end = System.nanoTime();
+		// long end = System.nanoTime();
 		String footer = "\n}";
-		
+
 		sb.append(footer);
 
 		// try {
@@ -135,22 +144,25 @@ private static final Logger logger = LoggerFactory.getLogger(TestWordMachine.cla
 		groovyScript.setInput(sb.toString());
 		StateMachine stateMachine = (StateMachine) groovyScript.execute();
 
-//			new Thread(new EventProducer(new StringReader(inputEvents), stateMachine)).start();
+		// new Thread(new EventProducer(new StringReader(inputEvents),
+		// stateMachine)).start();
 
-		
 		stateMachine.start();
-		
-		String[] events = {"start","stop","switchOff","toEnd"};
-		
-		for (String e : events) {			
+
+		String[] events = { "start", "stop", "switchOff", "toEnd" };
+
+		for (String e : events) {
 			stateMachine.sendEvent(e);
-		}			
-		
-//		long end2 = System.nanoTime();
+		}
+
+		// long end2 = System.nanoTime();
 
 		// logger.info();
-		// logger.info("parsing: " + TimeUnit.NANOSECONDS.toSeconds(end - start));
-		// logger.info("executing: " + TimeUnit.NANOSECONDS.toSeconds(end2 - end));
-		// logger.info("total: " + TimeUnit.NANOSECONDS.toSeconds(end2 - start));
+		// logger.info("parsing: " + TimeUnit.NANOSECONDS.toSeconds(end -
+		// start));
+		// logger.info("executing: " + TimeUnit.NANOSECONDS.toSeconds(end2 -
+		// end));
+		// logger.info("total: " + TimeUnit.NANOSECONDS.toSeconds(end2 -
+		// start));
 	}
 }

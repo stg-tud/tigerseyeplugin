@@ -6,7 +6,7 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 
-public class MethodProductionElementsTest {
+public class MethodProductionElementTest {
 
 	private KeywordElement keywordElement;
 	private WhitespaceElement whitespaceElement;

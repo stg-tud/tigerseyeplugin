@@ -1,7 +1,9 @@
 package de.tud.stg.tigerseye.eclipse.core.codegeneration.resources;
 
 import de.tud.stg.popart.builder.core.annotations.DSLMethod;
+import de.tud.stg.popart.builder.core.annotations.DSLMethod.Associativity;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod.DslMethodType;
+import de.tud.stg.popart.builder.core.annotations.DSLMethod.PreferencePriority;
 
 public class MixedAnnotatedProductionForMethodDSLInfoTest {
 
@@ -93,5 +95,47 @@ public class MixedAnnotatedProductionForMethodDSLInfoTest {
 	public void annotationWithSomeConfigurationOptions() {
 
 	}
+	
+	@DSLMethod(type = DslMethodType.Literal)
+	public Object validLiteral() {
+		return null;
+	}
+	
+	public void getInvalidLiteral(){
+		
+	}
+	
+	// priority access methods testing
+	
+	@DSLMethod(priorityLowerThan="lowerman")
+	public void haspriolower(){		
+	}
+	@DSLMethod(priorityHigherThan="uberman")
+	public void haspriohigher(){		
+	}
+	@DSLMethod(associativity=Associativity.LEFT)
+	public void hasassoleft(){		
+	}
+	@DSLMethod(preferencePriority=PreferencePriority.Avoid)
+	public void hasprefvoid(){		
+	}
+	@DSLMethod(absolutePriority=-3245)
+	public void hasAbsolutePriorityNeg(){		
+	}
+	@DSLMethod(absolutePriority=12)
+	public void hasAbsolutePriorityPos(){		
+	}
+	
+	// Return type tests
+	
+	public Object hasReturnType(){
+		return null;
+	}
+	
+	public void hasNtReturnType(){
+		
+	}
+	
+	
 
 }

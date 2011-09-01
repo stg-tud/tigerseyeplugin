@@ -20,6 +20,6 @@ public class CollectionAssertExtension extends CollectionAssert{
 		Object[] array = collections.toArray();
 		contains(array);
 		return this;
-	}
+	}	
 	
 }

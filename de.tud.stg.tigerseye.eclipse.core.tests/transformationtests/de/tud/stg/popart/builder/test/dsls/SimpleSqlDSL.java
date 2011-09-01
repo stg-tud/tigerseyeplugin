@@ -3,7 +3,7 @@ import groovy.lang.Closure;
 
 import java.util.HashMap;
 
-import de.tud.stg.popart.builder.core.annotations.DSL;
+import de.tud.stg.popart.builder.core.annotations.DSLParameter;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod;
 import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeyword;
@@ -31,7 +31,7 @@ public class SimpleSqlDSL implements de.tud.stg.popart.dslsupport.DSL {
 
 	@DSLMethod(production = "SELECT__p0__FROM__p1__WHERE__p2")
 	
-	public void selectFromWhere(String[] columns, String[] tables, @DSL(arrayDelimiter = "AND") String[] checks) {
+	public void selectFromWhere(String[] columns, String[] tables, @DSLParameter(arrayDelimiter = "AND") String[] checks) {
 		System.out.println("sending QUERY: SELECT " + columns + " FROM " + "tables" + "WHERE" + " AND_concatenatedarray: " + checks);
 	}
 }
