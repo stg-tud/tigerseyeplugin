@@ -117,7 +117,7 @@ private static final Logger logger = LoggerFactory.getLogger(KeywordTranslationT
 					e);
 			    }
 			} else
-			    logger.error(
+			    logger.warn(
 				    "Failed to determine Translation file from {}.",
 				    f);
 		    } finally {

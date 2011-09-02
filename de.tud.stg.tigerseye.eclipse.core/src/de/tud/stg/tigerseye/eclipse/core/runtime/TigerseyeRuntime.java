@@ -48,7 +48,7 @@ public class TigerseyeRuntime {
     private static final Logger logger = LoggerFactory
 	    .getLogger(TigerseyeRuntime.class);
 
-    public static final String tigerseyeBuilder = "de.tud.stg.tigerseye.eclipse.core.tigerseyeBuilder";
+    public static final String tigerseyeBuilder = "de.tud.stg.tigerseye.core.tigerseyeBuilder";
 
     public static String getOutputDirectoryPath() {
 	String outputfolder = TigerseyeCore.getPreferences().getString(

@@ -19,8 +19,7 @@ import de.tud.stg.tigerseye.eclipse.core.api.ClassLoaderStrategy;
 
 public class WorkspaceProjectClassLoaderStrategy implements ClassLoaderStrategy {
 
-    private static final Logger logger = LoggerFactory
-	    .getLogger(WorkspaceProjectClassLoaderStrategy.class);
+    private static final Logger logger = LoggerFactory.getLogger(WorkspaceProjectClassLoaderStrategy.class);
 
     private final IProject workspaceProject;
 
@@ -39,12 +38,13 @@ public class WorkspaceProjectClassLoaderStrategy implements ClassLoaderStrategy 
 
     private void assertNotOnPluginClasspath(String className) {
 	try {
-	    Class<?> loadClass = Class.forName(className, false, getClass()
-		    .getClassLoader());
+	    Class<?> loadClass = Class.forName(className, false, getClass().getClassLoader());
 	    if (loadClass != null) {
-		logger.info(
+		logger.warn(
 			"did not expect class {} to be loadable by the tigerseye plugin."
-				+ "This means the class can not be updated and consequently no changes of that class can be considered by the transformation process.",
+				+ "This means the class can not be updated and consequently no changes of that class can be considered by the transformation process.\n"
+				+ "A possible reason might be that the DSL has the tigerseye core plug-in as registered buddy in which case both share the same classpath."
+				+ "Since I don't know how to remove a class from a classpath I can not reload it in a controlled ClassLoader and consequently not access any updated versions.",
 			loadClass.toString());
 	    }
 	} catch (ClassNotFoundException e) {
@@ -56,8 +56,7 @@ public class WorkspaceProjectClassLoaderStrategy implements ClassLoaderStrategy 
 	}
     }
 
-    private URLClassLoader getClassLoaderWithIndependentContext()
-	    throws ClassNotFoundException {
+    private URLClassLoader getClassLoaderWithIndependentContext() throws ClassNotFoundException {
 	IJavaProject javaProject = JavaCore.create(workspaceProject);
 	URL[] urls = computeDefaultRuntimeClasspathAsURLs(javaProject);
 	/*
@@ -76,26 +75,20 @@ public class WorkspaceProjectClassLoaderStrategy implements ClassLoaderStrategy 
 	 * environment is usually not of the same context as the classloader of
 	 * this plug-in (=bundle).
 	 */
-	URLClassLoader classLoader = URLClassLoader.newInstance(urls,
-		getClass().getClassLoader());
+	URLClassLoader classLoader = URLClassLoader.newInstance(urls, getClass().getClassLoader());
 	return classLoader;
     }
 
-    private URL[] computeDefaultRuntimeClasspathAsURLs(IJavaProject javaProject)
-	    throws ClassNotFoundException {
+    private URL[] computeDefaultRuntimeClasspathAsURLs(IJavaProject javaProject) throws ClassNotFoundException {
 	File[] resolveClasspath;
 	try {
-	    String[] computeDefaultRuntimeClassPath = JavaRuntime
-		    .computeDefaultRuntimeClassPath(javaProject);
+	    String[] computeDefaultRuntimeClassPath = JavaRuntime.computeDefaultRuntimeClassPath(javaProject);
 	    resolveClasspath = new File[computeDefaultRuntimeClassPath.length];
 	    for (int i = 0; i < computeDefaultRuntimeClassPath.length; i++) {
-		resolveClasspath[i] = new File(
-			computeDefaultRuntimeClassPath[i]);
+		resolveClasspath[i] = new File(computeDefaultRuntimeClassPath[i]);
 	    }
 	} catch (CoreException e) {
-	    throw new ClassNotFoundException(
-		    "Failed to resolve classpath for project "
-			    + workspaceProject, e);
+	    throw new ClassNotFoundException("Failed to resolve classpath for project " + workspaceProject, e);
 	}
 	List<URL> urlList = new ArrayList<URL>();
 	for (int i = 0; i < resolveClasspath.length; i++) {
@@ -105,8 +98,7 @@ public class WorkspaceProjectClassLoaderStrategy implements ClassLoaderStrategy 
 		urlList.add(url);
 	    } catch (MalformedURLException e) {
 		throw new ClassNotFoundException(
-			"Failed to transform classpath location file " + entry
-				+ " to an URL.", e);
+			"Failed to transform classpath location file " + entry + " to an URL.", e);
 	    }
 	}
 	URL[] urls = urlList.toArray(new URL[0]);

@@ -21,10 +21,9 @@ import org.slf4j.LoggerFactory;
 import de.tud.stg.popart.builder.eclipse.EDSL;
 
 /**
- * {@link AnnotationExtractor} is a class capable of scanning an input text for a given {
-private static final Logger logger = LoggerFactory.getLogger(capable.class);
-@link Annotation}. If the
- * annotation is found, it is dynamically instantiated with the found values and returned.
+ * {@link AnnotationExtractor} is a class capable of scanning an input text for
+ * a given {@link Annotation}. If the annotation is found, it is dynamically
+ * instantiated with the found values and returned.
  * 
  * @author Kamil Erhard
  * 
@@ -121,6 +120,12 @@ public class AnnotationExtractor<T extends Annotation> {
 
 			Set<Method> methods = new LinkedHashSet<Method>();
 			methods.addAll(Arrays.asList(this.annotation.getDeclaredMethods()));
+//			@formatter:off
+			/* wtf ...
+		// XXX(Leo_Roos;Sep 2, 2011)
+		// Method Element "value" is not guaranteed! Although convention
+		// for one element annotations. So this will cause exceptions
+		// most of the time plus why remove and add it again?
 			try {
 				Method method = this.annotation.getMethod("value");
 				methods.remove(method);
@@ -129,7 +134,8 @@ public class AnnotationExtractor<T extends Annotation> {
 				logger.warn("Generated log statement",e);
 			} catch (NoSuchMethodException e) {
 				logger.warn("Generated log statement",e);
-			}
+			}*/
+//			@formatter:on
 
 			for (Method m : this.annotation.getDeclaredMethods()) {
 
