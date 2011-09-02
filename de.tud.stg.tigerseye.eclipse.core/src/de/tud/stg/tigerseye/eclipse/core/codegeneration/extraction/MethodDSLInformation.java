@@ -328,16 +328,17 @@ public class MethodDSLInformation extends DSLInformation {
 
     // TODO(Leo_Roos;Sep 1, 2011) Untested
     public List<String> getKeywordList() {
+
 	ArrayList<String> result = new ArrayList<String>();
 	switch (getDSLType()) {
 	case Literal:
 	    result.add(getProduction());
 	    break;
 	case Operation:
-	    getProduction();
 	    MethodProductionScanner mps = new MethodProductionScanner(
 		    getConfigurationOption(ConfigurationOptions.WHITESPACE_ESCAPE),
 		    getConfigurationOption(ConfigurationOptions.PARAMETER_ESCAPE));
+	    mps.startScan(getProduction());
 	    for (MethodProductionElement mpe : mps) {
 		if (mpe.getProductionElementType().equals(ProductionElement.Keyword)) {
 		    result.add(mpe.getCapturedString());

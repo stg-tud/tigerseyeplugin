@@ -20,6 +20,20 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.Configurati
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.TypeHandler;
 import de.tud.stg.tigerseye.eclipse.core.internal.WorkspaceProjectClassLoaderStrategy;
 
+/**
+ * A parsing wrapper around a DSL class. Extracts all DSL specific information.
+ * Methods can be accessed via {@link #getMethodsInformation()}. To avoid
+ * Exceptions during creation the class has to be loaded before the information
+ * are extracted:
+ * 
+ * <pre>
+ * cdi = new ClassDSLInformation(SomeClass.class)
+ * cdi.load();
+ * </pre>
+ * 
+ * @author Leo_Roos
+ * 
+ */
 public class ClassDSLInformation extends DSLInformation {
     private boolean annotated;
 
@@ -31,6 +45,12 @@ public class ClassDSLInformation extends DSLInformation {
     @Nonnull
     private final List<MethodDSLInformation> methodsInformation = new ArrayList<MethodDSLInformation>();
 
+    /**
+     * Create a new Instance. Don't forget to call {@link #load()} or
+     * {@link #load(Map)}.
+     * 
+     * @param clazz
+     */
     public ClassDSLInformation(Class<?> clazz) {
 	this.clazz = clazz;
     }

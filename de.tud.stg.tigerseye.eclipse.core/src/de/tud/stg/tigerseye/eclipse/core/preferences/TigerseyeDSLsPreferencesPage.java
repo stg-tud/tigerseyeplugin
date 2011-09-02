@@ -46,6 +46,9 @@ import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.api.ILanguageProvider;
 import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFoundException;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.MethodDSLInformation;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.ParameterDSLInformation;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ConfigurationOptions;
 import de.tud.stg.tigerseye.eclipse.core.internal.DSLActivationState;
 import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntime;
 import de.tud.stg.tigerseye.eclipse.core.utils.KeyWordExtractor;
@@ -60,10 +63,8 @@ import de.tud.stg.tigerseye.eclipse.core.utils.KeyWordExtractor;
  * @author Leonid Melnyk
  * @author Leo Roos
  */
-public class TigerseyeDSLsPreferencesPage extends PreferencePage implements
-	IWorkbenchPreferencePage {
-    private static final Logger logger = LoggerFactory
-	    .getLogger(TigerseyeDSLsPreferencesPage.class);
+public class TigerseyeDSLsPreferencesPage extends PreferencePage implements IWorkbenchPreferencePage {
+    private static final Logger logger = LoggerFactory.getLogger(TigerseyeDSLsPreferencesPage.class);
 
     private Table languagesTable = null;
 
@@ -110,18 +111,16 @@ public class TigerseyeDSLsPreferencesPage extends PreferencePage implements
 	innerLayout.numColumns = 1;
 	preferencePageComposite.setLayout(innerLayout);
 
-	Group languageConfigurationGroup = createHorizontalGrabbingGroup(
-		preferencePageComposite, "Language Configuration");
+	Group languageConfigurationGroup = createHorizontalGrabbingGroup(preferencePageComposite,
+		"Language Configuration");
 
-	Composite popartTableComposite = new Composite(
-		languageConfigurationGroup, SWT.NONE);
+	Composite popartTableComposite = new Composite(languageConfigurationGroup, SWT.NONE);
 	GridData popartTableData = new GridData(SWT.FILL, SWT.FILL, true, false);
 	GridLayout popartTableLayout = new GridLayout(2, false);
 	popartTableComposite.setLayout(popartTableLayout);
 	popartTableComposite.setLayoutData(popartTableData);
 
-	languagesTable = getConfiguredTable(popartTableComposite, 339,
-		SWT.DEFAULT);
+	languagesTable = getConfiguredTable(popartTableComposite, 339, SWT.DEFAULT);
 
 	languagesTable.addSelectionListener(new SelectionListener() {
 	    @Override
@@ -156,13 +155,11 @@ public class TigerseyeDSLsPreferencesPage extends PreferencePage implements
 		{setAllCheckBoxState(false);}});
 	//@formatter:on
 
-	Group keywordsGroup = createHorizontalGrabbingGroup(
-		preferencePageComposite, "Declared Keywords For Selected DSL");
+	Group keywordsGroup = createHorizontalGrabbingGroup(preferencePageComposite,
+		"Declared Keywords For Selected DSL");
 
-	declaredKeywordsTable = getConfiguredTable(keywordsGroup,
-		SWT.DEFAULT, 70);
-	makeCols(declaredKeywordsTable, new String[] { "Name", "Return",
-		"Parameters" });
+	declaredKeywordsTable = getConfiguredTable(keywordsGroup, SWT.DEFAULT, 70);
+	makeCols(declaredKeywordsTable, new String[] { "Name", "Return", "Parameters" });
 
 	initializeTableContent();
 	initOnTableRowSelect();
@@ -171,23 +168,17 @@ public class TigerseyeDSLsPreferencesPage extends PreferencePage implements
 	return preferencePageComposite;
     }
 
-    private Group createHorizontalGrabbingGroup(
-Composite parent,
-	    String groupTitle) {
-	Group languageConfigurationGroup = new Group(parent,
-		SWT.NONE);
+    private Group createHorizontalGrabbingGroup(Composite parent, String groupTitle) {
+	Group languageConfigurationGroup = new Group(parent, SWT.NONE);
 	languageConfigurationGroup.setText(groupTitle);
-	languageConfigurationGroup.setLayoutData(new GridData(SWT.FILL,
-		SWT.FILL, true, false));
+	languageConfigurationGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 	languageConfigurationGroup.setLayout(new GridLayout());
 	languageConfigurationGroup.setFont(parent.getFont());
 	return languageConfigurationGroup;
     }
 
-    private Table getConfiguredTable(Composite popartTableComposite,
-	    int widthHint, int heightHint) {
-	Table table = new Table(popartTableComposite, SWT.BORDER | SWT.H_SCROLL
-		| SWT.V_SCROLL);
+    private Table getConfiguredTable(Composite popartTableComposite, int widthHint, int heightHint) {
+	Table table = new Table(popartTableComposite, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 	table.setLinesVisible(true);
 	table.setHeaderVisible(true);
 	GridData tableLayoutData = new GridData(SWT.FILL, SWT.FILL, true, false);
@@ -206,8 +197,7 @@ Composite parent,
     }
 
     private GridData newButtonLayoutData() {
-	final GridData gd_editButton = new GridData(SWT.LEFT, SWT.TOP, false,
-		false);
+	final GridData gd_editButton = new GridData(SWT.LEFT, SWT.TOP, false, false);
 	gd_editButton.widthHint = 106;
 	return gd_editButton;
     }
@@ -217,8 +207,7 @@ Composite parent,
 	TableColumn[] makeCols = makeCols(languagesTable, scols);
 	languagesTable.removeAll();
 	dslList.clear();
-	for (DSLDefinition dslDefinition : getLanguageProvider()
-		.getDSLDefinitions()) {
+	for (DSLDefinition dslDefinition : getLanguageProvider().getDSLDefinitions()) {
 	    PrefDSL propDSL = new PrefDSL(dslDefinition, getPreferenceStore());
 	    dslList.add(propDSL);
 	}
@@ -246,8 +235,7 @@ Composite parent,
 	return newCols;
     }
 
-    private void initializeExtensionTextItem(int column, final PrefDSL propDSL,
-	    TableItem item) {
+    private void initializeExtensionTextItem(int column, final PrefDSL propDSL, TableItem item) {
 	TableEditor tableEditor;
 	tableEditor = new TableEditor(languagesTable);
 	final Text extension = new Text(languagesTable, SWT.LEAD);
@@ -275,8 +263,7 @@ Composite parent,
 	extension.setVisible(false);
     }
 
-    private void initializeCheckBoxControl(int column, final PrefDSL propDSL,
-	    TableItem item) {
+    private void initializeCheckBoxControl(int column, final PrefDSL propDSL, TableItem item) {
 	TableEditor tableEditor = new TableEditor(languagesTable);
 	final Button button = new Button(languagesTable, SWT.CHECK);
 	button.setSelection(propDSL.isActiveLocal());
@@ -376,8 +363,7 @@ Composite parent,
      * instance is expensive and causes a noticeable delay until the updated new
      * graphical representation is visible.
      */
-    private void addCheckBoxControl(int column, final PrefDSL propDSL,
-	    TableItem item) {
+    private void addCheckBoxControl(int column, final PrefDSL propDSL, TableItem item) {
 	Button oldButton = checkBoxMap.get(propDSL);
 	if (oldButton == null) {
 	    initializeCheckBoxControl(column, propDSL, item);
@@ -386,8 +372,7 @@ Composite parent,
 	}
     }
 
-    private void addExtensionTextFieldControl(int column,
-	    final PrefDSL propDSL, TableItem item) {
+    private void addExtensionTextFieldControl(int column, final PrefDSL propDSL, TableItem item) {
 	Text text = extensionTextMap.get(propDSL);
 	if (text == null) {
 	    initializeExtensionTextItem(column, propDSL, item);
@@ -442,27 +427,22 @@ Composite parent,
 	    for (String line : listedProperties) {
 		formatted.append(line).append("\n");
 	    }
-	    logger.trace("Found {} properties: \n{}", listedProperties.size(),
-		    formatted);
+	    logger.trace("Found {} properties: \n{}", listedProperties.size(), formatted);
 	} catch (BackingStoreException e) {
 	    logger.error("Unexpected exception", e);
 	}
     }
 
-    private ArrayList<String> getListedProperties()
-	    throws BackingStoreException {
+    private ArrayList<String> getListedProperties() throws BackingStoreException {
 	ArrayList<String> all = new ArrayList<String>();
-	IEclipsePreferences[] preferenceNodes = ((ScopedPreferenceStore) getPreferenceStore())
-		.getPreferenceNodes(true);
+	IEclipsePreferences[] preferenceNodes = ((ScopedPreferenceStore) getPreferenceStore()).getPreferenceNodes(true);
 	for (IEclipsePreferences iEclipsePreferences : preferenceNodes) {
 	    all.add("Next types: " + iEclipsePreferences);
 	    String[] keys = iEclipsePreferences.keys();
 	    ArrayList<String> lines = new ArrayList<String>();
 	    for (String string : keys) {
 		StringBuilder line = new StringBuilder();
-		line.append("key ")
-			.append(string)
-			.append("\tvalue ")
+		line.append("key ").append(string).append("\tvalue ")
 			.append(iEclipsePreferences.get(string, "NoValueFound"));
 		lines.add(line.toString());
 	    }
@@ -474,9 +454,7 @@ Composite parent,
 
     private void storeDSL(PrefDSL dsl) {
 	if (!dsl.needsStoring()) {
-	    logger.trace(
-		    "dsl >>{}<< not changed aborting modification of property store",
-		    dsl);
+	    logger.trace("dsl >>{}<< not changed aborting modification of property store", dsl);
 	} else {
 	    dsl.store();
 	    logger.trace("updated store with dsl {}", dsl);
@@ -488,8 +466,7 @@ Composite parent,
 	List<PrefDSL> dsls = getDslList();
 	for (PrefDSL dsl : dsls) {
 	    DSLDefinition dslDefinition = dsl.getDsl();
-	    String defExt = DSLKey.EXTENSION.getDefault(dslDefinition,
-		    getPreferenceStore());
+	    String defExt = DSLKey.EXTENSION.getDefault(dslDefinition, getPreferenceStore());
 	    dsl.setExtension(defExt);
 
 	    boolean activeKey = DSLActivationState.getDefault();
@@ -504,8 +481,7 @@ Composite parent,
 	for (int i = 0; i < prefDSLs.length; i++) {
 	    PrefDSL prefDSL = prefDSLs[i];
 	    if (prefDSL.isActiveLocal()) {
-		if (existsSecondActiveDSLOfSameExtension(
-			prefDSL.getExtension(), prefDSLs, i + 1)) {
+		if (existsSecondActiveDSLOfSameExtension(prefDSL.getExtension(), prefDSLs, i + 1)) {
 		    setInvalidState("At most one DSL of the same extension may be active at the same time.");
 		    return;
 		}
@@ -514,8 +490,7 @@ Composite parent,
 	setValidState();
     }
 
-    private boolean existsSecondActiveDSLOfSameExtension(String setExtension,
-	    PrefDSL[] prefDSLs, int beginningIndex) {
+    private boolean existsSecondActiveDSLOfSameExtension(String setExtension, PrefDSL[] prefDSLs, int beginningIndex) {
 	for (int j = beginningIndex; j < prefDSLs.length; j++) {
 	    PrefDSL dsl = prefDSLs[j];
 	    if (dsl.isActiveLocal()) {
@@ -627,18 +602,29 @@ Composite parent,
 	// Read all public declared Fields from external class
 	Class<? extends DSL> loadClass = language.getDSLClassChecked();
 	if (loadClass == null) {
-	    TableItem tableItem = new TableItem(declaredKeywordsTable,
-		    SWT.BORDER);
-	    tableItem.setText(0, "Class " + language.getClassPath()
-		    + " not loadable");
+	    TableItem tableItem = new TableItem(declaredKeywordsTable, SWT.BORDER);
+	    tableItem.setText(0, "Class " + language.getClassPath() + " not loadable");
 	    tableItem.setText(1, "");
 	    return;
 	}
 
-	KeyWordExtractor keyWordExtractor = new KeyWordExtractor(
-		loadClass);
-	Field[] publicDeclaredFields = keyWordExtractor
-		.getDeclaredLiteralKeywords();
+	KeyWordExtractor keyWordExtractor = new KeyWordExtractor(loadClass);
+
+	for (MethodDSLInformation minf : keyWordExtractor.getMethodsInformation()) {
+	    TableItem tableItem = new TableItem(declaredKeywordsTable, SWT.BORDER);
+	    tableItem.setText(0, minf.getProduction());
+	    // XXX(Leo_Roos;Sep 2, 2011) check if it's useful to have the return
+	    // type directly accessible
+	    tableItem.setText(0, minf.getProduction());
+	    tableItem.setText(1, minf.getMethod().getReturnType().getSimpleName());
+	    tableItem.setText(2, prettyParameterInfosPrinter(minf.getParameterInfos()));
+	}
+
+
+	/*
+	 * Reevaluate what else is necessary
+	 */
+	Field[] publicDeclaredFields = keyWordExtractor.getDeclaredLiteralKeywords();
 	for (Field declaredField : publicDeclaredFields) {
 	    TableItem tableItem = null;
 
@@ -658,78 +644,89 @@ Composite parent,
 	Set<String> fieldAccessorTypes = new HashSet<String>();
 
 	if (publicDeclaredMethods.length == 0) {
-	    TableItem tableItem = new TableItem(declaredKeywordsTable,
-		    SWT.BORDER);
+	    TableItem tableItem = new TableItem(declaredKeywordsTable, SWT.BORDER);
 
 	    tableItem.setText(0, "NoMethodsRetrieved");
 	    tableItem.setText(1, "");
 	}
 
-	    for (Method declaredMethod : publicDeclaredMethods) {
+	for (Method declaredMethod : publicDeclaredMethods) {
 
 		// replace the Java coding conventions prefix from the keyword
-		// name
-		if (declaredMethod.getName().startsWith("get")) {
-		    fieldAccessors.add(declaredMethod.getName().substring(3));
-		    fieldAccessorTypes.add(declaredMethod.getReturnType()
-			    .getName());
+	    // name
+	    if (declaredMethod.getName().startsWith("get")) {
+		fieldAccessors.add(declaredMethod.getName().substring(3));
+		fieldAccessorTypes.add(declaredMethod.getReturnType().getName());
+	    }
+	    if (declaredMethod.getName().startsWith("set")) {
+		fieldAccessors.add(declaredMethod.getName().substring(3));
+		fieldAccessorTypes.add(declaredMethod.getReturnType().getName());
+	    }
+	    if (declaredMethod.getName().startsWith("is")) {
+		if ((declaredMethod.getReturnType().isPrimitive() && (declaredMethod.getReturnType() == boolean.class))
+			|| (declaredMethod.getReturnType() == Boolean.class)) {
+		    fieldAccessors.add(declaredMethod.getName().substring(2));
+		    fieldAccessorTypes.add(declaredMethod.getReturnType().getName());
 		}
-		if (declaredMethod.getName().startsWith("set")) {
-		    fieldAccessors.add(declaredMethod.getName().substring(3));
-		    fieldAccessorTypes.add(declaredMethod.getReturnType()
-			    .getName());
-		}
-		if (declaredMethod.getName().startsWith("is")) {
-		    if ((declaredMethod.getReturnType().isPrimitive() && (declaredMethod
-			    .getReturnType() == boolean.class))
-			    || (declaredMethod.getReturnType() == Boolean.class)) {
-			fieldAccessors.add(declaredMethod.getName()
-				.substring(2));
-			fieldAccessorTypes.add(declaredMethod.getReturnType()
-				.getName());
-		    }
 		}
 	    }
 
-	    Iterator<String> it = fieldAccessors.iterator();
-	    Iterator<String> itTypes = fieldAccessorTypes.iterator();
-	    while (it.hasNext() && itTypes.hasNext()) {
-		String item = it.next();
-		String itemType = itTypes.next();
+	Iterator<String> it = fieldAccessors.iterator();
+	Iterator<String> itTypes = fieldAccessorTypes.iterator();
+	while (it.hasNext() && itTypes.hasNext()) {
+	    String item = it.next();
+	    String itemType = itTypes.next();
 
 		TableItem tableItem = null;
 
 		// Add new keyword to table
-		tableItem = new TableItem(declaredKeywordsTable, SWT.BORDER);
+	    tableItem = new TableItem(declaredKeywordsTable, SWT.BORDER);
 
 		tableItem.setText(0, item);
-		tableItem.setText(1, itemType);
-		tableItem.setText(2, "(literal defined by accessor)");
-	    }
+	    tableItem.setText(1, itemType);
+	    tableItem.setText(2, "(literal defined by accessor)");
+	}
 
 	// Read all public declared methods from external class
-	    for (Method declaredMethod : publicDeclaredMethods) {
-		TableItem tableItem = null;
+	for (Method declaredMethod : publicDeclaredMethods) {
+	    TableItem tableItem = null;
 
 		// Add new keyword to table
-		tableItem = new TableItem(declaredKeywordsTable, SWT.BORDER);
+	    tableItem = new TableItem(declaredKeywordsTable, SWT.BORDER);
 
 		tableItem.setText(0, declaredMethod.getName());
-		tableItem.setText(1, declaredMethod.getReturnType()
-			.getSimpleName());
+	    tableItem.setText(1, declaredMethod.getReturnType().getSimpleName());
 
-		StringBuilder parameters = new StringBuilder();
-		for (int i = 0; i < declaredMethod.getParameterTypes().length; i++) {
-		    if (i > 0) {
-			parameters = parameters.append(", ");
-		    }
-		    parameters = parameters.append(declaredMethod
-			    .getParameterTypes()[i].getSimpleName().toString());
-		}
+	    Class<?>[] parameterTypes = declaredMethod.getParameterTypes();
+	    StringBuilder parameters = prettyParameterBuilder(parameterTypes);
+	    tableItem.setText(2, parameters.toString());
+	}
 
-		tableItem.setText(2, parameters.toString());
+    }
+
+    private String prettyParameterInfosPrinter(List<ParameterDSLInformation> parameterInfos) {
+	StringBuilder sb = new StringBuilder();
+	Iterator<ParameterDSLInformation> pit = parameterInfos.iterator();
+	while (pit.hasNext()) {
+	    ParameterDSLInformation pinf = pit.next();
+	    String pesc = pinf.getConfigurationOption(ConfigurationOptions.PARAMETER_ESCAPE);
+	    sb.append(pesc).append(pinf.getIndex());
+	    sb.append(":").append(pinf.getSimpleTypeName());
+	    if (pit.hasNext())
+		sb.append(", ");
+	}
+	return sb.toString();
+    }
+
+    private StringBuilder prettyParameterBuilder(Class<?>[] parameterTypes) {
+	StringBuilder parameters = new StringBuilder();
+	for (int i = 0; i < parameterTypes.length; i++) {
+	    if (i > 0) {
+		parameters = parameters.append(", ");
 	    }
-
+	    parameters = parameters.append(parameterTypes[i].getSimpleName().toString());
+	}
+	return parameters;
     }
 
 }

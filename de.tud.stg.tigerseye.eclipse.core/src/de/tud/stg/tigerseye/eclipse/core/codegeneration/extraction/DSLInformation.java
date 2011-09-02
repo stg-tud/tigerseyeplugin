@@ -11,6 +11,19 @@ import org.eclipse.core.runtime.Assert;
 import de.tud.stg.popart.builder.core.annotations.AnnotationConstants;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ConfigurationOptions;
 
+/**
+ * A parsing wrapper around DSL class elements. Extracts all DSL specific
+ * information. To avoid Exceptions during creation the class has to be loaded
+ * before the information are extracted:
+ * 
+ * <pre>
+ * cdi = new ClassDSLInformation(SomeClass.class)
+ * cdi.load();
+ * </pre>
+ * 
+ * @author Leo_Roos
+ * 
+ */
 public abstract class DSLInformation {
 
     @Nonnull
@@ -22,7 +35,8 @@ public abstract class DSLInformation {
 
     /**
      * load constructor class with
-     * {@link DSLInformationDefaults#DEFAULT_CONFIGURATIONOPTIONS_MAP} configuration.
+     * {@link DSLInformationDefaults#DEFAULT_CONFIGURATIONOPTIONS_MAP}
+     * configuration.
      */
     public void load() {
 	this.load(DSLInformationDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP);
@@ -33,8 +47,7 @@ public abstract class DSLInformation {
      * 
      * @param defaultConfigurationOptions
      */
-    public abstract void load(
-	    Map<ConfigurationOptions, String> defaultConfigurationOptions);
+    public abstract void load(Map<ConfigurationOptions, String> defaultConfigurationOptions);
 
     public abstract boolean isAnnotated();
 
@@ -42,8 +55,7 @@ public abstract class DSLInformation {
      * assigns value with key to resultMap if the value is neither null nor
      * equal to the UNASSIGNED constant.
      */
-    protected static Map<ConfigurationOptions, String> putIfValid(
-	    Map<ConfigurationOptions, String> resultMap,
+    protected static Map<ConfigurationOptions, String> putIfValid(Map<ConfigurationOptions, String> resultMap,
 	    ConfigurationOptions confOption, String value) {
 	Assert.isNotNull(value);
 	if (value.equals(AnnotationConstants.UNASSIGNED))
@@ -57,8 +69,7 @@ public abstract class DSLInformation {
     public String getConfigurationOption(ConfigurationOptions confOp) {
 	String string = getConfigurationOptions().get(confOp);
 	if (string == null)
-	    throw new IllegalArgumentException(confOp
-		    + " is not supported by this class");
+	    throw new IllegalArgumentException(confOp + " is not supported by this class");
 	return string;
     }
 

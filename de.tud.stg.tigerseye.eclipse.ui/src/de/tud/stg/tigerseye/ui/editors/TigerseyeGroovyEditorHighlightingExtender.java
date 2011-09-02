@@ -92,6 +92,7 @@ public class TigerseyeGroovyEditorHighlightingExtender implements
 		keywordsRule.addWord(keyWord, token);
 	    }
 	    List<String> keywords = getKeyWordsFor(dsl);
+	    logger.debug("For dsl {} found following real keywords {}", dsl, keywords);
 	    for (String string : keywords) {
 		keywordsRule.addWord(string, token);
 	    }
@@ -106,6 +107,7 @@ public class TigerseyeGroovyEditorHighlightingExtender implements
 	if (dsl.isDSLClassLoadable()) {
 	    Class<? extends DSL> dslClassChecked = dsl.getDSLClassChecked();
 	    ClassDSLInformation classDSLInformation = new ClassDSLInformation(dslClassChecked);
+	    classDSLInformation.load();
 	    List<MethodDSLInformation> methodsInformation = classDSLInformation.getMethodsInformation();
 	    ArrayList<String> result = new ArrayList<String>();
 	    for (MethodDSLInformation methodDSLInformation : methodsInformation) {
@@ -133,8 +135,7 @@ public class TigerseyeGroovyEditorHighlightingExtender implements
 	    keywords.add(field.getName());
 	}
 
-	return keywords; // TODO all chained keywords to list (such as
-			 // selectFormWhere --> select, from, where)
+	return keywords;
     }
 
     private List<DSLDefinition> getActiveDSLs() {

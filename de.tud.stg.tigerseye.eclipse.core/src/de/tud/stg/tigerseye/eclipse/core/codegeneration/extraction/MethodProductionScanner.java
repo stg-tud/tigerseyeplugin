@@ -13,8 +13,15 @@ import org.eclipse.core.runtime.Assert;
 
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ConfigurationOptionDefaults;
 
-public class MethodProductionScanner implements
-	Iterable<MethodProductionElement> {
+/**
+ * Tokenizes a DSL production definition according to given whitespace and
+ * parameter escape. Compiled {@link Pattern} for every escapee are cached
+ * statically and shared between all instances of this class.
+ * 
+ * @author Leo_Roos
+ * 
+ */
+public class MethodProductionScanner implements Iterable<MethodProductionElement> {
 
     private Pattern getProductionWhitespacePattern(String methodWhitespaceEscape) {
 	return Pattern.compile("(?:\\Q" + methodWhitespaceEscape + "\\E){1,2}");
@@ -112,8 +119,7 @@ public class MethodProductionScanner implements
 
     private void checkIfRunning() {
 	if (this.currentProduction != null)
-	    throw new IllegalStateException(
-		    "values can not be changed after the scan processes started");
+	    throw new IllegalStateException("values can not be changed after the scan processes started");
     }
 
     /**
@@ -209,6 +215,7 @@ public class MethodProductionScanner implements
 	    throw new IllegalStateException("No more elements to process");
 
 	MethodProductionElement result;
+
 	int nextWhitespacePos = Integer.MAX_VALUE;
 	int nextParameterPos = Integer.MAX_VALUE;
 
@@ -220,20 +227,22 @@ public class MethodProductionScanner implements
 	    nextParameterPos = pMatcher.start();
 
 	if (nextWhitespacePos <= currentPosition) {
+
 	    int endIndex = wsMatcher.end();
 	    String nextSubstring = nextSubstring(endIndex);
-	    result = new WhitespaceElement().setCapturedAndEscape(
-		    nextSubstring, whitespaceEscape);
+	    result = new WhitespaceElement().setCapturedAndEscape(nextSubstring, whitespaceEscape);
 
 	} else if (nextParameterPos <= currentPosition) {
+
 	    int end = pMatcher.end();
-	    result = new ParameterElement().setCapturedAndEscape(
-		    nextSubstring(end), parameterEscape);
+	    result = new ParameterElement().setCapturedAndEscape(nextSubstring(end), parameterEscape);
+
 	} else {
-	    int endIndex = min(nextWhitespacePos, nextParameterPos,
-		    currentProductionLength);
+
+	    int endIndex = min(nextWhitespacePos, nextParameterPos, currentProductionLength);
 	    String nextToken = nextSubstring(endIndex);
 	    result = new KeywordElement().setCapturedString(nextToken);
+
 	}
 	return result;
     }

@@ -19,18 +19,31 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tud.stg.popart.dslsupport.DSL;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.ClassDSLInformation;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.MethodDSLInformation;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.MethodProductionScanner;
 
 /**
  * Extracts Fields and Methods of a {@link DSL} class which represent the
  * keywords of the corresponding language.
+ * <p>
+ * TODO(Leo_Roos;Sep 2, 2011) time to reevaluate this class. Most of it can be
+ * probably accomplished by the {@link MethodProductionScanner}
+ * 
  * 
  * @author Leo Roos
  * 
  */
 public class KeyWordExtractor {
 
-    private static final Logger logger = LoggerFactory
-	    .getLogger(KeyWordExtractor.class);
+    public List<MethodDSLInformation> getMethodsInformation() {
+	ClassDSLInformation classDSLInformation = new ClassDSLInformation(this.clazz);
+	classDSLInformation.load();
+	List<MethodDSLInformation> methodsInformation = classDSLInformation.getMethodsInformation();
+	return methodsInformation;
+    }
+
+    private static final Logger logger = LoggerFactory.getLogger(KeyWordExtractor.class);
     private final Class<?> clazz;
 
     /**
@@ -70,7 +83,7 @@ public class KeyWordExtractor {
 	Method[] methods = getDSLClazz().getDeclaredMethods();// FIXME check if
 							      // declaredMethods
 							      // only methods()
-	    declaredMethods = Arrays.asList(methods);
+	declaredMethods = Arrays.asList(methods);
 
 	List<Method> sortedValidMems = extractValidModifiersSorted(declaredMethods);
 	List<Method> finalMems = removeGroovyObjectMethods(sortedValidMems);
@@ -81,10 +94,8 @@ public class KeyWordExtractor {
     List<Method> removeGroovyObjectMethods(List<Method> sortedMems) {
 	Method[] groovyObjectMethods = GroovyObject.class.getMethods();
 	List<Method> noGroovyMems = new ArrayList<Method>(sortedMems);
-	boolean removed = noGroovyMems.removeAll(Arrays
-		.asList(groovyObjectMethods));
-	logger.trace(removed ? "Removed Groovy methods"
-		: "No Groovy methods to remove.");
+	boolean removed = noGroovyMems.removeAll(Arrays.asList(groovyObjectMethods));
+	logger.trace(removed ? "Removed Groovy methods" : "No Groovy methods to remove.");
 	return noGroovyMems;
     }
 
@@ -106,8 +117,7 @@ public class KeyWordExtractor {
 
     List<Field> getValidFieldsForClass() {
 	Field[] declaredFields = getDSLClazz().getDeclaredFields();
-	List<Field> sortedFields = extractValidModifiersSorted(Arrays
-		.asList(declaredFields));
+	List<Field> sortedFields = extractValidModifiersSorted(Arrays.asList(declaredFields));
 	List<Field> noTimeStampFields = removeTimeStampFields(sortedFields);
 	return noTimeStampFields;
     }
@@ -148,8 +158,7 @@ public class KeyWordExtractor {
 	// XXX if the a valid modifier just has to be public a bitwise and would
 	// reduce this method to:
 	// return (modifiers & Modifier.PUBLIC) != 0
-	return (modifiers == Modifier.PUBLIC)
-		|| (modifiers == (Modifier.PUBLIC | Modifier.STATIC))
+	return (modifiers == Modifier.PUBLIC) || (modifiers == (Modifier.PUBLIC | Modifier.STATIC))
 		|| (modifiers == (Modifier.PUBLIC | Modifier.FINAL))
 		|| (modifiers == (Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL))
 		|| (modifiers == (Modifier.PUBLIC | Modifier.FINAL | Modifier.NATIVE))
