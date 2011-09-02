@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Util
+Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: de.tud.stg.tigerseye.util
 Bundle-Version: 0.0.1.qualifier
-Bundle-Vendor: TUD
+Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: de.tud.stg.tigerseye.util

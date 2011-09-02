@@ -2,30 +2,23 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: de.tud.stg.tigerseye.core;singleton:=true
-Bundle-Version: 0.0.1.qualifier
+Bundle-Version: 0.1.0.qualifier
 Bundle-Activator: de.tud.stg.tigerseye.eclipse.core.TigerseyeCoreActivator
 Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime,
- org.eclipse.core.resources;bundle-version="3.6.0",
- org.eclipse.debug.core;bundle-version="3.6.0",
- org.eclipse.jdt;bundle-version="3.6.1",
  org.eclipse.jdt.groovy.core;bundle-version="2.1.0",
  org.eclipse.jdt.core;bundle-version="3.6.1",
  org.eclipse.debug.ui;bundle-version="3.4.2",
  org.eclipse.jdt.launching;bundle-version="3.5.100",
  org.codehaus.groovy.eclipse.ui,
- org.eclipse.jdt.debug;bundle-version="3.6.1",
  org.codehaus.groovy.eclipse.core;bundle-version="2.1.1",
  org.eclipse.team.core;bundle-version="3.5.101";resolution:=optional,
  org.eclipse.pde.core;bundle-version="3.6.2",
  org.eclipse.pde.core.source;bundle-version="3.6.2";resolution:=optional,
- de.tud.stg.tigerseye;bundle-version="0.0.1",
- de.tud.stg.tigerseye.util;bundle-version="0.0.1";visibility:=reexport
+ de.tud.stg.tigerseye;bundle-version="0.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Import-Package: org.eclipse.jdt.internal.debug.core.breakpoints,
- org.slf4j,
+Import-Package: org.slf4j,
  org.slf4j.impl
 Export-Package: 
  de.tud.stg.tigerseye.eclipse.core,

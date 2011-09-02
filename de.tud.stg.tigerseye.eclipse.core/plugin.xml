@@ -57,7 +57,7 @@
          </run>
       </runtime>
       <builder
-            id="de.tud.stg.tigerseye.eclipse.core.tigerseyeBuilder">
+            id="de.tud.stg.tigerseye.core.tigerseyeBuilder">
       </builder>
       <builder
             id="org.eclipse.jdt.core.javabuilder">

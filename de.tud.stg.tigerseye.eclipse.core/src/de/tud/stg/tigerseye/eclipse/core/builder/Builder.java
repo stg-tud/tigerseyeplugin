@@ -1,5 +1,7 @@
 package de.tud.stg.tigerseye.eclipse.core.builder;
 
+import static de.tud.stg.tigerseye.util.Utils.illegalForArg;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -335,7 +337,7 @@ public class Builder extends IncrementalProjectBuilder {
 	    resourcesToLock.addAll(getSourcesForFullBuild());
 	    break;
 	default:
-	    throw new IllegalArgumentException("wtf:" + buildKind);
+	    throw illegalForArg(buildKind);
 	}
 	MultiRule multiRule = new MultiRule(
 		resourcesToLock.toArray(new ISchedulingRule[0]));
