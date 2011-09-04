@@ -136,6 +136,7 @@ public abstract class DSLResourceHandler extends ResourceVisitor implements
 	Context context = new Context(resource.getName());
 	context.addDSLs(dslDefinitions);
 	context.setFiletype(filetype);
+	context.setTransformedFile(srcFile);
 	IFile outputFile = getOutputPathHandler().getOutputFile(srcFile);
 	if (outputFile == null) {
 	    logger.error("Can not determine output file for {}", srcFile);

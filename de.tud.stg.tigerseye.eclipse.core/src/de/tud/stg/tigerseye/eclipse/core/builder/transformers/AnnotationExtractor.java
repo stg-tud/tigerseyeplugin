@@ -35,10 +35,9 @@ public class AnnotationExtractor<T extends Annotation> {
 	private static final Logger logger = LoggerFactory
 			.getLogger(AnnotationExtractor.class);
 
-	private final Pattern compile;
 	private static final Map<Class<?>, ElementHandler<?>> elementHandlers = new HashMap<Class<?>, ElementHandler<?>>();
 
-	private static Pattern packageImportPattern = Pattern.compile("import ([A-za-z0-9_\\$\\.]+)(?:;|\n)");
+    private static final Pattern packageImportPattern = Pattern.compile("import ([A-za-z0-9_\\$\\.]+)(?:;|\n)");
 
 	static {
 		setElementHandler(new IntegerElementHandler(), int.class, int[].class);
@@ -51,18 +50,21 @@ public class AnnotationExtractor<T extends Annotation> {
 
 	private static final EnumElementHandler enumElementHandler = new EnumElementHandler();
 
+    private static final Map<String, String> packageImports = new HashMap<String, String>();
+
+    private static final Pattern singleValueArrayPattern = Pattern.compile("\\{(.*?)\\}");
+    private static final Pattern singleValuePattern = Pattern.compile("([^,]+)");
+
+    private final Pattern annotationPattern;
 	private final Class<T> annotation;
-	private static final Map<String, String> packageImports = new HashMap<String, String>();
 	private Matcher matcher;
 	private int startPosition;
 	private int endPosition;
 
-	private static final Pattern singleValueArrayPattern = Pattern.compile("\\{(.*?)\\}");
-	private static final Pattern singleValuePattern = Pattern.compile("([^,]+)");
 
 	public AnnotationExtractor(Class<T> annotation) {
 		this.annotation = annotation;
-		this.compile = Pattern.compile("@(\\Q" + annotation.getSimpleName() + "\\E|\\Q" + annotation.getCanonicalName()
+		this.annotationPattern = Pattern.compile("@(\\Q" + annotation.getSimpleName() + "\\E|\\Q" + annotation.getCanonicalName()
 				+ "\\E)\\s*\\((.*?)\\)");
 	}
 
@@ -91,7 +93,7 @@ public class AnnotationExtractor<T extends Annotation> {
 	}
 
 	public void setInput(String input) {
-		this.matcher = this.compile.matcher(input);
+		this.matcher = this.annotationPattern.matcher(input);
 
 		this.determinePackageImports(input);
 	}
@@ -460,6 +462,10 @@ public class AnnotationExtractor<T extends Annotation> {
 			if (object == null) {
 				object = method.getDefaultValue();
 			}
+	    String name = method.getName();
+	    if (name.contains("toString")) {
+		object = this.getClass().getSimpleName() + "[valueMap=" + map + "]";
+	    }
 
 			return object;
 		}

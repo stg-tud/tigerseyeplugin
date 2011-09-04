@@ -32,7 +32,7 @@ public class DSLInvoker {
 		return list;
 	}
 
-	public static Object eval(Class<? extends DSL> clazz, Closure<?> c) {
+	public static Object eval(Class<? extends DSL> clazz, Closure c) {
 		DSL dsl = getDSL(clazz);
 
 		c.setDelegate(dsl);

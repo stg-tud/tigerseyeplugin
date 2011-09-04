@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +47,7 @@ public class Context {
     }
 
     private final String fileName;
+    private IFile transformedFile;
 
     public Context(String fileName) {
 	this.fileName = fileName;
@@ -55,15 +58,13 @@ public class Context {
     }
 
     public String[] getDSLExtensions() {
-	return this.dslClasses.keySet().toArray(
-		new String[this.dslClasses.size()]);
+	return this.dslClasses.keySet().toArray(new String[this.dslClasses.size()]);
     }
 
     @Deprecated
     @SuppressWarnings("unchecked")
     public Class<? extends DSL>[] getDSLClasses() {
-	return this.dslClasses.values().toArray(
-		new Class[this.dslClasses.size()]);
+	return this.dslClasses.values().toArray(new Class[this.dslClasses.size()]);
     }
 
     public String getFileName() {
@@ -103,11 +104,23 @@ public class Context {
 	    try {
 		this.addDSL(dsl);
 	    } catch (NoLegalPropertyFoundException e) {
-		logger.warn(
-			"DSL {} not properly initialized. Will be ignored.",
-			dsl, e);
+		logger.warn("DSL {} not properly initialized. Will be ignored.", dsl, e);
 	    }
 	}
+    }
+
+    public void setTransformedFile(IFile srcFile) {
+	this.transformedFile = srcFile;
+    }
+
+    public IFile getTransformedFile() {
+	return transformedFile;
+    }
+
+    public IProject getProject() {
+	if (transformedFile == null)
+	    throw new IllegalStateException("transformedFile has not been set yet.");
+	return transformedFile.getProject();
     }
 
 }

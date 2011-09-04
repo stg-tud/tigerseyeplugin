@@ -9,7 +9,9 @@ Require-Bundle: org.junit4;bundle-version="4.8.1"
 Bundle-ClassPath: libs/powermock-mockito-1.4.6-full.jar,
  libs/stateMachineDSL.jar,
  .,
- libs/mockito-all-1.8.5.jar
+ libs/mockito-all-1.8.5.jar,
+ libs/fest-assert-1.4/lib/fest-util-1.1.6.jar,
+ libs/fest-assert-1.4/fest-assert-1.4.jar
 Export-Package: de.tud.stg.popart.builder.test.dsls,
  de.tud.stg.popart.builder.test.junit,
  de.tud.stg.popart.builder.test.statemachine,

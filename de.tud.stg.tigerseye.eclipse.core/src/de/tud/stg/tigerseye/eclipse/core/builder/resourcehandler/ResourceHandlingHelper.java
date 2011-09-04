@@ -38,7 +38,7 @@ public class ResourceHandlingHelper {
     public static @CheckForNull
     StringBuffer readResource(IFile resource) {
 	try {
-	    String stringFromReader = IOUtils.toString(resource.getContents());
+	    String stringFromReader = IOUtils.toString(resource.getContents(), resource.getCharset());
 	    return new StringBuffer(stringFromReader);
 	} catch (IOException e) {
 	    logger.error("Failed to read resource.", e);

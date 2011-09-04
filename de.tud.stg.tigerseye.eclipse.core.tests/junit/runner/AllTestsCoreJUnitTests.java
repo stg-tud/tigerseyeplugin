@@ -1,19 +1,20 @@
 package runner;
 
+import learningtests.fileaccess.ReadingEncodingdependendUnicode;
+
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import utilities.tests.SystemPropertyRuleTest;
 import de.tud.stg.popart.builder.transformers.FileTypeTest;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilderTest;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarTest;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.UnicodeLookupTableTest;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.ClassDSLInformationTest;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.MethodDSLInformationTest;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.MethodProductionElement;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.MethodProductionElementTest;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.MethodProductionScannerTest;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.ParameterDSLInformation;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.ParameterDSLInformationTest;
 import de.tud.stg.tigerseye.eclipse.core.preferences.TransformerTableDialogTest;
 import de.tud.stg.tigerseye.eclipse.core.runtime.FileHelperTest;
@@ -43,6 +44,8 @@ import de.tud.stg.tigerseye.eclipse.core.utils.OutputPathHandlerTest;
 		ParameterDSLInformationTest.class,//
 		MethodProductionScannerTest.class,//
 		MethodProductionElementTest.class,//
+		SystemPropertyRuleTest.class, //
+		ReadingEncodingdependendUnicode.class, //
 })
 public class AllTestsCoreJUnitTests {
 
