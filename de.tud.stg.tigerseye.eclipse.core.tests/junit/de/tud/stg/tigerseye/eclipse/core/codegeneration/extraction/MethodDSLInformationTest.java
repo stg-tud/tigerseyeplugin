@@ -168,10 +168,11 @@ public class MethodDSLInformationTest {
 	}
 
 	@Test
-	public void shouldHaveMethodNameWithoutGetAsProductionIfNotAnnotatedIfBeginningWithGet() throws Exception {
+	public void shouldHaveMethodNameWithGetAsProductionIfNotAnnotatedIfBeginningWithGetAndHasParameters() throws Exception {
 		// public Grammar getGrammar(String topLevelModuleName, boolean
 		// cleanGrammar) {
-		assertThat(getGrammar_MethodInfo.getProduction()).isEqualTo("grammar");
+		assertThat(getGrammar_MethodInfo.getProduction()).isEqualTo("getGrammar");
+		assertThat(getGrammar_MethodInfo.getDSLType()).isEqualTo(DslMethodType.Operation);
 	}
 
 	@Test
@@ -381,7 +382,9 @@ public class MethodDSLInformationTest {
 
 	@Test
 	public void shouldGetDSLTypeLiteralForNotAnnotatedMethodBeginningWithGet() {
-		assertThat(getGrammar_MethodInfo.getDSLType()).isEqualTo(DslMethodType.Literal);
+		//"public String getLiteralNoAnnotation(){"
+		MethodDSLInformation minf = getMinfFromMixed("getLiteralNoAnnotation");
+		assertThat(minf.getDSLType()).isEqualTo(DslMethodType.Literal);
 	}
 
 	@Test
@@ -727,6 +730,22 @@ public class MethodDSLInformationTest {
 	public void shouldHaveBooleanWhetherHasReturnType() throws Exception {
 		MethodDSLInformation minfFromMixed = getMinfFromMixed("hasReturnType");
 		assertThat(minfFromMixed.hasReturnValue()).isTrue();
+	}
+	
+	@Test
+	public void shouldParseMethodBeginningWithGetAndParameterAsOperation() throws Exception {
+		// public Object get__p0(String key) {
+		MethodDSLInformation minf = getMinfFromMixed("get__p0");
+		assertThat(minf.getProduction()).isEqualTo("get__p0");
+		assertThat(minf.getDSLType()).isEqualTo(DslMethodType.Operation);
+	}
+	
+	@Test
+	public void shouldParseCorrectlyAsSingleParameterOperation() throws Exception {
+//		@DSLMethod(production="get__p0") public Object get__0(String key) {
+		MethodDSLInformation minf = getMinfFromMixed("get__a0");
+		assertThat(minf.getProduction()).isEqualTo("get__p0");
+		assertThat(minf.getDSLType()).isEqualTo(DslMethodType.Operation);
 	}
 
 }

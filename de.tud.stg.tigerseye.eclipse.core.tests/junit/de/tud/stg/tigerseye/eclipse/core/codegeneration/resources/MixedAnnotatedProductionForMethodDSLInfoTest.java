@@ -30,6 +30,11 @@ public class MixedAnnotatedProductionForMethodDSLInfoTest {
 
 	@DSLMethod(type = DslMethodType.Literal)
 	public void getliteral() {
+		//no return type actaully invalid literal 
+	}
+	
+	public String getLiteralNoAnnotation(){
+		return "";
 	}
 
 	@DSLMethod
@@ -136,6 +141,14 @@ public class MixedAnnotatedProductionForMethodDSLInfoTest {
 		
 	}
 	
-	
+	// special case get as operation keyword with single parameter
+	public Object get__p0(String key) {
+		return null;
+	}
+
+	@DSLMethod(production="get__p0")
+	public Object get__a0(String key) {
+		return null;
+	}
 
 }
