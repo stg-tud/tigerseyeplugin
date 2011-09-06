@@ -13,7 +13,7 @@ Require-Bundle: org.eclipse.core.runtime;visibility:=reexport,
  de.tud.stg.tigerseye.dslsupport;bundle-version="0.0.1";visibility:=reexport,
  de.tud.stg.parlex;bundle-version="1.0.1";visibility:=reexport,
  de.tud.stg.tigerseye.util;bundle-version="0.0.1";visibility:=reexport,
- org.codehaus.groovy;bundle-version="1.7.0";visibility:=reexport
+ org.codehaus.groovy;bundle-version="1.8.0";visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Import-Package: org.eclipse.jdt.internal.debug.core.breakpoints,
