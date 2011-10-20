@@ -128,7 +128,7 @@ public class TigerseyeCoreActivator extends AbstractUIPlugin {
 		    plugin.linkActiveDSLProjectsIntoWorkspace();
 		    ILanguageProvider provider = new LanguageProviderFactory().createLanguageProvider(plugin
 			    .getPreferenceStore());
-		    Map<DSLDefinition, Throwable> validateDSLDefinitionsState = provider.validateDSLDefinitionsState();
+		    Map<DSLDefinition, Throwable> validateDSLDefinitionsState = provider.validateDSLDefinitionsStateReturnInvalidDSLs();
 		    if (validateDSLDefinitionsState.size() > 0) {
 			logDSLsNotloadable(validateDSLDefinitionsState);
 		    }

@@ -51,7 +51,7 @@ public class KeyWordExtractor {
      *            the DSL class for which methods and Fields will be extracted
      * 
      */
-    public KeyWordExtractor(Class<?> cl) {
+    public KeyWordExtractor(@Nonnull Class<?> cl) {
 	this.clazz = cl;
     }
 
@@ -69,8 +69,21 @@ public class KeyWordExtractor {
      */
     public @Nonnull
     Method[] getMethodKeywords() {
-	List<Method> finalMems = getValidMethods();
-	return finalMems.toArray(new Method[0]);
+	try {
+	    List<Method> finalMems = getValidMethods();
+	    return finalMems.toArray(new Method[0]);
+	} catch (NoClassDefFoundError e) {
+	    logNoClassDefFoundError(e);
+	}
+	return new Method[0];
+    }
+
+    private void logNoClassDefFoundError(NoClassDefFoundError e) {
+	logger.warn(
+		"failed to load declared methods or fields of class {}. "
+			+ "This might be due to unresolvable dependencies of the class under inspection. "
+			+ "All dependencies must be explicitly declared via the MANIFEST.MF file s.t. they can be parsed and added to the classpath of"
+			+ " projects with tigerseye nature.", getDSLClazz(), e);
     }
 
     private List<Method> getValidMethods() {
@@ -79,10 +92,8 @@ public class KeyWordExtractor {
 	// .getDeclaredMethods());
 	// Returns all public declarations in the hierarchy
 	List<Method> declaredMethods = Collections.emptyList();
-	// try {
-	Method[] methods = getDSLClazz().getDeclaredMethods();// FIXME check if
-							      // declaredMethods
-							      // only methods()
+	Method[] methods = getDSLClazz().getDeclaredMethods();
+
 	declaredMethods = Arrays.asList(methods);
 
 	List<Method> sortedValidMems = extractValidModifiersSorted(declaredMethods);
@@ -111,8 +122,13 @@ public class KeyWordExtractor {
      */
     public @Nonnull
     Field[] getDeclaredLiteralKeywords() {
-	List<Field> validFields = getValidFieldsForClass();
-	return validFields.toArray(new Field[0]);
+	try {
+	    List<Field> validFields = getValidFieldsForClass();
+	    return validFields.toArray(new Field[validFields.size()]);
+	} catch (NoClassDefFoundError e) {
+	    logNoClassDefFoundError(e);
+	}
+	return new Field[0];
     }
 
     List<Field> getValidFieldsForClass() {

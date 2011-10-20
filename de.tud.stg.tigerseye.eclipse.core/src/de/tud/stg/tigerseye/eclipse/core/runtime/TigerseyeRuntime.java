@@ -33,8 +33,6 @@ import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.ILanguageProvider;
 import de.tud.stg.tigerseye.eclipse.core.api.TigerseyeRuntimeException;
 import de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyePreferenceConstants;
-import de.tud.stg.tigerseye.util.ListMap;
-import de.tud.stg.tigerseye.util.Transformer;
 
 /**
  * Provides static functions for configuration of Tigerseye nature Projects.
@@ -65,59 +63,58 @@ public class TigerseyeRuntime {
 	sw.start();
 	ILanguageProvider updateLanguageProvider = TigerseyeCore
 		.updateLanguageProvider();
-	Map<DSLDefinition, Throwable> validateDSLDefinitionsState = updateLanguageProvider
-		.validateDSLDefinitionsState();
-	if (validateDSLDefinitionsState.size() > 0) {
-	    TigerseyeCoreActivator
-		    .logDSLsNotloadable(validateDSLDefinitionsState);
+	Map<DSLDefinition, Throwable> invalidDSLs = updateLanguageProvider
+		.validateDSLDefinitionsStateReturnInvalidDSLs();
+	if (invalidDSLs.size() > 0) {
+	    TigerseyeCoreActivator.logDSLsNotloadable(invalidDSLs);
 	}
 	sw.split();
 	logger.debug("{}ms took languageprovider update", sw.getSplitTime());
 
-	IProject[] projects = ResourcesPlugin.getWorkspace().getRoot()
-		.getProjects();
+	IProject[] workspaceProjects = getWorkspaceProjects();
 
-	ArrayList<IProject> tigerProjects = new ArrayList<IProject>();
-	for (final IProject iProject : projects) {
+	ArrayList<IProject> tigerseyeWorkspaceProjects = new ArrayList<IProject>();
+	for (IProject iProject : workspaceProjects) {
 	    if (isTigerseyeNature(iProject)) {
-		tigerProjects.add(iProject);
+		tigerseyeWorkspaceProjects.add(iProject);
 	    }
 	}
 
-	IJavaProject[] ps = new IJavaProject[tigerProjects.size()];
-	for (int i = 0; i < tigerProjects.size(); i++) {
-	    ps[i] = JavaCore.create(tigerProjects.get(i));
+	IJavaProject[] ps = new IJavaProject[tigerseyeWorkspaceProjects.size()];
+	for (int i = 0; i < tigerseyeWorkspaceProjects.size(); i++) {
+	    ps[i] = JavaCore.create(tigerseyeWorkspaceProjects.get(i));
 	}
 
 	try {
-	    setTigerseyeClasspathContainer(ps);
+	    updateTigerseyeClasspathContainerOnProjects(ps);
 	} catch (Exception e) {
 	    logger.error("Classpath update failed", e);
 	}
+
 	logger.debug("{} ms took complete classpath update", sw.getTime());
     }
 
-    public static void setTigerseyeClasspathContainer(IJavaProject... projects)
+    private static IProject[] getWorkspaceProjects() {
+	return ResourcesPlugin.getWorkspace().getRoot()
+		.getProjects();
+    }
+
+    public static void updateTigerseyeClasspathContainerOnProjects(IJavaProject... projects)
 	    throws JavaModelException {
+
 	final TigerseyeLibraryClasspathResolver resolver = new TigerseyeLibraryClasspathResolver();
 	resolver.recomputeClassPathEntries();
-	List<TigerseyeClasspathContainer> container = ListMap.map(
-		new Transformer<IJavaProject, TigerseyeClasspathContainer>() {
 
-		    @Override
-		    public TigerseyeClasspathContainer transform(
-			    IJavaProject input) {
-			TigerseyeClasspathContainer container = new TigerseyeClasspathContainer(
-				input.getProject());
-			container
-				.setTigerseyeLibraryClasspathResolver(resolver);
-			return container;
-		    }
-		}, projects);
+	List<TigerseyeClasspathContainer> containers = new ArrayList<TigerseyeClasspathContainer>(projects.length);
+	for (IJavaProject input : projects) {
+	    TigerseyeClasspathContainer container = new TigerseyeClasspathContainer(input.getProject());
+	    container.setTigerseyeLibraryClasspathResolver(resolver);
+	    containers.add(container);
+	}
 
 	JavaCore.setClasspathContainer(
 		TigerseyeClasspathContainer.CONTAINER_ID, projects,
-		container.toArray(new IClasspathContainer[0]), null);
+		containers.toArray(new IClasspathContainer[0]), null);
     }
 
     static void updateTigerseyeCPContainerofProject(IJavaProject jp) {
@@ -158,7 +155,7 @@ public class TigerseyeRuntime {
 	    IProjectDescription desc = project.getDescription();
 	    ICommand[] commands = desc.getBuildSpec();
 	    for (int i = 0; i < commands.length; ++i)
-		if (commands[i].getBuilderName().equals(tigerseyeBuilder))
+		if (tigerseyeBuilder.equals(commands[i].getBuilderName()))
 		    return;
 	    // add builder to project
 	    ICommand command = desc.newCommand();

@@ -26,7 +26,7 @@ public class HandlingDispatcherHelper {
     
         	grammar.addCategory(nodeCategory);
     
-        	if (clazz == Object.class) {
+        	if (Object.class.equals(clazz)) {
         		return nodeCategory;
         	}
     

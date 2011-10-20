@@ -122,8 +122,11 @@ public class TigerseyeGroovyEditorHighlightingExtender implements
     // and provides different methods working on that class
     private List<String> getMethodKeyWordsForDSL(DSLDefinition dsl) {
 	List<String> keywords = new ArrayList<String>();
+	if (!dsl.isDSLClassLoadable())
+	    return Collections.emptyList();
+	Class<? extends DSL> dslClassChecked = dsl.getDSLClassChecked();
 	KeyWordExtractor keyWordExtractor = new KeyWordExtractor(
-		dsl.getDSLClassChecked());
+		dslClassChecked);
 	Method[] methodKeywords = keyWordExtractor.getMethodKeywords();
 	for (Method method : methodKeywords) {
 	    keywords.add(method.getName());

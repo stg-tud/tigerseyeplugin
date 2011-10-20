@@ -199,7 +199,7 @@ Collection<DSLDefinition> registeredDefinitions) {
     }
 
     @Override
-    public Map<DSLDefinition, Throwable> validateDSLDefinitionsState() {
+    public Map<DSLDefinition, Throwable> validateDSLDefinitionsStateReturnInvalidDSLs() {
 	HashMap<DSLDefinition, Throwable> notLoadable = new HashMap<DSLDefinition, Throwable>();
 	Set<DSLDefinitionImpl> dslDefinitions = getConfiguredDSLDefinitions();
 	for (DSLDefinitionImpl dslDefinition : dslDefinitions) {

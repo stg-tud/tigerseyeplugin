@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Dslsupport
-Bundle-SymbolicName: de.tud.stg.tigerseye.dslsupport
+Bundle-SymbolicName: de.tud.stg.tigerseye.dslsupport;singleton:=true
 Bundle-Version: 0.0.1.qualifier
 Bundle-Vendor: TUD
-Require-Bundle: org.codehaus.groovy;bundle-version="1.7.0",
+Require-Bundle: org.codehaus.groovy;bundle-version="1.8.0",
  org.eclipse.core.runtime,
  de.tud.stg.parlex;bundle-version="1.0.1",
  de.tud.stg.tigerseye.util;bundle-version="0.0.1"

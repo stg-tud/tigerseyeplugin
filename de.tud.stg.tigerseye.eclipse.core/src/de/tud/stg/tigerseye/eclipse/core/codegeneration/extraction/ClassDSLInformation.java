@@ -12,6 +12,8 @@ import javax.annotation.Nonnull;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.tud.stg.popart.builder.core.annotations.DSLClass;
 import de.tud.stg.popart.builder.core.annotations.DSLMethod;
@@ -35,6 +37,9 @@ import de.tud.stg.tigerseye.eclipse.core.internal.WorkspaceProjectClassLoaderStr
  * 
  */
 public class ClassDSLInformation extends DSLInformation {
+
+    private static final Logger logger = LoggerFactory.getLogger(ClassDSLInformation.class);
+
     private boolean annotated;
 
     @Nonnull
@@ -85,17 +90,22 @@ public class ClassDSLInformation extends DSLInformation {
 	DSLClass annotation = clazz.getAnnotation(DSLClass.class);
 	if (annotation != null) {
 	    this.annotated = true;
-	    setConfigurationOptions(getAnnotationParameterOptionsOverInitialMap(
-		    annotation,
+	    setConfigurationOptions(getAnnotationParameterOptionsOverInitialMap(annotation,
 		    DSLInformationDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP));
 	    this.classAnnotation = annotation;
 	}
 
-	Set<Method> methods = extractAllRelevantMethods(clazz);
+	Set<Method> methods = Collections.emptySet();
+	try {
+	    methods = extractAllRelevantMethods(clazz);
+	} catch (NoClassDefFoundError e) {
+	    logger.warn(
+		    "Failed to extract methods from class {}.\nProbably the class uses libraries that can not be loaded by the Tigerseye Plug-in.",
+		    clazz, e);
+	}
 	// FIXME(Leo_Roos;Aug 31, 2011) load annotations from inherited methods
 	for (Method method : methods) {
-	    MethodDSLInformation methodInfo = new MethodDSLInformation(
-		    method);
+	    MethodDSLInformation methodInfo = new MethodDSLInformation(method);
 	    methodInfo.load(getConfigurationOptions());
 	    this.methodsInformation.add(methodInfo);
 	}
@@ -115,8 +125,7 @@ public class ClassDSLInformation extends DSLInformation {
 	 * Instance does not work since Groovy seems to weave the methods
 	 * directly to the class instead of changing its hierarchy.
 	 */
-	methods = filterMethodsByNameAndParameter(methods,
-		groovyObjectSupportMethods);
+	methods = filterMethodsByNameAndParameter(methods, groovyObjectSupportMethods);
 	// TODO(Leo_Roos;Aug 30, 2011) consider to also remove the method from
 	// the Interpreter class
 	return methods;
@@ -131,24 +140,21 @@ public class ClassDSLInformation extends DSLInformation {
 	Iterator<Method> iterator = methods.iterator();
 	while (iterator.hasNext()) {
 	    Method next = iterator.next();
-	    boolean specialMethod = next.getName().contains(
-		    DSLInformationDefaults.SUBSTRING_DEFINING_FILTERED_METHODS);
+	    boolean specialMethod = next.getName().contains(DSLInformationDefaults.SUBSTRING_DEFINING_FILTERED_METHODS);
 	    if (specialMethod)
 		iterator.remove();
 	}
 	return methods;
     }
 
-    static Set<Method> filterMethodsByNameAndParameter(Set<Method> methods,
-	    Set<ComparableMethod> toremove) {
+    static Set<Method> filterMethodsByNameAndParameter(Set<Method> methods, Set<ComparableMethod> toremove) {
 	Set<ComparableMethod> comparableMethods = getComparableMethods(methods);
 	comparableMethods.removeAll(toremove);
 	Set<Method> hashSet = comparableToNormalMethod(comparableMethods);
 	return hashSet;
     }
 
-    private static Set<Method> comparableToNormalMethod(
-	    Collection<ComparableMethod> comparableMethods) {
+    private static Set<Method> comparableToNormalMethod(Collection<ComparableMethod> comparableMethods) {
 	HashSet<Method> hashSet = new HashSet<Method>();
 	for (ComparableMethod comparableMethod : comparableMethods) {
 	    hashSet.add(comparableMethod.getMethod());
@@ -156,19 +162,14 @@ public class ClassDSLInformation extends DSLInformation {
 	return hashSet;
     }
 
-    static Map<ConfigurationOptions, String> getAnnotationParameterOptionsOverInitialMap(
-	    DSLClass dslAnnotation, Map<ConfigurationOptions, String> initialMap) {
-	Map<ConfigurationOptions, String> resultMap = new HashMap<ConfigurationOptions, String>(
-		initialMap);
+    static Map<ConfigurationOptions, String> getAnnotationParameterOptionsOverInitialMap(DSLClass dslAnnotation,
+	    Map<ConfigurationOptions, String> initialMap) {
+	Map<ConfigurationOptions, String> resultMap = new HashMap<ConfigurationOptions, String>(initialMap);
 	if (dslAnnotation != null) {
-	    putIfValid(resultMap, ConfigurationOptions.PARAMETER_ESCAPE,
-		    dslAnnotation.parameterEscape());
-	    putIfValid(resultMap, ConfigurationOptions.WHITESPACE_ESCAPE,
-		    dslAnnotation.whitespaceEscape());
-	    putIfValid(resultMap, ConfigurationOptions.ARRAY_DELIMITER,
-		    dslAnnotation.arrayDelimiter());
-	    putIfValid(resultMap, ConfigurationOptions.STRING_QUOTATION,
-		    dslAnnotation.stringQuotation());
+	    putIfValid(resultMap, ConfigurationOptions.PARAMETER_ESCAPE, dslAnnotation.parameterEscape());
+	    putIfValid(resultMap, ConfigurationOptions.WHITESPACE_ESCAPE, dslAnnotation.whitespaceEscape());
+	    putIfValid(resultMap, ConfigurationOptions.ARRAY_DELIMITER, dslAnnotation.arrayDelimiter());
+	    putIfValid(resultMap, ConfigurationOptions.STRING_QUOTATION, dslAnnotation.stringQuotation());
 	}
 	return resultMap;
     }
@@ -211,8 +212,7 @@ public class ClassDSLInformation extends DSLInformation {
 		return false;
 	    }
 	    ComparableMethod other = (ComparableMethod) obj;
-	    return new EqualsBuilder().append(name, other.name)
-		    .append(parameterTypes, other.parameterTypes).isEquals();
+	    return new EqualsBuilder().append(name, other.name).append(parameterTypes, other.parameterTypes).isEquals();
 	}
 
 	@Override
@@ -222,22 +222,18 @@ public class ClassDSLInformation extends DSLInformation {
 
 	@Override
 	public String toString() {
-	    return new ToStringBuilder(this).append(name)
-		    .append(parameterTypes).toString();
+	    return new ToStringBuilder(this).append(name).append(parameterTypes).toString();
 	}
     }
 
     private static Set<ComparableMethod> getGroovyObjectSupportMethods() {
-	Method[] declaredMethods = GroovyObjectSupport.class
-		.getDeclaredMethods();
-	Set<Method> methodsWithModifier = getMethodsWithModifier(
-		Arrays.asList(declaredMethods), Modifier.PUBLIC);
+	Method[] declaredMethods = GroovyObjectSupport.class.getDeclaredMethods();
+	Set<Method> methodsWithModifier = getMethodsWithModifier(Arrays.asList(declaredMethods), Modifier.PUBLIC);
 	Set<ComparableMethod> comps = getComparableMethods(methodsWithModifier);
 	return comps;
     }
 
-    private static Set<Method> getMethodsWithModifier(
-	    Collection<Method> methods, int modifier) {
+    private static Set<Method> getMethodsWithModifier(Collection<Method> methods, int modifier) {
 	HashSet<Method> hashSet = new HashSet<Method>();
 	for (Method method : methods) {
 	    if ((method.getModifiers() & modifier) != 0) {
@@ -247,8 +243,7 @@ public class ClassDSLInformation extends DSLInformation {
 	return hashSet;
     }
 
-    static Set<ComparableMethod> getComparableMethods(
-	    Collection<Method> declaredMethods) {
+    static Set<ComparableMethod> getComparableMethods(Collection<Method> declaredMethods) {
 	HashSet<ComparableMethod> comps = new HashSet<ComparableMethod>();
 	for (Method method : declaredMethods) {
 	    ComparableMethod cm = new ComparableMethod(method);

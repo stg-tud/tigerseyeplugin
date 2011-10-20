@@ -4,7 +4,6 @@ import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 
 import de.tud.stg.tigerseye.eclipse.core.api.ClassLoaderStrategy;
-import de.tud.stg.tigerseye.eclipse.core.api.TigerseyeRuntimeException;
 
 public class BundleClassloaderStrategy implements ClassLoaderStrategy {
 
@@ -18,10 +17,16 @@ public class BundleClassloaderStrategy implements ClassLoaderStrategy {
     public Class<?> loadClass(String className) throws ClassNotFoundException {
 	Bundle bundle = Platform.getBundle(contributor);
 	if (bundle == null)
-	    throw new TigerseyeRuntimeException("Could not access bundle "
-		    + contributor + " to load class " + className);
-	Class<?> loadClass = bundle.loadClass(className);
-	return loadClass;
+	    throw new ClassNotFoundException("Could not access bundle " + contributor + " to load class " + className);
+	try {
+	    Class<?> loadClass = bundle.loadClass(className);
+	    return loadClass;
+	} catch (ClassNotFoundException e) {
+	    throw e;
+	} catch (Throwable e) {
+	    throw new ClassNotFoundException("Unexpected problem while trying to load class " + className
+		    + " of bundle " + bundle + ":" + e.getMessage(), e);
+	}
     }
 
 }
