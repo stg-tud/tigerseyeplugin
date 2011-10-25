@@ -8,9 +8,9 @@ import org.eclipse.core.runtime.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileTypeHelper;
-import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntime;
 
 /**
  * Central unit to perform the filename translation between Tigerseye source
@@ -30,7 +30,7 @@ public class OutputPathHandler {
     private String localOutputDirectoryName;
 
     public OutputPathHandler() {
-	this.localOutputDirectoryName = TigerseyeRuntime
+	this.localOutputDirectoryName = TigerseyeCore
 		.getOutputDirectoryPath();
     }
 

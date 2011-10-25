@@ -23,7 +23,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubProgressMonitor;
-import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
@@ -32,12 +31,12 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 import de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler.DSLResourceVisitor;
 import de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler.GroovyResourceVisitor;
 import de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler.JavaResourceVisitor;
 import de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler.ResourceHandler;
 import de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler.ResourceVisitor;
-import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntime;
 
 //FIXME(Leo_Roos;Aug 25, 2011) and tests for logic
 public class Builder extends IncrementalProjectBuilder {
@@ -95,7 +94,7 @@ public class Builder extends IncrementalProjectBuilder {
 	    int cleanwork = totalWork / 10;
 
 	    monitor.beginTask("Cleaning " + getProject(), totalWork);
-	    String outputDirectoryPath = TigerseyeRuntime.getOutputDirectoryPath();
+	    String outputDirectoryPath = TigerseyeCore.getOutputDirectoryPath();
 	    logger.debug("cleaning output directory {} for  {}", outputDirectoryPath, getProject());
 
 	    IJavaProject jp = JavaCore.create(getProject());
@@ -135,7 +134,7 @@ public class Builder extends IncrementalProjectBuilder {
     }
 
     private boolean isTigerseyeOutputSourceDirectory(IJavaElement packRoot) {
-	IFolder tigerseyeoutputfolder = getProject().getFolder(TigerseyeRuntime.getOutputDirectoryPath());
+	IFolder tigerseyeoutputfolder = getProject().getFolder(TigerseyeCore.getOutputDirectoryPath());
 	IPath projectRelativePath = tigerseyeoutputfolder.getFullPath();
 	IPath packRootPath = packRoot.getPath();
 	boolean isTigerseyeOutputSourceDirectory = packRootPath.equals(projectRelativePath);
@@ -297,10 +296,4 @@ public class Builder extends IncrementalProjectBuilder {
 
     }
 
-    @Override
-    public ISchedulingRule getRule(int kind, Map args) {
-	return super.getRule(kind, args);
-	// XXX(Leo_Roos;Sep 2, 2011) Previous implementation made no difference
-	// should research some more on how to write rules
-    }
 }

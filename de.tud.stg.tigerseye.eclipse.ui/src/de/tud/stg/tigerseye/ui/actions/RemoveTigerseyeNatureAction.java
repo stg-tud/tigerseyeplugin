@@ -12,7 +12,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntime;
+import de.tud.stg.tigerseye.eclipse.core.ProjectModificationUtilities;
 
 public class RemoveTigerseyeNatureAction implements IObjectActionDelegate {
 
@@ -31,7 +31,7 @@ public class RemoveTigerseyeNatureAction implements IObjectActionDelegate {
 	    return;
 	}
 	try {
-	    TigerseyeRuntime.removeTigerseyeNature(projectForSelection);
+	    ProjectModificationUtilities.removeTigerseyeNature(projectForSelection);
 	} catch (CoreException e) {
 	    logger.error("Failed to remove nature", e);
 	}

@@ -9,6 +9,8 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 
+import de.tud.stg.tigerseye.eclipse.core.ProjectModificationUtilities;
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 
 //FIXME renaming, refactoring, tests
 public class TigerseyeNature implements IProjectNature {
@@ -17,11 +19,11 @@ public class TigerseyeNature implements IProjectNature {
 
     @Override
     public void configure() throws CoreException {
-	TigerseyeRuntime.addTigerseyeNatures(getProject());
-	TigerseyeRuntime.setSourceFolder(getProject());
-	TigerseyeRuntime.addTigerseyeRuntimeLibraries(JavaCore
+	ProjectModificationUtilities.addTigerseyeNatures(getProject());
+	ProjectModificationUtilities.setSourceFolder(getProject());
+	ProjectModificationUtilities.addTigerseyeRuntimeLibraries(JavaCore
 		.create(getProject()));
-	TigerseyeRuntime.addBuilder(getProject());
+	ProjectModificationUtilities.addBuilder(getProject());
     }
 
     @Override
@@ -29,7 +31,7 @@ public class TigerseyeNature implements IProjectNature {
 	IJavaProject jp = JavaCore.create(getProject());
 	deconfigureSourceFolder(jp);
 	deconfigureClassPath(jp);
-	TigerseyeRuntime.removeTigerseyeNature(getProject());
+	ProjectModificationUtilities.removeTigerseyeNature(getProject());
     }
 
     @Override
@@ -48,14 +50,14 @@ public class TigerseyeNature implements IProjectNature {
 	    throws JavaModelException {
 	IClasspathEntry entry = JavaCore.newContainerEntry(
 		TigerseyeClasspathContainer.CONTAINER_ID, true);
-	TigerseyeRuntime.removeClassPathEntry(jp, entry);
+	ProjectModificationUtilities.removeClassPathEntry(jp, entry);
     }
 
     private void deconfigureSourceFolder(IJavaProject jp) {
 	IFolder srcFolder = jp.getProject().getFolder(
-		TigerseyeRuntime
+TigerseyeCore
 		.getOutputDirectoryPath());
-	TigerseyeRuntime.removeSourceFolder(jp, srcFolder);
+	ProjectModificationUtilities.removeSourceFolder(jp, srcFolder);
     }
 
 }

@@ -6,6 +6,7 @@ import org.eclipse.core.commands.ExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.tud.stg.tigerseye.eclipse.core.ProjectModificationUtilities;
 import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntime;
 
 public class UpdateTigerseyeClasspathHandler extends AbstractHandler {
@@ -16,6 +17,7 @@ public class UpdateTigerseyeClasspathHandler extends AbstractHandler {
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
 	TigerseyeRuntime.updateTigerseyeClassPaths();
+	ProjectModificationUtilities.createTigerseyeSourceFoldersIfNotExisting();
 	return null;
     }
 

@@ -11,7 +11,7 @@ import org.eclipse.ui.INewWizard;
 
 import de.tud.stg.popart.eclipse.wizards.legacygroovy.wizards.WizardUtil;
 import de.tud.stg.popart.eclipse.wizards.popartLanguageWizard.model.PopartLanguageModel;
-import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntime;
+import de.tud.stg.tigerseye.eclipse.core.ProjectModificationUtilities;
 import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeCoreConstants;
 
 /**
@@ -79,7 +79,7 @@ public class NewPopartLanguageWizzard extends NewClassWizard implements INewWiza
 		"Add Tigerseye Nature",
 		"Do you want to add the Tigerseye runtime libraries?");
 	if (openQuestion) {	
-	TigerseyeRuntime
+	ProjectModificationUtilities
 		.addTigersEyeRuntimeConfiguration(javaProject.getProject());
 	}
 	}
