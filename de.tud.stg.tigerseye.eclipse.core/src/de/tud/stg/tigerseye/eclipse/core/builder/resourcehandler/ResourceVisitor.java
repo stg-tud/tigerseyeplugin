@@ -25,11 +25,9 @@ import de.tud.stg.tigerseye.eclipse.core.utils.OutputPathHandler;
 public abstract class ResourceVisitor implements IResourceDeltaVisitor {
 
     public ResourceVisitor() {
-	languageProvider = TigerseyeCore.getLanguageProvider();
     }
 
     private static final Logger logger = LoggerFactory.getLogger(ResourceVisitor.class);
-    private final ILanguageProvider languageProvider;
 
     @Override
     public boolean visit(IResourceDelta delta) {
@@ -80,7 +78,7 @@ public abstract class ResourceVisitor implements IResourceDeltaVisitor {
 		    logger.debug("derived File for {} exists. it is {}. Trying to delete it.", file, outputFile);
 		    outputFile.delete(false, null);
 		} catch (CoreException e) {
-		    logger.error("Could not delete file {}", file, e);
+		    logger.error("Could not delete file " + file, e);
 		}
 	    }
 	}
@@ -104,6 +102,10 @@ public abstract class ResourceVisitor implements IResourceDeltaVisitor {
 
     // * FIXME(Leo_Roos;Aug 27, 2011) paritally copied from
     // DSLResourceHandler#handleResource
+    // refactor/move so that common logic in single location
+    /*
+     * @return whether file <code>resource</code> can be handled
+     */
     private boolean allDSLsForDeltaAreActive(IFile resource) {
 
 	IFile srcFile = resource;
@@ -119,9 +121,11 @@ public abstract class ResourceVisitor implements IResourceDeltaVisitor {
 	}
 	Set<DSLDefinition> dslDefinitions = Collections.emptySet();
 	try {
-	    dslDefinitions = determineInvolvedDSLs(srcFile, resourceContent, languageProvider);
+	    dslDefinitions = determineInvolvedDSLs(srcFile, resourceContent, getLanguageProvider());
 	} catch (DSLNotFoundException e) {
-	    logger.debug("Resource {} could not be handled. {}", new Object[] { srcFile, e.noDSLMsg() }, e);
+	    if (logger.isDebugEnabled()) {
+		logger.debug("Resource could not be handled. " + srcFile, e);
+	    }
 	}
 	for (DSLDefinition dslDefinition : dslDefinitions) {
 	    if (!dslDefinition.isActive()) {
@@ -129,6 +133,13 @@ public abstract class ResourceVisitor implements IResourceDeltaVisitor {
 	    }
 	}
 	return true;
+    }
+
+    /*
+     * should not be cached
+     */
+    private ILanguageProvider getLanguageProvider() {
+	return TigerseyeCore.getLanguageProvider();
     }
 
     protected abstract Set<DSLDefinition> determineInvolvedDSLs(IFile srcFile, StringBuffer resourceContent,

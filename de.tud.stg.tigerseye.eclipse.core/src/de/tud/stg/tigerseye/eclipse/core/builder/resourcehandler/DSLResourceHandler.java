@@ -59,8 +59,6 @@ public abstract class DSLResourceHandler extends ResourceVisitor implements
 
     public final FileType fileType;
 
-    private ILanguageProvider languageProvider;
-
     private TransformerConfigurationProvider transformerProvider;
 
     private OutputPathHandler outputPathHandler;
@@ -76,7 +74,6 @@ public abstract class DSLResourceHandler extends ResourceVisitor implements
     }
 
     private void init() {
-	this.languageProvider = TigerseyeCore.getLanguageProvider();
 	this.ult = TigerseyeCore.getUnicodeLookupTable();
 	this.transformerProvider = new TransformerConfigurationProvider(
 		TigerseyeCore.getTransformationProvider());
@@ -85,7 +82,8 @@ public abstract class DSLResourceHandler extends ResourceVisitor implements
     }
 
     protected ILanguageProvider getLanguageProvider() {
-	return languageProvider;
+	// don't cache it
+	return TigerseyeCore.getLanguageProvider();
     }
 
     protected TransformerConfigurationProvider getTransformerProvider() {
