@@ -74,7 +74,7 @@ public interface DSLDefinition extends TransformationType {
      * be returned
      * 
      * @return the loaded Class of this {@code DSLDefinition} or
-     *         <code>null</code> is it's not load-able.
+     *         <code>null</code> if it's not load-able.
      */
     @Nullable
     Class<? extends de.tud.stg.popart.dslsupport.DSL> getDSLClassChecked();

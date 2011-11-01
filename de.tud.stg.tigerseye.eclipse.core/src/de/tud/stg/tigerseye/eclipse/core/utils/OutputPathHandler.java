@@ -41,8 +41,10 @@ public class OutputPathHandler {
 
     public @CheckForNull
     IFile getOutputFile(IFile srcFile) {
-	// FIXME the assumption that the source folder is always only exactly
-	// the first element might be wrong.
+	// FIXME(Leo_Roos;update Nov 1, 2011) the assumption that the source
+	// folder is always only exactly
+	// the first element might be wrong. For example consider maven like
+	// source folder structure.
 	IPath projectRelativePath = srcFile.getProjectRelativePath();
 	IPath delegatedPath = getSrcRelativeOutputPath(projectRelativePath
 		.removeFirstSegments(1));

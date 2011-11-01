@@ -76,8 +76,12 @@ public class Context {
     }
 
     public void addDSL(DSLDefinition dsl) throws NoLegalPropertyFoundException {
-	addDSL(dsl.getValue(DSLKey.EXTENSION), dsl.getDSLClassChecked());
-	this.dsls.add(dsl);
+	if (dsl.isDSLClassLoadable()) {
+	    addDSL(dsl.getValue(DSLKey.EXTENSION), dsl.getDSLClassChecked());
+	    this.dsls.add(dsl);
+	} else {
+	    logger.error("tried to add not loadable dsl {}", dsl);
+	}
     }
 
     public List<DSLDefinition> getDsls() {
