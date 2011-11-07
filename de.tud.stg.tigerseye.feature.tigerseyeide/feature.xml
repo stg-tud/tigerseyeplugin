@@ -26,27 +26,25 @@
       <import plugin="org.apache.commons.collections" version="3.2.0" match="greaterOrEqual"/>
       <import plugin="org.apache.commons.io" version="1.4.0" match="greaterOrEqual"/>
       <import plugin="de.tud.stg.tigerseye.dslsupport" version="0.0.1" match="greaterOrEqual"/>
+      <import plugin="de.tud.stg.parlex" version="1.0.1" match="greaterOrEqual"/>
       <import plugin="de.tud.stg.tigerseye.util" version="0.0.1" match="greaterOrEqual"/>
+      <import plugin="org.codehaus.groovy" version="1.8.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jdt.debug" version="3.6.1" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.jdt.groovy.core" version="2.1.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jdt.core" version="3.6.1" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.debug.ui" version="3.4.2" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.debug.ui" version="3.6.1" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jdt.launching" version="3.5.100" match="greaterOrEqual"/>
       <import plugin="org.codehaus.groovy.eclipse.ui"/>
       <import plugin="org.codehaus.groovy.eclipse.core" version="2.1.1" match="greaterOrEqual"/>
       <import plugin="org.eclipse.pde.core" version="3.6.2" match="greaterOrEqual"/>
       <import plugin="de.tud.stg.tigerseye" version="0.0.1" match="greaterOrEqual"/>
-      <import feature="org.codehaus.groovy.eclipse.feature" version="2.1.1.xx-20101215-2100-e36"/>
-      <import plugin="de.tud.stg.parlex" version="1.0.1" match="greaterOrEqual"/>
-      <import plugin="org.codehaus.groovy" version="1.7.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jface.text"/>
       <import plugin="org.eclipse.ui.editors"/>
       <import plugin="org.eclipse.jdt.ui"/>
-      <import plugin="org.eclipse.debug.ui" version="3.6.1" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jdt.debug.ui" version="3.5.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.jdt.groovy.core" version="2.1.2" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui.ide"/>
+      <import feature="org.codehaus.groovy.eclipse.feature" version="2.1.1.xx-20101215-2100-e36"/>
    </requires>
 
    <plugin
