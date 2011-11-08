@@ -697,6 +697,7 @@ public class GrammarBuilder {
 
 	ICategory<String> typeCategory = new Category(CategoryNames.PARAMETERTYPE_CATEGORY, false);
 	Rule typeRule = new Rule(parameterMapping, typeCategory);
+	typeRule.addAnnotation(new AvoidAnnotation());
 
 	box.addRule(rule);
 	box.addRule(typeRule);
