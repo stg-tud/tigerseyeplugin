@@ -342,6 +342,7 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 	KeywordSensitiveLexer ksl = new KeywordSensitiveLexer(new KeywordSeperator());
 
 	EarleyParser parser = new EarleyParser(ksl, grammar);
+	parser.detectUsedOracles();
 	IChart chart = parser.parse(input.toString().trim());
 
 	IAbstractNode program = chart.getAST();
