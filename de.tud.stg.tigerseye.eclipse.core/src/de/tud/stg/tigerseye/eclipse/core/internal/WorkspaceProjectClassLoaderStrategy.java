@@ -31,12 +31,19 @@ public class WorkspaceProjectClassLoaderStrategy implements ClassLoaderStrategy 
     @Override
     public Class<?> loadClass(String className) throws ClassNotFoundException {
 	URLClassLoader classLoader = getClassLoaderWithIndependentContext();
-	Class<?> loadedClass = classLoader.loadClass(className);
-	assertNotOnPluginClasspath(className);
-	return loadedClass;
+	try {
+	    Class<?> loadedClass = classLoader.loadClass(className);
+	    logAssertNotOnPluginClasspath(className);
+	    return loadedClass;
+	} catch (ClassNotFoundException e) {
+	    throw e;
+	} catch (Throwable e) {
+	    throw new ClassNotFoundException("Failed to load class " + className + " of project " + workspaceProject
+		    + ":" + e.getMessage(), e);
+	}
     }
 
-    private void assertNotOnPluginClasspath(String className) {
+    private void logAssertNotOnPluginClasspath(String className) {
 	try {
 	    Class<?> loadClass = Class.forName(className, false, getClass().getClassLoader());
 	    if (loadClass != null) {

@@ -10,10 +10,12 @@ import javax.annotation.Nonnull;
 
 import org.apache.commons.lang.time.StopWatch;
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
@@ -23,7 +25,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubProgressMonitor;
-import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
@@ -32,24 +33,25 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
+import de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler.DSLResourceHandler;
 import de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler.DSLResourceVisitor;
 import de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler.GroovyResourceVisitor;
 import de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler.JavaResourceVisitor;
-import de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler.ResourceHandler;
-import de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler.ResourceVisitor;
-import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntime;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileTypeHelper;
 
 //FIXME(Leo_Roos;Aug 25, 2011) and tests for logic
 public class Builder extends IncrementalProjectBuilder {
     private static final Logger logger = LoggerFactory.getLogger(Builder.class);
 
-    private final ResourceVisitor[] visitors = { new DSLResourceVisitor(), new GroovyResourceVisitor(),
+    private final DSLResourceHandler[] visitors = { new DSLResourceVisitor(), new GroovyResourceVisitor(),
 	    new JavaResourceVisitor() };
 
     private final AtomicBoolean mustRecomputeSourcesForFullBuild = new AtomicBoolean();
 
     private @Nonnull
-    List<IResource> actualResourcesToBuildCache = Collections.emptyList();
+    List<IFile> actualResourcesToBuildCache = Collections.emptyList();
 
     enum BuildKind {
 	FULL_BUILD(IncrementalProjectBuilder.FULL_BUILD), //
@@ -95,7 +97,7 @@ public class Builder extends IncrementalProjectBuilder {
 	    int cleanwork = totalWork / 10;
 
 	    monitor.beginTask("Cleaning " + getProject(), totalWork);
-	    String outputDirectoryPath = TigerseyeRuntime.getOutputDirectoryPath();
+	    String outputDirectoryPath = TigerseyeCore.getOutputDirectoryPath();
 	    logger.debug("cleaning output directory {} for  {}", outputDirectoryPath, getProject());
 
 	    IJavaProject jp = JavaCore.create(getProject());
@@ -135,7 +137,7 @@ public class Builder extends IncrementalProjectBuilder {
     }
 
     private boolean isTigerseyeOutputSourceDirectory(IJavaElement packRoot) {
-	IFolder tigerseyeoutputfolder = getProject().getFolder(TigerseyeRuntime.getOutputDirectoryPath());
+	IFolder tigerseyeoutputfolder = getProject().getFolder(TigerseyeCore.getOutputDirectoryPath());
 	IPath projectRelativePath = tigerseyeoutputfolder.getFullPath();
 	IPath packRootPath = packRoot.getPath();
 	boolean isTigerseyeOutputSourceDirectory = packRootPath.equals(projectRelativePath);
@@ -152,8 +154,6 @@ public class Builder extends IncrementalProjectBuilder {
 	StopWatch sw = startedStopWatch();
 	try {
 	    buildSources(buildKind, monitor);
-	    monitor.beginTask("Start build", 100);
-
 	} catch (CoreException e) {
 	    logger.warn("Build failed because ", e);
 	} finally {
@@ -180,16 +180,16 @@ public class Builder extends IncrementalProjectBuilder {
 	    this.incrementalBuild(delta, monitor);
 	    break;
 	case CLEAN_BUILD:
+	    monitor.beginTask("Start build", 100);
 	    this.clean(new SubProgressMonitor(monitor, 10));
 	    this.fullBuild(new SubProgressMonitor(monitor, 90));
 	    break;
 	case FULL_BUILD:
-	    this.fullBuild(new SubProgressMonitor(monitor, 1));
+	    this.fullBuild(monitor);
 	    break;
 	default:
 	    throw new IllegalArgumentException("Forgot to add enum to switch?");
 	}
-
     }
 
     public @Nonnull
@@ -206,7 +206,7 @@ public class Builder extends IncrementalProjectBuilder {
 	monitor.beginTask("Building", totalWork);
 	// IProject project = this.getProject();
 	if (delta != null) {
-	    for (ResourceVisitor visitor : visitors) {
+	    for (DSLResourceHandler visitor : visitors) {
 		checkCancelAndAct(monitor);
 		monitor.subTask("Building " + delta.getFullPath()
 		/* + " with Visitor:" + visitor.getClass().getSimpleName() */);
@@ -223,7 +223,7 @@ public class Builder extends IncrementalProjectBuilder {
 	try {
 	    int totalWork = 10000;
 	    monitor.beginTask("Building", totalWork);
-	    List<IResource> actualResourcesToBuild = getSourcesForFullBuild();
+	    List<IFile> actualResourcesToBuild = getSourcesForFullBuild();
 
 	    int sourceDirWorked = totalWork / (1 + actualResourcesToBuild.size());
 	    buildResourcesInSourceDirectory(new SubProgressMonitor(monitor, sourceDirWorked), actualResourcesToBuild);
@@ -233,12 +233,14 @@ public class Builder extends IncrementalProjectBuilder {
 	}
     }
 
-    private List<IResource> getSourcesForFullBuild() {
+    private List<IFile> getSourcesForFullBuild() {
 	if (mustRecomputeSourcesForFullBuild.get()) {
-	    List<IResource> actualResourcesToBuild = Collections.emptyList();
+	    List<IFile> actualResourcesToBuild = Collections.emptyList();
 	    try {
 		actualResourcesToBuild = recomputeSourceForFullBuild();
 	    } catch (JavaModelException e) {
+		logger.error("Failed to determine which sources to build.", e);
+	    } catch (CoreException e) {
 		logger.error("Failed to determine which sources to build.", e);
 	    }
 	    actualResourcesToBuildCache = actualResourcesToBuild;
@@ -247,7 +249,7 @@ public class Builder extends IncrementalProjectBuilder {
 	return actualResourcesToBuildCache;
     }
 
-    public ArrayList<IResource> recomputeSourceForFullBuild() throws JavaModelException {
+    public ArrayList<IFile> recomputeSourceForFullBuild() throws JavaModelException, CoreException {
 	IProject project = this.getProject();
 	IJavaProject jp = JavaCore.create(project);
 	IPackageFragmentRoot[] packageFragmentRoots = jp.getPackageFragmentRoots();
@@ -259,18 +261,33 @@ public class Builder extends IncrementalProjectBuilder {
 		sourcesToBuild.add(packRoot);
 	    }
 	}
-	ArrayList<IResource> actualResourcesToBuild = new ArrayList<IResource>();
+
+	final ArrayList<IFile> teSrcFiles = new ArrayList<IFile>();
 	for (IPackageFragmentRoot sourceDirRoot : sourcesToBuild) {
-	    Object[] nonJavaResources = sourceDirRoot.getNonJavaResources();
-	    for (Object object : nonJavaResources) {
-		if (object instanceof IResource)
-		    actualResourcesToBuild.add((IResource) object);
-	    }
+	    IResource resource = sourceDirRoot.getResource();
+	    resource.accept(new IResourceVisitor() {
+
+		@Override
+		public boolean visit(IResource resource) throws CoreException {
+		    int type = resource.getType();
+		    if (type == IResource.FILE) {
+			IFile file = (IFile) resource;
+			FileType typeForSrcResource = FileTypeHelper.getTypeForSrcResource(file.getName());
+			if (FileType.TIGERSEYE.equals(typeForSrcResource)) {
+			    System.out.println("adding file " + file + " for build");
+			    teSrcFiles.add(file);
+			}
+			return false;
+		    }
+		    return true;
+		}
+	    });
 	}
-	return actualResourcesToBuild;
+	
+	return teSrcFiles;
     }
 
-    private void buildResourcesInSourceDirectory(@Nonnull IProgressMonitor monitor, List<IResource> nonJavaResources)
+    private void buildResourcesInSourceDirectory(@Nonnull IProgressMonitor monitor, List<IFile> nonJavaResources)
 	    throws JavaModelException {
 	try {
 	    int totalWork = Integer.MAX_VALUE;
@@ -281,12 +298,11 @@ public class Builder extends IncrementalProjectBuilder {
 	    int oneResourceWork = (totalWork / nonJavaResources.size());
 	    int oneVisitorWork = oneResourceWork / visitors.length;
 	    for (IResource resource : nonJavaResources) {
-		for (ResourceVisitor visitor : visitors) {
+		for (DSLResourceHandler visitor : visitors) {
 		    checkCancelAndAct(monitor);
 		    if (visitor.isInteresstedIn(resource)) {
 			monitor.subTask("Building: " + resource.getName());
-			ResourceHandler newResourceHandler = visitor.getResourceHandler();
-			newResourceHandler.handleResource(resource);
+			visitor.handleResource(resource);
 		    }
 		    monitor.worked(oneVisitorWork);
 		}
@@ -297,10 +313,4 @@ public class Builder extends IncrementalProjectBuilder {
 
     }
 
-    @Override
-    public ISchedulingRule getRule(int kind, Map args) {
-	return super.getRule(kind, args);
-	// XXX(Leo_Roos;Sep 2, 2011) Previous implementation made no difference
-	// should research some more on how to write rules
-    }
 }

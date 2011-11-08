@@ -39,6 +39,6 @@ public interface ILanguageProvider {
      * Returns a Map of those classes that can not be loaded and the problematic
      * Exception.
      */
-    public Map<DSLDefinition, Throwable> validateDSLDefinitionsState();
+    public Map<DSLDefinition, Throwable> validateDSLDefinitionsStateReturnInvalidDSLs();
 
 }

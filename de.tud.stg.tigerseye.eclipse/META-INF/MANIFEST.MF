@@ -13,7 +13,7 @@ Require-Bundle: org.eclipse.core.runtime;visibility:=reexport,
  de.tud.stg.tigerseye.dslsupport;bundle-version="0.0.1";visibility:=reexport,
  de.tud.stg.parlex;bundle-version="1.0.1";visibility:=reexport,
  de.tud.stg.tigerseye.util;bundle-version="0.0.1";visibility:=reexport,
- org.codehaus.groovy;bundle-version="1.7.0";visibility:=reexport
+ org.codehaus.groovy;bundle-version="1.8.0";visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Import-Package: org.eclipse.jdt.internal.debug.core.breakpoints,
@@ -21,13 +21,20 @@ Import-Package: org.eclipse.jdt.internal.debug.core.breakpoints,
  org.slf4j.impl
 Export-Package: aterm,
  aterm.pure,
+ aterm.pure.binary,
+ aterm.pure.binary.test,
+ aterm.stream,
+ aterm.test,
  de.tud.stg.tigerseye.eclipse,
  javax.annotation,
  javax.annotation.meta,
  jjtraveler,
+ jjtraveler.graph,
+ jjtraveler.reflective,
+ jjtraveler.util,
  shared
 Bundle-ClassPath: libs/aterm-java.jar,
- libs/jjtraveler.jar,
  .,
+ libs/jjtraveler.jar,
  libs/jsr305.jar,
  libs/shared-objects.jar

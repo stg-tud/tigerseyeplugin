@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="de.tud.stg.tigerseye.eclipse.core" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="de.tud.stg.tigerseye.dslsupport" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="de.tud.stg.tigerseye.eclipse.core" id="de.tud.stg.tigerseye.dslDefinitions" name="DSL Definition"/>
+         <meta.schema plugin="de.tud.stg.tigerseye.dslsupport" id="de.tud.stg.tigerseye.dslDefinitions" name="DSL Definition"/>
       </appinfo>
       <documentation>
          [Enter description of this extension point.]
@@ -95,7 +95,7 @@
          <meta.section type="examples"/>
       </appinfo>
       <documentation>
-         [Enter extension point usage example here.]
+         Extension Point via which new DSLs can be provided.
       </documentation>
    </annotation>
 

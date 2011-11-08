@@ -8,9 +8,9 @@ import org.eclipse.core.runtime.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileTypeHelper;
-import de.tud.stg.tigerseye.eclipse.core.runtime.TigerseyeRuntime;
 
 /**
  * Central unit to perform the filename translation between Tigerseye source
@@ -30,7 +30,7 @@ public class OutputPathHandler {
     private String localOutputDirectoryName;
 
     public OutputPathHandler() {
-	this.localOutputDirectoryName = TigerseyeRuntime
+	this.localOutputDirectoryName = TigerseyeCore
 		.getOutputDirectoryPath();
     }
 
@@ -41,8 +41,10 @@ public class OutputPathHandler {
 
     public @CheckForNull
     IFile getOutputFile(IFile srcFile) {
-	// FIXME the assumption that the source folder is always only exactly
-	// the first element might be wrong.
+	// FIXME(Leo_Roos;update Nov 1, 2011) the assumption that the source
+	// folder is always only exactly
+	// the first element might be wrong. For example consider maven like
+	// source folder structure.
 	IPath projectRelativePath = srcFile.getProjectRelativePath();
 	IPath delegatedPath = getSrcRelativeOutputPath(projectRelativePath
 		.removeFirstSegments(1));

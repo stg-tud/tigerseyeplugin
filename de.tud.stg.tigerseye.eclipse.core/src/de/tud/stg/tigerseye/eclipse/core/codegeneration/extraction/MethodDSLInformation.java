@@ -60,7 +60,7 @@ public class MethodDSLInformation extends DSLInformation {
 	if (isAnnotated()) {
 	    // Annotation has Priority
 	    return this.dslMethodAnnotation.type();
-	} else if (methodNameHasLiteralForm()) {
+	} else if (methodHasLiteralForm()) {
 	    return DslMethodType.Literal;
 	} else {
 	    // Otherwise return default
@@ -72,7 +72,9 @@ public class MethodDSLInformation extends DSLInformation {
      * @return <code>true</code> if method name begins with literal identifying
      *         string and is longer as that prefix.
      */
-    private boolean methodNameHasLiteralForm() {
+    private boolean methodHasLiteralForm() {
+	if (getMethod().getParameterTypes().length > 0)
+	    return false;
 	String name = getMethod().getName();
 	if (name.length() > LITERAL_IDENTIFER_ON_METHOD_NAME.length()) {
 	    return name.startsWith(LITERAL_IDENTIFER_ON_METHOD_NAME);

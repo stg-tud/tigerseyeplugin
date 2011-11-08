@@ -24,10 +24,13 @@ import de.tud.stg.tigerseye.eclipse.core.api.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFoundException;
 import de.tud.stg.tigerseye.eclipse.core.api.TigerseyeRuntimeException;
 
+/*
+ * FIXME(Leo_Roos;Oct 19, 2011) need a wrapper around Class which handles all runtime exceptions. These might occur when an ill configured DSL is loaded.
+ *
+ */
 public class DSLDefinitionImpl implements DSLDefinition {
 
-    private static final Logger logger = LoggerFactory
-	    .getLogger(DSLDefinitionImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(DSLDefinitionImpl.class);
 
     private final String classPath;
     // private final String contributorSymbolicName;
@@ -57,8 +60,7 @@ public class DSLDefinitionImpl implements DSLDefinition {
      * @param classloaderStrategy
      */
     @Nonnull
-    public DSLDefinitionImpl(String classPath,
-	    DSLConfigurationElement dslconfel, String dslName) {
+    public DSLDefinitionImpl(String classPath, DSLConfigurationElement dslconfel, String dslName) {
 	this.classPath = classPath;
 	this.dslName = dslName;
 	this.configurationElement = dslconfel;
@@ -163,10 +165,8 @@ public class DSLDefinitionImpl implements DSLDefinition {
 		try {
 		    dslClass = loadClassRaw();
 		} catch (Exception e) {
-		    throw new TigerseyeRuntimeException(
-			    "Catched unexpected exception while trying to load "
-				    + this
-				    + ". Unexpected because a prior loadability check has been made.");
+		    throw new TigerseyeRuntimeException("Catched unexpected exception while trying to load " + this
+			    + ". Unexpected because a prior loadability check has been made.");
 		}
 	    }
 	}
@@ -215,8 +215,7 @@ public class DSLDefinitionImpl implements DSLDefinition {
 	try {
 	    // Check existence
 	    @SuppressWarnings("unchecked")
-	    Class<? extends DSL> loadClass = (Class<? extends DSL>) getClassLoaderStrategy()
-		    .loadClass(getClassPath());
+	    Class<? extends DSL> loadClass = (Class<? extends DSL>) getClassLoaderStrategy().loadClass(getClassPath());
 	    /*
 	     * Cannot do the next check since that would also execute possible
 	     * logic within the constructor
@@ -226,12 +225,10 @@ public class DSLDefinitionImpl implements DSLDefinition {
 	} catch (Exception e) {
 	    logger.warn(
 		    "Could not access registered DSL {} with class {} of plug-in {}. It will be ignored. Check your configuration. Is the correct DSL class name given? Is the plug-in accessible?",
-		    new Object[] { dsl.getDslName(), dsl.getClassPath(),
-			    dsl.getContributor().getId(), e });
+		    new Object[] { dsl.getDslName(), dsl.getClassPath(), dsl.getContributor().getId(), e });
 	    return false;
 	}
-	ModelEntry findEntry = PluginRegistry.findEntry(dsl.getContributor()
-		.getId());
+	ModelEntry findEntry = PluginRegistry.findEntry(dsl.getContributor().getId());
 	IPluginModelBase model = null;
 	if (findEntry == null) {
 	    // dsl not yet loaded
@@ -241,8 +238,7 @@ public class DSLDefinitionImpl implements DSLDefinition {
 	}
 
 	if (model == null) {
-	    logger.error("No plugin definition for given id {} can be found",
-		    dsl.getContributor().getId());
+	    logger.error("No plugin definition for given id {} can be found", dsl.getContributor().getId());
 	    return false;
 	} else {
 	    String installLocation = model.getInstallLocation();
@@ -257,9 +253,14 @@ public class DSLDefinitionImpl implements DSLDefinition {
 	return true;
     }
 
-    private void logIfClassHasNoZeroArgConstructor(
-	    Class<? extends DSL> loadClass) {
-	Constructor<?>[] constructors = loadClass.getConstructors();
+    private void logIfClassHasNoZeroArgConstructor(Class<? extends DSL> loadClass) {
+	Constructor<?>[] constructors;
+	try {
+	    constructors = loadClass.getConstructors();
+	} catch (NoClassDefFoundError e) {
+	    logger.warn("could not determine whether class has zero argument constructor.", e);
+	    return;
+	}
 	if (constructors.length < 1) {
 	    logger.warn("DSL Class has no public contructor. Tigerseye expects a constructor with zero arguments");
 	} else {

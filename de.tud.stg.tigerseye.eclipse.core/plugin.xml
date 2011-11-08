@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension-point id="de.tud.stg.tigerseye.dslDefinitions" name="%extension-point.name" schema="schema/de.tud.stg.tigerseye.dslDefinitions.exsd"/>
    <extension-point id="de.tud.stg.tigerseye.transformers" name="%extension-point.name.1" schema="schema/de.tud.stg.tigerseye.transformers.exsd"/>
 
    <extension
