@@ -117,6 +117,7 @@ public class TestDSLTransformation {
 
 		ILexer lexer = new KeywordSensitiveLexer(new KeywordSeperator());
 		EarleyParser earleyParser = new EarleyParser(lexer, gr.grammar);
+		earleyParser.detectUsedOracles();
 
 		// logger.info("= Parsing input stream = {}", inputStream);
 
