@@ -33,8 +33,7 @@ public class PrefixDSL implements de.tud.stg.popart.dslsupport.DSL {
 		return 0;
 	}
 
-	@DSLMethod(type=DslMethodType.Literal)
-//	
+	@DSLMethod(type=DslMethodType.Literal)	
 	public int getStart() {
 		return 0;
 	}

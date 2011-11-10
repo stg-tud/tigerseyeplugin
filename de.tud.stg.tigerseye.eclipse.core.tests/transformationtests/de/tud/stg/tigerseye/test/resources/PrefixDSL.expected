@@ -1,2 +1,10 @@
+start__state__p0(1)
+
 getStart()
-state 12
+state__p0(2)
+
+state__p0(5)
+
+state__p0(6)
+
+i = getStart()

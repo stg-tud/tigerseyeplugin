@@ -45,17 +45,7 @@ public class AmbiguityFailuresTest {
 	// test("MapDSLMultipleEntries", MapDSL.class);
 	// }
 
-	/**
-	 * When applying the same second {@code SimleSql} statement (containing the
-	 * WHERE and, as array delimiter defined, AND) stand-alone (see
-	 * {@link TestSimpleSqlDSL}) or followed by a comment (or probably other
-	 * delimiting characters as well) (see {@link SmallCombinedMapMathDSL}) it
-	 * works fine but the AND is not translated when used in this combined
-	 * manner (last statement no delimiting character).
-	 * <p>
-	 * Concrete reason unknown.
-	 */
-	@Test(expected = ComparisonFailure.class)
+	@Test
 	public void testSmallCombinedDSL() {
 		test("SmallCombinedDSLAmbiguity", MathDSL.class, SimpleSqlDSL.class);
 	}
