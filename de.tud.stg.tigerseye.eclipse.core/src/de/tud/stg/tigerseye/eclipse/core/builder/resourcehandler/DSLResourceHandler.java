@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -72,6 +73,8 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 
     public final FileType fileType;
 
+    public static Map<IFile, Long> lastTimeHandledCache = new Hashtable<IFile, Long>();
+
     // XXX(Leo_Roos;Nov 9, 2011) dirty fix for more debug information about
     // transformation process for every built file. Could be turned into
     // preference.
@@ -80,11 +83,23 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
     @Override
     public boolean visit(IResourceDelta delta) {
 
+	// FIXME(leo;10.11.2011) QOD to suppress build of files copied into
+	// bin folder
 	IResource aResource = delta.getResource();
+	if (aResource.getFullPath().toString().contains("/bin/"))
+	    return false;
 
 	IFile file;
 	if (aResource instanceof IFile) {
 	    file = (IFile) aResource;
+	    boolean fileHasChanged = fileHasChanged(file);
+	    if (!fileHasChanged) {
+		boolean exists = this.outputPathHandler.getOutputFile(file).exists();
+		if (exists) {
+		    return false;
+		}
+	    }
+
 	} else {
 	    logger.trace("Skipping resource {}, since not of type IFile", aResource);
 	    // Returning true since this will usually mean the resource is a
@@ -112,6 +127,25 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 	}
 
 	return false;
+    }
+
+    private boolean fileHasChanged(IFile file) {
+	long modificationStamp = file.getModificationStamp();
+	if (modificationStamp < 0) {
+	    logger.warn("file not accessible or has no valid modification timestamp. File: {} Timestamp: {}", file,
+		    modificationStamp);
+	    return false;
+	}
+
+	Long lastModificationStamp = lastTimeHandledCache.get(file);
+
+	if (lastModificationStamp != null && lastModificationStamp == modificationStamp) {
+	    logger.info("Previously({}) handled. Will be skipped: {}", modificationStamp, file);
+	    return false;
+	} else {
+	    lastTimeHandledCache.put(file, modificationStamp);
+	    return true;
+	}
     }
 
     private void handleRemoved(IFile file) {
@@ -193,7 +227,6 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 	return TigerseyeCore.getLanguageProvider();
     }
 
-
     public abstract boolean isInteresstedIn(IResource resource);
 
     // private IPreferenceStore tigerseyePreferenceStore;
@@ -210,8 +243,8 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 	this.outputPathHandler = new OutputPathHandler();
 
 	String property = System.getProperty(TRANSFORMATION_DEBUG_SYSTEM_PROPERTY);
-	if(property != null)
-	    this.tigerseyetransforamtiondebug  = true;
+	if (property != null)
+	    this.tigerseyetransforamtiondebug = true;
 	// this.tigerseyePreferenceStore = TigerseyeCore.getPreferences();
     }
 
@@ -301,15 +334,15 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 	}
 
 	EarleyParser parser = new EarleyParserConfiguration().getDefaultEarleyParserConfiguration(grammar);
-	
+
 	IChart chart = parser.parse(workingInput);
 
 	ATerm term = getATermFromChart(chart);
 
 	Map<String, MethodOptions> methodOptions = grammarBuilder.getMethodOptions();
 
-	if(tigerseyetransforamtiondebug){
-	    //FIXME(Leo_Roos;Nov 9, 2011) unflexible solution
+	if (tigerseyetransforamtiondebug) {
+	    // FIXME(Leo_Roos;Nov 9, 2011) unflexible solution
 	    IFile transformedFile = context.getTransformedFile();
 	    IPath projectRelativePath = transformedFile.getProjectRelativePath();
 	    String fileName = projectRelativePath.lastSegment();
@@ -319,12 +352,12 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 
 	    IFile chartASTFile = project.getFile(debugFileCoreName.append(fileName + ".chartAST"));
 	    writeResourceContent(chart.getAST().toString(), chartASTFile);
-	    
+
 	    IFile grammarFile = project.getFile(debugFileCoreName.append(fileName + ".grammar"));
 	    writeResourceContent(grammar.toString(), grammarFile);
 
 	}
-	
+
 	ATerm astTransformedTerm = this.performASTTransformations(term, context, methodOptions);
 	ByteArrayOutputStream out = this.performPrettyPrinting(astTransformedTerm);
 	return out;

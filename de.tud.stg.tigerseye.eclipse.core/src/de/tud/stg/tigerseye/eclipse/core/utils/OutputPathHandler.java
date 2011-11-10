@@ -70,7 +70,10 @@ public class OutputPathHandler {
 	IPath srcPath = srcRelativePath;
 	String resourcefileName = srcPath.lastSegment();
 	String outputSrcUnitName = getOutputNameForSourceName(resourcefileName);
-	IPath outputSrcFileName = srcPath.removeLastSegments(1).append(
+	IPath removeLastSegments = srcPath.removeLastSegments(1);
+	// FIXME(leo;10.11.2011) append sometimes causes nullpointer exception
+	// on left segment
+	IPath outputSrcFileName = removeLastSegments.append(
 		outputSrcUnitName);
 	return outputSrcFileName;
     }
