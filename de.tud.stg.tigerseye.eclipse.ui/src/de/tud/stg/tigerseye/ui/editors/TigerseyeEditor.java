@@ -130,8 +130,8 @@ public class TigerseyeEditor extends GroovyEditor {
 
     private void setInvolvedDSLs() {
 	IFile file = (IFile) getAdapter(IFile.class);
-	String[] extensionsForSrcResource = new DSLExtensionsExtractor()
-		.getExtensionsForSrcResource(file.getName());
+	// FIXME(Leo_Roos;Nov 10, 2011) QOD
+	String[] extensionsForSrcResource = new DSLExtensionsExtractor().getExtensionsForSrcResource(file);
 	logger.info("For file {} extracted extensions {} ", file.getName(),
 		Arrays.toString(extensionsForSrcResource));
 	Set<DSLDefinition> activeDSLSet = new HashSet<DSLDefinition>();

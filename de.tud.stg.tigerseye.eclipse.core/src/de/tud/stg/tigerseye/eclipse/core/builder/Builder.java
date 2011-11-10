@@ -204,7 +204,10 @@ public class Builder extends IncrementalProjectBuilder {
 	int totalWork = 10000;
 	int work = totalWork / visitors.length;
 	monitor.beginTask("Building", totalWork);
-	// IProject project = this.getProject();
+	// TODO(Leo_Roos;Nov 10, 2011) Usually the delta will be the root
+	// directory containing all further deltas recursively. So I have to add
+	// filter capabilities to this incremental as well similar to the full
+	// build approach
 	if (delta != null) {
 	    for (DSLResourceHandler visitor : visitors) {
 		checkCancelAndAct(monitor);

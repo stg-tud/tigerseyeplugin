@@ -45,6 +45,12 @@ public class ResourceHandlingHelper {
 	return null;
     }
 
+    // FIXME(Leo_Roos;Nov 10, 2011) QOD
+    public static List<String> determineInvolvedDSLNames(IFile resource, String input,
+	    ILanguageProvider languageProvider, FileType interestedInFiletype) {
+	return determineInvolvedDSLNames(resource, new StringBuffer(input), languageProvider, interestedInFiletype);
+    }
+
     /**
      * Determines involved DSL names. Those are only dependent on the file name
      * and possible annotations
@@ -56,7 +62,7 @@ public class ResourceHandlingHelper {
      */
     public static List<String> determineInvolvedDSLNames(IFile resource,
 	    StringBuffer input, ILanguageProvider languageProvider,
-	    FileType interestedInFiletype) throws DSLNotFoundException {
+ FileType interestedInFiletype) {
 	List<String> determinedDSLNames = new LinkedList<String>();
 	int fileExtensionIndex = resource.getName().lastIndexOf(
 		interestedInFiletype.srcFileEnding);

@@ -6,6 +6,7 @@ package de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,14 +29,13 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import aterm.ATerm;
 import de.tud.stg.parlex.ast.IAbstractNode;
 import de.tud.stg.parlex.core.IGrammar;
-import de.tud.stg.parlex.lexer.KeywordSensitiveLexer;
-import de.tud.stg.parlex.lexer.KeywordSeperator;
 import de.tud.stg.parlex.parser.IChart;
 import de.tud.stg.parlex.parser.earley.EarleyParser;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
@@ -58,6 +58,8 @@ import de.tud.stg.tigerseye.eclipse.core.utils.OutputPathHandler;
 
 public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 
+    public static final String TRANSFORMATION_DEBUG_SYSTEM_PROPERTY = "tigerseye.transformation.debug";
+
     private static final Logger logger = LoggerFactory.getLogger(DSLResourceHandler.class);
 
     private final CodePrinter prettyPrinter;
@@ -69,6 +71,11 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
     private UnicodeLookupTable ult;
 
     public final FileType fileType;
+
+    // XXX(Leo_Roos;Nov 9, 2011) dirty fix for more debug information about
+    // transformation process for every built file. Could be turned into
+    // preference.
+    private boolean tigerseyetransforamtiondebug = false;
 
     @Override
     public boolean visit(IResourceDelta delta) {
@@ -201,6 +208,10 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 	this.ult = TigerseyeCore.getUnicodeLookupTable();
 	this.transformerProvider = new TransformerConfigurationProvider(TigerseyeCore.getTransformationProvider());
 	this.outputPathHandler = new OutputPathHandler();
+
+	String property = System.getProperty(TRANSFORMATION_DEBUG_SYSTEM_PROPERTY);
+	if(property != null)
+	    this.tigerseyetransforamtiondebug  = true;
 	// this.tigerseyePreferenceStore = TigerseyeCore.getPreferences();
     }
 
@@ -277,6 +288,7 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 
     private ByteArrayOutputStream getTransformedContent(StringBuffer input, Context context) {
 	StringBuffer textualTransformedInput = this.performTextualTransformations(input, context);
+	String workingInput = textualTransformedInput.toString().trim();
 
 	List<DSLDefinition> dsls = context.getDsls();
 
@@ -288,11 +300,32 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 	    logger.trace("Grammar is: {}", grammar);
 	}
 
-	ATerm term = this.parseResource(textualTransformedInput, grammar);
+	EarleyParser parser = new EarleyParserConfiguration().getDefaultEarleyParserConfiguration(grammar);
+	
+	IChart chart = parser.parse(workingInput);
+
+	ATerm term = getATermFromChart(chart);
 
 	Map<String, MethodOptions> methodOptions = grammarBuilder.getMethodOptions();
-	ATerm astTransformedTerm = this.performASTTransformations(term, context, methodOptions);
 
+	if(tigerseyetransforamtiondebug){
+	    //FIXME(Leo_Roos;Nov 9, 2011) unflexible solution
+	    IFile transformedFile = context.getTransformedFile();
+	    IPath projectRelativePath = transformedFile.getProjectRelativePath();
+	    String fileName = projectRelativePath.lastSegment();
+	    IPath srcRelativePath = projectRelativePath.removeFirstSegments(1).removeLastSegments(1);
+	    IPath debugFileCoreName = new Path("debugtigerseye").append(srcRelativePath);
+	    IProject project = transformedFile.getProject();
+
+	    IFile chartASTFile = project.getFile(debugFileCoreName.append(fileName + ".chartAST"));
+	    writeResourceContent(chart.getAST().toString(), chartASTFile);
+	    
+	    IFile grammarFile = project.getFile(debugFileCoreName.append(fileName + ".grammar"));
+	    writeResourceContent(grammar.toString(), grammarFile);
+
+	}
+	
+	ATerm astTransformedTerm = this.performASTTransformations(term, context, methodOptions);
 	ByteArrayOutputStream out = this.performPrettyPrinting(astTransformedTerm);
 	return out;
     }
@@ -338,14 +371,9 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 	return aterm;
     }
 
-    protected ATerm parseResource(StringBuffer input, IGrammar<String> grammar) {
-	KeywordSensitiveLexer ksl = new KeywordSensitiveLexer(new KeywordSeperator());
-
-	EarleyParser parser = new EarleyParser(ksl, grammar);
-	parser.detectUsedOracles();
-	IChart chart = parser.parse(input.toString().trim());
-
+    private ATerm getATermFromChart(IChart chart) {
 	IAbstractNode program = chart.getAST();
+
 	ATermBuilder aterm = new ATermBuilder(program);
 
 	ATerm term = aterm.getATerm();
@@ -374,6 +402,15 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 
     private void writeResourceContent(ByteArrayOutputStream content, IFile file) {
 	ByteArrayInputStream bais = new ByteArrayInputStream(content.toByteArray());
+	writeResourceContent(file, bais);
+    }
+
+    private void writeResourceContent(String content, IFile file) {
+	ByteArrayInputStream bais = new ByteArrayInputStream(content.getBytes());
+	writeResourceContent(file, bais);
+    }
+
+    private void writeResourceContent(IFile file, InputStream bais) {
 	try {
 	    if (!file.exists()) {
 		IFolder fileParentFolder = file.getProject().getFolder(

@@ -700,6 +700,7 @@ public class GrammarBuilder {
 	// XXX(Leo_Roos;Nov 9, 2011) This annotation has been added by Pablo to
 	// avoid interpretation of DSL key words as groovy keywords if they are
 	// parsed mixed with groovy grammer.
+
 	typeRule.addAnnotation(new AvoidAnnotation());
 
 	box.addRule(rule);
