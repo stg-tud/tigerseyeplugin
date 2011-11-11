@@ -70,11 +70,11 @@ public class OutputPathHandler {
 	IPath srcPath = srcRelativePath;
 	String resourcefileName = srcPath.lastSegment();
 	String outputSrcUnitName = getOutputNameForSourceName(resourcefileName);
+	if (outputSrcUnitName == null) {
+	    throw new IllegalArgumentException("Not a valid path for conversion " + srcRelativePath);
+	}
 	IPath removeLastSegments = srcPath.removeLastSegments(1);
-	// FIXME(leo;10.11.2011) append sometimes causes nullpointer exception
-	// on left segment
-	IPath outputSrcFileName = removeLastSegments.append(
-		outputSrcUnitName);
+	IPath outputSrcFileName = removeLastSegments.append(outputSrcUnitName);
 	return outputSrcFileName;
     }
 
@@ -92,34 +92,37 @@ public class OutputPathHandler {
 	if (filetype == null)
 	    return null;
 
+
 	String resourceFileEnding = filetype.srcFileEnding;
 	String outputFileExtension = filetype.outputFileEnding;
 	int endingInclusiveLastDot = resourceFileEnding.length() + 1;
 	String srcUnitDslsName = srcResourceFileName.substring(0,
 		srcResourceFileName.length() - endingInclusiveLastDot);
 	int firstDot = srcUnitDslsName.indexOf('.');
+
 	String srcUnitName;
-	if (firstDot > 0) {
-	    srcUnitName = srcUnitDslsName.substring(0, firstDot);
-	    String dslExtensions = srcUnitDslsName.substring(firstDot);
-	    String dotLessExtensions = dslExtensions.replaceAll("\\.",
-		    dotReplacement);
-	    srcUnitName += beginningDSLPrefixString + dotLessExtensions
-		    + dotReplacement;
+	if (FileType.TIGERSEYE.equals(filetype)) {
+	    if (firstDot > 0) {
+		srcUnitName = srcUnitDslsName.substring(0, firstDot);
+		String dslExtensions = srcUnitDslsName.substring(firstDot);
+		String dotLessExtensions = dslExtensions.replaceAll("\\.", dotReplacement);
+		srcUnitName += beginningDSLPrefixString + dotLessExtensions + dotReplacement;
+	    } else {
+		srcUnitName = srcUnitDslsName + beginningDSLPrefixString;
+	    }
 	} else {
 	    srcUnitName = srcUnitDslsName;
 	}
 	String outputSrcUnitName;
 	if (!outputFileExtension.contains(".")) {
-	    srcUnitName += ".";/*
-			        * A resource of FileType Popart gets a
-			        * dsl.groovy extension and hence must not have
-			        * any further dots in his resulting file name in
-			        * order to avoid complaints from the groovy
-			        * launcher which subsequently handles the
-			        * generated file. XXX after having adjusted the
-			        * launch process, is this still a problem?
-			        */
+	    outputFileExtension = "." + outputFileExtension;
+	    /*
+	     * A resource of FileType Tigerseye gets a dsl.groovy extension and
+	     * hence must not have any further dots in his resulting file name
+	     * in order to avoid complaints from the groovy launcher which
+	     * subsequently handles the generated file. XXX after having
+	     * adjusted the launch process, is this still a problem?
+	     */
 	}
 
 	outputSrcUnitName = srcUnitName.concat(outputFileExtension);

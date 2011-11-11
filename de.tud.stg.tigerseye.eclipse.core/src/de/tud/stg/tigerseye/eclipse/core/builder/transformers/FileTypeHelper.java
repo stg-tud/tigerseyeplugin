@@ -28,7 +28,9 @@ public class FileTypeHelper {
         List<FileType> srcFileEndings = Arrays.asList(FileType.values());
 	Collections.sort(srcFileEndings, longestSrcFileEndingFirstComparator());
         for (FileType filetype : srcFileEndings) {
-            if (resourceName.endsWith(filetype.srcFileEnding)) {
+	    // XXX(Leo_Roos;Nov 11, 2011) should the "." be left here hard coded
+	    // or should it be made configurable
+	    if (resourceName.endsWith("." + filetype.srcFileEnding)) {
         	return filetype;
             }
         }

@@ -1,7 +1,6 @@
 package de.tud.stg.tigerseye.ui.editors;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
@@ -13,6 +12,7 @@ import org.codehaus.groovy.eclipse.core.util.ReflectionUtils;
 import org.codehaus.groovy.eclipse.editor.GroovyConfiguration;
 import org.codehaus.groovy.eclipse.editor.GroovyEditor;
 import org.codehaus.groovy.eclipse.editor.GroovyTagScanner;
+import org.codehaus.groovy.eclipse.editor.outline.GroovyOutlinePage;
 import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaOutlinePage;
@@ -33,7 +33,7 @@ import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.ILanguageProvider;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileTypeHelper;
-import de.tud.stg.tigerseye.eclipse.core.utils.DSLExtensionsExtractor;
+import de.tud.stg.tigerseye.eclipse.core.utils.InvolvedDSLsExtractor;
 import de.tud.stg.tigerseye.ui.editors.TigerseyeGroovyEditorHighlightingExtender.DSLWordRule;
 
 public class TigerseyeEditor extends GroovyEditor {
@@ -131,9 +131,9 @@ public class TigerseyeEditor extends GroovyEditor {
     private void setInvolvedDSLs() {
 	IFile file = (IFile) getAdapter(IFile.class);
 	// FIXME(Leo_Roos;Nov 10, 2011) QOD
-	String[] extensionsForSrcResource = new DSLExtensionsExtractor().getExtensionsForSrcResource(file);
+	Set<String> extensionsForSrcResource = new InvolvedDSLsExtractor().getDSLNamesForSrcResource(file);
 	logger.info("For file {} extracted extensions {} ", file.getName(),
-		Arrays.toString(extensionsForSrcResource));
+ extensionsForSrcResource);
 	Set<DSLDefinition> activeDSLSet = new HashSet<DSLDefinition>();
 	ILanguageProvider languageProvider = TigerseyeCore
 		.getLanguageProvider();
@@ -176,6 +176,17 @@ public class TigerseyeEditor extends GroovyEditor {
 	} else {
 	    return adapter;
 	}
+    }
+
+    @Override
+    public GroovyOutlinePage getOutlinePage() {
+	return null;
+    }
+
+
+    @Override
+    protected void initializeKeyBindingScopes() {
+	// deactivate
     }
 
 }
