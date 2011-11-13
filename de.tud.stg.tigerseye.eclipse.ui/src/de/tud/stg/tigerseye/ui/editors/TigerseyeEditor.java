@@ -183,10 +183,4 @@ public class TigerseyeEditor extends GroovyEditor {
 	return null;
     }
 
-
-    @Override
-    protected void initializeKeyBindingScopes() {
-	// deactivate
-    }
-
 }

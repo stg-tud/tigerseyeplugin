@@ -100,6 +100,9 @@ public class InvolvedDSLsExtractor {
 	    edslAnnotations.add(extractor.getBounds());
 
 	    String[] dslNames = annotation.value();
+	    if (dslNames == null)
+		throw new IllegalAnnotationFormat(
+			"Failed to parse dsl names. Probably illegal format in EDSL description.");
 
 	    List<String> determinedDSLNames = Arrays.asList(dslNames);
 
