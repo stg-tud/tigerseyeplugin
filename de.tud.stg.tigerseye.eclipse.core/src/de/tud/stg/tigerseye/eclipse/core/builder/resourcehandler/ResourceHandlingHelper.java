@@ -1,10 +1,6 @@
 package de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.annotation.CheckForNull;
 
@@ -13,13 +9,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import de.tud.stg.popart.builder.eclipse.EDSL;
-import de.tud.stg.tigerseye.eclipse.core.api.DSLNotFoundException;
-import de.tud.stg.tigerseye.eclipse.core.api.ILanguageProvider;
-import de.tud.stg.tigerseye.eclipse.core.builder.transformers.AnnotationExtractor;
-import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
-import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileTypeHelper;
 
 public class ResourceHandlingHelper {
 
@@ -45,87 +34,6 @@ public class ResourceHandlingHelper {
 	return null;
     }
 
-    // FIXME(Leo_Roos;Nov 10, 2011) QOD
-    public static List<String> determineInvolvedDSLNames(IFile resource, String input,
-	    ILanguageProvider languageProvider, FileType interestedInFiletype) {
-	return determineInvolvedDSLNames(resource, new StringBuffer(input), languageProvider, interestedInFiletype);
-    }
 
-    /**
-     * Determines involved DSL names. Those are only dependent on the file name
-     * and possible annotations
-     * 
-     * @param resource
-     * @param input
-     * @return
-     * @throws DSLNotFoundException
-     */
-    public static List<String> determineInvolvedDSLNames(IFile resource,
-	    StringBuffer input, ILanguageProvider languageProvider,
- FileType interestedInFiletype) {
-	List<String> determinedDSLNames = new LinkedList<String>();
-	int fileExtensionIndex = resource.getName().lastIndexOf(
-		interestedInFiletype.srcFileEnding);
-	if (fileExtensionIndex < 1) {
-	    // throw new DSLNotFoundException(
-	    // "No dsl extension could be determined for " + resource);
-	    logger.debug("resource {} of no interest for caller interested in {}", resource, interestedInFiletype);
-	    return Collections.emptyList();
-	}
-
-	String name = resource.getName();
-	FileType typeForSrcResource = FileTypeHelper.getTypeForSrcResource(name);
-	if (typeForSrcResource == null) {
-	    logger.warn("Resource of unknown type {}", resource);
-	    return Collections.emptyList();
-	}
-
-	// XXX(Leo_Roos;Nov 1, 2011) Is the exclusive or approach necessary? It
-	// would be possible to simply define the involved languages from the
-	// file making the decision which dsls to use more dynamic
-	if (FileType.TIGERSEYE.equals(typeForSrcResource)) {
-	    String[] str = name.substring(0, fileExtensionIndex - 1).split("\\.");
-	    if (str.length > 1) {
-		// if (str.length > 1) {
-		for (int i = 1; i < str.length; i++) {
-		    String dslName = str[i];
-		    determinedDSLNames.add(dslName);
-		}
-	    } else {
-		determinedDSLNames = extractFromEDSLAnnotation(input);
-	    }
-	    // }
-	} else {
-	    determinedDSLNames = extractFromEDSLAnnotation(input);
-	}
-	return determinedDSLNames;
-    }
-
-    private static List<String> extractFromEDSLAnnotation(StringBuffer input) {
-	List<int[]> edslAnnotations = new LinkedList<int[]>();
-	// Java EDSL Annotation, can be used to determine DSLs in Java file
-	// context or probably in Groovy File Context as well
-	AnnotationExtractor<EDSL> extractor = new AnnotationExtractor<EDSL>(EDSL.class);
-	extractor.setInput(input.toString());
-
-	// XXX(Leo_Roos;Nov 1, 2011) could do find and add in loop to
-	// support multiple
-	// EDSL statements
-	EDSL annotation = extractor.find();
-	edslAnnotations.add(extractor.getBounds());
-
-	if (annotation != null) {
-
-	    String[] dslNames = annotation.value();
-	    List<String> determinedDSLNames = Arrays.asList(dslNames);
-
-	    // Removes the EDSL annotation from the source file
-	    for (int[] b : edslAnnotations) {
-		input.delete(b[0], b[1]);
-	    }
-	    return determinedDSLNames;
-	}
-	return Collections.emptyList();
-    }
 
 }

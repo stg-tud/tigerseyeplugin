@@ -1,5 +1,8 @@
 package de.tud.stg.tigerseye.eclipse.core.utils;
 
+import static de.tud.stg.tigerseye.eclipse.core.utils.CustomFESTAssertions.assertThat;
+import static de.tud.stg.tigerseye.util.Utils.newList;
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -42,6 +45,16 @@ public class OutputPathHandlerTest {
 			+ "SimpleSet$_set_dsl.groovy");
 	testCorrectConversion(originalSrcProjRelPath, expectedOutputPat);
     }
+    
+    @Test
+    public void testGetFileOutputPathNoDslInName() {
+	File originalSrcProjRelPath = new File(
+		"some/package/SimpleSet.dsl");
+    	final File expectedOutputPat = new File(
+		"some/package/"
+			+ "SimpleSet$dsl.groovy");
+	testCorrectConversion(originalSrcProjRelPath, expectedOutputPat);
+    }
 
     @Test
     public void testGetFileOutputPathGroovyfile() {
@@ -68,11 +81,12 @@ public class OutputPathHandlerTest {
 	IPath fileOutputPath = new OutputPathHandler(OUTPUT_DIRECTORY).getSrcRelativeOutputPath(originialPath);
 	File generatedOutputFile = fileOutputPath.toFile();
 	logger.debug("for path {} was generated {} ", originialPath, fileOutputPath);
-	assertEquals("Generated name does not equal expected",
-		expectedOutputPath, generatedOutputFile);
+	
+	
+	assertThat(generatedOutputFile).isEqualTo(expectedOutputPath);
     }
     
-    private static IPath actualOutputPath = null;
+    private IPath actualOutputPath = null;
     
     private IFile getFileMock(IPath path, IProject project){
     	IFile resource = mock(IFile.class);
@@ -161,7 +175,7 @@ logger.info(rootFolder.toString());
     	String outputName = "myjavafile$_sql_dsl.groovy";
     	String expected = "myjavafile.sql.dsl";    	    	
 		assertCorrectOutputforSourceName(outputName, expected);
-	}
+	}       
     
     @Test
 	public void testGetSrcNameForOutputNameDsl2() throws Exception {		    
@@ -194,6 +208,21 @@ logger.info(rootFolder.toString());
     	String actual = outputPathHandler.getSourceNameForOutputName(outputName);
     	assertEquals(expected, actual);
 	}
+	
+    @Test
+	public void testNoDslInName() throws Exception {		    
+    	String outputName = "myjavafile$dsl.groovy";
+    	String expected = "myjavafile.dsl";    	    	
+		assertCorrectOutputforSourceName(outputName, expected);
+	}
+    
+    @Test
+	public void testNullPointerBugInGetSrcRelativeOutputPath() throws Exception {
+		OutputPathHandler oh = new OutputPathHandler(OUTPUT_DIRECTORY);
+		IPath path = oh.getSrcRelativeOutputPath(new Path("BaseDSL.dsl"));
+		System.out.println(path);
+	}
+
 
     
 }

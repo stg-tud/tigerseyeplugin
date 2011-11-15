@@ -32,6 +32,7 @@ import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.AnnotationExtractor;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.IllegalAnnotationFormat;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TextualTransformation;
 
 public class KeywordTranslationTransformation implements TextualTransformation {
@@ -131,11 +132,11 @@ public class KeywordTranslationTransformation implements TextualTransformation {
 	    AnnotationExtractor<Translation> annotationExtractor) {
 	LinkedList<int[]> bounds = new LinkedList<int[]>();
 	LinkedList<Translation> translations = new LinkedList<Translation>();
-	Translation nextTranslation = annotationExtractor.find();
+	Translation nextTranslation = findNextValidAnnotation(annotationExtractor);
 	while (nextTranslation != null) {
 	    translations.add(nextTranslation);
 	    bounds.add(annotationExtractor.getBounds());
-	    nextTranslation = annotationExtractor.find();
+	    nextTranslation = findNextValidAnnotation(annotationExtractor);
 	}
 
 	for (int[] b : bounds) {
@@ -146,6 +147,16 @@ public class KeywordTranslationTransformation implements TextualTransformation {
 	    logger.trace("deleting annotation {} in anticipated bounds {}", toDelete, b[0] + " - " + b[1]);
 	}
 	return translations;
+    }
+
+    private Translation findNextValidAnnotation(AnnotationExtractor<Translation> annotationExtractor) {
+	while (true) {
+	    try {
+		return annotationExtractor.find();
+	    } catch (IllegalAnnotationFormat e) {
+		logger.trace("resource had illegal annotation format", e);
+	    }
+	}
     }
 
     private @CheckForNull

@@ -60,14 +60,17 @@ public class TestBnfDSL {
 				"] as Term[]))\n" + 
 				"] as Rule[])");
 	}
+	
 //	@Test
 	public void shouldTransformsSimpleExample3() throws Exception {
 		assertInputExpected("plus		::= number "+" number", "");
 	}
+	
 //	@Test
 	public void shouldTransformsSimpleExample4() throws Exception {
 		assertInputExpected("minus		::= number \"-\" number", "");
 	}
+	
 //	@Test
 	public void shouldTransformsSimpleExample5() throws Exception {
 		assertInputExpected("number		::= digit { digit }", "");

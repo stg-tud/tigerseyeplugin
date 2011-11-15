@@ -17,6 +17,14 @@ public class FileTypeTest {
 		FileType expected = FileType.TIGERSEYE;
 		assertEquals(expected, type);
 	}
+	
+	@Test
+	public void testDSLNameWithoutDSLs() throws Exception {
+		FileType type = FileTypeHelper
+				.getTypeForSrcResource("/src/some/package/SimpleSet.dsl");
+		FileType expected = FileType.TIGERSEYE;
+		assertEquals(expected, type);
+	}
 
 	@Test
 	public void testGroovyName() throws Exception {

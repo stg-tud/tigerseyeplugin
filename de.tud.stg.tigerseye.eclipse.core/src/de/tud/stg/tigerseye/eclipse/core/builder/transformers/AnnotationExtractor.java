@@ -98,12 +98,15 @@ public class AnnotationExtractor<T extends Annotation> {
 		this.determinePackageImports(input);
 	}
 
-	/**
-	 * Finds the next occurrence of the set annotation and returns an instance of it.
-	 * 
-	 * @return a new instance of the annotation
-	 */
-	public T find() {
+    /**
+     * Finds the next occurrence of the set annotation and returns an instance
+     * of it.
+     * 
+     * @return a new instance of the annotation
+     * @throws IllegalAnnotationFormat
+     *             if required field in annotation was not found
+     */
+	public T find() throws IllegalAnnotationFormat {
 		if (this.matcher == null) {
 			throw new IllegalStateException("No input text set");
 		}
@@ -181,7 +184,11 @@ public class AnnotationExtractor<T extends Annotation> {
 					fieldOccured |= value != null;
 
 					if (required && value == null) {
-						throw new RuntimeException("Annotation misses required field: " + m.getName());
+			// TODO(Leo_Roos;Nov 11, 2011) Check/Access belongs into
+			// another method, so that the exploration of the
+			// annotation and its check for validity can be
+			// accomplished in two different steps.
+			throw new IllegalAnnotationFormat("Annotation misses required field: " + m.getName());
 					}
 
 					map.put(m, value);
@@ -495,7 +502,7 @@ public class AnnotationExtractor<T extends Annotation> {
 		String name() default "no name";
 	}
 
-	public static void main(String[] args) {
+    public static void main(String[] args) throws IllegalAnnotationFormat {
 		// AnnotationExtractor<TestAnnotation> extractor = new
 		// AnnotationExtractor<TestAnnotation>(TestAnnotation.class);
 		// extractor.setInput("@TestAnnotation(name=\"Peter\") @TestAnnotation(name=\"Jack\")");

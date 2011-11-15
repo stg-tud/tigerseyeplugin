@@ -5,21 +5,18 @@ package de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
-
 import jjtraveler.VisitFailure;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -54,6 +51,7 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.MethodOpt
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.UnicodeLookupTable;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.ATermBuilder;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.CodePrinter;
+import de.tud.stg.tigerseye.eclipse.core.utils.InvolvedDSLsExtractor;
 import de.tud.stg.tigerseye.eclipse.core.utils.OutputPathHandler;
 
 public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
@@ -72,6 +70,8 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 
     public final FileType fileType;
 
+    private static final Map<IFile, Long> lastTimeHandledCache = new Hashtable<IFile, Long>();
+
     // XXX(Leo_Roos;Nov 9, 2011) dirty fix for more debug information about
     // transformation process for every built file. Could be turned into
     // preference.
@@ -80,11 +80,24 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
     @Override
     public boolean visit(IResourceDelta delta) {
 
+	// FIXME(leo;10.11.2011) QOD to suppress build of files copied into
+	// bin folder
 	IResource aResource = delta.getResource();
+	if (aResource.getFullPath().toString().contains("/bin/"))
+	    return false;
 
 	IFile file;
 	if (aResource instanceof IFile) {
+	    if (!isInteresstedIn(aResource))
+		return false;
+
 	    file = (IFile) aResource;
+	    if (fileNeedsRehandle(file)) {
+		rehandleFile(delta, file);
+	    } else {
+		logger.info("Already handled {}. Skipping file.", file);
+	    }
+	    return false;
 	} else {
 	    logger.trace("Skipping resource {}, since not of type IFile", aResource);
 	    // Returning true since this will usually mean the resource is a
@@ -93,11 +106,18 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 	    return true;
 	}
 
+    }
+
+    private void rehandleFile(IResourceDelta delta, IFile file) {
 	int kind = delta.getKind();
 	switch (kind) {
 	case IResourceDelta.CHANGED:
 	    logger.trace("File '{}' changed.", file);
-	    return handleChanged(file);
+	    boolean wasHandled = handleChanged(file);
+	    if (!wasHandled) {
+		logger.debug("Failed to handle file {} ", file);
+	    }
+	    break;
 	case IResourceDelta.ADDED:
 	    logger.trace("Resource has been added: '{}'", file);
 	    break;
@@ -110,8 +130,34 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 	default:
 	    logger.warn("Cannot handle IResourceDelta kind '{}'. Will ignore it.", kind);
 	}
+    }
 
-	return false;
+    private boolean fileNeedsRehandle(IFile file) {
+	boolean fileHasChanged = fileHasChanged(file);
+	if (fileHasChanged)
+	    return true;
+	else {
+	    boolean exists = this.outputPathHandler.getOutputFile(file).exists();
+	    return !exists;
+	}
+    }
+
+    private boolean fileHasChanged(IFile file) {
+	long modificationStamp = file.getModificationStamp();
+	if (modificationStamp < 0) {
+	    logger.warn("file not accessible or has no valid modification timestamp. File: {} Timestamp: {}", file,
+		    modificationStamp);
+	    return false;
+	}
+
+	Long lastModificationStamp = lastTimeHandledCache.get(file);
+
+	if (lastModificationStamp != null && lastModificationStamp == modificationStamp) {
+	    return false;
+	} else {
+	    lastTimeHandledCache.put(file, modificationStamp);
+	    return true;
+	}
     }
 
     private void handleRemoved(IFile file) {
@@ -135,20 +181,25 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 	}
     }
 
+    /*
+     * return true if file could be handled, all DSLs have been active, no
+     * exception was thrown
+     */
     private boolean handleChanged(IFile file) {
 
 	boolean canHandleDelta = allDSLsForDeltaAreActive(file);
 	if (!canHandleDelta)
-	    return true;
+	    return false;
 
 	try {
 	    if (this.isInteresstedIn(file)) {
 		handleResource(file);
+		return true;
 	    }
 	} catch (Exception e) {
 	    logger.error("failed vissiting file {}", file, e);
 	}
-	return true;
+	return false;
     }
 
     // * FIXME(Leo_Roos;Aug 27, 2011) paritally copied from
@@ -193,7 +244,6 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 	return TigerseyeCore.getLanguageProvider();
     }
 
-
     public abstract boolean isInteresstedIn(IResource resource);
 
     // private IPreferenceStore tigerseyePreferenceStore;
@@ -210,8 +260,8 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 	this.outputPathHandler = new OutputPathHandler();
 
 	String property = System.getProperty(TRANSFORMATION_DEBUG_SYSTEM_PROPERTY);
-	if(property != null)
-	    this.tigerseyetransforamtiondebug  = true;
+	if (property != null)
+	    this.tigerseyetransforamtiondebug = true;
 	// this.tigerseyePreferenceStore = TigerseyeCore.getPreferences();
     }
 
@@ -242,7 +292,7 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 	    logger.error("Skipping unhandled resource {}", srcFile);
 	    return;
 	}
-	Set<DSLDefinition> dslDefinitions = Collections.emptySet();
+	Set<DSLDefinition> dslDefinitions = null;
 	try {
 	    Set<String> determineInvolvedDSLNames = determineInvolvedDSLNames(srcFile, resourceContent);
 	    dslDefinitions = getActiveDSLDefinitionsForNames(determineInvolvedDSLNames);
@@ -256,9 +306,10 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 	    logger.debug("Resource {} could not be handled. {}", new Object[] { srcFile, e.noDSLMsg() }, e);
 	    return;
 	}
-	if (dslDefinitions.size() < 1) {
-	    // Might be still valid to just output file without changes
-	    logger.trace("No DSLs for {} determined. Will not attempt a transformation.");
+	if (dslDefinitions == null || dslDefinitions.size() < 1) {
+	    // XXX(Leo_Roos;Nov 11, 2011) Might be still valid to just output
+	    // file without changes
+	    logger.trace("No DSLs for {} determined. Will not attempt a transformation.", resource);
 	    return;
 	}
 	for (DSLDefinition dslDefinition : dslDefinitions) {
@@ -301,15 +352,15 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 	}
 
 	EarleyParser parser = new EarleyParserConfiguration().getDefaultEarleyParserConfiguration(grammar);
-	
+
 	IChart chart = parser.parse(workingInput);
 
 	ATerm term = getATermFromChart(chart);
 
 	Map<String, MethodOptions> methodOptions = grammarBuilder.getMethodOptions();
 
-	if(tigerseyetransforamtiondebug){
-	    //FIXME(Leo_Roos;Nov 9, 2011) unflexible solution
+	if (tigerseyetransforamtiondebug) {
+	    // FIXME(Leo_Roos;Nov 9, 2011) unflexible solution
 	    IFile transformedFile = context.getTransformedFile();
 	    IPath projectRelativePath = transformedFile.getProjectRelativePath();
 	    String fileName = projectRelativePath.lastSegment();
@@ -319,12 +370,12 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 
 	    IFile chartASTFile = project.getFile(debugFileCoreName.append(fileName + ".chartAST"));
 	    writeResourceContent(chart.getAST().toString(), chartASTFile);
-	    
+
 	    IFile grammarFile = project.getFile(debugFileCoreName.append(fileName + ".grammar"));
 	    writeResourceContent(grammar.toString(), grammarFile);
 
 	}
-	
+
 	ATerm astTransformedTerm = this.performASTTransformations(term, context, methodOptions);
 	ByteArrayOutputStream out = this.performPrettyPrinting(astTransformedTerm);
 	return out;
@@ -350,7 +401,7 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 	ArrayList<TransformationType> idents = new ArrayList<TransformationType>(context.getDsls());
 	idents.add(context.getFiletype());
 	Collection<TextualTransformation> configuredTextualTransformers = getTransformerProvider()
-		.getConfiguredTextualTransformers(idents.toArray(new TransformationType[0]));
+		.getConfiguredTextualTransformers(idents.toArray(new TransformationType[idents.size()]));
 	logger.trace("found transformations {}", configuredTextualTransformers);
 	for (TextualTransformation t : configuredTextualTransformers) {
 	    transformedInput = t.transform(context, transformedInput);
@@ -363,7 +414,7 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 	ArrayList<TransformationType> idents = new ArrayList<TransformationType>(context.getDsls());
 	idents.add(context.getFiletype());
 	Set<ASTTransformation> configuredTextualTransformers = getTransformerProvider().getConfiguredASTTransformers(
-		idents.toArray(new TransformationType[0]));
+		idents.toArray(new TransformationType[idents.size()]));
 	logger.trace("found transformations {}", configuredTextualTransformers);
 	for (ASTTransformation t : configuredTextualTransformers) {
 	    aterm = t.transform(methodOptions, aterm);
@@ -379,25 +430,6 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 	ATerm term = aterm.getATerm();
 
 	return term;
-    }
-
-    /**
-     * @param resource
-     *            the resource to read
-     * @return The content of {@code resource} or <code>null</code> if resource
-     *         can not be read
-     */
-    private @CheckForNull
-    StringBuffer readResource(IFile resource) {
-	try {
-	    String stringFromReader = IOUtils.toString(resource.getContents());
-	    return new StringBuffer(stringFromReader);
-	} catch (IOException e) {
-	    logger.error("Failed to read resource.", e);
-	} catch (CoreException e) {
-	    logger.error("Failed to obtain content of specified resource.", e);
-	}
-	return null;
     }
 
     private void writeResourceContent(ByteArrayOutputStream content, IFile file) {
@@ -454,9 +486,16 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 
     private Set<String> determineInvolvedDSLNames(IFile srcFile, StringBuffer resourceContent)
 	    throws DSLNotFoundException {
-	List<String> determinedDSLNames = ResourceHandlingHelper.determineInvolvedDSLNames(srcFile, resourceContent,
-		getLanguageProvider(), fileType);
-	return new HashSet<String>(determinedDSLNames);
+	String resourceName = srcFile.getName();
+
+	FileType resourceType = FileTypeHelper.getTypeForSrcResource(resourceName);
+
+	if (!fileType.equals(resourceType)) {
+	    logger.debug("resource {} of no interest for caller interested in {}", srcFile, fileType);
+	    return Collections.emptySet();
+	}
+
+	return new InvolvedDSLsExtractor().determineInvolvedDSLNames(srcFile, resourceContent);
     }
 
     private Set<DSLDefinition> getActiveDSLDefinitionsForNames(Set<String> determinedDSLNames) {
