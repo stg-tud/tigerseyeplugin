@@ -19,7 +19,7 @@ import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ASTTransformation;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.textual.TextualTransformationUtils;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.MethodOptions;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.DSLMethodDescription;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.RecursiveVisitor;
 
 /**
@@ -33,7 +33,7 @@ public class KeywordChainingTransformation extends RecursiveVisitor implements A
 private static final Logger logger = LoggerFactory.getLogger(KeywordChainingTransformation.class);
 
 
-    private Map<String, MethodOptions> moptions;
+    private Map<String, DSLMethodDescription> moptions;
 
     // private final static ATerm methodCompositionTemplate = SingletonFactory
     // .getInstance().make("[<list>]");
@@ -42,7 +42,7 @@ private static final Logger logger = LoggerFactory.getLogger(KeywordChainingTran
 
 	}
 
-    private KeywordChainingTransformation(Map<String, MethodOptions> moptions) {
+    private KeywordChainingTransformation(Map<String, DSLMethodDescription> moptions) {
 	this.moptions = moptions;
 	}
 
@@ -69,7 +69,7 @@ private static final Logger logger = LoggerFactory.getLogger(KeywordChainingTran
 
 		String statement = ((ATermAppl) annotation).getName();
 
-	MethodOptions methodOptions = moptions.get(statement);
+	DSLMethodDescription methodOptions = moptions.get(statement);
 
 		boolean isComposedMethod = methodOptions != null;
 
@@ -99,7 +99,7 @@ private static final Logger logger = LoggerFactory.getLogger(KeywordChainingTran
 	}
 
     @Override
-    public ATerm transform(Map<String, MethodOptions> moptions, ATerm aterm) {
+    public ATerm transform(Map<String, DSLMethodDescription> moptions, ATerm aterm) {
 
 	// TODO just change to this.moptions = moptions
 	// why has there to be created a new object of the same type as this?
@@ -135,13 +135,13 @@ private static final Logger logger = LoggerFactory.getLogger(KeywordChainingTran
 		PureFactory fac = SingletonFactory.getInstance();
 
 		ATerm term = fac.make("foo{[KEY, VALUE]}");
-		logger.info("term is {}", term);
-		logger.info("annotations are {}", term.getAnnotations());
+	System.out.println("term is {}" + term);
+	System.out.println("annotations are {}" + term.getAnnotations());
 
 		ATerm match = fac.make("[[<fun>, <fun>]]");
-		logger.info("match is {}", match);
+	System.out.println("match is {}" + match);
 
-		logger.info("annotationmatch is {}", term.getAnnotations().match(match));
+		System.out.println("annotationmatch is {}" + term.getAnnotations().match(match));
 	}
 
 	public String getName() {

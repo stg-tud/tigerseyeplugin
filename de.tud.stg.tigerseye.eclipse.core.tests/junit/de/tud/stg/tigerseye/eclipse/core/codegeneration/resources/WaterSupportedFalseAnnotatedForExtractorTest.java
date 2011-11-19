@@ -1,8 +1,8 @@
 package de.tud.stg.tigerseye.eclipse.core.codegeneration.resources;
 
-import de.tud.stg.popart.builder.core.annotations.DSLClass;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod.DslMethodType;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLClass;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod.DslMethodType;
 
 @DSLClass(waterSupported=false)
 public class WaterSupportedFalseAnnotatedForExtractorTest {

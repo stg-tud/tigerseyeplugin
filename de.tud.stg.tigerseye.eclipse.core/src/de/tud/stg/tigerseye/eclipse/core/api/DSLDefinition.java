@@ -38,11 +38,13 @@ public interface DSLDefinition extends TransformationType {
 
     /**
      * The class path of the class implementing the
-     * {@link de.tud.stg.popart.dslsupport.DSL} interface, which represents the
+     * {@link de.tud.stg.tigerseye.dslsupport.DSL} interface, which represents the
      * evaluation class of this DSL.
      * 
-     * @return
+     * @return the fully qualified name of the DSL implementing class.
      */
+    // TODO(Leo_Roos;Nov 17, 2011) getDSLFullyQualifiedName would be more
+    // appropriate
     public String getClassPath();
 
     /**
@@ -77,7 +79,7 @@ public interface DSLDefinition extends TransformationType {
      *         <code>null</code> if it's not load-able.
      */
     @Nullable
-    Class<? extends de.tud.stg.popart.dslsupport.DSL> getDSLClassChecked();
+    Class<? extends de.tud.stg.tigerseye.dslsupport.DSL> getDSLClassChecked();
 
     /**
      * @return <code>true</code> if class can be loaded via
@@ -186,8 +188,8 @@ public interface DSLDefinition extends TransformationType {
 	}
 
 	@Override
-	public Class<? extends de.tud.stg.popart.dslsupport.DSL> getDSLClassChecked() {
-	    return de.tud.stg.popart.dslsupport.DSL.class;
+	public Class<? extends de.tud.stg.tigerseye.dslsupport.DSL> getDSLClassChecked() {
+	    return de.tud.stg.tigerseye.dslsupport.DSL.class;
 	}
 
 	@Override

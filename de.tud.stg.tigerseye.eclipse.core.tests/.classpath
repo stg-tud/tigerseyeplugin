@@ -6,7 +6,6 @@
 	<classpathentry excluding="generated/" kind="src" path="transformationtests"/>
 	<classpathentry kind="src" path="plugin"/>
 	<classpathentry exported="true" kind="lib" path="libs/powermock-mockito-1.4.6-full.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/stateMachineDSL.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/mockito-all-1.8.5.jar"/>
 	<classpathentry kind="lib" path="libs/fest-assert-1.4/fest-assert-1.4.jar" sourcepath="libs/fest-assert-1.4/fest-assert-1.4-sources.jar"/>
 	<classpathentry kind="lib" path="libs/fest-assert-1.4/lib/fest-util-1.1.6.jar" sourcepath="libs/fest-assert-1.4/lib/fest-util-1.1.6-sources.jar"/>

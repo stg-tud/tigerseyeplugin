@@ -12,7 +12,7 @@ import org.apache.bsf.util.IOUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.UnhandledException;
 
-import de.tud.stg.popart.dslsupport.DSL;
+import de.tud.stg.tigerseye.dslsupport.DSL;
 
 public class DefaultDSLTransformationTester{
 	

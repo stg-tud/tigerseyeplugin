@@ -13,7 +13,7 @@ import org.eclipse.core.resources.IProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.popart.dslsupport.DSL;
+import de.tud.stg.tigerseye.dslsupport.DSL;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFoundException;

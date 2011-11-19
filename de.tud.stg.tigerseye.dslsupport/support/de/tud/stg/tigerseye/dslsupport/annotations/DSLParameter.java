@@ -1,4 +1,4 @@
-package de.tud.stg.popart.builder.core.annotations;
+package de.tud.stg.tigerseye.dslsupport.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
 
 import org.eclipse.core.runtime.Assert;
 
-import de.tud.stg.popart.builder.core.annotations.AnnotationConstants;
+import de.tud.stg.tigerseye.dslsupport.annotations.AnnotationConstants;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ConfigurationOptions;
 
 /**

@@ -47,7 +47,7 @@ import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileTypeHelper;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TextualTransformation;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformerConfigurationProvider;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.MethodOptions;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.DSLMethodDescription;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.UnicodeLookupTable;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.ATermBuilder;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.CodePrinter;
@@ -298,7 +298,7 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 	    dslDefinitions = getActiveDSLDefinitionsForNames(determineInvolvedDSLNames);
 	    if (determineInvolvedDSLNames.size() != dslDefinitions.size()) {
 		logger.trace(
-			"Skipping resource {} since not all involved DSLs seem to be active. \nDefined DSLs are {}\nbut from those active are {}",
+			"Skipping resource {} since not all involved DSLs seem to be active. \nDefined DSLs are {}\nbut from those are only active {}",
 			new Object[] { resource, determineInvolvedDSLNames.toString(), dslDefinitions.toString() });
 		return;
 	    }
@@ -357,7 +357,7 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 
 	ATerm term = getATermFromChart(chart);
 
-	Map<String, MethodOptions> methodOptions = grammarBuilder.getMethodOptions();
+	Map<String, DSLMethodDescription> methodOptions = grammarBuilder.getMethodOptions();
 
 	if (tigerseyetransforamtiondebug) {
 	    // FIXME(Leo_Roos;Nov 9, 2011) unflexible solution
@@ -409,7 +409,7 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 	return transformedInput;
     }
 
-    private ATerm performASTTransformations(ATerm aterm, Context context, Map<String, MethodOptions> methodOptions) {
+    private ATerm performASTTransformations(ATerm aterm, Context context, Map<String, DSLMethodDescription> methodOptions) {
 	logger.trace("starting ast transformations");
 	ArrayList<TransformationType> idents = new ArrayList<TransformationType>(context.getDsls());
 	idents.add(context.getFiletype());

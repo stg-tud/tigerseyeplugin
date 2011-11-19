@@ -4,8 +4,8 @@ import groovy.lang.Closure;
 
 import java.util.HashMap;
 
-import de.tud.stg.popart.builder.core.annotations.DSLClass;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLClass;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod;
 
 /**
  * {@link ConditionalDSL} is a DSL with support for conditional statements in an alternative if-then-else syntax
@@ -14,7 +14,7 @@ import de.tud.stg.popart.builder.core.annotations.DSLMethod;
  * 
  */
 @DSLClass(whitespaceEscape = " ")
-public class ConditionalDSL implements de.tud.stg.popart.dslsupport.DSL {
+public class ConditionalDSL implements de.tud.stg.tigerseye.dslsupport.DSL {
 
 	public Object eval(HashMap map, Closure cl) {
 		cl.setDelegate(this);

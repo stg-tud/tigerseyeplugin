@@ -7,7 +7,7 @@ import java.util.List;
 import org.junit.Test;
 
 import de.tud.stg.popart.builder.test.dsls.MathDSL;
-import de.tud.stg.popart.dslsupport.DSL;
+import de.tud.stg.tigerseye.dslsupport.DSL;
 import de.tud.stg.tigerseye.test.TransformationUtils;
 
 public class TestMathDSL {

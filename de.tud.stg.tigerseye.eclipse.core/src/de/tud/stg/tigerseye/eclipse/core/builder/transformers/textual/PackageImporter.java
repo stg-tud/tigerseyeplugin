@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.tud.stg.popart.builder.utils.DSLInvoker;
+import de.tud.stg.tigerseye.dslsupport.DSLInvoker;
 import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
@@ -35,6 +35,8 @@ public class PackageImporter implements TextualTransformation {
 	for (Class<?> clazz : context.getDSLClasses()) {
 			imports.add(clazz.getCanonicalName());
 		}
+	// working to unify under DSLInvoker
+	imports.add(DSLInvoker.class.getCanonicalName());
 
 	if (matcher.find() && !(context.getDSLClasses().length < 1)) {
 			sb.append("$1");
@@ -59,7 +61,9 @@ public class PackageImporter implements TextualTransformation {
 
 	private static Pattern packagePosition = Pattern.compile("package [A-Za-z0-9\\.]+?;?\\s+");
 
-	private void addImports(LinkedList<String> imports, StringBuffer out) {
+    // XXX(Leo_Roos;Nov 18, 2011) only static until BootStrapTransformation no
+    // longer necessary
+    public static void addImports(LinkedList<String> imports, StringBuffer out) {
 		Matcher matcher = packagePosition.matcher(out);
 
 		int position = 0;

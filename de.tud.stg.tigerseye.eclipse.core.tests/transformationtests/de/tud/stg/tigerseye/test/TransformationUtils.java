@@ -3,12 +3,10 @@ package de.tud.stg.tigerseye.test;
 import static de.tud.stg.tigerseye.eclipse.core.utils.CustomFESTAssertions.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import static org.junit.matchers.JUnitMatchers.containsString;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,17 +18,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-import jjtraveler.VisitFailure;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.junit.Test;
 
-import utilities.TestUtils;
-
 import de.tud.stg.parlex.core.IGrammar;
-import de.tud.stg.popart.builder.test.dsls.LiteralsDSL;
-import de.tud.stg.popart.dslsupport.DSL;
+import de.tud.stg.tigerseye.dslsupport.DSL;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.UnicodeLookupTable;
 import de.tud.stg.tigerseye.test.TestDSLTransformation.GrammarResult;
@@ -47,7 +40,7 @@ public class TransformationUtils {
 
 	private static DefaultDSLTransformationTester dtt = new DefaultDSLTransformationTester(TransformationUtils.class,
 			generatedFilesFolder, "resources");
-	public static OutputStream out = System.out;
+	static OutputStream out = System.out;
 
 	public static void test(String file, Class<? extends DSL>... classes) {
 		test(true, file, classes);
@@ -94,7 +87,8 @@ public class TransformationUtils {
 
 		GrammarBuilder grammarBuilder = new GrammarBuilder(getDefaultLookupTable());
 
-		IGrammar<String> buildGrammar = grammarBuilder.buildGrammar(classes);
+		List<Class<? extends DSL>> asList = Arrays.asList(classes);
+		IGrammar<String> buildGrammar = grammarBuilder.buildGrammar(asList);
 
 		GrammarResult grammarResult = new GrammarResult(buildGrammar, grammarBuilder.getMethodOptions(), classes);
 

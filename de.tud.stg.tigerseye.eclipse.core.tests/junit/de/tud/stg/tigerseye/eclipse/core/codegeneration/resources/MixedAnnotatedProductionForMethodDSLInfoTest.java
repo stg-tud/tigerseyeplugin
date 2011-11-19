@@ -1,9 +1,9 @@
 package de.tud.stg.tigerseye.eclipse.core.codegeneration.resources;
 
-import de.tud.stg.popart.builder.core.annotations.DSLMethod;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod.Associativity;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod.DslMethodType;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod.PreferencePriority;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod.Associativity;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod.DslMethodType;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod.PreferencePriority;
 
 public class MixedAnnotatedProductionForMethodDSLInfoTest {
 

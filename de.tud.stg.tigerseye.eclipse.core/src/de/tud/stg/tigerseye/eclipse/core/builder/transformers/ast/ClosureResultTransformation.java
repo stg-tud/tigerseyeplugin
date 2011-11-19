@@ -15,11 +15,12 @@ import aterm.ATermList;
 import aterm.Visitable;
 import aterm.pure.PureFactory;
 import aterm.pure.SingletonFactory;
+import de.tud.stg.tigerseye.dslsupport.DSLInvoker;
 import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ASTTransformation;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.textual.TextualTransformationUtils;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.MethodOptions;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.DSLMethodDescription;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.RecursiveVisitor;
 
 /**
@@ -39,12 +40,12 @@ private static final Logger logger = LoggerFactory.getLogger(ClosureResultTransf
 	private final static AFun dslInvokerFunction;
 
 	private ATermList dslInvokerClasses;
-    private Map<String, MethodOptions> moptions;
+    private Map<String, DSLMethodDescription> moptions;
 
 	static {
 		PureFactory factory = SingletonFactory.getInstance();
-
-		dslInvokerFunction = factory.makeAFun("DSLInvoker.eval", 2, false);
+	String dslInvokerName = DSLInvoker.class.getSimpleName();
+	dslInvokerFunction = factory.makeAFun(dslInvokerName + ".eval", 2, false);
 		closureBegin = factory.makeAppl(factory.makeAFun("{", 0, false));
 		closureEnd = factory.makeAppl(factory.makeAFun("}", 0, false));
 	}
@@ -52,7 +53,7 @@ private static final Logger logger = LoggerFactory.getLogger(ClosureResultTransf
 	public ClosureResultTransformation() {
 	}
 
-    public ClosureResultTransformation(Map<String, MethodOptions> moptions) {
+    public ClosureResultTransformation(Map<String, DSLMethodDescription> moptions) {
 	this.moptions = moptions;
 		dslInvokerClasses = factory.makeList();
 	}
@@ -62,6 +63,7 @@ private static final Logger logger = LoggerFactory.getLogger(ClosureResultTransf
 		if (arg.getArity() > 0) {
 			return this.transformATerm(arg);
 		} else {
+	    // should probably be also transformed for properties
 			return arg;
 		}
 	}
@@ -73,22 +75,23 @@ private static final Logger logger = LoggerFactory.getLogger(ClosureResultTransf
 		if (v0 != null) {
 			String statement = ((ATermAppl) v0).getName();
 
-	    MethodOptions methodAlias = moptions
-.get(
-		    statement);
+	    DSLMethodDescription methodAlias = moptions.get(statement);
 
 			if (methodAlias != null) {
 
-				ATermAppl dslInvokerClasses = factory.makeAppl(factory.makeAFun(methodAlias.getParentClass()
+				Class<?> parentClass = methodAlias.getParentClass();
+				AFun makeAFun = factory.makeAFun(parentClass
 						.getSimpleName()
-						+ ".class", 0, false));
+						+ ".class", 0, false);
+				ATermAppl dslInvokerClasses = factory.makeAppl(makeAFun);
 
 				ATermList closureArgument = factory.makeList();
 				closureArgument = closureArgument.append(closureBegin);
 				closureArgument = closureArgument.append(arg);
 				closureArgument = closureArgument.append(closureEnd);
 
-				return factory.makeAppl(dslInvokerFunction, dslInvokerClasses, closureArgument);
+				ATermAppl makeAppl = factory.makeAppl(dslInvokerFunction, dslInvokerClasses, closureArgument);
+				return makeAppl;
 			}
 		}
 
@@ -96,11 +99,11 @@ private static final Logger logger = LoggerFactory.getLogger(ClosureResultTransf
 	}
 
     @Override
-    public ATerm transform(Map<String, MethodOptions> moptions, ATerm aterm) {
+    public ATerm transform(Map<String, DSLMethodDescription> moptions, ATerm aterm) {
 	ClosureResultTransformation crt = new ClosureResultTransformation(
 		moptions);
 
-	logger.info("[ClosureResult] start");
+	logger.debug("start ClosureResultTransformation");
 	try {
 	    aterm = (ATerm) aterm.accept(crt);
 	} catch (VisitFailure e) {
@@ -122,7 +125,7 @@ private static final Logger logger = LoggerFactory.getLogger(ClosureResultTransf
 
 	@Override
 	public Set<TransformationType> getSupportedFileTypes() {
-		return TextualTransformationUtils.getSetForFiletypes(FileType.GROOVY);
+	return TextualTransformationUtils.getSetForFiletypes(FileType.GROOVY, FileType.TIGERSEYE);
 	}
 
 	@Override

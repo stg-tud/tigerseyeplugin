@@ -41,8 +41,6 @@ public class KeywordTranslationTransformation implements TextualTransformation {
     private static final Logger logger = LoggerFactory.getLogger(KeywordTranslationTransformation.class);
 
     /**
-     * 
-     * 
      * @author Leo_Roos
      * 
      */

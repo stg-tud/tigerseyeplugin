@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import de.tud.stg.parlex.core.IGrammar;
 import de.tud.stg.popart.builder.test.dsls.MathDSL;
-import de.tud.stg.popart.dslsupport.DSL;
+import de.tud.stg.tigerseye.dslsupport.DSL;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.MathDSL4GrammarBuilderTest;
 import de.tud.stg.tigerseye.test.TransformationUtils;
 
@@ -53,14 +53,6 @@ public class GrammarTest {
 				.buildGrammar(classForTest);
 		grammarDifferent.addRule(grammarDifferent.getStartRule());
 		assertFalse(grammar.equals(grammarDifferent));
-	}
-
-	@Ignore("bad test rests specific numberings")
-	@Test
-	public void testPopartStateMachineGrammarToString() throws Exception {
-		Class<? extends DSL> classForTest = de.tud.stg.popart.builder.test.statemachine.StateMachineDSL.class;
-		String expected = loadresource("popartstatemachinedsltostring.expected");
-		assertProducedEqualsExpectedGrammar(classForTest, expected);
 	}
 
 	private void assertProducedEqualsExpectedGrammar(Class<? extends DSL> classForTest, String expected) {

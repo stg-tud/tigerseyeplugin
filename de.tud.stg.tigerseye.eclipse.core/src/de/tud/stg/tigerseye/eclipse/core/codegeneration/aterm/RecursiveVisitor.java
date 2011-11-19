@@ -1,18 +1,7 @@
 package de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm;
 
 import jjtraveler.VisitFailure;
-import aterm.AFun;
-import aterm.ATerm;
-import aterm.ATermAppl;
-import aterm.ATermBlob;
-import aterm.ATermFactory;
-import aterm.ATermInt;
-import aterm.ATermList;
-import aterm.ATermLong;
-import aterm.ATermPlaceholder;
-import aterm.ATermReal;
-import aterm.Visitable;
-import aterm.Visitor;
+import aterm.*;
 import aterm.pure.SingletonFactory;
 
 public class RecursiveVisitor implements Visitor {
@@ -62,15 +51,19 @@ public class RecursiveVisitor implements Visitor {
 	}
 
 	@Override
+    // XXX(Leo_Roos;Nov 18, 2011) leads to many recursive calls, a possible
+    // reason why there has to be such a big stack size in order to run
+    // Tigerseye
 	public Visitable visitList(ATermList arg) throws VisitFailure {
-
 		// save annotations
 		ATermList annotations = arg.getAnnotations();
 
-		for (int i = 0; i < arg.getChildCount(); i++) {
-			ATerm t = (ATerm) arg.elementAt(i).accept(this);
+		int childCount = arg.getChildCount();
+		for (int i = 0; i < childCount; i++) {
+	    ATerm currentAterm = arg.elementAt(i);
+	    ATerm t = (ATerm) currentAterm.accept(this);
 
-			if (t != arg.elementAt(i)) {
+			if (t != currentAterm) {
 				arg = arg.replace(t, i);
 			}
 		}

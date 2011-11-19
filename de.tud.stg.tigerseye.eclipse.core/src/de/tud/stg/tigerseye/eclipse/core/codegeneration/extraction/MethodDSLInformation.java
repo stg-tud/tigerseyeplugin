@@ -23,12 +23,12 @@ import org.eclipse.core.runtime.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.popart.builder.core.annotations.AnnotationConstants;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod.Associativity;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod.DslMethodType;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod.PreferencePriority;
-import de.tud.stg.popart.builder.core.annotations.DSLParameter;
+import de.tud.stg.tigerseye.dslsupport.annotations.AnnotationConstants;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLParameter;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod.Associativity;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod.DslMethodType;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod.PreferencePriority;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.MethodProductionConstants.ProductionElement;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ConfigurationOptions;
 
@@ -39,6 +39,9 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.Configurati
  * @author Leo_Roos
  * 
  */
+// TODO(Leo_Roos;Nov 18, 2011) Should split into different subclasses
+// Literal/Operation/AbstractionOperator instead of
+// switch-casing
 public class MethodDSLInformation extends DSLInformation {
 
     private static final Logger logger = LoggerFactory.getLogger(MethodDSLInformation.class);
@@ -234,8 +237,8 @@ public class MethodDSLInformation extends DSLInformation {
 
     /**
      * @param methodNameRaw
-     * @return methodNameRaw without a possible get. returns the passesd string
-     *         if it's lenght is smaller or equal to the string that would be
+     * @return methodNameRaw without a possible get. returns the passed string
+     *         if it's length is smaller or equal to the string that would be
      *         subtracted from it. if the name is just {@code get}. the first
      *         character of the resulting string will be made to lowercase.
      */
@@ -249,6 +252,9 @@ public class MethodDSLInformation extends DSLInformation {
     private String firstCharToLowercase(String substring) {
 	if (substring.isEmpty())
 	    return substring;
+	/*
+	 * I assume valid method names so English should cover all valid cases.
+	 */
 	String firstChar = substring.substring(0, 1).toLowerCase(Locale.ENGLISH);
 	return firstChar + substring.substring(1);
     }
@@ -329,6 +335,8 @@ public class MethodDSLInformation extends DSLInformation {
     }
 
     // TODO(Leo_Roos;Sep 1, 2011) Untested
+    // TODO(Leo_Roos;Nov 18, 2011) Should split into different subclasses
+    // instead switch-casing
     public List<String> getKeywordList() {
 
 	ArrayList<String> result = new ArrayList<String>();

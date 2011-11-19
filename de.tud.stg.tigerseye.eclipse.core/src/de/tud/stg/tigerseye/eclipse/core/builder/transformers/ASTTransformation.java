@@ -5,7 +5,7 @@ import java.util.Set;
 
 import aterm.ATerm;
 import de.tud.stg.tigerseye.eclipse.core.api.Transformation;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.MethodOptions;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.DSLMethodDescription;
 
 /**
  * The is the interface for all AST transformations that are processed after
@@ -15,7 +15,7 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.MethodOpt
  * 
  */
 public interface ASTTransformation extends Transformation {
-    public ATerm transform(Map<String, MethodOptions> moptions, ATerm aterm);
+    public ATerm transform(Map<String, DSLMethodDescription> moptions, ATerm aterm);
 
 	public Set<ATerm> getRequirements();
 

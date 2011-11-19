@@ -5,7 +5,7 @@ import groovy.lang.Closure;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.tud.stg.popart.builder.core.annotations.DSLParameter;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLParameter;
 import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeyword;
 
@@ -16,7 +16,7 @@ import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeywor
  * 
  */
 @DSL
-public class StatefulDSL implements de.tud.stg.popart.dslsupport.DSL {
+public class StatefulDSL implements de.tud.stg.tigerseye.dslsupport.DSL {
 
 	public Object eval(HashMap map, Closure cl) {
 		cl.setDelegate(this);

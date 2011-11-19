@@ -151,7 +151,7 @@ public class TransformationHandler implements ITransformationHandler {
 	/*
 	 * FIXME: consider refactoring for FileType split into physical
 	 * representation (file extension) an conceptual (a DSL Language
-	 * provider); When is the type neither Filetype nor DSLDefinitionImpl
+	 * provider); When is the type neither FileType nor DSLDefinitionImpl
 	 */
 	if (type instanceof DSLDefinition)
 	    return supportedFileTypes.contains(FileType.DSL);

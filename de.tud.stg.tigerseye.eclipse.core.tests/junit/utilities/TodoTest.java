@@ -6,8 +6,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation marks a test that should be implemented soon and in order to
- * not get forgotten is supposed to be turned on in general but can be turned
+ * This annotation marks a test that
+ * <ul>
+ *  <li/>is not yet implemented
+ *  <li/>is not working as supposed to (see the comments directly at the test)
+ * and in order to not get forgotten is supposed to be turned on in general but can be turned
  * off by system property
  * 
  * @author Leo_Roos

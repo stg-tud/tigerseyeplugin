@@ -6,7 +6,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -19,6 +18,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.eclipse.core.runtime.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,10 +38,10 @@ import de.tud.stg.parlex.core.ruleannotations.AvoidAnnotation;
 import de.tud.stg.parlex.core.ruleannotations.PreferAnnotation;
 import de.tud.stg.parlex.core.ruleannotations.RejectAnnotation;
 import de.tud.stg.parlex.core.ruleannotations.RelativePriorityAnnotation;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod.Associativity;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod.DslMethodType;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod.PreferencePriority;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod.Associativity;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod.DslMethodType;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod.PreferencePriority;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.ClassDSLInformation;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.DSLInformationDefaults;
@@ -78,7 +79,7 @@ public class GrammarBuilder {
 
     private final UnicodeLookupTable unicodeLookupTable;
 
-    public final HashMap<String, MethodOptions> methodAliases = new HashMap<String, MethodOptions>();
+    public final HashMap<String, DSLMethodDescription> methodAliases = new HashMap<String, DSLMethodDescription>();
 
     public GrammarBuilder(UnicodeLookupTable ult) {
 	this.unicodeLookupTable = ult;
@@ -115,27 +116,29 @@ public class GrammarBuilder {
 
     // XXX(Leo Roos;Aug 16, 2011) Untested
     public IGrammar<String> buildGrammarFromDefinitions(List<DSLDefinition> dsls) {
-	ArrayList<Class<? extends de.tud.stg.popart.dslsupport.DSL>> clazzes = new ArrayList<Class<? extends de.tud.stg.popart.dslsupport.DSL>>(
+	ArrayList<Class<? extends de.tud.stg.tigerseye.dslsupport.DSL>> clazzes = new ArrayList<Class<? extends de.tud.stg.tigerseye.dslsupport.DSL>>(
 		dsls.size());
 	for (DSLDefinition dsl : dsls) {
-	    Class<? extends de.tud.stg.popart.dslsupport.DSL> loadClass = dsl.getDSLClassChecked();
+	    Class<? extends de.tud.stg.tigerseye.dslsupport.DSL> loadClass = dsl.getDSLClassChecked();
 	    clazzes.add(loadClass);
 	}
 	return buildGrammar(clazzes);
     }
 
     /**
-     * @param clazzes
-     * @return the grammar for DSL classes
-     * @deprecated use type safe version {@link #buildGrammar(List)} instead
+     * Convenience method for {@link #buildGrammar(List)}
+     * 
+     * @param clazz
+     * @return
      */
-    @Deprecated
-    public IGrammar<String> buildGrammar(Class<? extends de.tud.stg.popart.dslsupport.DSL>... clazzes) {
-	List<Class<? extends de.tud.stg.popart.dslsupport.DSL>> clazzess = Arrays.asList(clazzes);
-	return buildGrammar(clazzess);
+    public IGrammar<String> buildGrammar(Class<? extends de.tud.stg.tigerseye.dslsupport.DSL> clazz) {
+	List<Class<? extends de.tud.stg.tigerseye.dslsupport.DSL>> clazzes = new ArrayList<Class<? extends de.tud.stg.tigerseye.dslsupport.DSL>>(
+		1);
+	clazzes.add(clazz);
+	return buildGrammar(clazzes);
     }
 
-    public IGrammar<String> buildGrammar(List<Class<? extends de.tud.stg.popart.dslsupport.DSL>> clazzes) {
+    public IGrammar<String> buildGrammar(List<Class<? extends de.tud.stg.tigerseye.dslsupport.DSL>> clazzes) {
 
 	List<ClassDSLInformation> exInfos = extractClassesInformation(clazzes);
 
@@ -145,15 +148,15 @@ public class GrammarBuilder {
     }
 
     private List<ClassDSLInformation> extractClassesInformation(
-	    List<Class<? extends de.tud.stg.popart.dslsupport.DSL>> clazzes) {
+	    List<Class<? extends de.tud.stg.tigerseye.dslsupport.DSL>> clazzes) {
 	ArrayList<ClassDSLInformation> result = new ArrayList<ClassDSLInformation>(clazzes.size());
-	for (Class<? extends de.tud.stg.popart.dslsupport.DSL> aClass : clazzes) {
+	for (Class<? extends de.tud.stg.tigerseye.dslsupport.DSL> aClass : clazzes) {
 	    result.add(loadClassInformation(aClass));
 	}
 	return result;
     }
 
-    private ClassDSLInformation loadClassInformation(Class<? extends de.tud.stg.popart.dslsupport.DSL> aClass) {
+    private ClassDSLInformation loadClassInformation(Class<? extends de.tud.stg.tigerseye.dslsupport.DSL> aClass) {
 	ClassDSLInformation classInfo = new ClassDSLInformation(aClass);
 	classInfo.load(DSLInformationDefaults.DEFAULT_CONFIGURATIONOPTIONS_MAP);
 	return classInfo;
@@ -534,19 +537,24 @@ public class GrammarBuilder {
 	box.addRule(returnTypeRule);
 
 	this.methodAliases.put(literal,
-		new MethodOptions(method.getName(), new LinkedList<Integer>(), method.getDeclaringClass()));
+		new DSLMethodDescription(method.getName(), new LinkedList<Integer>(), method.getDeclaringClass()));
     }
 
-    public static class MethodOptions {
+    /**
+     * A description of a method that is used as a Terminal during the
+     * transformation.
+     */
+    // TODO(Leo_Roos;Nov 18, 2011) can be replaced with MethodDSLInformation
+    public static class DSLMethodDescription {
 
 	private final List<Integer> parameterIndices;
 	private final String methodCallName;
-	private final Class<?> parentClass;
+	private final Class<?> enclosingClass;
 
-	public MethodOptions(String methodCallName, List<Integer> parameterIndices, Class<?> clazz) {
+	public DSLMethodDescription(String methodCallName, List<Integer> parameterIndices, Class<?> clazz) {
 	    this.methodCallName = methodCallName;
 	    this.parameterIndices = parameterIndices;
-	    this.parentClass = clazz;
+	    this.enclosingClass = clazz;
 	}
 
 	public List<Integer> getParamaterIndices() {
@@ -558,7 +566,15 @@ public class GrammarBuilder {
 	}
 
 	public Class<?> getParentClass() {
-	    return this.parentClass;
+	    return this.enclosingClass;
+	}
+
+	@Override
+	public String toString() {
+	    String str = new ToStringBuilder(DSLMethodDescription.this, ToStringStyle.SIMPLE_STYLE)
+		    .append("methodName", methodCallName).append("enclosingClass", enclosingClass)
+		    .append("parameterIndices", parameterIndices).toString();
+	    return str;
 	}
     }
 
@@ -617,7 +633,7 @@ public class GrammarBuilder {
 	int methodCounter = this.parameterCounter.getAndIncrement();
 
 	String indexedMethodProduction = "M" + methodCounter + "{[" + methodProduction + "]" + method.getName() + "}";
-	MethodOptions value = new MethodOptions(method.getName(), parameterIndices, method.getDeclaringClass());
+	DSLMethodDescription value = new DSLMethodDescription(method.getName(), parameterIndices, method.getDeclaringClass());
 	this.methodAliases.put(indexedMethodProduction, value);
 
 	ICategory<String> methodCategory = new Category(indexedMethodProduction, false);
@@ -655,7 +671,6 @@ public class GrammarBuilder {
 	String keyword = next.getCapturedString();
 	keyword = getUnicodeRepresentationOrKeyword(keyword);
 	box.rhsMethodCategory.add(new Category(keyword, true));
-	// this.keywords.add(keyword);
     }
 
     private void handleProductionElementWhitespace(GrammarCollectionBox box, WhitespaceElement we) {
@@ -709,72 +724,8 @@ public class GrammarBuilder {
 
     }
 
-    public Map<String, MethodOptions> getMethodOptions() {
+    public Map<String, DSLMethodDescription> getMethodOptions() {
 	return Collections.unmodifiableMap(methodAliases);
     }
-
-//@formatter:off
-// TODO(Leo_Roos;Sep 1, 2011) delete when sure that no lost treasure is buried somewhere down there ...
-// ======================================================================================================
-/*
-    // private void handleConstructor(Constructor<?> constructor, String
-    // methodParameterEscape,
-    // String methodWhitespaceEscape) {
-    // String methodProduction = this.getMethodProduction(constructor,
-    // constructor.getName());
-    //
-    // Pattern[] pattern = this.getPattern(methodParameterEscape,
-    // methodWhitespaceEscape);
-    //
-    // this.methodAliases.put(methodProduction, new Pair<String,
-    // Pattern[]>(constructor.getName(), pattern));
-    //
-    // Class<?>[] parameters = constructor.getParameterTypes();
-    //
-    // this.handleNonLiteral(methodProduction, constructor.getClass(),
-    // parameters, pattern);
-    // }
-
-    // private static final String DEFAULT_STRING_QUOTATION =
-    // "([\\w_]+|(\".*?\"))";
-     
-//From handleProductionElementParameter
- 	/*
-	 * categories.add(parameterCategory);
-	 * 
-	 * DSL parameterDSLAnnotation = null; for (Annotation a : pAnnotations)
-	 * { if (a instanceof DSL) { parameterDSLAnnotation = (DSL) a; break; }
-	 * }
-	 * 
-	 * Map<ConfigurationOptions, String> parameterOptions =
-	 * getAnnotationParameterOptionsOverInitialMap( parameterDSLAnnotation,
-	 * methodOptions);
-	 * 
-	 * ICategory<String> parameterMapping = typeHandler.handle(
-	 * parameterType, parameterOptions); Rule rule = new
-	 * Rule(parameterCategory, parameterMapping);
-	 */
-    
-//  /*
-//  * assigns value with key to resultMap if the value is neither null nor
-//  * equal to the UNASSIGNED constant.
-//  */
-// private static Map<ConfigurationOptions, String> putIfValid(Map<ConfigurationOptions, String> resultMap,
-//	    ConfigurationOptions confOption, String value) {
-//	Assert.isNotNull(value);
-//	if (value.equals(AnnotationConstants.UNASSIGNED))
-//	    return resultMap;
-//	else {
-//	    resultMap.put(confOption, value);
-//	    return resultMap;
-//	}
-// }
- 
-    // Never used; still necessary to save the
-    // resulting set of keywords?
-    //private final Set<String> keywords = new LinkedHashSet<String>();
-
-//@formatter:on
-    // ===================================
 
 }

@@ -3,7 +3,7 @@
  * GNU GENERAL PUBLIC LICENSE version 2.0
  * @author Tom Dinkelaker
  **/
-package de.tud.stg.popart.dslsupport;
+package de.tud.stg.tigerseye.dslsupport;
 
 import java.util.HashMap;
 
@@ -29,7 +29,7 @@ public class Interpreter extends GroovyObjectSupport implements DSL {
 	    bodyDelegate = bd; 
 	} 
 	
-	public Object eval(Closure cl) {
+	public Object eval(Closure<?> cl) {
 		cl.setDelegate(bodyDelegate);
 		return cl.call();
 	}
@@ -39,7 +39,7 @@ public class Interpreter extends GroovyObjectSupport implements DSL {
 	}
 	
 	//XXX (Leo Roos; Jun 28, 2011): Added this method since it is the most often applied used case.
-	public Object eval(@SuppressWarnings("rawtypes") HashMap map, @SuppressWarnings("rawtypes") Closure cl) {
+	public Object eval(@SuppressWarnings("rawtypes") HashMap map, Closure<?> cl) {
 		cl.setDelegate(this);
 		cl.setResolveStrategy(Closure.DELEGATE_FIRST);
 		return cl.call();

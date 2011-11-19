@@ -1,4 +1,4 @@
-package de.tud.stg.popart.builder.test.dsls;
+package de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast.resources;
 
 import groovy.lang.Closure;
 
@@ -8,23 +8,13 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
-import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
-import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeyword;
 import de.tud.stg.tigerseye.dslsupport.annotations.DSLClass;
 import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod;
-import de.tud.stg.tigerseye.dslsupport.annotations.DSLParameter;
 
-/**
- * {@link SetDSL} is a small DSL showing the possibility of modeling
- * mathematical sets
- *
- * @author Kamil Erhard
- *
- */
 @DSLClass(whitespaceEscape = " ", waterSupported=true)
-public class SetDSL implements de.tud.stg.tigerseye.dslsupport.DSL {
+public class SetDSLForInvokationsTransformation implements de.tud.stg.tigerseye.dslsupport.DSL {
 
-	public Object eval(HashMap map, Closure cl) {
+	public Object eval(HashMap<?,?> map, Closure<?> cl) {
 		cl.setDelegate(this);
 		cl.setResolveStrategy(Closure.DELEGATE_FIRST);
 		return cl.call();
@@ -81,4 +71,19 @@ public class SetDSL implements de.tud.stg.tigerseye.dslsupport.DSL {
 	public MyList multiElementedList(String head, MyList tail) {
 		return new MyList(head, tail);
 	}
+	
+	@DSLMethod(production = "oneArity  p0")
+	public String oneArityMethod(String input){
+		return "oneAritied " + input;
+	}
+	
+	@DSLMethod(production = "Get  the  Cake")
+	public String zeroArityMethod(){
+		return "Here is the Cake";
+	}
+	
+	public String plainZeroArity(){
+		return "No Cake for you.";
+	}
+	
 }

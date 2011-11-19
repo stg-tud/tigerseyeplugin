@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.popart.builder.eclipse.EDSL;
+import de.tud.stg.tigerseye.dslsupport.annotations.EDSL;
 
 /**
  * {@link AnnotationExtractor} is a class capable of scanning an input text for

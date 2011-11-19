@@ -17,12 +17,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import utilities.TestUtils;
-import de.tud.stg.popart.builder.core.annotations.DSLParameter;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod.Associativity;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod.DslMethodType;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod.PreferencePriority;
 import de.tud.stg.popart.builder.test.dsls.SetDSL;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLParameter;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod.Associativity;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod.DslMethodType;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod.PreferencePriority;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.GroovyClassWithSomeAnnotatedMethodsForExtractorTest;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.MixedAnnotatedMethodsForExtractionTest;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.MixedAnnotatedProductionForMethodDSLInfoTest;

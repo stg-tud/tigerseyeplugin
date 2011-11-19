@@ -1,9 +1,11 @@
 package de.tud.stg.tigerseye.eclipse.core.codegeneration;
 
+import static de.tud.stg.tigerseye.util.Utils.single;
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -28,12 +30,11 @@ import de.tud.stg.parlex.parser.IChart;
 import de.tud.stg.parlex.parser.earley.Chart;
 import de.tud.stg.parlex.parser.earley.EarleyParser;
 import de.tud.stg.popart.builder.test.dsls.MathDSL;
-import de.tud.stg.popart.builder.test.statemachine.StateMachineDSL;
-import de.tud.stg.popart.dslsupport.DSL;
+import de.tud.stg.tigerseye.dslsupport.DSL;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast.InvokationDispatcherTransformation;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast.KeywordChainingTransformation;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.MethodOptions;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.DSLMethodDescription;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.ATermBuilder;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.CodePrinter;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.PrettyGroovyCodePrinter;
@@ -61,8 +62,9 @@ public class GrammarBuilderTest {
 
 	@Test
 	public void testToString() throws Exception {
-		Class[] classes =  { MathDSL4GrammarBuilderTest.class };
-		IGrammar<String> grammar = gb.buildGrammar(classes);
+		Class<MathDSL4GrammarBuilderTest> clazz = MathDSL4GrammarBuilderTest.class;
+		
+		IGrammar<String> grammar = gb.buildGrammar(clazz);
 		String string = grammar.toString();
 		
 		
@@ -87,16 +89,17 @@ public class GrammarBuilderTest {
 		ATermBuilder aTermBuilder = new ATermBuilder(ast);
 		ATerm term = aTermBuilder.getATerm();
 
-		Map<String, MethodOptions> moptions = gb.getMethodOptions();
+		Map<String, DSLMethodDescription> moptions = gb.getMethodOptions();
 
 		term = new KeywordChainingTransformation().transform(moptions, term);
 
-		if (classes.length > 1) {
-			// term = new ClosureResultTransformer().transform(context,
-			// term);
-			term = new InvokationDispatcherTransformation().transform(moptions,
-					term);
-		}
+//		if (classes.length > 1) {
+//			// term = new ClosureResultTransformer().transform(context,
+//			// term);
+//			term = new InvokationDispatcherTransformation().transform(moptions,
+//					term);
+//		}
+		
 		PrettyGroovyCodePrinter prettyPrinter = new PrettyGroovyCodePrinter();
 		term.accept(prettyPrinter);
 

@@ -10,15 +10,18 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.popart.dslsupport.DSL;
-import de.tud.stg.popart.dslsupport.InterpreterCombiner;
+import de.tud.stg.tigerseye.dslsupport.DSLInvoker;
+import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
+import de.tud.stg.tigerseye.eclipse.core.api.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TextualTransformation;
 
+// XXX(Leo_Roos;Nov 18, 2011) General problem of the regexes is that they don't consider comments in between keywords and parenthesis for example.  
 public class BootStrapTransformation implements TextualTransformation {
-private static final Logger logger = LoggerFactory.getLogger(BootStrapTransformation.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(BootStrapTransformation.class);
 
 
 	@Override
@@ -31,103 +34,149 @@ private static final Logger logger = LoggerFactory.getLogger(BootStrapTransforma
 	private final static Pattern regexp = Pattern.compile(
 			"(.*?)([\\w,]+)\\s*\\(\\s*name\\s*:\\s*'(\\w+)'\\s*\\)(\\s*)\\{(.*)\\}(.*)", Pattern.DOTALL);
 
+    private final static Pattern tigerprefix = Pattern.compile(
+	    "(.*?)(tigerseye)\\s*\\(\\s*'(\\w+)'\\s*\\)(\\s*)\\{(.*)\\}(.*)", Pattern.DOTALL);
+
 	private final static Pattern dslRegexp = Pattern.compile("(\\w+)");
 
-	private StringBuffer addBootstrap(Context context, StringBuffer input) {
+    private StringBuffer addBootstrap(Context context, StringBuffer input) {
 
-		Matcher matcher = regexp.matcher(input);
+	Matcher dslNamesMatcher = regexp.matcher(input);
 
 		StringBuffer out = new StringBuffer();
 
-		LinkedList<String> imports = new LinkedList<String>();
 
-		if (matcher.find()) {
-			String dslExtensions = matcher.group(2);
-			logger.trace("group: " + dslExtensions);
+	Pattern tigerprefix = Pattern.compile("(.*?)(tigerseyeblock)\\s*\\(\\s*(\\w+)?\\s*\\)(\\s*)\\{(.*)\\}(.*)",
+		Pattern.DOTALL);
 
-			Matcher matcher2 = dslRegexp.matcher(dslExtensions);
+	// DSLs are known from context a consistent indication syntax is
+	// sufficient
+	Matcher tigerformmatcher = tigerprefix.matcher(input);
 
-			List<Class<? extends DSL>> dsls = new LinkedList<Class<? extends DSL>>();
+	Matcher effectiveMatcher;
 
-			while (matcher2.find()) {
-				String dslExtension = matcher2.group();
-		Class<? extends DSL> e = context
-			.getDSLForExtension(dslExtension);
-		if (e != null)
-				dsls.add(e);
-		else {
-		    logger.debug("no class found for " + dslExtension);
-		}
-			}
+	boolean dslNamesFormFound = dslNamesMatcher.find();
+	if (dslNamesFormFound) {
+	    effectiveMatcher = dslNamesMatcher;
+	} else if (tigerformmatcher.find()) {
+	    effectiveMatcher = tigerformmatcher;
+	} else {
+	    effectiveMatcher = null;
+	}
 
-	    if (dsls.isEmpty()) {
-		logger.warn("Searched for {} but no dsls found",
-			context.getDsls());
-		return input;
+	List<DSLDefinition> dsls = context.getDsls();
+	LinkedList<String> imports = new LinkedList<String>();
+
+	// if (effectiveMatcher != null) {
+	//
+	// // redundant because known from context
+	// String dslExtensions = effectiveMatcher.group(2);
+	// logger.trace("group: " + dslExtensions);
+	//
+	// Matcher matcher2 = dslRegexp.matcher(dslExtensions);
+	//
+	// // redundant
+	// // List<Class<? extends DSL>> dsls = new LinkedList<Class<? extends
+	// // DSL>>();
+	// //
+	// // while (matcher2.find()) {
+	// // String dslExtension = matcher2.group();
+	// //
+	// //
+	// //
+	// // Class<? extends DSL> e = context
+	// // .getDSLForExtension(dslExtension);
+	// // if (e != null)
+	// // dsls.add(e);
+	// // else {
+	// // logger.debug("no class found for " + dslExtension);
+	// // }
+	// // }
+	//
+	//
+	//
+	// if (dsls.isEmpty()) {
+	// logger.warn("Searched for {} but no dsls found",
+	// context.getDsls());
+	// out = input;
+	// }
+	// else {
+
+	if (effectiveMatcher != null) {
+	    logger.trace("found dsls: {}", Arrays.toString(dsls.toArray()));
+
+	    StringBuilder sb = new StringBuilder("$1");
+
+	    String name = effectiveMatcher.group(3);
+	    if (name == null || name.isEmpty()) {
+		name = "Unnamed_DSL";
 	    }
-			logger.trace("found dsls: {}", Arrays.toString(dsls.toArray()));
 
-			StringBuilder sb = new StringBuilder("$1");
+	    // Should move this also to an AST operation
 
-			for (Class<?> clazz : dsls) {
-				imports.add(clazz.getCanonicalName());
-			}
+	    String dslInvokerName = DSLInvoker.class.getSimpleName();
+	    sb.append("\n");
+	    sb.append(dslInvokerName).append(".eval([");
 
-			if (dsls.size() == 1) {
-				sb.append('\n');
-				sb.append("new ").append(dsls.get(0).getSimpleName()).append("()");
+	    if (dsls.size() == 1) {
+		DSLDefinition dslDefinition = dsls.get(0);
+		String dslClassName = getSimpleNameIfLoadableOrDescriptiveErrorStatement(dslDefinition);
+		sb.append('\n');
+		// sb.append("new ").append(dslClassName).append("()");
+		// sb.append(".eval(name:'" + name + "')");
+		sb.append(dslClassName).append(".class");
 
-				sb.append(".eval(name:'$3')");
-			} else {
-		// "de.tud.stg.popart.dslsupport.InterpreterCombiner";
-		imports.add(InterpreterCombiner.class.getCanonicalName());
-				sb.append('\n');
-				sb.append("new InterpreterCombiner([");
+	    } else {
 
-				for (Class<? extends DSL> dsl : dsls) {
-					sb.append("new ").append(dsl.getSimpleName()).append("()").append(',').append(' ');
-				}
+		// imports.add(InterpreterCombiner.class.getCanonicalName());
+		// sb.append('\n');
+		// sb.append("new ").append(InterpreterCombiner.class.getSimpleName()).append("([");
 
-				sb.delete(sb.length() - 2, sb.length());
-				sb.append("], [name:'$3']).eval()");
-			}
-
-			sb.append("$4{$5}$6");
-
-			matcher.appendReplacement(out, sb.toString());
+		for (DSLDefinition dsl : dsls) {
+		    String dslName = getSimpleNameIfLoadableOrDescriptiveErrorStatement(dsl);
+		    sb.append(dslName).append(".class").append(",");
+		    // sb.append("new ").append(dslName).append("()").append(',').append(' ');
 		}
 
-		matcher.appendTail(out);
+		sb.delete(sb.length() - 1, sb.length());
+		// sb.append("], [name:'" + name + "']).eval()");
+	    }
 
-		this.addImports(imports, out);
+	    sb.append("])");
+
+	    // String group4 = effectiveMatcher.group(4);
+	    // String group5 = effectiveMatcher.group(5);
+	    // String group6 = effectiveMatcher.group(6);
+
+	    sb.append("$4{$5}$6");
+
+	    effectiveMatcher.appendReplacement(out, sb.toString());
+	    effectiveMatcher.appendTail(out);
+	} else {
+	    // No Transformation
+	    out = input;
+	}
+
+	
+	// Import of DSLs already happens in PackageImprter
+	// XXX(Leo_Roos;Nov 18, 2011) should make it consistent, only imoprt
+	// that is left is InterpreterCombiner
+	PackageImporter.addImports(imports, out);
 
 		return out;
 	}
 
-	private void addImports(LinkedList<String> imports, StringBuffer out) {
-		Matcher matcher = packagePosition.matcher(out);
-
-		int position = 0;
-
-		if (matcher.find()) {
-			position = matcher.end();
-		}
-
-		StringBuilder sb = new StringBuilder();
-
-		for (String im : imports) {
-			sb.append("import ").append(im).append(';');
-			sb.append('\n');
-		}
-
-		out.insert(position, sb);
+	private String getSimpleNameIfLoadableOrDescriptiveErrorStatement(DSLDefinition dslDefinition) {
+	    String dslClassName = dslDefinition.getKeyFor(DSLKey.EXTENSION) + "_not_resolvable";
+	    if (dslDefinition.isDSLClassLoadable()) {
+	        dslClassName = dslDefinition.getDSLClassChecked().getSimpleName();
+	    }
+	    return dslClassName;
 	}
-
-	private static Pattern packagePosition = Pattern.compile("package [A-Za-z0-9\\.]+?;?\\s+");
 
 	@Override
 	public String toString() {
-		return "bootStrap: " + super.toString();
+	return getClass().getSimpleName() + ": " + super.toString();
 	}
 
 	@Override

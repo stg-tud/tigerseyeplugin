@@ -11,11 +11,11 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import de.tud.stg.popart.builder.core.annotations.DSLMethod;
-import de.tud.stg.popart.builder.core.annotations.DSLParameter;
 import de.tud.stg.popart.builder.test.dsls.BnfDSL;
 import de.tud.stg.popart.builder.test.dsls.BnfDSL.AnyCharacter;
 import de.tud.stg.popart.builder.test.dsls.BnfDSL.QuotedSymbol;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLParameter;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.SdfDSLForExtractingTest;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ConfigurationOptions;
 
