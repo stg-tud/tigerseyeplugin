@@ -214,7 +214,7 @@ public class TransformationsPreferencePage extends PreferencePage implements
 
     private void openDSLTransformationDialog(DSLDefinition selectedDSL) {
 	String title = "Transformations for '" + selectedDSL.getDslName() + "'";
-	FileType dslFT = FileType.DSL;
+	FileType dslFT = FileType.DSL_LANGUAGE;
 
 	List<CheckedItem> items = getTransformationsForFiletypeAssociatedToIdentity(
 		dslFT, selectedDSL);

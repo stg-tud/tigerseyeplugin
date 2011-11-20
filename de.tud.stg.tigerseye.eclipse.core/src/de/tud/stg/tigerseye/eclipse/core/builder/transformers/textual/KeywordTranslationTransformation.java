@@ -28,6 +28,7 @@ import org.eclipse.core.runtime.IPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.tud.stg.tigerseye.eclipse.core.api.TransformationConstants;
 import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.AnnotationExtractor;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
@@ -289,7 +290,12 @@ public class KeywordTranslationTransformation implements TextualTransformation {
 
     @Override
     public Set<TransformationType> getSupportedFileTypes() {
-	return TextualTransformationUtils.getSetForFiletypes(FileType.DSL);
+	return TextualTransformationUtils.getSetForFiletypes(FileType.DSL_LANGUAGE);
+    }
+
+    @Override
+    public int getBuildOrderPriority() {
+	return TransformationConstants.KEYWORD_TRANSLATION_TRANSFORMATION;
     }
 
 }

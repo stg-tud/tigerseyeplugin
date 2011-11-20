@@ -17,6 +17,7 @@ import aterm.pure.PureFactory;
 import aterm.pure.SingletonFactory;
 import de.tud.stg.tigerseye.dslsupport.DSLInvoker;
 import de.tud.stg.tigerseye.eclipse.core.api.Transformation;
+import de.tud.stg.tigerseye.eclipse.core.api.TransformationConstants;
 import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ASTTransformation;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
@@ -170,4 +171,9 @@ private static final Logger logger = LoggerFactory.getLogger(InvokationDispatche
 				+ " prepending DSLInvoker.getDSL(DSL_CLASS). This supports multiple DSLs in one"
 				+ " AST.";
 	}
+
+    @Override
+    public int getBuildOrderPriority() {
+	return TransformationConstants.INVOKATION_TRANSFORMATION;
+    }
 }

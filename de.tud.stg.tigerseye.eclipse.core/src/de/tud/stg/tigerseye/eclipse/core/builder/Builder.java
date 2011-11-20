@@ -214,7 +214,9 @@ public class Builder extends IncrementalProjectBuilder {
 		monitor.subTask("Building " + delta.getFullPath()
 		/* + " with Visitor:" + visitor.getClass().getSimpleName() */);
 		logger.trace("Starting build with visitor {}", visitor);
+
 		delta.accept(visitor);
+
 		monitor.worked(work);
 	    }
 	}
@@ -291,7 +293,7 @@ public class Builder extends IncrementalProjectBuilder {
     }
 
     private void buildResourcesInSourceDirectory(@Nonnull IProgressMonitor monitor, List<IFile> nonJavaResources)
-	    throws JavaModelException {
+    /* throws JavaModelException */{
 	try {
 	    int totalWork = Integer.MAX_VALUE;
 	    monitor.beginTask("Building", totalWork);
@@ -299,21 +301,33 @@ public class Builder extends IncrementalProjectBuilder {
 		return;
 	    }
 	    int oneResourceWork = (totalWork / nonJavaResources.size());
-	    int oneVisitorWork = oneResourceWork / visitors.length;
 	    for (IResource resource : nonJavaResources) {
-		for (DSLResourceHandler visitor : visitors) {
-		    checkCancelAndAct(monitor);
-		    if (visitor.isInteresstedIn(resource)) {
-			monitor.subTask("Building: " + resource.getName());
-			visitor.handleResource(resource);
-		    }
-		    monitor.worked(oneVisitorWork);
-		}
+		checkCancelAndAct(monitor);
+		monitor.subTask("Building: " + resource.getName());
+		feedVisitorsHandleExceptions(monitor, resource);
+		monitor.worked(oneResourceWork);
 	    }
 	} finally {
 	    monitor.done();
 	}
 
+    }
+
+    private void feedVisitorsHandleExceptions(IProgressMonitor monitor, IResource resource) {
+	for (DSLResourceHandler visitor : visitors) {
+	    try {
+		if (visitor.isInteresstedIn(resource)) {
+		    resource.accept(visitor);
+//		     visitor.handleResource(resource);
+		}
+	    } catch (Exception e) {
+		logBuildError(resource, visitor, e);
+	    }
+	}
+    }
+
+    private void logBuildError(IResource resource, DSLResourceHandler visitor, Exception e) {
+	logger.error("Build failed for:" + resource + "witch Visitor: " + visitor, e);
     }
 
 }

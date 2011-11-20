@@ -154,7 +154,7 @@ public class TransformationHandler implements ITransformationHandler {
 	 * provider); When is the type neither FileType nor DSLDefinitionImpl
 	 */
 	if (type instanceof DSLDefinition)
-	    return supportedFileTypes.contains(FileType.DSL);
+	    return supportedFileTypes.contains(FileType.DSL_LANGUAGE);
 	//
 	if (type instanceof FileType)
 	    return supportedFileTypes.contains(type);

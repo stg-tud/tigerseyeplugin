@@ -95,10 +95,6 @@
                name="TranslationTransformer">
          </transformer>
          <transformer
-               class="de.tud.stg.tigerseye.eclipse.core.builder.transformers.textual.BootStrapTransformation"
-               name="BootStrap">
-         </transformer>
-         <transformer
                class="de.tud.stg.tigerseye.eclipse.core.builder.transformers.textual.PackageImporter"
                name="PackageImporter">
          </transformer>
@@ -113,6 +109,10 @@
          <transformer
                class="de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast.InvokationDispatcherTransformation"
                name="InvokationDispatcher">
+         </transformer>
+         <transformer
+               class="de.tud.stg.tigerseye.eclipse.core.builder.transformers.textual.BootStrapTransformation"
+               name="BootStrap">
          </transformer>
       </transformers>
    </extension>

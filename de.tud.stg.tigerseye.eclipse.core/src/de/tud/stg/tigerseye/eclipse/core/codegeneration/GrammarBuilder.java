@@ -180,7 +180,9 @@ public class GrammarBuilder {
 		switch (dslType) {
 
 		case Literal:
-		    this.handleLiteral(methodInfo, box, getTypeHandlerConfigurationOnGrammar(classesInfos, box));
+		    // this.handleLiteral(methodInfo, box,
+		    // getTypeHandlerConfigurationOnGrammar(classesInfos, box));
+		    this.handleNonLiteral(methodInfo, box, getTypeHandlerConfigurationOnGrammar(classesInfos, box));
 		    break;
 
 		case Operation:
@@ -381,6 +383,8 @@ public class GrammarBuilder {
 
     private final DSLMethod defaultDSLM = DSLInformationDefaults.DEFAULT_DSLMethod;
 
+    private final int literalCouner = 0;
+
     /*
      * Water is supported as long as every involved DSL supports water.
      * Otherwise it is not supported
@@ -523,11 +527,29 @@ public class GrammarBuilder {
 
 	String literal = extractedMethod.getProduction();
 
-	ICategory<String> literalCategory = new Category(literal, true);
+	String indexedLiteralProduction = literal; // "L" + (literalCouner++) +
+						   // "{[" + literal + "]" +
+						   // method.getName() + "}";
+
+	this.methodAliases.put(indexedLiteralProduction,
+		new DSLMethodDescription(method.getName(), new LinkedList<Integer>(), method.getDeclaringClass()));
+
+	ICategory<String> literalCategory = new Category(indexedLiteralProduction, true);
 	box.addCategory(literalCategory);
 
-	Rule literalRule = new Rule(this.statement, literalCategory);
-	box.addRule(literalRule);
+	// should question whether toplevel
+	Rule topLevelRule = new Rule(this.statement, literalCategory);
+	box.addRule(topLevelRule);
+	//
+	// Rule specificLiteralRule = new Rule(literalCategory,
+	// box.rhsMethodCategory);
+	// box.addRule(specificLiteralRule);
+
+	// Is that necessary?
+	// for (ICategory<String> c : box.rhsMethodCategory) {
+	// box.addCategory(c);
+	// }
+	// ----------
 
 	Class<?> returnType = method.getReturnType();
 	ICategory<String> returnTypeCategory = iTypeHandler.handle(returnType, methodOptions);
@@ -536,8 +558,7 @@ public class GrammarBuilder {
 	Rule returnTypeRule = new Rule(returnTypeCategory, literalCategory);
 	box.addRule(returnTypeRule);
 
-	this.methodAliases.put(literal,
-		new DSLMethodDescription(method.getName(), new LinkedList<Integer>(), method.getDeclaringClass()));
+
     }
 
     /**
@@ -630,6 +651,8 @@ public class GrammarBuilder {
 	    index++;
 	}
 
+	// can probably be replaced by separate method counter -> would produce
+	// actually useful Information
 	int methodCounter = this.parameterCounter.getAndIncrement();
 
 	String indexedMethodProduction = "M" + methodCounter + "{[" + methodProduction + "]" + method.getName() + "}";
@@ -645,8 +668,8 @@ public class GrammarBuilder {
 	    box.addRule(methodRule);
 	}
 
-	Rule rule = new Rule(methodCategory, box.rhsMethodCategory);
-	box.addRule(rule);
+	Rule specificMethodRule = new Rule(methodCategory, box.rhsMethodCategory);
+	box.addRule(specificMethodRule);
 
 	// XXX(Leo_Roos;Sep 1, 2011) i leave it shortly to see if it all works
 	for (ICategory<String> c : box.rhsMethodCategory) {

@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import de.tud.stg.tigerseye.dslsupport.DSLInvoker;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLKey;
+import de.tud.stg.tigerseye.eclipse.core.api.TransformationConstants;
 import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
@@ -198,4 +199,9 @@ public class BootStrapTransformation implements TextualTransformation {
 	public String getDescription() {
 		return "Makes first transformations. Default DSL dependencies are added and constructs available to all DSLs transformed";
 	}
+
+    @Override
+    public int getBuildOrderPriority() {
+	return TransformationConstants.BOOT_STRAP_TRANSFORMATION;
+    }
 }

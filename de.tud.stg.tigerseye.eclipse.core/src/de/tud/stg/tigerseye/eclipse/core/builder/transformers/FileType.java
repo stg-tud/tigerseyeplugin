@@ -16,7 +16,7 @@ public enum FileType implements TransformationType {
     JAVA("JAVA", "java.dsl", "java"), //
     GROOVY("GROOVY", "groovy.dsl", "groovy"), //
     TIGERSEYE("TIGERSEYE", "dsl", "dsl.groovy"), //
-    DSL("DSL", "notset", "notset"); /*
+    DSL_LANGUAGE("DSL", "notset", "notset"); /*
 				     * XXX Actually not a FileType. Renaming
 				     * this enumeration to DomainType?
 				     */
@@ -39,7 +39,7 @@ public enum FileType implements TransformationType {
     // be modified
     public static final FileType[] RESOURCE_FILE_TYPES = { JAVA, GROOVY,
 	    TIGERSEYE };
-    public static final FileType[] DSL_FILETYPES = { DSL };
+    public static final FileType[] DSL_FILETYPES = { DSL_LANGUAGE };
 
     private FileType(String name, String srcFileEnding, String outPutFileEnding) {
 	this.name = name;

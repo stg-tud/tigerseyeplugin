@@ -39,8 +39,10 @@ public class LiteralsDSLTest {
 		assertExpectedForInputTransformation(inpExp2);
 	}
 
-	@Test(expected=ComparisonFailure.class)
+	@Test//(expected=ComparisonFailure.class)
 	public void shouldProcessAnnotatedLiteralFunctionAsLiteral() throws Exception {
+		//	@DSLMethod(production="green", type=DslMethodType.Literal)
+		//	def moreGreen(){
 		String[] inpExp3 = { "green", "moreGreen()" };
 		assertExpectedForInputTransformation(inpExp3);
 	}

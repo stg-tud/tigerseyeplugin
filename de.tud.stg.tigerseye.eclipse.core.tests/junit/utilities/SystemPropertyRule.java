@@ -33,6 +33,8 @@ public class SystemPropertyRule implements MethodRule {
 
 	private static final String TRUE = "true";
 
+	private static final boolean activate_longrunning_tests_default = false;
+
 	private boolean runtest;
 
 	private List<String> skipReasons;
@@ -70,6 +72,11 @@ public class SystemPropertyRule implements MethodRule {
 		}
 		if (isPropertyOfBooleanValue(LongrunningTest.PROPERTY_KEY_TESTS_LONGRUNNING, false)) {
 			skipWithReason("Long running Tests have been disabled.");
+		}else{
+			if(activate_longrunning_tests_default){
+				return;
+			}else
+				skipWithReason("Found LongRunningTest annotation, default is to skip.");
 		}
 	}
 

@@ -40,24 +40,23 @@ public class TransformerConfigurationProvider {
     }
 
 
-    public Set<TextualTransformation> getConfiguredTextualTransformers(
-	    TransformationType... identiables) {
-	return getTransformations(
-		new TransformationFilter<TextualTransformation>() {
-		    @Override
-		    public TextualTransformation instanceOrNull(Transformation t) {
-			if (t instanceof TextualTransformation)
-			    return (TextualTransformation) t;
-			return null;
-		    }
+    public Set<TextualTransformation> getConfiguredTextualTransformers(TransformationType... identfiables) {
+	return getTransformations(new TransformationFilter<TextualTransformation>() {
+	    @Override
+	    public TextualTransformation instanceOrNull(Transformation t) {
+		if (t instanceof TextualTransformation)
+		    return (TextualTransformation) t;
+		return null;
+	    }
 
-		}, identiables);
+	}, identfiables);
     }
 
     private <T extends Transformation> Set<T> getTransformations(
-	    TransformationFilter<T> filter, TransformationType... identiables) {
+TransformationFilter<T> filter,
+	    TransformationType... identfiables) {
 	Set<T> ts = new LinkedHashSet<T>();
-	for (TransformationType i : identiables) {
+	for (TransformationType i : identfiables) {
 	    Collection<ITransformationHandler> transformations = getTransformations();
 	    for (ITransformationHandler h : transformations) {
 		if (h.isActiveFor(i)) {

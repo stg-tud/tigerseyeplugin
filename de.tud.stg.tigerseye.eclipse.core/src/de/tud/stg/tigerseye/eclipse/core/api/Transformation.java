@@ -24,4 +24,13 @@ public interface Transformation {
 	 */
 	public Set<TransformationType> getSupportedFileTypes();
 
+    /**
+     * Determines when this Transformation has to be build
+     * 
+     * @return the priority when to execute this transformation.
+     */
+    public int getBuildOrderPriority();
+    // XXX(leo;20.11.2011) add uniform transform statement or two! so they can
+    // be
+
 }

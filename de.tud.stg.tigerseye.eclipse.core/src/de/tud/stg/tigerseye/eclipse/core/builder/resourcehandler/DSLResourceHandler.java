@@ -6,14 +6,7 @@ package de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import jjtraveler.VisitFailure;
 
@@ -24,6 +17,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -39,6 +33,8 @@ import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLNotFoundException;
 import de.tud.stg.tigerseye.eclipse.core.api.ILanguageProvider;
+import de.tud.stg.tigerseye.eclipse.core.api.Transformation;
+import de.tud.stg.tigerseye.eclipse.core.api.TransformationConstants;
 import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ASTTransformation;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
@@ -54,7 +50,7 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.CodePrinter;
 import de.tud.stg.tigerseye.eclipse.core.utils.InvolvedDSLsExtractor;
 import de.tud.stg.tigerseye.eclipse.core.utils.OutputPathHandler;
 
-public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
+public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IResourceVisitor {
 
     public static final String TRANSFORMATION_DEBUG_SYSTEM_PROPERTY = "tigerseye.transformation.debug";
 
@@ -76,6 +72,19 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
     // transformation process for every built file. Could be turned into
     // preference.
     private boolean tigerseyetransforamtiondebug = false;
+
+
+    @Override
+    public boolean visit(IResource aResource) throws CoreException {
+	if (!(aResource instanceof IFile)) {
+	    logger.debug("Expected to visit a file but got {}", aResource);
+	    return true;
+	}
+	else {
+	    handleResource(aResource);
+	    return false;
+	}
+    }
 
     @Override
     public boolean visit(IResourceDelta delta) {
@@ -327,9 +336,9 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 	    logger.error("Can not determine output file for {}", srcFile);
 	    return;
 	}
-	ByteArrayOutputStream transformedContent = getTransformedContent(resourceContent, context);
-	if (transformedContent.size() > 0) {
-	    this.writeResourceContent(transformedContent, outputFile);
+	StringBuffer transformedContent = transformContent(resourceContent, context);
+	if (transformedContent.length() > 0) {
+	    this.writeResourceContent(transformedContent.toString(), outputFile);
 	} else {
 	    logger.trace("Transformation for {} was empty. Will not write any change to file.", resource);
 	}
@@ -337,12 +346,57 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 	logger.info("{} ms took Transformation of {}", sw.getTime(), resource);
     }
 
-    private ByteArrayOutputStream getTransformedContent(StringBuffer input, Context context) {
-	StringBuffer textualTransformedInput = this.performTextualTransformations(input, context);
+    private StringBuffer transformContent(StringBuffer input, Context context) {
+
+	ArrayList<TransformationType> idents = new ArrayList<TransformationType>(context.getDsls());
+	idents.add(context.getFiletype());
+
+
+	Set<TextualTransformation> configuredTextualTransformers = getTransformerProvider()
+		.getConfiguredTextualTransformers(idents.toArray(new TransformationType[idents.size()]));
+	Set<ASTTransformation> configuredASTTransformers = getTransformerProvider().getConfiguredASTTransformers(
+		idents.toArray(new TransformationType[idents.size()]));
+
+	List<Transformation> transformers = new LinkedList<Transformation>();
+	transformers.addAll(configuredTextualTransformers);
+	transformers.addAll(configuredASTTransformers);
+	Collections.sort(transformers, new Comparator<Transformation>() {
+
+	    @Override
+	    public int compare(Transformation arg0, Transformation arg1) {
+		return arg0.getBuildOrderPriority() - arg1.getBuildOrderPriority();
+	    }
+	});
+	Iterator<Transformation> transformationIterator;
+
+
+	StringBuffer textualTransformedInput = new StringBuffer(input);
+
+	// StringBuffer textualTransformedInput =
+	// this.performTextualTransformations(input, context);
+
+	List<Transformation> illegalTransformers = new LinkedList<Transformation>();
+
+	// Pre Earley Transformation Phase
+	transformationIterator = transformers.iterator();
+	while (transformationIterator.hasNext()) {
+	    Transformation next = transformationIterator.next();
+	    if (next.getBuildOrderPriority() < TransformationConstants.AFTER_EARLEY_TRANSFORMATION) {
+		transformationIterator.remove();
+		if (next instanceof TextualTransformation) {
+		    textualTransformedInput = ((TextualTransformation) next)
+			    .transform(context, textualTransformedInput);
+		} else {
+		    logger.warn("Wrong transformation type in pre early transformation phase found: {}", next);
+		    illegalTransformers.add(next);
+		}
+	    }
+	}
+	transformationIterator = null;
+
 	String workingInput = textualTransformedInput.toString().trim();
 
 	List<DSLDefinition> dsls = context.getDsls();
-
 	GrammarBuilder grammarBuilder = new GrammarBuilder(ult);
 	IGrammar<String> grammar = grammarBuilder.buildGrammarFromDefinitions(dsls);
 
@@ -376,9 +430,51 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 
 	}
 
-	ATerm astTransformedTerm = this.performASTTransformations(term, context, methodOptions);
-	ByteArrayOutputStream out = this.performPrettyPrinting(astTransformedTerm);
-	return out;
+
+	// ATerm astTransformedTerm = this.performASTTransformations(term,
+	// context, methodOptions);
+
+	transformationIterator = transformers.iterator();
+	while (transformationIterator.hasNext()) {
+	    Transformation next = transformationIterator.next();
+	    int nextbuildOrderPriority = next.getBuildOrderPriority();
+	    if (nextbuildOrderPriority > TransformationConstants.AFTER_EARLEY_TRANSFORMATION
+		    && nextbuildOrderPriority < TransformationConstants.AFTER_AST_TRANSFORMATION) {
+		transformationIterator.remove();
+		if (next instanceof ASTTransformation) {
+		    term = ((ASTTransformation) next).transform(methodOptions, term);
+		} else {
+		    logger.warn("Wrong transformation type in pre early transformation phase found: {}", next);
+		    illegalTransformers.add(next);
+		}
+	    }
+	}
+	transformationIterator = null;
+
+	// Should move it down
+	ByteArrayOutputStream out = this.performPrettyPrinting(term);
+
+	StringBuffer finalTransformation = new StringBuffer(new String(out.toByteArray()));
+
+	transformationIterator = transformers.iterator();
+	while (transformationIterator.hasNext()) {
+	    Transformation next = transformationIterator.next();
+	    int nextbuildOrderPriority = next.getBuildOrderPriority();
+	    if (nextbuildOrderPriority > TransformationConstants.AFTER_AST_TRANSFORMATION) {
+		transformationIterator.remove();
+		if (next instanceof TextualTransformation) {
+		    finalTransformation = ((TextualTransformation) next).transform(context, finalTransformation);
+		} else {
+		    logger.warn("Wrong transformation type in pre early transformation phase found: {}", next);
+		    illegalTransformers.add(next);
+		}
+	    }
+	}
+	transformationIterator = null;
+
+	logger.debug("Illegal Transformers:", illegalTransformers);
+
+	return finalTransformation;
     }
 
     protected ByteArrayOutputStream performPrettyPrinting(ATerm term) {
@@ -397,7 +493,6 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 
     private StringBuffer performTextualTransformations(StringBuffer originalInput, Context context) {
 	StringBuffer transformedInput = new StringBuffer(originalInput);
-	logger.trace("starting textual transformations");
 	ArrayList<TransformationType> idents = new ArrayList<TransformationType>(context.getDsls());
 	idents.add(context.getFiletype());
 	Collection<TextualTransformation> configuredTextualTransformers = getTransformerProvider()
@@ -430,11 +525,6 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor {
 	ATerm term = aterm.getATerm();
 
 	return term;
-    }
-
-    private void writeResourceContent(ByteArrayOutputStream content, IFile file) {
-	ByteArrayInputStream bais = new ByteArrayInputStream(content.toByteArray());
-	writeResourceContent(file, bais);
     }
 
     private void writeResourceContent(String content, IFile file) {

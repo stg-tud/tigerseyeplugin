@@ -15,6 +15,7 @@ import aterm.ATermList;
 import aterm.Visitable;
 import aterm.pure.PureFactory;
 import aterm.pure.SingletonFactory;
+import de.tud.stg.tigerseye.eclipse.core.api.TransformationConstants;
 import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ASTTransformation;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
@@ -168,4 +169,9 @@ private static final Logger logger = LoggerFactory.getLogger(KeywordChainingTran
 	public Set<ATerm> getAssurances() {
 		return Collections.emptySet();
 	}
+
+    @Override
+    public int getBuildOrderPriority() {
+	return TransformationConstants.KEYWORD_CHAINING_TRANSFORMATION;
+    }
 }

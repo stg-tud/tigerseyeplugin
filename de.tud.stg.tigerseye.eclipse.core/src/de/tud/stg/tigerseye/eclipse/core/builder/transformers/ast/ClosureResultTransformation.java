@@ -16,6 +16,7 @@ import aterm.Visitable;
 import aterm.pure.PureFactory;
 import aterm.pure.SingletonFactory;
 import de.tud.stg.tigerseye.dslsupport.DSLInvoker;
+import de.tud.stg.tigerseye.eclipse.core.api.TransformationConstants;
 import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ASTTransformation;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
@@ -131,5 +132,10 @@ private static final Logger logger = LoggerFactory.getLogger(ClosureResultTransf
 	@Override
     public String getDescription() {
 	return "Scans the AST for method calls to a DSL interface and encapsulates them into closures";
+    }
+
+    @Override
+    public int getBuildOrderPriority() {
+	return TransformationConstants.CLOSURE_RESULT_TRANSFORMATION;
     }
 }

@@ -6,12 +6,16 @@ import static TransformationUtils.*;
 import java.io.ByteArrayOutputStream;
 
 import org.apache.commons.lang.time.StopWatch;
+import org.eclipse.jdt.internal.compiler.problem.ShouldNotImplement;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import utilities.LongrunningTest;
+import utilities.SystemPropertyRule;
 import utilities.TestUtils;
 
 import aterm.ATerm;
@@ -31,6 +35,7 @@ import de.tud.stg.tigerseye.eclipse.core.builder.transformers.textual.BootStrapT
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.ATermBuilder;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.PrettyGroovyCodePrinter;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast.resources.RuleDSLInvokationTransformation;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast.resources.SetDSLForInvokationsTransformation;
 import de.tud.stg.tigerseye.test.TestDSLTransformation;
 import de.tud.stg.tigerseye.test.TransformationUtils;
@@ -41,6 +46,9 @@ public class InvokationDispatcherTransformationTests {
 
 	private static final Logger logger = LoggerFactory.getLogger(InvokationDispatcherTransformationTests.class);
 
+	@Rule
+	public SystemPropertyRule sysproprule = new SystemPropertyRule();
+	
 	def ult = TransformationUtils.getDefaultLookupTable()
 
 	@Before
@@ -48,6 +56,7 @@ public class InvokationDispatcherTransformationTests {
 	}
 
 
+	@LongrunningTest(3976)
 	@Test
 	public void shouldDSLInvokeOneArityMethod() throws Exception {
 		def clazz = SetDSLForInvokationsTransformation.class
@@ -130,6 +139,7 @@ moreCode"""
 		String output = TestDSLTransformation.aTermToString(term, new PrettyGroovyCodePrinter())
 	}
 
+	@LongrunningTest(7674)
 	@Test
 	public void shouldTransformCombination() {
 		def clazz = SetDSLForInvokationsTransformation.class
@@ -138,6 +148,75 @@ moreCode"""
 		def output = performCustomTransformation(clazz, input);
 
 		assertThat(output).isEqualToIgnoringWhitespace builderExpected1
+	}
+	
+	@Test
+	public void shouldLiteralWithDSLInvoke() {
+		Class clazz = RuleDSLInvokationTransformation.class
+		String input = """resultingPolicy"""
+		String expected = 
+"""DSLInvoker.eval(RuleDSLInvokationTransformation.class,{
+createPolicyEmergent()})"""
+		
+		def output = performCustomTransformation(clazz, input);
+
+		assertThat(output).isEqualToIgnoringWhitespace expected
+	}
+	
+	@Test
+	public void shouldDSLInvokeZeroArityMethodRuleDSL() {
+		Class clazz = RuleDSLInvokationTransformation.class
+		String input = """get the policy"""
+		String expected =
+"""DSLInvoker.eval(RuleDSLInvokationTransformation.class,{
+createZeroArityMethod()})"""
+		
+		def output = performCustomTransformation(clazz, input);
+
+		assertThat(output).isEqualToIgnoringWhitespace expected
+	}
+	
+
+	@Test
+	public void shouldNotTransformWithRedundantCloures() throws Exception {
+		String input =
+"""Policy (Id = "Service-Levels") {
+	Rule {
+		Trust = "High",
+		Location= "Germany",
+		Options = { "Pre-Paid", "Credit-Card", "Invoice" }
+	}
+	Rule {
+		Trust = "Low",
+		Options = { "Pre-Paid" }
+	}
+}
+def p = resultingPolicy"""
+String expected = """
+DSLInvoker.eval(RuleDSLInvokationTransformation.class,{
+	aPolicyWithId("Service-Levels",{
+		DSLInvoker.eval(RuleDSLInvokationTransformation.class,{
+			aRule([
+				DSLInvoker.eval(RuleDSLInvokationTransformation.class,{
+					aKeyValue(Trust,["High"] as String[])}),
+				DSLInvoker.eval(RuleDSLInvokationTransformation.class,{
+					aKeyValue(Location,["Germany"] as String[])}),
+				DSLInvoker.eval(RuleDSLInvokationTransformation.class,{
+					entryOptions(["Pre-Paid","Credit-Card","Invoice"] as String[])})
+				] as Entry[])})
+	 	DSLInvoker.eval(RuleDSLInvokationTransformation.class,{
+			aRule([
+				DSLInvoker.eval(RuleDSLInvokationTransformation.class,{
+					aKeyValue(Trust,["Low"] as String[])}),
+				DSLInvoker.eval(RuleDSLInvokationTransformation.class,{
+						entryOptions(["Pre-Paid"] as String[])})] as Entry[])})})})
+def p =
+	DSLInvoker.eval(RuleDSLInvokationTransformation.class,{
+		createPolicyEmergent()})
+"""
+		def out = performCustomTransformation(RuleDSLInvokationTransformation.class, input)
+		
+		assertThat(out).isEqualToIgnoringWhitespace(expected)	
 	}
 
 	private IAbstractNode getAST(String input, Class clazz, Grammar grammar){
