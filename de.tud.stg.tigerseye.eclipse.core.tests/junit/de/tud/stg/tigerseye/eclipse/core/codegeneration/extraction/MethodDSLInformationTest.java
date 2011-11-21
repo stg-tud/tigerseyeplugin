@@ -447,7 +447,7 @@ public class MethodDSLInformationTest {
 	}
 
 	@Test
-	public void shouldGetMethod() {
+	public void shouldGetExpectedMethod() {
 		Method aMethod = getFirstMethod(SdfDSLForExtractingTest.class, "contextFreeStartSymbols");
 		MethodDSLInformation aMInfo = new MethodDSLInformation(aMethod);
 		assertThat(aMInfo.getMethod()).isEqualTo(aMethod);
@@ -636,7 +636,7 @@ public class MethodDSLInformationTest {
 	}
 
 	@Test
-	public void shouldToString() {
+	public void shouldHaveAllExpectedInformationInToString() {
 		// @DSLMethod(production = "asdf.zuul",stringQuotation =
 		// "\".*?(?<!\\)\"", whitespaceEscape = ".")public void
 		// annotationWithSomeConfigurationOptions() {
@@ -746,6 +746,20 @@ public class MethodDSLInformationTest {
 		MethodDSLInformation minf = getMinfFromMixed("get__a0");
 		assertThat(minf.getProduction()).isEqualTo("get__p0");
 		assertThat(minf.getDSLType()).isEqualTo(DslMethodType.Operation);
+	}
+	
+	@Test
+	public void shouldBeFalseWhetherProductionInAnnotationDefined() throws Exception {
+		boolean hasProductionInAnnotationDefined = getSomeliteral_MethodInfo.hasProductionInAnnotationDefined();
+		assertThat(hasProductionInAnnotationDefined).isFalse();
+	}
+	
+	@Test
+	public void shouldBeTrueWhetherProductionInAnnotationDefined() throws Exception {
+		//	@DSLMethod(production = "grep_p0")
+		//	public Object has_production(String arg) {
+		boolean hasProductionInAnnotationDefined = getMinfFromMixed("has_production").hasProductionInAnnotationDefined();
+		assertThat(hasProductionInAnnotationDefined).isTrue();
 	}
 
 }

@@ -45,7 +45,7 @@ public class ClassDSLInformationTest {
 
 	String[] expectedSDFMethodsToBeExtracted = { //
 	"getGrammar(String,boolean)",//
-			"eval(HashMap,Closure)",//
+//			"eval(HashMap,Closure)",// removed as it is part of Interpreter.class
 			"moduleWithoutParameters(ModuleId,Imports[],ExportOrHiddenSection[])",//
 			"moduleWithParameters(ModuleId,Symbol[],Imports[],ExportOrHiddenSection[])",//
 			"parseString(String,String)",//

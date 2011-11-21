@@ -107,8 +107,12 @@
                name="ClosureResult">
          </transformer>
          <transformer
-               class="de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast.InvokationDispatcherTransformation"
-               name="InvokationDispatcher">
+               class="de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast.InvokationDispatcherGroovyTransformation"
+               name="InvokationDispatcherGroovy">
+         </transformer>
+         <transformer
+               class="de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast.InvokationDispatcherJavaTransformation"
+               name="InvokationDispatcherJava">
          </transformer>
          <transformer
                class="de.tud.stg.tigerseye.eclipse.core.builder.transformers.textual.BootStrapTransformation"

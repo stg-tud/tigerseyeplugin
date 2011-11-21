@@ -44,8 +44,7 @@ public class PackageImporter implements TextualTransformation {
 	    sb.append("$2\n");
 	    sb.append('\n');
 
-	    // imports.add("de.tud.stg.popart.builder.utils.DSLInvoker");
-	    imports.add(DSLInvoker.class.getCanonicalName());
+	    // imports.add(DSLInvoker.class.getCanonicalName());
 	    sb.append("$3");
 	    sb.append("$4");
 

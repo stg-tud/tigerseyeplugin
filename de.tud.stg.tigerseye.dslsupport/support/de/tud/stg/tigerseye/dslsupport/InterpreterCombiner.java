@@ -18,7 +18,6 @@ import java.util.Set;
 import org.codehaus.groovy.runtime.InvokerHelper;
 
 import de.tud.stg.tigerseye.dslsupport.logger.DSLSupportLogger;
-import de.tud.stg.tigerseye.dslsupport.logger.DSLSupportLogger.Level;
 
 public class InterpreterCombiner extends Interpreter /*implements DSL // redundant*/ {
 	

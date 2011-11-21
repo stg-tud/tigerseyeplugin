@@ -82,13 +82,17 @@ public class TransformationUtils {
 			IOUtils.closeQuietly(out);
 		}
 	}
+	
+	
+	public static GrammarResult newGrammar(Class<? extends DSL> clazz){
+		return newGrammar(dslSingle(clazz));
+	}
 
-	public static GrammarResult newGrammar(Class<? extends DSL>... classes) {
+	public static GrammarResult newGrammar(List<Class<? extends DSL>> classes) {
 
 		GrammarBuilder grammarBuilder = new GrammarBuilder(getDefaultLookupTable());
 
-		List<Class<? extends DSL>> asList = Arrays.asList(classes);
-		IGrammar<String> buildGrammar = grammarBuilder.buildGrammar(asList);
+		IGrammar<String> buildGrammar = grammarBuilder.buildGrammar(classes);
 
 		GrammarResult grammarResult = new GrammarResult(buildGrammar, grammarBuilder.getMethodOptions(), classes);
 

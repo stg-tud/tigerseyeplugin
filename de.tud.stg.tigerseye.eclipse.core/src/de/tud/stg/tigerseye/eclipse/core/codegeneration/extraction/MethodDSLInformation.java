@@ -25,10 +25,10 @@ import org.slf4j.LoggerFactory;
 
 import de.tud.stg.tigerseye.dslsupport.annotations.AnnotationConstants;
 import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod;
-import de.tud.stg.tigerseye.dslsupport.annotations.DSLParameter;
 import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod.Associativity;
 import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod.DslMethodType;
 import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod.PreferencePriority;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLParameter;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.extraction.MethodProductionConstants.ProductionElement;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ConfigurationOptions;
 
@@ -117,7 +117,7 @@ public class MethodDSLInformation extends DSLInformation {
 	String definedWS = getConfigurationOption(ConfigurationOptions.WHITESPACE_ESCAPE);
 	if (definedWS.isEmpty()) {
 	    setDefaultWSE();
-	} else if (!hasProductionInAnnotationdDefined()) {
+	} else if (!hasProductionInAnnotationDefined()) {
 	    // Not annotated uses method name as production have to narrow
 	    // possibly inherited whitespace escapes to valid java identifier
 	    if (!Character.isJavaIdentifierPart(definedWS.charAt(0))) {
@@ -156,7 +156,7 @@ public class MethodDSLInformation extends DSLInformation {
 	return null;
     }
 
-    private boolean hasProductionInAnnotationdDefined() {
+    public boolean hasProductionInAnnotationDefined() {
 	if (AnnotationConstants.UNASSIGNED.equals(this.dslMethodAnnotation.production())) {
 	    return false;
 	} else {
@@ -202,7 +202,7 @@ public class MethodDSLInformation extends DSLInformation {
      */
     public String getProduction() {
 	String production;
-	if (hasProductionInAnnotationdDefined())
+	if (hasProductionInAnnotationDefined())
 	    production = this.dslMethodAnnotation.production();
 	else {
 	    production = getProductionFromMethodName();
@@ -311,7 +311,8 @@ public class MethodDSLInformation extends DSLInformation {
 
     /**
      * TODO(Leo_Roos;Sep 1, 2011) still looking for more assertion to be made.
-     * currently only whether literal has return type
+     * currently only whether literal has return type; inconsistent parameter
+     * number in production and declaration could be considered invalid.
      * 
      * @return whether this information and annotated method are actually valid
      *         in their current form.

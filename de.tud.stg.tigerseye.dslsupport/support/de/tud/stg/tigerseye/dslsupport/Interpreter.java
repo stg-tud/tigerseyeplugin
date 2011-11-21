@@ -34,10 +34,6 @@ public class Interpreter extends GroovyObjectSupport implements DSL {
 		return cl.call();
 	}
 	
-	public Interpreter add(Interpreter other) {
-		return new InterpreterCombiner(this, other, new java.util.HashMap<String,Object>());
-	}
-	
 	//XXX (Leo Roos; Jun 28, 2011): Added this method since it is the most often applied used case.
 	public Object eval(@SuppressWarnings("rawtypes") HashMap map, Closure<?> cl) {
 		cl.setDelegate(this);

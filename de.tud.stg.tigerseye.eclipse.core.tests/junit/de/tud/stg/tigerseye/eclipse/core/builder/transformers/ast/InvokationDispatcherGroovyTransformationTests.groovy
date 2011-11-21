@@ -6,7 +6,6 @@ import static TransformationUtils.*;
 import java.io.ByteArrayOutputStream;
 
 import org.apache.commons.lang.time.StopWatch;
-import org.eclipse.jdt.internal.compiler.problem.ShouldNotImplement;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -29,7 +28,7 @@ import de.tud.stg.popart.builder.test.dsls.SetDSL;
 import de.tud.stg.tigerseye.dslsupport.DSL;
 import de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler.EarleyParserConfiguration;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
-import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast.InvokationDispatcherTransformation;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast.InvokationDispatcherGroovyTransformation;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast.KeywordChainingTransformation;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.textual.BootStrapTransformation;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder;
@@ -41,15 +40,15 @@ import de.tud.stg.tigerseye.test.TestDSLTransformation;
 import de.tud.stg.tigerseye.test.TransformationUtils;
 import de.tud.stg.tigerseye.test.TestDSLTransformation.GrammarResult;
 
-public class InvokationDispatcherTransformationTests {
+public class InvokationDispatcherGroovyTransformationTests {
 
 
-	private static final Logger logger = LoggerFactory.getLogger(InvokationDispatcherTransformationTests.class);
+	private static final Logger logger = LoggerFactory.getLogger(InvokationDispatcherGroovyTransformationTests.class);
 
 	@Rule
 	public SystemPropertyRule sysproprule = new SystemPropertyRule();
 	
-	def ult = TransformationUtils.getDefaultLookupTable()
+	
 
 	@Before
 	public void setUp() throws Exception {
@@ -86,17 +85,16 @@ SetDSLForInvokationsTransformation.class,
 			//some comment
 		Get the Cake
 		}
-		moreCode""";
+		moreCode"""
 
 		def output = performCustomTransformation(clazz, input);
-		//		output = new BootStrapTransformation().transform(context, new StringBuffer(output))
-		assertThat(output).isEqualToIgnoringWhitespace("""ablock{
+		assertThat(output).isEqualToIgnoringWhitespace """ablock{
 			//some comment
 		DSLInvoker.eval(
 SetDSLForInvokationsTransformation.class,
 {zeroArityMethod()})
 		}
-		moreCode""")
+		moreCode"""
 	}
 
 	@Test
@@ -121,23 +119,8 @@ SetDSLForInvokationsTransformation.class,
 moreCode"""
 	}
 
-	private String performCustomTransformation(Class clazz, String input){
 
-		GrammarResult gr =  newGrammar(clazz)
 
-		IAbstractNode ast = getAST(input, clazz, gr.grammar)
-
-		ATermBuilder aTermBuilder = new ATermBuilder(ast);
-		ATerm term = aTermBuilder.getATerm();
-
-		//performs keyword to methods transformation
-		term = new KeywordChainingTransformation().transform(gr.moptions, term);
-
-		//encloses DSL method calls into invocations
-		term = new InvokationDispatcherTransformation().transform(gr.moptions, term);
-
-		String output = TestDSLTransformation.aTermToString(term, new PrettyGroovyCodePrinter())
-	}
 
 	@LongrunningTest(7674)
 	@Test
@@ -174,6 +157,10 @@ createZeroArityMethod()})"""
 		def output = performCustomTransformation(clazz, input);
 
 		assertThat(output).isEqualToIgnoringWhitespace expected
+	}
+	
+	private performCustomTransformation(Class<? extends DSL> clazz, String input){
+		return TestDSLTransformation.performCustomTransformation(clazz, input,new PrettyGroovyCodePrinter(), new InvokationDispatcherGroovyTransformation())
 	}
 	
 
@@ -217,19 +204,6 @@ def p =
 		def out = performCustomTransformation(RuleDSLInvokationTransformation.class, input)
 		
 		assertThat(out).isEqualToIgnoringWhitespace(expected)	
-	}
-
-	private IAbstractNode getAST(String input, Class clazz, Grammar grammar){
-
-		EarleyParser earleyParser = new EarleyParserConfiguration().getDefaultEarleyParserConfiguration(grammar);
-
-		Chart chart = (Chart) earleyParser.parse(input);
-
-		Context context = new Context("dummyFileName");
-		context.addDSL(clazz.getSimpleName(), clazz);
-
-		IAbstractNode ast = chart.getAST();
-		return ast
 	}
 
 	String builderInput1 = """package de.tud.stg.tigerseye.examples.set

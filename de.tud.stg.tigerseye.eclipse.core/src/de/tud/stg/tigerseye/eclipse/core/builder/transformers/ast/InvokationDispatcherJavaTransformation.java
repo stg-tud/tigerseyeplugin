@@ -26,7 +26,7 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.DSLMethod
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.RecursiveVisitor;
 
 /**
- * {@link InvokationDispatcherTransformation} scans the AST for method calls to
+ * {@link InvokationDispatcherJavaTransformation} scans the AST for method calls to
  * a DSL interface and binds them to a instance of the concrete DSL by
  * prepending DSLInvoker.getDSL(DSL_CLASS). This supports multiple DSLs in one
  * AST.
@@ -34,8 +34,8 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.RecursiveVisitor;
  * @author Kamil Erhard
  *
  */
-public class InvokationDispatcherTransformation extends RecursiveVisitor implements ASTTransformation {
-private static final Logger logger = LoggerFactory.getLogger(InvokationDispatcherTransformation.class);
+public class InvokationDispatcherJavaTransformation extends RecursiveVisitor implements ASTTransformation {
+private static final Logger logger = LoggerFactory.getLogger(InvokationDispatcherJavaTransformation.class);
 
 
 	private final static AFun dslInvokerFunction;
@@ -44,13 +44,13 @@ private static final Logger logger = LoggerFactory.getLogger(InvokationDispatche
 	static {
 		PureFactory factory = SingletonFactory.getInstance();
 	String dslInvokerName = DSLInvoker.class.getSimpleName();
-	dslInvokerFunction = factory.makeAFun(dslInvokerName + ".eval", 2, false);
+	dslInvokerFunction = factory.makeAFun(dslInvokerName + ".getDSL", 1, false);
 	}
 
-	public InvokationDispatcherTransformation() {
+	public InvokationDispatcherJavaTransformation() {
 	}
 
-    public InvokationDispatcherTransformation(
+    public InvokationDispatcherJavaTransformation(
 	    Map<String, DSLMethodDescription> moptions) {
 	this.moptions = moptions;
 	}
@@ -92,43 +92,36 @@ private static final Logger logger = LoggerFactory.getLogger(InvokationDispatche
 				ATerm secondArg;
 				
 		if (arg.getArity() < 1) {
-		    AFun makeAFun = factory.makeAFun(arg.getName() + "()", 0, false);
+		    AFun makeAFun = factory.makeAFun(arg.getName(), 0, false);
 				    secondArg = makeAFun;
 				} else {
-
-		    // ATerm make = factory.make(arg.getName());
-
-		    // ATermList ilist = factory.makeList();
-		    // ATermAppl makeAppl =
-		    // factory.makeAppl(factory.makeAFun(".", 0, false));
-		    // makeAppl.
-		    // ilist.append(makeAppl);
-		    // ilist.append(arg);
 
 		    secondArg = arg;
 
 		}
 
-		ATermAppl closureBegin = factory.makeAppl(factory.makeAFun("{", 0, false));
-		    ATermAppl closureEnd = factory.makeAppl(factory.makeAFun("}", 0, false));
+		// ATermAppl closureBegin =
+		// factory.makeAppl(factory.makeAFun("{", 0, false));
+		// ATermAppl closureEnd = factory.makeAppl(factory.makeAFun("}",
+		// 0, false));
+		//
+		// ATermList closureArgument = factory.makeList();
+		// closureArgument = closureArgument.append(closureBegin);
+		// closureArgument = closureArgument.append(secondArg);
+		// closureArgument = closureArgument.append(closureEnd);
+		// secondArg = closureArgument;
 
-		ATermList closureArgument = factory.makeList();
-		    closureArgument = closureArgument.append(closureBegin);
-		closureArgument = closureArgument.append(secondArg);
-		    closureArgument = closureArgument.append(closureEnd);
-		    secondArg = closureArgument;
+		ATermAppl getDSL = factory.makeAppl(dslInvokerFunction, factory.makeAppl(factory.makeAFun(methodAlias
+			.getParentClass().getSimpleName() + ".class", 0, false)));
 
-				ATermAppl appl = factory.makeAppl(dslInvokerFunction, factory.makeAppl(factory.makeAFun(
-						methodAlias.getParentClass().getSimpleName() + ".class", 0, false)),
-						secondArg);
+		ATermAppl applyDSLOn = factory.makeAppl(factory.makeAFun(".", 0, false));
 
 
+				list = list.append(getDSL);
+		list = list.append(applyDSLOn);
+		list = list.append(secondArg);
 
-//				list = list.append(appl);
-////				list = list.append(factory.makeAppl(factory.makeAFun(".", 0, false)));
-//				list = list.append(arg);
-
-				return appl;
+		return list;
 			}
 		}
 
@@ -137,7 +130,7 @@ private static final Logger logger = LoggerFactory.getLogger(InvokationDispatche
 
 	@Override
 	public ATerm transform(Map<String, DSLMethodDescription> moptions, ATerm aterm) {
-		InvokationDispatcherTransformation crt = new InvokationDispatcherTransformation(moptions);
+		InvokationDispatcherJavaTransformation crt = new InvokationDispatcherJavaTransformation(moptions);
 
 	logger.debug("[InvokationDispatcher] start");
 		try {
@@ -161,7 +154,7 @@ private static final Logger logger = LoggerFactory.getLogger(InvokationDispatche
 
 	@Override
 	public Set<TransformationType> getSupportedFileTypes() {
-	return TextualTransformationUtils.getSetForFiletypes(FileType.JAVA, FileType.TIGERSEYE);
+	return TextualTransformationUtils.getSetForFiletypes(FileType.JAVA);
 	}
 
 	@Override

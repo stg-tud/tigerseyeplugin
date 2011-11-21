@@ -1,5 +1,8 @@
 package de.tud.stg.tigerseye.test;
 
+import static de.tud.stg.tigerseye.test.TransformationUtils.dslSingle;
+import static de.tud.stg.tigerseye.test.TransformationUtils.newGrammar;
+
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -29,8 +32,9 @@ import de.tud.stg.parlex.parser.earley.Chart;
 import de.tud.stg.parlex.parser.earley.EarleyParser;
 import de.tud.stg.tigerseye.dslsupport.DSL;
 import de.tud.stg.tigerseye.eclipse.core.builder.resourcehandler.EarleyParserConfiguration;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ASTTransformation;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
-import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast.InvokationDispatcherTransformation;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast.InvokationDispatcherGroovyTransformation;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast.KeywordChainingTransformation;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.DSLMethodDescription;
@@ -114,17 +118,15 @@ public class TestDSLTransformation {
 
 	}
 
+	/**
+	 * Only performs Keyword transformation no additional wrapping into Closures or DSLInvokers or adding Packages etc.
+	 */
 	public String performTransformation(String sb, GrammarResult gr) throws VisitFailure {
 
 		EarleyParser earleyParser = new EarleyParserConfiguration().getDefaultEarleyParserConfiguration(gr.grammar);
 
 		Chart chart = (Chart) earleyParser.parse(sb.trim());
 		logger.debug("Resulting AST for classes {} is:\n{}", gr.classes, chart.getAST());
-
-		Context context = new Context("dummyFileName");
-		for (Class<? extends DSL> clazz : gr.classes) {
-			context.addDSL(clazz.getSimpleName(), clazz);
-		}
 
 		// int cnt = 0;
 		// do {
@@ -140,15 +142,41 @@ public class TestDSLTransformation {
 
 		term = new KeywordChainingTransformation().transform(moptions, term);
 
-		if (gr.classes.size() > 1) {
-			// term = new ClosureResultTransformer().transform(context,
-			// term);
-			term = new InvokationDispatcherTransformation().transform(moptions, term);
-		}
 		return aTermToString(term, this.cpf.createCodePrinter());
 	}
 
-	public static String aTermToString(ATerm term, CodePrinter prettyPrinter) throws VisitFailure {
+	public static String performCustomTransformation(Class<? extends DSL> clazz, String input, CodePrinter cp, ASTTransformation ... astts) throws VisitFailure {
+		return performCustomTransformation(dslSingle(clazz), input, cp, astts);
+	}
+
+	public static String performCustomTransformation(List<Class<? extends DSL>> clazzes, String input, CodePrinter codePrinter, ASTTransformation ... astts) throws VisitFailure {
+	
+		GrammarResult gr = newGrammar(clazzes);
+	
+		IAbstractNode ast = getAST(input.trim(), gr.grammar);
+	
+		ATerm term = new ATermBuilder(ast).getATerm();
+	
+		// performs keyword to methods transformation
+		term = new KeywordChainingTransformation().transform(gr.moptions, term);
+	
+		// encloses DSL method calls into invocations
+		for (ASTTransformation astTransformation : astts) {			
+			term = astTransformation.transform(gr.moptions, term);
+		}
+	
+		String output = aTermToString(term, codePrinter);
+		return output;
+	}
+
+	private static IAbstractNode getAST(String input, IGrammar<String> grammar) {
+		EarleyParser earleyParser = new EarleyParserConfiguration().getDefaultEarleyParserConfiguration(grammar);
+		Chart chart = (Chart) earleyParser.parse(input);
+		IAbstractNode ast = chart.getAST();
+		return ast;
+	}
+
+	private static String aTermToString(ATerm term, CodePrinter prettyPrinter) throws VisitFailure {
 		term.accept(prettyPrinter);
 
 		ByteArrayOutputStream out = new ByteArrayOutputStream();

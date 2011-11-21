@@ -28,13 +28,12 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.RecursiveVisitor;
  * chained keywords into the callable methods of the DSL interface
  * 
  * @author Kamil Erhard
+ * @author Leo_Roos
  * 
  */
-public class KeywordChainingTransformation extends RecursiveVisitor implements ASTTransformation {
+public class KeywordChainingTransformation implements ASTTransformation {
 private static final Logger logger = LoggerFactory.getLogger(KeywordChainingTransformation.class);
 
-
-    private Map<String, DSLMethodDescription> moptions;
 
     // private final static ATerm methodCompositionTemplate = SingletonFactory
     // .getInstance().make("[<list>]");
@@ -43,72 +42,11 @@ private static final Logger logger = LoggerFactory.getLogger(KeywordChainingTran
 
 	}
 
-    private KeywordChainingTransformation(Map<String, DSLMethodDescription> moptions) {
-	this.moptions = moptions;
-	}
-
-	private ATerm checkMethodComposition(ATerm arg, Type type) {
-
-		ATerm v0 = arg.getAnnotation(factory.make("LHS"));
-
-		if (v0 != null) {
-			ATerm v1 = arg.getAnnotation(factory.make("RHS"));
-
-			if (v1 != null) {
-				return this.transformStatement(arg, v1, type);
-			}
-		}
-
-		return arg;
-	}
-
-	private enum Type {
-		LIST, APPL;
-	}
-
-	private ATerm transformStatement(ATerm arg, ATerm annotation, Type type) {
-
-		String statement = ((ATermAppl) annotation).getName();
-
-	DSLMethodDescription methodOptions = moptions.get(statement);
-
-		boolean isComposedMethod = methodOptions != null;
-
-		if (!isComposedMethod) {
-			return arg;
-		}
-
-		if (type == Type.LIST) {
-			arg = (ATerm) arg.getChildAt(0);
-		}
-
-		List<Integer> paramaterIndices = methodOptions.getParamaterIndices();
-
-		int parameterCount = paramaterIndices.size();
-
-		ATerm[] terms = new ATerm[paramaterIndices.size()];
-
-		for (int i = 0; i < paramaterIndices.size(); i++) {
-			terms[i] = ((ATermList) arg).elementAt(paramaterIndices.get(i));
-		}
-
-		String fun = methodOptions.getMethodCallName();
-		ATermAppl appl = factory.makeAppl(factory.makeAFun(fun, parameterCount, false), terms);
-		appl = (ATermAppl) appl.setAnnotations(arg.getAnnotations());
-
-		return appl;
-	}
-
     @Override
     public ATerm transform(Map<String, DSLMethodDescription> moptions, ATerm aterm) {
 
-	// TODO just change to this.moptions = moptions
-	// why has there to be created a new object of the same type as this?
-	KeywordChainingTransformation keywordChainingTransformer = new KeywordChainingTransformation(
-		moptions);
-
 	try {
-	    aterm = (ATerm) aterm.accept(keywordChainingTransformer);
+	    aterm = (ATerm) aterm.accept(new KeywordChainingATermVisitor(moptions));
 	} catch (VisitFailure e) {
 	    logger.warn("Generated log statement", e);
 	}
@@ -116,21 +54,7 @@ private static final Logger logger = LoggerFactory.getLogger(KeywordChainingTran
 	return aterm;
     }
 
-	@Override
-	public Visitable visitList(ATermList arg) throws VisitFailure {
 
-		arg = (ATermList) super.visitList(arg);
-		ATerm v = this.checkMethodComposition(arg, Type.LIST);
-		return v;
-	}
-
-	@Override
-	public Visitable visitAppl(ATermAppl arg) throws VisitFailure {
-
-		arg = (ATermAppl) super.visitAppl(arg);
-		ATerm v = this.checkMethodComposition(arg, Type.APPL);
-		return v;
-	}
 
 	public static void main(String[] args) {
 		PureFactory fac = SingletonFactory.getInstance();
@@ -173,5 +97,84 @@ private static final Logger logger = LoggerFactory.getLogger(KeywordChainingTran
     @Override
     public int getBuildOrderPriority() {
 	return TransformationConstants.KEYWORD_CHAINING_TRANSFORMATION;
+    }
+
+    private static class KeywordChainingATermVisitor extends RecursiveVisitor {
+
+
+	private enum Type {
+	    LIST, APPL;
+	}
+
+	private final Map<String, DSLMethodDescription> moptions;
+
+	public KeywordChainingATermVisitor(Map<String, DSLMethodDescription> moptions) {
+	    this.moptions = moptions;
+	}
+
+	@Override
+	public Visitable visitList(ATermList arg) throws VisitFailure {
+
+	    arg = (ATermList) super.visitList(arg);
+	    ATerm v = this.checkMethodComposition(arg, Type.LIST);
+	    return v;
+	}
+
+	@Override
+	public Visitable visitAppl(ATermAppl arg) throws VisitFailure {
+
+	    arg = (ATermAppl) super.visitAppl(arg);
+	    ATerm v = this.checkMethodComposition(arg, Type.APPL);
+	    return v;
+	}
+
+	private ATerm checkMethodComposition(ATerm arg, Type type) {
+
+	    ATerm v0 = arg.getAnnotation(factory.make("LHS"));
+
+	    if (v0 != null) {
+		ATerm v1 = arg.getAnnotation(factory.make("RHS"));
+
+		if (v1 != null) {
+		    return this.transformStatement(arg, v1, type);
+		}
+	    }
+
+	    return arg;
+	}
+
+	private ATerm transformStatement(ATerm arg, ATerm annotation, Type type) {
+
+	    String statement = ((ATermAppl) annotation).getName();
+
+	    DSLMethodDescription methodOptions = moptions.get(statement);
+
+	    boolean isComposedMethod = methodOptions != null;
+
+	    if (!isComposedMethod) {
+		return arg;
+	    }
+
+	    if (type == Type.LIST) {
+		arg = (ATerm) arg.getChildAt(0);
+	    }
+
+	    List<Integer> paramaterIndices = methodOptions.getParamaterIndices();
+
+	    int parameterCount = paramaterIndices.size();
+
+	    ATerm[] terms = new ATerm[paramaterIndices.size()];
+
+	    for (int i = 0; i < paramaterIndices.size(); i++) {
+		terms[i] = ((ATermList) arg).elementAt(paramaterIndices.get(i));
+	    }
+
+	    String fun = methodOptions.getMethodCallName();
+	    ATermAppl appl = factory.makeAppl(factory.makeAFun(fun, parameterCount, false), terms);
+	    appl = (ATermAppl) appl.setAnnotations(arg.getAnnotations());
+
+	    return appl;
+	}
+
     }
 }

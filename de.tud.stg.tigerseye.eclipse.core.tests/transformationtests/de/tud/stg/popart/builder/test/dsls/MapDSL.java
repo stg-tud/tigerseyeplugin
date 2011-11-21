@@ -7,6 +7,7 @@ import java.util.Map;
 
 import de.tud.stg.tigerseye.dslsupport.annotations.DSLClass;
 import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod.PreferencePriority;
 
 /**
  * MapDSL is a DSL with operations to create a map with specified value/key pairs in one single statement
@@ -50,7 +51,7 @@ public class MapDSL implements de.tud.stg.tigerseye.dslsupport.DSL {
 	// }
 
 	
-	@DSLMethod(production = "p0  =  p1", topLevel = false)
+	@DSLMethod(production = "p0  =  p1", topLevel = false, preferencePriority=PreferencePriority.Prefer)
 	public <K, V> Entry<K, V> buildEntry(K o, V b) {
 		return new Entry<K, V>(o, b);
 	}

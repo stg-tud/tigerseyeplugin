@@ -383,8 +383,6 @@ public class GrammarBuilder {
 
     private final DSLMethod defaultDSLM = DSLInformationDefaults.DEFAULT_DSLMethod;
 
-    private final int literalCouner = 0;
-
     /*
      * Water is supported as long as every involved DSL supports water.
      * Otherwise it is not supported
@@ -520,6 +518,9 @@ public class GrammarBuilder {
 
     }
 
+    // XXX(Leo_Roos;Nov 20, 2011) should be redundant now
+    @Deprecated
+    // ?
     private void handleLiteral(MethodDSLInformation extractedMethod, GrammarCollectionBox box, ITypeHandler iTypeHandler) {
 
 	Method method = extractedMethod.getMethod();
@@ -537,19 +538,8 @@ public class GrammarBuilder {
 	ICategory<String> literalCategory = new Category(indexedLiteralProduction, true);
 	box.addCategory(literalCategory);
 
-	// should question whether toplevel
 	Rule topLevelRule = new Rule(this.statement, literalCategory);
 	box.addRule(topLevelRule);
-	//
-	// Rule specificLiteralRule = new Rule(literalCategory,
-	// box.rhsMethodCategory);
-	// box.addRule(specificLiteralRule);
-
-	// Is that necessary?
-	// for (ICategory<String> c : box.rhsMethodCategory) {
-	// box.addCategory(c);
-	// }
-	// ----------
 
 	Class<?> returnType = method.getReturnType();
 	ICategory<String> returnTypeCategory = iTypeHandler.handle(returnType, methodOptions);
@@ -557,8 +547,6 @@ public class GrammarBuilder {
 
 	Rule returnTypeRule = new Rule(returnTypeCategory, literalCategory);
 	box.addRule(returnTypeRule);
-
-
     }
 
     /**
@@ -649,6 +637,14 @@ public class GrammarBuilder {
 		throwIllegalArgFor(productionElementType);
 	    }
 	    index++;
+	}
+
+	int methoddeclarationparameternumber = methodInfo.getMethod().getParameterTypes().length;
+	if (parameterIndices.size() != methoddeclarationparameternumber) {
+	    logger.warn(
+		    "Inconsistent parameter number for {}. Method declaration takes {} but production {}, Declaring class is {}",
+		    new Object[] { method.getName(), methoddeclarationparameternumber, parameterIndices.size(),
+			    method.getDeclaringClass() });
 	}
 
 	// can probably be replaced by separate method counter -> would produce

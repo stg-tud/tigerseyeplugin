@@ -21,5 +21,7 @@ import java.lang.annotation.Target;
 public @interface TodoTest {
 
 	public static final String PROPERTY_KEY_TESTS_TODO = "runtests.todo";
+	
+	public static final boolean ACTIVATE_TODO_TESTS_DEFAULT = true;
 
 }

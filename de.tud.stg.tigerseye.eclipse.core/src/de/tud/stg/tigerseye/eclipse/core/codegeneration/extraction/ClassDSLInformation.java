@@ -15,6 +15,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.tud.stg.tigerseye.dslsupport.Interpreter;
 import de.tud.stg.tigerseye.dslsupport.annotations.DSLClass;
 import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.HostLanguageGrammar;
@@ -39,6 +40,10 @@ import de.tud.stg.tigerseye.eclipse.core.internal.WorkspaceProjectClassLoaderStr
 public class ClassDSLInformation extends DSLInformation {
 
     private static final Logger logger = LoggerFactory.getLogger(ClassDSLInformation.class);
+
+    private static final Set<ComparableMethod> groovyObjectSupportMethods = getPublicMethodsAsComparable(GroovyObjectSupport.class);
+
+    private static final Set<ComparableMethod> interpreterMethods = getPublicMethodsAsComparable(Interpreter.class);
 
     private boolean annotated;
 
@@ -126,6 +131,8 @@ public class ClassDSLInformation extends DSLInformation {
 	 * directly to the class instead of changing its hierarchy.
 	 */
 	methods = filterMethodsByNameAndParameter(methods, groovyObjectSupportMethods);
+
+	methods = filterMethodsByNameAndParameter(methods, interpreterMethods);
 	// TODO(Leo_Roos;Aug 30, 2011) consider to also remove the method from
 	// the Interpreter class
 	return methods;
@@ -173,8 +180,6 @@ public class ClassDSLInformation extends DSLInformation {
 	}
 	return resultMap;
     }
-
-    private static final Set<ComparableMethod> groovyObjectSupportMethods = getGroovyObjectSupportMethods();
 
     /**
      * provides an equals method for {@link Method} objects without considering
@@ -226,8 +231,9 @@ public class ClassDSLInformation extends DSLInformation {
 	}
     }
 
-    private static Set<ComparableMethod> getGroovyObjectSupportMethods() {
-	Method[] declaredMethods = GroovyObjectSupport.class.getDeclaredMethods();
+    private static Set<ComparableMethod> getPublicMethodsAsComparable(
+	    Class<?> classWithMethodsToRemove) {
+	Method[] declaredMethods = classWithMethodsToRemove.getDeclaredMethods();
 	Set<Method> methodsWithModifier = getMethodsWithModifier(Arrays.asList(declaredMethods), Modifier.PUBLIC);
 	Set<ComparableMethod> comps = getComparableMethods(methodsWithModifier);
 	return comps;

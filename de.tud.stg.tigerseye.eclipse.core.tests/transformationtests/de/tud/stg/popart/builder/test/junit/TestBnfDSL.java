@@ -9,6 +9,7 @@ import org.junit.rules.TemporaryFolder;
 
 import utilities.LongrunningTest;
 import utilities.SystemPropertyRule;
+import utilities.TodoTest;
 
 import de.tud.stg.popart.builder.test.dsls.BnfDSL;
 import de.tud.stg.tigerseye.test.TestDSLTransformation;
@@ -29,7 +30,7 @@ public class TestBnfDSL {
 		TransformationUtils.assertExpectedForInputTransformation(input, expectedTransformation, BnfDSL.class);
 	}
 	
-	
+	@TodoTest
 	@Test
 	public void shouldTransformsSimpleExample1() throws Exception {
 		assertInputExpected("math ::= { expression }", "syntax(\n" + 
@@ -46,7 +47,7 @@ public class TestBnfDSL {
 				"] as Term[]))\n" + 
 				"] as Rule[])");
 	}
-	
+	@TodoTest
 	@Test
 	public void shouldTransformsSimpleExample2() throws Exception {
 		assertInputExpected("expression	::= plus | minus","syntax(\n" + 
@@ -75,7 +76,7 @@ public class TestBnfDSL {
 	public void shouldTransformsSimpleExample5() throws Exception {
 		assertInputExpected("number		::= digit { digit }", "");
 	}
-	
+	@TodoTest
 	@Test
 	public void shouldTransformsSimpleExampleIdentifier() throws Exception {
 		assertInputExpected("identifier ::= expression", "syntax(\n" + 
@@ -85,7 +86,7 @@ public class TestBnfDSL {
 				"expression)\n" + 
 				"] as Rule[])");
 	}
-	
+	@TodoTest
 	@Test
 	public void shouldTransformsSimpleExampleAssignment() throws Exception {
 		assertInputExpected("a ::= b", "syntax(\n" + 
