@@ -23,8 +23,6 @@ import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TextualTransformat
  */
 public interface TransformationConstants {
 
-    int PACKAGE_IMPORTER_TRANSFORMATION = 1000;
-
     int KEYWORD_TRANSLATION_TRANSFORMATION = 2000;
 
     /**
@@ -48,8 +46,15 @@ public interface TransformationConstants {
      * Transformers of this priority will be ignored
      */
     int AFTER_AST_TRANSFORMATION = 20000;
-    
+
     int BOOT_STRAP_TRANSFORMATION = 21000;
 
+    /**
+     * Tries to determine which dependencies have accumulated and tries to
+     * import them. Should be executed as last transformation since it doesn't
+     * transform anything, but introduces new strings which might easily be
+     * misinterpreted.
+     */
+    int PACKAGE_IMPORTER_TRANSFORMATION = 22000;
 
 }

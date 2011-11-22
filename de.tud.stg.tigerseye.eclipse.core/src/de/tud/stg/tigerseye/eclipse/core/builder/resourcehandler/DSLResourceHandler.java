@@ -33,6 +33,8 @@ import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLNotFoundException;
 import de.tud.stg.tigerseye.eclipse.core.api.ILanguageProvider;
+import de.tud.stg.tigerseye.eclipse.core.api.ITransformationHandler;
+import de.tud.stg.tigerseye.eclipse.core.api.ITransformationProvider;
 import de.tud.stg.tigerseye.eclipse.core.api.Transformation;
 import de.tud.stg.tigerseye.eclipse.core.api.TransformationConstants;
 import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
@@ -58,7 +60,7 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 
     private final CodePrinter prettyPrinter;
 
-    private TransformerConfigurationProvider transformerProvider;
+    private ITransformationProvider transformerProvider;
 
     private OutputPathHandler outputPathHandler;
 
@@ -265,7 +267,7 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 
     protected void init() {
 	this.ult = TigerseyeCore.getUnicodeLookupTable();
-	this.transformerProvider = new TransformerConfigurationProvider(TigerseyeCore.getTransformationProvider());
+	this.transformerProvider = TigerseyeCore.getTransformationProvider();
 	this.outputPathHandler = new OutputPathHandler();
 
 	String property = System.getProperty(TRANSFORMATION_DEBUG_SYSTEM_PROPERTY);
@@ -274,7 +276,7 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 	// this.tigerseyePreferenceStore = TigerseyeCore.getPreferences();
     }
 
-    protected TransformerConfigurationProvider getTransformerProvider() {
+    protected ITransformationProvider getTransformerProvider() {
 	return transformerProvider;
     }
 
@@ -348,18 +350,15 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 
     private StringBuffer transformContent(StringBuffer input, Context context) {
 
-	ArrayList<TransformationType> idents = new ArrayList<TransformationType>(context.getDsls());
+	final ArrayList<TransformationType> idents = new ArrayList<TransformationType>(context.getDsls());
 	idents.add(context.getFiletype());
+	
+	Collection<ITransformationHandler> configuredTransformations = getTransformerProvider().getConfiguredTransformations();
+	
+	List<Transformation> transformers = getTransformationsActiveForAllTransformationsTypes(
+		configuredTransformations, idents);
+	    
 
-
-	Set<TextualTransformation> configuredTextualTransformers = getTransformerProvider()
-		.getConfiguredTextualTransformers(idents.toArray(new TransformationType[idents.size()]));
-	Set<ASTTransformation> configuredASTTransformers = getTransformerProvider().getConfiguredASTTransformers(
-		idents.toArray(new TransformationType[idents.size()]));
-
-	List<Transformation> transformers = new LinkedList<Transformation>();
-	transformers.addAll(configuredTextualTransformers);
-	transformers.addAll(configuredASTTransformers);
 	Collections.sort(transformers, new Comparator<Transformation>() {
 
 	    @Override
@@ -367,6 +366,7 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 		return arg0.getBuildOrderPriority() - arg1.getBuildOrderPriority();
 	    }
 	});
+
 	Iterator<Transformation> transformationIterator;
 
 
@@ -477,6 +477,20 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 	return finalTransformation;
     }
 
+    private List<Transformation> getTransformationsActiveForAllTransformationsTypes(
+	    Collection<ITransformationHandler> configuredTransformations, final ArrayList<TransformationType> idents) {
+	List<Transformation> transformers = new ArrayList<Transformation>(configuredTransformations.size());
+	outer: for (ITransformationHandler iTransformationHandler : configuredTransformations) {
+	    for (TransformationType transformationType : idents) {
+		boolean activeFor = iTransformationHandler.isActiveFor(transformationType);
+		if (!activeFor)
+		    continue outer;
+	    }
+	    transformers.add(iTransformationHandler.getTransformation());
+	}
+	return transformers;
+    }
+
     protected ByteArrayOutputStream performPrettyPrinting(ATerm term) {
 
 	try {
@@ -495,7 +509,11 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 	StringBuffer transformedInput = new StringBuffer(originalInput);
 	ArrayList<TransformationType> idents = new ArrayList<TransformationType>(context.getDsls());
 	idents.add(context.getFiletype());
-	Collection<TextualTransformation> configuredTextualTransformers = getTransformerProvider()
+
+	TransformerConfigurationProvider transformerConfigurationProvider = new TransformerConfigurationProvider(
+		getTransformerProvider());
+
+	Collection<TextualTransformation> configuredTextualTransformers = transformerConfigurationProvider
 		.getConfiguredTextualTransformers(idents.toArray(new TransformationType[idents.size()]));
 	logger.trace("found transformations {}", configuredTextualTransformers);
 	for (TextualTransformation t : configuredTextualTransformers) {
@@ -508,7 +526,12 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 	logger.trace("starting ast transformations");
 	ArrayList<TransformationType> idents = new ArrayList<TransformationType>(context.getDsls());
 	idents.add(context.getFiletype());
-	Set<ASTTransformation> configuredTextualTransformers = getTransformerProvider().getConfiguredASTTransformers(
+
+	TransformerConfigurationProvider transformerConfigurationProvider = new TransformerConfigurationProvider(
+		getTransformerProvider());
+
+	Set<ASTTransformation> configuredTextualTransformers = transformerConfigurationProvider
+		.getConfiguredASTTransformers(
 		idents.toArray(new TransformationType[idents.size()]));
 	logger.trace("found transformations {}", configuredTextualTransformers);
 	for (ASTTransformation t : configuredTextualTransformers) {

@@ -12,6 +12,7 @@ import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TextualTransformation;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationUtils;
 
 public class PackageImporter implements TextualTransformation {
 
@@ -99,7 +100,7 @@ public class PackageImporter implements TextualTransformation {
 
     @Override
     public Set<TransformationType> getSupportedFileTypes() {
-	return TextualTransformationUtils.getSetForFiletypes(FileType.TIGERSEYE, FileType.JAVA, FileType.GROOVY);
+	return TransformationUtils.getSetForFiletypes(FileType.values());
     }
 
     @Override

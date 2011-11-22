@@ -18,6 +18,7 @@ import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TextualTransformation;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationUtils;
 
 // XXX(Leo_Roos;Nov 18, 2011) General problem of the regexes is that they don't consider comments in between keywords and parenthesis for example.  
 public class BootStrapTransformation implements TextualTransformation {
@@ -36,7 +37,7 @@ public class BootStrapTransformation implements TextualTransformation {
 			"(.*?)([\\w,]+)\\s*\\(\\s*name\\s*:\\s*'(\\w+)'\\s*\\)(\\s*)\\{(.*)\\}(.*)", Pattern.DOTALL);
 
     private final static Pattern tigerprefix = Pattern.compile(
-	    "(.*?)(tigerseye)\\s*\\(\\s*'(\\w+)'\\s*\\)(\\s*)\\{(.*)\\}(.*)", Pattern.DOTALL);
+	    "(.*?)(tigerseyeblock)\\s*\\(\\s*(\\w+)?\\s*\\)(\\s*)\\{(.*)\\}(.*)", Pattern.DOTALL);
 
 	private final static Pattern dslRegexp = Pattern.compile("(\\w+)");
 
@@ -46,9 +47,6 @@ public class BootStrapTransformation implements TextualTransformation {
 
 		StringBuffer out = new StringBuffer();
 
-
-	Pattern tigerprefix = Pattern.compile("(.*?)(tigerseyeblock)\\s*\\(\\s*(\\w+)?\\s*\\)(\\s*)\\{(.*)\\}(.*)",
-		Pattern.DOTALL);
 
 	// DSLs are known from context a consistent indication syntax is
 	// sufficient
@@ -192,7 +190,7 @@ public class BootStrapTransformation implements TextualTransformation {
 
 	@Override
 	public Set<TransformationType> getSupportedFileTypes() {
-		return TextualTransformationUtils.getSetForFiletypes(FileType.TIGERSEYE);
+		return TransformationUtils.getSetForFiletypes(FileType.TIGERSEYE);
 	}
 
 	@Override

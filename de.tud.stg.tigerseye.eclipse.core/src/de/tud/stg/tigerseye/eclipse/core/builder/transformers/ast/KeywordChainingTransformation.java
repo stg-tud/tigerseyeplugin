@@ -19,7 +19,7 @@ import de.tud.stg.tigerseye.eclipse.core.api.TransformationConstants;
 import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ASTTransformation;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
-import de.tud.stg.tigerseye.eclipse.core.builder.transformers.textual.TextualTransformationUtils;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationUtils;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.DSLMethodDescription;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.RecursiveVisitor;
 
@@ -80,7 +80,7 @@ private static final Logger logger = LoggerFactory.getLogger(KeywordChainingTran
 
 	@Override
 	public Set<TransformationType> getSupportedFileTypes() {
-		return TextualTransformationUtils.getSetForFiletypes(FileType.TIGERSEYE,
+		return TransformationUtils.getSetForFiletypes(FileType.TIGERSEYE,
 				FileType.JAVA, FileType.GROOVY);
 	}
 

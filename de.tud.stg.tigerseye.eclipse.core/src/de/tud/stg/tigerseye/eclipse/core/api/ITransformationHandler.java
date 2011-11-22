@@ -2,6 +2,7 @@ package de.tud.stg.tigerseye.eclipse.core.api;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 
 public interface ITransformationHandler {
 
@@ -18,7 +19,7 @@ public interface ITransformationHandler {
      */
     String getName();
 
-    boolean supports(TransformationType type);
+    boolean supports(FileType type);
 
     /**
      * @return the unique identifier for this Transformation

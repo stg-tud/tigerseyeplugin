@@ -35,6 +35,7 @@ import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.IllegalAnnotationFormat;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TextualTransformation;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationUtils;
 
 public class KeywordTranslationTransformation implements TextualTransformation {
     private static final String possiblyInsufficientCharset = "This might be insufficient if characters are used that depend on a specific encoding.";
@@ -290,7 +291,7 @@ public class KeywordTranslationTransformation implements TextualTransformation {
 
     @Override
     public Set<TransformationType> getSupportedFileTypes() {
-	return TextualTransformationUtils.getSetForFiletypes(FileType.DSL_LANGUAGE);
+	return TransformationUtils.getSetForFiletypes(FileType.values());
     }
 
     @Override

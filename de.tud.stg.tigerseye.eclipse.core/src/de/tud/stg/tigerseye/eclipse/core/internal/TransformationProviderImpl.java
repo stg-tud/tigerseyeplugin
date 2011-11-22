@@ -10,6 +10,7 @@ import de.tud.stg.tigerseye.eclipse.core.api.ITransformationHandler;
 import de.tud.stg.tigerseye.eclipse.core.api.ITransformationProvider;
 import de.tud.stg.tigerseye.eclipse.core.api.TigerseyeRuntimeException;
 import de.tud.stg.tigerseye.eclipse.core.api.Transformation;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationHandler;
 
 
@@ -44,6 +45,9 @@ public class TransformationProviderImpl implements ITransformationProvider {
 		    TransformationHandler handler = new TransformationHandler(
 			    contributor, name, t);
 		    handler.setPreferenceStore(getPreferences());
+		    for (FileType filetype : FileType.values()) {
+			getPreferences().setDefault(handler.getPreferenceKeyFor(filetype), handler.supports(filetype));
+		    }
 		    transformationsList.add(handler);
 		}
 	    }

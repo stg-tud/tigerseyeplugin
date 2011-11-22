@@ -639,12 +639,14 @@ public class GrammarBuilder {
 	    index++;
 	}
 
-	int methoddeclarationparameternumber = methodInfo.getMethod().getParameterTypes().length;
-	if (parameterIndices.size() != methoddeclarationparameternumber) {
-	    logger.warn(
-		    "Inconsistent parameter number for {}. Method declaration takes {} but production {}, Declaring class is {}",
-		    new Object[] { method.getName(), methoddeclarationparameternumber, parameterIndices.size(),
-			    method.getDeclaringClass() });
+	if (logger.isDebugEnabled()) {
+	    int methoddeclarationparameternumber = methodInfo.getMethod().getParameterTypes().length;
+	    if (parameterIndices.size() != methoddeclarationparameternumber) {
+		logger.debug(
+			"Inconsistent parameter number for {}. Method declaration takes {} but production {}, Declaring class is {}",
+			new Object[] { method.getName(), methoddeclarationparameternumber, parameterIndices.size(),
+				method.getDeclaringClass() });
+	    }
 	}
 
 	// can probably be replaced by separate method counter -> would produce
