@@ -95,6 +95,23 @@ public @interface DSLMethod {
 	boolean topLevel() default true;
 
 	/**
+	 * Defines if keywords should be treated as encoding for special characters.
+	 * The transformation follows the <a href=
+	 * "http://www.unicode.org/Public/math/revision-12/MathClassEx-12.txt"
+	 * ><i>MathClassEx-12.txt</i> file</a>.
+	 * <p>
+	 * For example a production of the form <code>p0__lt__p1</code> would cover
+	 * code of the form <code>1 < 2</code>, because the <code><</code> character
+	 * is encoded as <code>lt</code> in the reference file.
+	 * <p>
+	 * Default value is <code>false</code>.
+	 */
+	// XXX(Leo_Roos;Nov 23, 2011) Could also be annotated on class level, that
+	// would make the addition of this option to the configuration options
+	// necessary
+	boolean isUnicodeEncoding() default false;
+
+	/**
 	 * Describes the type of an annotated method.
 	 * 
 	 * @author Leo_Roos

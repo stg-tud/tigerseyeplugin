@@ -118,6 +118,14 @@
                class="de.tud.stg.tigerseye.eclipse.core.builder.transformers.textual.BootStrapTransformation"
                name="BootStrap">
          </transformer>
+         <transformer
+               class="de.tud.stg.tigerseye.eclipse.core.builder.transformers.textual.PurificationExtractor"
+               name="PurificationExtractor">
+         </transformer>
+         <transformer
+               class="de.tud.stg.tigerseye.eclipse.core.builder.transformers.textual.PurificationReinserter"
+               name="PurificationReinserter">
+         </transformer>
       </transformers>
    </extension>
    <extension

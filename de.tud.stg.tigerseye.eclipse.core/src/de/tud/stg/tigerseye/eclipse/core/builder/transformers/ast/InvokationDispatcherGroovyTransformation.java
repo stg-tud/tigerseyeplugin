@@ -17,10 +17,10 @@ import aterm.pure.PureFactory;
 import aterm.pure.SingletonFactory;
 import de.tud.stg.tigerseye.dslsupport.DSLInvoker;
 import de.tud.stg.tigerseye.eclipse.core.api.Transformation;
-import de.tud.stg.tigerseye.eclipse.core.api.TransformationConstants;
-import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ASTTransformation;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationConstants;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationUtils;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.DSLMethodDescription;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.RecursiveVisitor;
@@ -112,8 +112,9 @@ private static final Logger logger = LoggerFactory.getLogger(InvokationDispatche
     }
 
     @Override
-    public ATerm transform(Map<String, DSLMethodDescription> moptions, ATerm aterm) {
-	InvokationDispatcherGroovyTransformation crt = new InvokationDispatcherGroovyTransformation(moptions);
+    public ATerm transform(Context context, ATerm aterm) {
+	InvokationDispatcherGroovyTransformation crt = new InvokationDispatcherGroovyTransformation(
+		context.getDslMethodDescriptions());
 
 	logger.debug("start");
 	try {
@@ -136,9 +137,9 @@ private static final Logger logger = LoggerFactory.getLogger(InvokationDispatche
 	}
 
 	@Override
-	public Set<TransformationType> getSupportedFileTypes() {
+	public Set<FileType> getSupportedFileTypes() {
 	return TransformationUtils
-.getSetForFiletypes(FileType.GROOVY, FileType.TIGERSEYE);
+.getSetForFiletypes(FileType.GROOVY);
 	}
 
     @Override

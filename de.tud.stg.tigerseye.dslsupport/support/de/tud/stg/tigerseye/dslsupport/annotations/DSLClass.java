@@ -29,7 +29,7 @@ public @interface DSLClass {
 	String arrayDelimiter() default AnnotationConstants.UNASSIGNED;
 
 	String stringQuotation() default AnnotationConstants.UNASSIGNED;
-
+	
 	Class<? extends TypeHandler>[] typeRules() default {};
 
 	Class<? extends HostLanguageGrammar>[] hostLanguageRules() default { JavaSpecificGrammar.class };

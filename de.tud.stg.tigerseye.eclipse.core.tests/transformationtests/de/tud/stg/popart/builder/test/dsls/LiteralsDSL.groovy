@@ -32,11 +32,12 @@ class LiteralsDSL  implements DSL {
 		return Color.GREEN;
 	}
 	
-	@DSLMethod(production="para__p0")
+	@DSLMethod(production="para__p0",isUnicodeEncoding=true)
 	def moreParameter(int i){
 		return Color.GREEN;
 	}
 	
+	@DSLMethod(isUnicodeEncoding=true)
 	def sum__p0(int[] inp){
 		res = inp.collect { it }
 		println res

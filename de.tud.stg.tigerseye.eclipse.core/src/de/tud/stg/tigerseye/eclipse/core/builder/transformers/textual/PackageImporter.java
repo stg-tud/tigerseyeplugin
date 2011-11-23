@@ -2,22 +2,22 @@ package de.tud.stg.tigerseye.eclipse.core.builder.transformers.textual;
 
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.tud.stg.tigerseye.dslsupport.DSLInvoker;
-import de.tud.stg.tigerseye.eclipse.core.api.TransformationConstants;
-import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TextualTransformation;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationConstants;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationUtils;
 
 public class PackageImporter implements TextualTransformation {
 
     @Override
-    public StringBuffer transform(Context context, StringBuffer sb) {
+    public String transform(Context context, String sb, Map<String, Object> data) {
 	sb = this.importPackages(context, sb);
 	return sb;
     }
@@ -25,7 +25,7 @@ public class PackageImporter implements TextualTransformation {
     private final static Pattern packageDeclaration = Pattern.compile(
 	    "(.*)(package (?:.*?);)(.*?)(?:@EDSL\\(.*?\\))?(.*)", Pattern.DOTALL);
 
-    private StringBuffer importPackages(Context context, StringBuffer input) {
+    private String importPackages(Context context, String input) {
 
 	Matcher matcher = packageDeclaration.matcher(input);
 
@@ -56,16 +56,16 @@ public class PackageImporter implements TextualTransformation {
 
 	matcher.appendTail(out);
 
-	this.addImports(imports, out);
-	return out;
+	String result = addImports(imports, out.toString());
+	return result;
     }
 
     private static Pattern packagePosition = Pattern.compile("package [A-Za-z0-9\\.]+?;?\\s+");
 
     // XXX(Leo_Roos;Nov 18, 2011) only static until BootStrapTransformation no
     // longer necessary
-    public static void addImports(LinkedList<String> imports, StringBuffer out) {
-	Matcher matcher = packagePosition.matcher(out);
+    public static String addImports(LinkedList<String> imports, String input) {
+	Matcher matcher = packagePosition.matcher(input);
 
 	int position = 0;
 
@@ -80,7 +80,7 @@ public class PackageImporter implements TextualTransformation {
 	    sb.append('\n');
 	}
 
-	out.insert(position, sb);
+	return new StringBuffer(input).insert(position, sb).toString();
     }
 
     @Override
@@ -99,7 +99,7 @@ public class PackageImporter implements TextualTransformation {
     }
 
     @Override
-    public Set<TransformationType> getSupportedFileTypes() {
+    public Set<FileType> getSupportedFileTypes() {
 	return TransformationUtils.getSetForFiletypes(FileType.values());
     }
 

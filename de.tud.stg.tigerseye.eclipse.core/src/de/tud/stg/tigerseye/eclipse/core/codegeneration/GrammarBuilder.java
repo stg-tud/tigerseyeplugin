@@ -182,9 +182,10 @@ public class GrammarBuilder {
 		case Literal:
 		    // this.handleLiteral(methodInfo, box,
 		    // getTypeHandlerConfigurationOnGrammar(classesInfos, box));
-		    this.handleNonLiteral(methodInfo, box, getTypeHandlerConfigurationOnGrammar(classesInfos, box));
-		    break;
-
+		    // this.handleNonLiteral(methodInfo, box,
+		    // getTypeHandlerConfigurationOnGrammar(classesInfos, box));
+		    // break;
+		    //$FALL-THROUGH$
 		case Operation:
 		    this.handleNonLiteral(methodInfo, box, getTypeHandlerConfigurationOnGrammar(classesInfos, box));
 		    break;
@@ -518,7 +519,8 @@ public class GrammarBuilder {
 
     }
 
-    // XXX(Leo_Roos;Nov 20, 2011) should be redundant now
+    // XXX(Leo_Roos;Nov 20, 2011) should be redundant now, using
+    // handleNonLiteral by default
     @Deprecated
     // ?
     private void handleLiteral(MethodDSLInformation extractedMethod, GrammarCollectionBox box, ITypeHandler iTypeHandler) {
@@ -532,8 +534,8 @@ public class GrammarBuilder {
 						   // "{[" + literal + "]" +
 						   // method.getName() + "}";
 
-	this.methodAliases.put(indexedLiteralProduction,
-		new DSLMethodDescription(method.getName(), new LinkedList<Integer>(), method.getDeclaringClass()));
+	this.methodAliases.put(indexedLiteralProduction, new DSLMethodDescription(method.getName(),
+		new LinkedList<Integer>(), method.getDeclaringClass()));
 
 	ICategory<String> literalCategory = new Category(indexedLiteralProduction, true);
 	box.addCategory(literalCategory);
@@ -610,12 +612,14 @@ public class GrammarBuilder {
 	int index = 0;
 	List<Integer> parameterIndices = new ArrayList<Integer>();
 
+	boolean keywordTranslationActivated = methodInfo.isKeywordUnicodeTransformationEnabled();
+
 	while (mps.hasNext()) {
 	    MethodProductionElement next = mps.next();
 	    ProductionElement productionElementType = next.getProductionElementType();
 	    switch (productionElementType) {
 	    case Keyword:
-		handleProductionElementKeyword(box, next);
+		handleProductionElementKeyword(box, next, keywordTranslationActivated);
 		break;
 	    case Parameter:
 		ParameterElement pe = (ParameterElement) next;
@@ -643,7 +647,7 @@ public class GrammarBuilder {
 	    int methoddeclarationparameternumber = methodInfo.getMethod().getParameterTypes().length;
 	    if (parameterIndices.size() != methoddeclarationparameternumber) {
 		logger.debug(
-			"Inconsistent parameter number for {}. Method declaration takes {} but production {}, Declaring class is {}",
+			"Inconsistent parameter number for {}. Method declaration takes {} but production declares {} parameters, Declaring class is {}",
 			new Object[] { method.getName(), methoddeclarationparameternumber, parameterIndices.size(),
 				method.getDeclaringClass() });
 	    }
@@ -654,7 +658,8 @@ public class GrammarBuilder {
 	int methodCounter = this.parameterCounter.getAndIncrement();
 
 	String indexedMethodProduction = "M" + methodCounter + "{[" + methodProduction + "]" + method.getName() + "}";
-	DSLMethodDescription value = new DSLMethodDescription(method.getName(), parameterIndices, method.getDeclaringClass());
+	DSLMethodDescription value = new DSLMethodDescription(method.getName(), parameterIndices,
+		method.getDeclaringClass());
 	this.methodAliases.put(indexedMethodProduction, value);
 
 	ICategory<String> methodCategory = new Category(indexedMethodProduction, false);
@@ -688,9 +693,12 @@ public class GrammarBuilder {
 
     }
 
-    private void handleProductionElementKeyword(GrammarCollectionBox box, MethodProductionElement next) {
+    private void handleProductionElementKeyword(GrammarCollectionBox box, MethodProductionElement next,
+	    boolean keywordTranslationActivated) {
 	String keyword = next.getCapturedString();
-	keyword = getUnicodeRepresentationOrKeyword(keyword);
+	if (keywordTranslationActivated) {
+	    keyword = getUnicodeRepresentationOrKeyword(keyword);
+	}
 	box.rhsMethodCategory.add(new Category(keyword, true));
     }
 

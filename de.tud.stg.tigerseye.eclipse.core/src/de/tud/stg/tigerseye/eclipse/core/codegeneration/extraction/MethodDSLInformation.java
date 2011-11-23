@@ -387,4 +387,8 @@ public class MethodDSLInformation extends DSLInformation {
     public boolean hasReturnValue() {
 	return !isVoid(getMethod().getReturnType());
     }
+
+    public boolean isKeywordUnicodeTransformationEnabled() {
+	return this.dslMethodAnnotation.isUnicodeEncoding();
+    }
 }

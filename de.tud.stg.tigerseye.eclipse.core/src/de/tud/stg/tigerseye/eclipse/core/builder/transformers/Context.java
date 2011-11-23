@@ -13,10 +13,12 @@ import org.eclipse.core.resources.IProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.tud.stg.parlex.core.IGrammar;
 import de.tud.stg.tigerseye.dslsupport.DSL;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFoundException;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.DSLMethodDescription;
 
 /**
  * This class represents the context of a Tigerseye source file during the
@@ -48,6 +50,8 @@ public class Context {
 
     private final String fileName;
     private IFile transformedFile;
+    private Map<String, DSLMethodDescription> dslMethodDescriptions;
+    private IGrammar<String> grammar;
 
     public Context(String fileName) {
 	this.fileName = fileName;
@@ -118,6 +122,8 @@ public class Context {
     }
 
     public IFile getTransformedFile() {
+	if (transformedFile == null)
+	    throw new IllegalStateException("transformedFile has not been set yet.");
 	return transformedFile;
     }
 
@@ -125,6 +131,26 @@ public class Context {
 	if (transformedFile == null)
 	    throw new IllegalStateException("transformedFile has not been set yet.");
 	return transformedFile.getProject();
+    }
+
+    public void setDSLMethodDescriptions(Map<String, DSLMethodDescription> methodOptions) {
+	this.dslMethodDescriptions = methodOptions;
+    }
+
+    public Map<String, DSLMethodDescription> getDslMethodDescriptions() {
+	if (dslMethodDescriptions == null)
+	    throw new IllegalStateException("dslMethodDescriptions has not been set yet.");
+	return dslMethodDescriptions;
+    }
+
+    public void setGrammar(IGrammar<String> grammar) {
+	this.grammar = grammar;
+    }
+
+    public IGrammar<String> getGrammar() {
+	if (grammar == null)
+	    throw new IllegalStateException("grammar has not been set yet.");
+	return grammar;
     }
 
 }

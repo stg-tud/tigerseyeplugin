@@ -24,7 +24,7 @@ import org.eclipse.core.runtime.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import aterm.ATerm;
+import aterm.*;
 import de.tud.stg.parlex.ast.IAbstractNode;
 import de.tud.stg.parlex.core.IGrammar;
 import de.tud.stg.parlex.parser.IChart;
@@ -36,14 +36,13 @@ import de.tud.stg.tigerseye.eclipse.core.api.ILanguageProvider;
 import de.tud.stg.tigerseye.eclipse.core.api.ITransformationHandler;
 import de.tud.stg.tigerseye.eclipse.core.api.ITransformationProvider;
 import de.tud.stg.tigerseye.eclipse.core.api.Transformation;
-import de.tud.stg.tigerseye.eclipse.core.api.TransformationConstants;
 import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ASTTransformation;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileTypeHelper;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TextualTransformation;
-import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformerConfigurationProvider;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationConstants;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.DSLMethodDescription;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.UnicodeLookupTable;
@@ -333,14 +332,27 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 	context.addDSLs(dslDefinitions);
 	context.setFiletype(filetype);
 	context.setTransformedFile(srcFile);
+
+	GrammarBuilder grammarBuilder = new GrammarBuilder(ult);
+	IGrammar<String> grammar = grammarBuilder.buildGrammarFromDefinitions(new ArrayList<DSLDefinition>(
+		dslDefinitions));
+
+	if (logger.isDebugEnabled()) {
+	    logger.debug("Grammar successfully construced");
+	    logger.trace("Grammar is: {}", grammar);
+	}
+	Map<String, DSLMethodDescription> methodOptions = grammarBuilder.getMethodOptions();
+	context.setGrammar(grammar);
+	context.setDSLMethodDescriptions(methodOptions);
+
 	IFile outputFile = getOutputPathHandler().getOutputFile(srcFile);
 	if (outputFile == null) {
 	    logger.error("Can not determine output file for {}", srcFile);
 	    return;
 	}
-	StringBuffer transformedContent = transformContent(resourceContent, context);
+	String transformedContent = transformContent(resourceContent, context);
 	if (transformedContent.length() > 0) {
-	    this.writeResourceContent(transformedContent.toString(), outputFile);
+	    this.writeResourceContent(transformedContent, outputFile);
 	} else {
 	    logger.trace("Transformation for {} was empty. Will not write any change to file.", resource);
 	}
@@ -348,7 +360,9 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 	logger.info("{} ms took Transformation of {}", sw.getTime(), resource);
     }
 
-    private StringBuffer transformContent(StringBuffer input, Context context) {
+    private String transformContent(StringBuffer input, Context context) {
+
+	Map<String, Object> transformerCommunicationData = new HashMap<String, Object>();
 
 	final ArrayList<TransformationType> idents = new ArrayList<TransformationType>(context.getDsls());
 	idents.add(context.getFiletype());
@@ -370,7 +384,7 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 	Iterator<Transformation> transformationIterator;
 
 
-	StringBuffer textualTransformedInput = new StringBuffer(input);
+	String textualTransformedInput = input.toString();
 
 	// StringBuffer textualTransformedInput =
 	// this.performTextualTransformations(input, context);
@@ -384,8 +398,8 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 	    if (next.getBuildOrderPriority() < TransformationConstants.AFTER_EARLEY_TRANSFORMATION) {
 		transformationIterator.remove();
 		if (next instanceof TextualTransformation) {
-		    textualTransformedInput = ((TextualTransformation) next)
-			    .transform(context, textualTransformedInput);
+		    textualTransformedInput = ((TextualTransformation) next).transform(context,
+			    textualTransformedInput, transformerCommunicationData);
 		} else {
 		    logger.warn("Wrong transformation type in pre early transformation phase found: {}", next);
 		    illegalTransformers.add(next);
@@ -396,38 +410,24 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 
 	String workingInput = textualTransformedInput.toString().trim();
 
-	List<DSLDefinition> dsls = context.getDsls();
-	GrammarBuilder grammarBuilder = new GrammarBuilder(ult);
-	IGrammar<String> grammar = grammarBuilder.buildGrammarFromDefinitions(dsls);
-
-	if (logger.isDebugEnabled()) {
-	    logger.debug("Grammar successfully construced");
-	    logger.trace("Grammar is: {}", grammar);
-	}
-
-	EarleyParser parser = new EarleyParserConfiguration().getDefaultEarleyParserConfiguration(grammar);
+	EarleyParser parser = new EarleyParserConfiguration().getDefaultEarleyParserConfiguration(context.getGrammar());
 
 	IChart chart = parser.parse(workingInput);
 
 	ATerm term = getATermFromChart(chart);
 
-	Map<String, DSLMethodDescription> methodOptions = grammarBuilder.getMethodOptions();
+
 
 	if (tigerseyetransforamtiondebug) {
+	    AtermPrinter atermPrinter = new AtermPrinter();
+	    try {
+		term.accept(atermPrinter);
+	    } catch (VisitFailure e) {
+		logger.debug("unexpecetd error. Ignoring since just in debug.", e);
+	    }
 	    // FIXME(Leo_Roos;Nov 9, 2011) unflexible solution
-	    IFile transformedFile = context.getTransformedFile();
-	    IPath projectRelativePath = transformedFile.getProjectRelativePath();
-	    String fileName = projectRelativePath.lastSegment();
-	    IPath srcRelativePath = projectRelativePath.removeFirstSegments(1).removeLastSegments(1);
-	    IPath debugFileCoreName = new Path("debugtigerseye").append(srcRelativePath);
-	    IProject project = transformedFile.getProject();
-
-	    IFile chartASTFile = project.getFile(debugFileCoreName.append(fileName + ".chartAST"));
-	    writeResourceContent(chart.getAST().toString(), chartASTFile);
-
-	    IFile grammarFile = project.getFile(debugFileCoreName.append(fileName + ".grammar"));
-	    writeResourceContent(grammar.toString(), grammarFile);
-
+	    writeDebugInformation(context.getTransformedFile(), new Object[] { context.getGrammar(), chart.getAST(),
+		    atermPrinter });
 	}
 
 
@@ -442,7 +442,7 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 		    && nextbuildOrderPriority < TransformationConstants.AFTER_AST_TRANSFORMATION) {
 		transformationIterator.remove();
 		if (next instanceof ASTTransformation) {
-		    term = ((ASTTransformation) next).transform(methodOptions, term);
+		    term = ((ASTTransformation) next).transform(context, term);
 		} else {
 		    logger.warn("Wrong transformation type in pre early transformation phase found: {}", next);
 		    illegalTransformers.add(next);
@@ -454,7 +454,7 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 	// Should move it down
 	ByteArrayOutputStream out = this.performPrettyPrinting(term);
 
-	StringBuffer finalTransformation = new StringBuffer(new String(out.toByteArray()));
+	String finalTransformation = new String(out.toByteArray());
 
 	transformationIterator = transformers.iterator();
 	while (transformationIterator.hasNext()) {
@@ -463,7 +463,8 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 	    if (nextbuildOrderPriority > TransformationConstants.AFTER_AST_TRANSFORMATION) {
 		transformationIterator.remove();
 		if (next instanceof TextualTransformation) {
-		    finalTransformation = ((TextualTransformation) next).transform(context, finalTransformation);
+		    finalTransformation = ((TextualTransformation) next).transform(context, finalTransformation,
+			    transformerCommunicationData);
 		} else {
 		    logger.warn("Wrong transformation type in pre early transformation phase found: {}", next);
 		    illegalTransformers.add(next);
@@ -475,6 +476,20 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 	logger.debug("Illegal Transformers:", illegalTransformers);
 
 	return finalTransformation;
+    }
+
+    private void writeDebugInformation(IFile transformedFile, Object[] debugObjects) {
+	IPath projectRelativePath = transformedFile.getProjectRelativePath();
+	String fileName = projectRelativePath.lastSegment();
+	IPath srcRelativePath = projectRelativePath.removeFirstSegments(1).removeLastSegments(1);
+	IPath debugFileCoreName = new Path("debugtigerseye").append(srcRelativePath);
+	IProject project = transformedFile.getProject();
+
+	for (Object object : debugObjects) {
+	    IFile debugOutputFile = project.getFile(debugFileCoreName.append(fileName + "."
+		    + object.getClass().getSimpleName()));
+	    writeResourceContent(object.toString(), debugOutputFile);
+	}
     }
 
     private List<Transformation> getTransformationsActiveForAllTransformationsTypes(
@@ -505,40 +520,50 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 	return out;
     }
 
-    private StringBuffer performTextualTransformations(StringBuffer originalInput, Context context) {
-	StringBuffer transformedInput = new StringBuffer(originalInput);
-	ArrayList<TransformationType> idents = new ArrayList<TransformationType>(context.getDsls());
-	idents.add(context.getFiletype());
+    // private String performTextualTransformations(StringBuffer originalInput,
+    // Context context) {
+    // String transformedInput = originalInput.toString();
+    // ArrayList<TransformationType> idents = new
+    // ArrayList<TransformationType>(context.getDsls());
+    // idents.add(context.getFiletype());
+    //
+    // TransformerConfigurationProvider transformerConfigurationProvider = new
+    // TransformerConfigurationProvider(
+    // getTransformerProvider());
+    //
+    // Collection<TextualTransformation> configuredTextualTransformers =
+    // transformerConfigurationProvider
+    // .getConfiguredTextualTransformers(idents.toArray(new
+    // TransformationType[idents.size()]));
+    // logger.trace("found transformations {}", configuredTextualTransformers);
+    // for (TextualTransformation t : configuredTextualTransformers) {
+    // transformedInput = t.transform(context, transformedInput, null);
+    // }
+    // return transformedInput;
+    // }
 
-	TransformerConfigurationProvider transformerConfigurationProvider = new TransformerConfigurationProvider(
-		getTransformerProvider());
-
-	Collection<TextualTransformation> configuredTextualTransformers = transformerConfigurationProvider
-		.getConfiguredTextualTransformers(idents.toArray(new TransformationType[idents.size()]));
-	logger.trace("found transformations {}", configuredTextualTransformers);
-	for (TextualTransformation t : configuredTextualTransformers) {
-	    transformedInput = t.transform(context, transformedInput);
-	}
-	return transformedInput;
-    }
-
-    private ATerm performASTTransformations(ATerm aterm, Context context, Map<String, DSLMethodDescription> methodOptions) {
-	logger.trace("starting ast transformations");
-	ArrayList<TransformationType> idents = new ArrayList<TransformationType>(context.getDsls());
-	idents.add(context.getFiletype());
-
-	TransformerConfigurationProvider transformerConfigurationProvider = new TransformerConfigurationProvider(
-		getTransformerProvider());
-
-	Set<ASTTransformation> configuredTextualTransformers = transformerConfigurationProvider
-		.getConfiguredASTTransformers(
-		idents.toArray(new TransformationType[idents.size()]));
-	logger.trace("found transformations {}", configuredTextualTransformers);
-	for (ASTTransformation t : configuredTextualTransformers) {
-	    aterm = t.transform(methodOptions, aterm);
-	}
-	return aterm;
-    }
+    
+// private ATerm performASTTransformations(ATerm aterm, Context context,
+    // Map<String, DSLMethodDescription> methodOptions) {
+    // logger.trace("starting ast transformations");
+    // ArrayList<TransformationType> idents = new
+    // ArrayList<TransformationType>(context.getDsls());
+    // idents.add(context.getFiletype());
+    //
+    // TransformerConfigurationProvider transformerConfigurationProvider = new
+    // TransformerConfigurationProvider(
+    // getTransformerProvider());
+    //
+    // Set<ASTTransformation> configuredTextualTransformers =
+    // transformerConfigurationProvider
+    // .getConfiguredASTTransformers(
+    // idents.toArray(new TransformationType[idents.size()]));
+    // logger.trace("found transformations {}", configuredTextualTransformers);
+    // for (ASTTransformation t : configuredTextualTransformers) {
+    // aterm = t.transform(context, aterm);
+    // }
+    // return aterm;
+    // }
 
     private ATerm getATermFromChart(IChart chart) {
 	IAbstractNode program = chart.getAST();
@@ -620,6 +645,130 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 	    }
 	}
 	return determinedDSLs;
+    }
+
+    private static class AtermPrinter implements Visitor {
+
+	StringBuffer sb = new StringBuffer();
+	int indention = 0;
+
+	@Override
+	public jjtraveler.Visitable visit(jjtraveler.Visitable any) throws VisitFailure {
+	    newLine();
+	    sb.append("Any\\[").append(any.toString()).append("\\]");
+	    return any;
+	}
+
+	@Override
+	public Visitable visitReal(ATermReal arg) throws VisitFailure {
+	    sb.append("Real");
+	    printSimpleWithAnnotations(arg);
+	    return arg;
+	}
+
+	@Override
+	public Visitable visitPlaceholder(ATermPlaceholder arg) throws VisitFailure {
+	    newLine();
+	    sb.append("Placeholder");
+	    printSimpleWithAnnotations(arg);
+	    return arg;
+	}
+
+	@Override
+	public Visitable visitLong(ATermLong arg) throws VisitFailure {
+	    sb.append("Long");
+	    printSimpleWithAnnotations(arg);
+	    sb.append(")");
+	    return arg;
+	}
+
+	@Override
+	public Visitable visitList(ATermList arg) throws VisitFailure {
+	    newLine();
+	    sb.append("List[");
+	    ATermList annotations = arg.getAnnotations();
+	    if (annotations != null) {
+		sb.append("annotations:{").append(annotations).append("}");
+	    }
+	    newLine();
+	    sb.append("children:{");
+	    indention++;
+	    int childCount = arg.getChildCount();
+	    for (int i = 0; i < childCount; i++) {
+
+		jjtraveler.Visitable child = arg.getChildAt(i);
+		if (child instanceof ATerm) {
+		    ((ATerm) child).accept(this);
+		} else {
+		    sb.append(child);
+		}
+	    }
+	    indention--;
+	    newLine();
+	    sb.append("}");
+	    sb.append("]");
+	    return arg;
+	}
+
+	@Override
+	public Visitable visitInt(ATermInt arg) throws VisitFailure {
+	    sb.append("Int");
+	    printSimpleWithAnnotations(arg);
+	    return arg;
+	}
+
+	private void printSimpleWithAnnotations(ATerm arg) {
+	    sb.append("(");
+	    ATermList annotations = arg.getAnnotations();
+	    if (annotations != null)
+		sb.append("annotations:{").append(annotations).append("}");
+	    sb.append("content:{").append(arg);
+	    sb.append("})");
+	}
+
+	@Override
+	public Visitable visitBlob(ATermBlob arg) throws VisitFailure {
+	    newLine();
+	    sb.append("Blob");
+	    printSimpleWithAnnotations(arg);
+	    return arg;
+	}
+
+	@Override
+	public Visitable visitAppl(ATermAppl arg) throws VisitFailure {
+	    newLine();
+	    sb.append("Application");
+	    printSimpleWithAnnotations(arg);
+	    return arg;
+	}
+
+	@Override
+	public Visitable visitATerm(ATerm arg) throws VisitFailure {
+	    newLine();
+	    sb.append("ATerm");
+	    printSimpleWithAnnotations(arg);
+	    return arg;
+	}
+
+	@Override
+	public Visitable visitAFun(AFun fun) throws VisitFailure {
+	    newLine();
+	    sb.append("Function");
+	    printSimpleWithAnnotations(fun);
+	    return fun;
+	}
+
+	private void newLine() {
+	    sb.append("\n");
+	    for (int i = 0; i < indention; i++) {
+		sb.append(" ");
+	    }
+	}
+
+	@Override
+	public String toString() {
+	    return sb.toString();
+	}
     }
 
 }

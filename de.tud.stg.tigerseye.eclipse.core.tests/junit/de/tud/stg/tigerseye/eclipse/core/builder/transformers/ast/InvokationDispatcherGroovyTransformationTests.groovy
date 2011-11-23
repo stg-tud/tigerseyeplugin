@@ -212,7 +212,6 @@ def p =
  *
  * Declared keywords:
  *  Set asSet(MyList)
- *  Object eval(HashMap, Closure)
  *  Set intersection(Set, Set)
  *  Set union(Set, Set)
  *  
@@ -240,9 +239,6 @@ set(name:'SetTest'){
  *
  * Declared keywords:
  *  Set asSet(MyList)
- *  Object DSLInvoker.eval(
-SetDSLForInvokationsTransformation.class,
-{eval()})(HashMap, Closure)
  *  Set intersection(Set, Set)
  *  Set union(Set, Set)
  *  

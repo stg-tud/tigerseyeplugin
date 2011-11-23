@@ -150,5 +150,16 @@ public class MixedAnnotatedProductionForMethodDSLInfoTest {
 	public Object get__a0(String key) {
 		return null;
 	}
+	
+	
+	@DSLMethod(isUnicodeEncoding=true)
+	public void hasKeywordTranslationActivated(int i){
+		
+	}
+	
+	@DSLMethod(isUnicodeEncoding=false)
+	public void hasKeywordTranslationExplicitlyFalse(int j){
+		
+	}
 
 }

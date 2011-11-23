@@ -1,7 +1,5 @@
-package de.tud.stg.tigerseye.eclipse.core.api;
+package de.tud.stg.tigerseye.eclipse.core.builder.transformers;
 
-import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ASTTransformation;
-import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TextualTransformation;
 
 /**
  * A description of transformation priorities, which determine the point during
@@ -22,6 +20,8 @@ import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TextualTransformat
  * 
  */
 public interface TransformationConstants {
+
+    int PURIFICATION_EXTRACTION_TRANSFORMATION = 1000;
 
     int KEYWORD_TRANSLATION_TRANSFORMATION = 2000;
 
@@ -49,12 +49,14 @@ public interface TransformationConstants {
 
     int BOOT_STRAP_TRANSFORMATION = 21000;
 
+    int PURIFICATION_REINSERTION_TRANSFORMATION = 22000;
+
     /**
      * Tries to determine which dependencies have accumulated and tries to
      * import them. Should be executed as last transformation since it doesn't
      * transform anything, but introduces new strings which might easily be
      * misinterpreted.
      */
-    int PACKAGE_IMPORTER_TRANSFORMATION = 22000;
+    int PACKAGE_IMPORTER_TRANSFORMATION = 23000;
 
 }

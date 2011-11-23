@@ -551,6 +551,7 @@ public class MethodDSLInformationTest {
 		assertThat(mi.isToplevel()).isEqualTo(def.topLevel());
 		assertThat(mi.getProduction()).isEqualTo(expectedProduction);
 		assertThat(mi.getUniqueIdentifier()).isEqualTo(expectedUniqueIdentifier);
+		assertThat(mi.isKeywordUnicodeTransformationEnabled()).isEqualTo(def.isUnicodeEncoding());
 	}
 
 	@Test
@@ -761,5 +762,26 @@ public class MethodDSLInformationTest {
 		boolean hasProductionInAnnotationDefined = getMinfFromMixed("has_production").hasProductionInAnnotationDefined();
 		assertThat(hasProductionInAnnotationDefined).isTrue();
 	}
+	
+	@Test
+	public void shouldHaveDefaultKeywordTranslationValue() throws Exception {
+		assertThat(notAnnotated_MethodInfo.isKeywordUnicodeTransformationEnabled()).isEqualTo(DSLInformationDefaults.DEFAULT_DSLMethod.isUnicodeEncoding());
+	}
+	
+	@Test
+	public void shouldHaveactivateKeywordTranslation() throws Exception {
+//	@DSLMethod(keywordUnicodeTranslation=true)
+//	public void hasKeywordTranslationActivated(int i){
+		MethodDSLInformation mut = getFirstMethodInfoInClass(MixedAnnotatedProductionForMethodDSLInfoTest.class, "hasKeywordTranslationActivated");
+		assertThat(mut.isKeywordUnicodeTransformationEnabled()).isTrue();
+	}
+	
+	@Test
+	public void shouldHaveExplicitlyFalseDefinedKeywordTranslation() throws Exception {
+		MethodDSLInformation mut = getFirstMethodInfoInClass(MixedAnnotatedProductionForMethodDSLInfoTest.class, "hasKeywordTranslationExplicitlyFalse");
+		assertThat(mut.isKeywordUnicodeTransformationEnabled()).isFalse();
+	}
+	
+	
 
 }

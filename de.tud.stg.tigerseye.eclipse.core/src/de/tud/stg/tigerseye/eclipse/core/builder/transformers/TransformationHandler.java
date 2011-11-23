@@ -146,23 +146,9 @@ public class TransformationHandler implements ITransformationHandler {
      */
     @Override
     public boolean supports(FileType type) {
-	Set<TransformationType> supportedFileTypes = getTransformation()
+	Set<FileType> supportedFileTypes = getTransformation()
 		.getSupportedFileTypes();
-	/*
-	 * FIXME: consider refactoring for FileType split into physical
-	 * representation (file extension) an conceptual (a DSL Language
-	 * provider); When is the type neither FileType nor DSLDefinitionImpl
-	 */
-	// if (type instanceof DSLDefinition)
-	// // XXX(Leo_Roos;Nov 21, 2011) Refactoring
-	// // throw exception to ensure not use
-	// return supportedFileTypes.contains(FileType.DSL_LANGUAGE);
-	//
-	if (type instanceof FileType)
 	    return supportedFileTypes.contains(type);
-
-	throw new IllegalArgumentException(
-		"An object of not anticipated kind has been passed: " + type);
     }
 
     @Override

@@ -1,11 +1,9 @@
 package de.tud.stg.tigerseye.eclipse.core.builder.transformers;
 
-import java.util.Map;
 import java.util.Set;
 
 import aterm.ATerm;
 import de.tud.stg.tigerseye.eclipse.core.api.Transformation;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.DSLMethodDescription;
 
 /**
  * The is the interface for all AST transformations that are processed after
@@ -15,9 +13,12 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.DSLMethod
  * 
  */
 public interface ASTTransformation extends Transformation {
-    public ATerm transform(Map<String, DSLMethodDescription> moptions, ATerm aterm);
 
-	public Set<ATerm> getRequirements();
+    public ATerm transform(Context context, ATerm aterm);
 
-	public Set<ATerm> getAssurances();
+    // XXX(Leo_Roos;Nov 22, 2011) currentyl ignored maybe remove?
+    public Set<ATerm> getRequirements();
+
+    // XXX(Leo_Roos;Nov 22, 2011) currentyl ignored maybe remove?
+    public Set<ATerm> getAssurances();
 }

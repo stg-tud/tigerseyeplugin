@@ -90,8 +90,11 @@ public class GrammarBuilderTest {
 		ATerm term = aTermBuilder.getATerm();
 
 		Map<String, DSLMethodDescription> moptions = gb.getMethodOptions();
+		
+		Context context = new Context("dummy");
+		context.setDSLMethodDescriptions(moptions);
 
-		term = new KeywordChainingTransformation().transform(moptions, term);
+		term = new KeywordChainingTransformation().transform(context, term);
 
 //		if (classes.length > 1) {
 //			// term = new ClosureResultTransformer().transform(context,

@@ -2,6 +2,8 @@ package de.tud.stg.tigerseye.eclipse.core.preferences;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang.UnhandledException;
@@ -37,7 +39,7 @@ public class TransformationsPreferencePage extends PreferencePage implements
 
     private static final Logger logger = LoggerFactory
 	    .getLogger(TransformationsPreferencePage.class);
-    private Collection<ITransformationHandler> configuredTransformations;
+    private List<ITransformationHandler> configuredTransformations;
     private Table languagesTable;
     private ILanguageProvider languageProvider;
     private Table resourcesTable;
@@ -50,8 +52,8 @@ public class TransformationsPreferencePage extends PreferencePage implements
     public void init(IWorkbench workbench) {
 	noDefaultAndApplyButton();
 	setPreferenceStore(TigerseyeCore.getPreferences());
-	this.configuredTransformations = TigerseyeCore
-		.getTransformationProvider().getConfiguredTransformations();
+	this.configuredTransformations = new ArrayList<ITransformationHandler>(TigerseyeCore
+		.getTransformationProvider().getConfiguredTransformations());
 	this.languageProvider = TigerseyeCore.getLanguageProvider();
     }
 
@@ -59,7 +61,7 @@ public class TransformationsPreferencePage extends PreferencePage implements
 	return languageProvider;
     }
 
-    public Collection<ITransformationHandler> getConfiguredTransformations() {
+    public List<ITransformationHandler> getConfiguredTransformations() {
 	return configuredTransformations;
     }
 
@@ -228,12 +230,23 @@ public class TransformationsPreferencePage extends PreferencePage implements
 
     private void openFileTypeTransformationDialog(FileType fileType,
 	    String title) {
-	ArrayList<ITransformationHandler> supportedTransformationsForFiletype = getSupportedTransformationsForFiletype(fileType);
+	List<ITransformationHandler> supportedTransformationsForFiletype = getSupportedTransformationsForFiletype(fileType);
+	sortTransformationHandlerAfterBuildOrder(supportedTransformationsForFiletype);
+
 	List<CheckedItem> items = makeCheckItemsForTransformationsAssociatedToIdentity(
 		supportedTransformationsForFiletype, fileType);
 	List<CheckedItem> changedItems = openDialogForItemsReturnChanged(items,
 		title, TransformationHandler.getDefaultActivationStateFor(fileType));
 	saveItemsFor(changedItems, fileType);
+    }
+
+    private void sortTransformationHandlerAfterBuildOrder(List<ITransformationHandler> transformationHandler) {
+	Collections.sort(transformationHandler, new Comparator<ITransformationHandler>() {
+	    @Override
+	    public int compare(ITransformationHandler o1, ITransformationHandler o2) {
+		return o1.getTransformation().getBuildOrderPriority() - o2.getTransformation().getBuildOrderPriority();
+	    }
+	});
     }
 
     private List<CheckedItem> openDialogForItemsReturnChanged(
@@ -267,7 +280,9 @@ public class TransformationsPreferencePage extends PreferencePage implements
 
 
     private List<CheckedItem> getTransformationsForFiletypeAssociatedToIdentity(TransformationType identitiy) {
-	Collection<ITransformationHandler> supportedTransformers = getConfiguredTransformations();// getSupportedTransformationsForFiletype(identitiy);
+	List<ITransformationHandler> supportedTransformers = getConfiguredTransformations();// getSupportedTransformationsForFiletype(identitiy);
+	sortTransformationHandlerAfterBuildOrder(supportedTransformers);
+
 	List<CheckedItem> items = makeCheckItemsForTransformationsAssociatedToIdentity(
 		supportedTransformers, identitiy);
 	return items;

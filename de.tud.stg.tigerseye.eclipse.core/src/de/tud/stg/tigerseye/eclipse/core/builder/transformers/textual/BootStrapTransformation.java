@@ -3,6 +3,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,11 +14,10 @@ import org.slf4j.LoggerFactory;
 import de.tud.stg.tigerseye.dslsupport.DSLInvoker;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLKey;
-import de.tud.stg.tigerseye.eclipse.core.api.TransformationConstants;
-import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TextualTransformation;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationConstants;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationUtils;
 
 // XXX(Leo_Roos;Nov 18, 2011) General problem of the regexes is that they don't consider comments in between keywords and parenthesis for example.  
@@ -27,7 +27,7 @@ public class BootStrapTransformation implements TextualTransformation {
 
 
 	@Override
-	public StringBuffer transform(Context context, StringBuffer sb) {
+	public String transform(Context context, String sb, Map<String, Object> data) {
 		logger.trace("starting bootstrapping");
 		sb = this.addBootstrap(context, sb);
 		return sb;
@@ -41,12 +41,9 @@ public class BootStrapTransformation implements TextualTransformation {
 
 	private final static Pattern dslRegexp = Pattern.compile("(\\w+)");
 
-    private StringBuffer addBootstrap(Context context, StringBuffer input) {
+    private String addBootstrap(Context context, String input) {
 
 	Matcher dslNamesMatcher = regexp.matcher(input);
-
-		StringBuffer out = new StringBuffer();
-
 
 	// DSLs are known from context a consistent indication syntax is
 	// sufficient
@@ -100,7 +97,7 @@ public class BootStrapTransformation implements TextualTransformation {
 	// out = input;
 	// }
 	// else {
-
+	String result;
 	if (effectiveMatcher != null) {
 	    logger.trace("found dsls: {}", Arrays.toString(dsls.toArray()));
 
@@ -149,20 +146,22 @@ public class BootStrapTransformation implements TextualTransformation {
 
 	    sb.append("$4{$5}$6");
 
+	    StringBuffer out = new StringBuffer();
 	    effectiveMatcher.appendReplacement(out, sb.toString());
 	    effectiveMatcher.appendTail(out);
+	    result = out.toString();
 	} else {
 	    // No Transformation
-	    out = input;
+	    result = input;
 	}
 
 	
 	// Import of DSLs already happens in PackageImprter
 	// XXX(Leo_Roos;Nov 18, 2011) should make it consistent, only imoprt
 	// that is left is InterpreterCombiner
-	PackageImporter.addImports(imports, out);
+	result = PackageImporter.addImports(imports, result);
 
-		return out;
+	return result;
 	}
 
 	private String getSimpleNameIfLoadableOrDescriptiveErrorStatement(DSLDefinition dslDefinition) {
@@ -189,7 +188,7 @@ public class BootStrapTransformation implements TextualTransformation {
 	}
 
 	@Override
-	public Set<TransformationType> getSupportedFileTypes() {
+	public Set<FileType> getSupportedFileTypes() {
 		return TransformationUtils.getSetForFiletypes(FileType.TIGERSEYE);
 	}
 

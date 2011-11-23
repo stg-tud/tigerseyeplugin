@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import de.tud.stg.tigerseye.eclipse.core.api.Transformation;
-import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 
 /**
  * Utility class for {@link Transformation} implementing classes.
@@ -15,9 +14,11 @@ import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
  */
 public final class TransformationUtils {
 
-    public static Set<TransformationType> getSetForFiletypes(FileType... popart) {
-	Set<TransformationType> set = new HashSet<TransformationType>();
-	set.addAll(Arrays.asList(popart));
+    public static final Set<FileType> FILE_TYPE_SET = getSetForFiletypes(FileType.values());
+
+    public static Set<FileType> getSetForFiletypes(FileType... fts) {
+	Set<FileType> set = new HashSet<FileType>();
+	set.addAll(Arrays.asList(fts));
 	return set;
     }
 

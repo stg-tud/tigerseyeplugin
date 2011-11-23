@@ -140,7 +140,10 @@ public class TestDSLTransformation {
 
 		Map<String, DSLMethodDescription> moptions = gr.moptions;
 
-		term = new KeywordChainingTransformation().transform(moptions, term);
+		Context context = new Context("dummy");
+		context.setDSLMethodDescriptions(moptions);
+		
+		term = new KeywordChainingTransformation().transform(context, term);
 
 		return aTermToString(term, this.cpf.createCodePrinter());
 	}
@@ -157,12 +160,17 @@ public class TestDSLTransformation {
 	
 		ATerm term = new ATermBuilder(ast).getATerm();
 	
+
+		Context c = new Context("dummy");
+		c.setDSLMethodDescriptions(gr.moptions);
+		
 		// performs keyword to methods transformation
-		term = new KeywordChainingTransformation().transform(gr.moptions, term);
+		term = new KeywordChainingTransformation().transform(c, term);
 	
+		
 		// encloses DSL method calls into invocations
 		for (ASTTransformation astTransformation : astts) {			
-			term = astTransformation.transform(gr.moptions, term);
+			term = astTransformation.transform(c, term);
 		}
 	
 		String output = aTermToString(term, codePrinter);
