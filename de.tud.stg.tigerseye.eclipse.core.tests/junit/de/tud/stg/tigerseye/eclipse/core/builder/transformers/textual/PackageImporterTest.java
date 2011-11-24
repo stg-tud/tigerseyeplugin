@@ -65,7 +65,6 @@ public class PackageImporterTest {
 		assertThat(ret).startsWith(somecomments+packagedeclr);
 		assertThat(ret).contains(MathDSL.class.getCanonicalName());
 		assertThat(ret).contains(randomCode);
-		System.out.println(ret);
 	}
 
 	private Context createContextMock(final Class ... classes) {

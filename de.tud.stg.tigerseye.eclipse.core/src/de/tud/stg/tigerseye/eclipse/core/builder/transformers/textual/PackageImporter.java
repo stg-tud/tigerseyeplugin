@@ -58,7 +58,7 @@ public class PackageImporter implements TextualTransformation {
 	StringBuilder importsString = new StringBuilder();
 
 	for (String im : imports) {
-	    importsString.append("import ").append(im).append(';').append('\n');
+	    importsString.append("\nimport ").append(im).append(';');
 	}
 
 	return new StringBuffer(input).insert(position, importsString).toString();
