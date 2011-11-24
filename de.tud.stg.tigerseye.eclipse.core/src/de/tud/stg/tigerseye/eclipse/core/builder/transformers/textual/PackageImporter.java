@@ -10,10 +10,18 @@ import java.util.regex.Pattern;
 import de.tud.stg.tigerseye.dslsupport.DSLInvoker;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.RegExCollection;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TextualTransformation;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationConstants;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationUtils;
 
+/**
+ * Imports necessary packages. Only searches for a valid package declaration and
+ * adds imports afterwards.
+ * 
+ * @author Leo_Roos
+ * 
+ */
 public class PackageImporter implements TextualTransformation {
 
     @Override
@@ -22,48 +30,22 @@ public class PackageImporter implements TextualTransformation {
 	return sb;
     }
 
-    private final static Pattern packageDeclaration = Pattern.compile(
-	    "(.*)(package (?:.*?);)(.*?)(?:@EDSL\\(.*?\\))?(.*)", Pattern.DOTALL);
-
     private String importPackages(Context context, String input) {
 
-	Matcher matcher = packageDeclaration.matcher(input);
-
-	StringBuffer out = new StringBuffer();
-	StringBuilder sb = new StringBuilder();
-
 	LinkedList<String> imports = new LinkedList<String>();
-
+	// working to unify under DSLInvoker
+	imports.add(DSLInvoker.class.getCanonicalName());
 	for (Class<?> clazz : context.getDSLClasses()) {
 	    imports.add(clazz.getCanonicalName());
 	}
-	// working to unify under DSLInvoker
-	imports.add(DSLInvoker.class.getCanonicalName());
 
-	if (matcher.find() && !(context.getDSLClasses().length < 1)) {
-	    sb.append("$1");
-	    sb.append("$2\n");
-	    sb.append('\n');
 
-	    // imports.add(DSLInvoker.class.getCanonicalName());
-	    sb.append("$3");
-	    sb.append("$4");
-
-	    matcher.appendReplacement(out, sb.toString());
-	} else if (!(context.getDSLClasses().length < 1)) {
-	    out.append(sb);
-	}
-
-	matcher.appendTail(out);
-
-	String result = addImports(imports, out.toString());
+	String result = addImports(imports, input);
 	return result;
     }
 
-    private static Pattern packagePosition = Pattern.compile("package [A-Za-z0-9\\.]+?;?\\s+");
+    private static Pattern packagePosition = RegExCollection.packagePattern;
 
-    // XXX(Leo_Roos;Nov 18, 2011) only static until BootStrapTransformation no
-    // longer necessary
     public static String addImports(LinkedList<String> imports, String input) {
 	Matcher matcher = packagePosition.matcher(input);
 
@@ -73,19 +55,18 @@ public class PackageImporter implements TextualTransformation {
 	    position = matcher.end();
 	}
 
-	StringBuilder sb = new StringBuilder();
+	StringBuilder importsString = new StringBuilder();
 
 	for (String im : imports) {
-	    sb.append("import ").append(im).append(';');
-	    sb.append('\n');
+	    importsString.append("import ").append(im).append(';').append('\n');
 	}
 
-	return new StringBuffer(input).insert(position, sb).toString();
+	return new StringBuffer(input).insert(position, importsString).toString();
     }
 
     @Override
     public String toString() {
-	return "package importer: " + super.toString();
+	return "PackageImporter:" + super.toString();
     }
 
     @Override
@@ -100,12 +81,12 @@ public class PackageImporter implements TextualTransformation {
 
     @Override
     public Set<FileType> getSupportedFileTypes() {
-	return TransformationUtils.getSetForFiletypes(FileType.values());
+	return TransformationUtils.FILE_TYPE_SET;
     }
 
     @Override
     public String getDescription() {
-	return "Adds necessary import statements specific for each DSL.";
+	return "Adds necessary import statements specific for each DSL. If no valid package has been declared the result might be unexpected.";
     }
 
     @Override

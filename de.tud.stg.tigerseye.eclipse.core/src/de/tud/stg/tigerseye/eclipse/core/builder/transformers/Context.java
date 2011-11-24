@@ -57,7 +57,7 @@ public class Context {
 	this.fileName = fileName;
     }
 
-    public void addDSL(String extension, Class<? extends DSL> clazz) {
+    private void addExtensionToClassRelation(String extension, Class<? extends DSL> clazz) {
 	this.dslClasses.put(extension, clazz);
     }
 
@@ -65,7 +65,6 @@ public class Context {
 	return this.dslClasses.keySet().toArray(new String[this.dslClasses.size()]);
     }
 
-    @Deprecated
     @SuppressWarnings("unchecked")
     public Class<? extends DSL>[] getDSLClasses() {
 	return this.dslClasses.values().toArray(new Class[this.dslClasses.size()]);
@@ -81,7 +80,7 @@ public class Context {
 
     public void addDSL(DSLDefinition dsl) throws NoLegalPropertyFoundException {
 	if (dsl.isDSLClassLoadable()) {
-	    addDSL(dsl.getValue(DSLKey.EXTENSION), dsl.getDSLClassChecked());
+	    addExtensionToClassRelation(dsl.getValue(DSLKey.EXTENSION), dsl.getDSLClassChecked());
 	    this.dsls.add(dsl);
 	} else {
 	    logger.error("tried to add not loadable dsl {}", dsl);
@@ -101,7 +100,7 @@ public class Context {
     }
 
     /**
-     * This method will simply call {@link #addDSL(String, Class)} for each
+     * This method will simply call {@link #addExtensionToClassRelation(String, Class)} for each
      * element and ignore any element that causes an exception during the
      * addition.
      * 

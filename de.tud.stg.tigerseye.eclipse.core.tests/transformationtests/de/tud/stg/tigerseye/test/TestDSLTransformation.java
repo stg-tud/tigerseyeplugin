@@ -104,18 +104,6 @@ public class TestDSLTransformation {
 			classes = cs;
 		}
 
-		@Deprecated
-		public Context generateContext(@Nullable String contextName) {
-			if (contextName == null)
-				contextName = "no_context_name_given";
-			Context context = new Context(contextName);
-			for (int i = 0; i < classes.size(); i++) {
-				context.addDSL("anyextension" + i, (Class<? extends DSL>) classes.get(i));
-			}
-			context.setFiletype(null);
-			return context;
-		}
-
 	}
 
 	/**
