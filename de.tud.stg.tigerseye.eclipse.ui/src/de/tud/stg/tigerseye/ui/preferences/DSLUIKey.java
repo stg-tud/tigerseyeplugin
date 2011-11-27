@@ -1,5 +1,8 @@
 package de.tud.stg.tigerseye.ui.preferences;
 
+import java.awt.Color;
+import java.util.Random;
+
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.swt.graphics.RGB;
@@ -16,9 +19,14 @@ public abstract class DSLUIKey extends DSLKey<Object> {
 	super(suffix);
     }
 
+    private static final Random random = new Random();
+
     public static RGB getDefaultColor(IPreferenceStore store) {
-	return PreferenceConverter.getDefaultColor(store,
-		TigerseyeUIPreferenceConstants.DEFAULT_COLOR_VALUE);
+	Color[] cs = TigerseyeUIPreferenceConstants.DEFAULT_COLORS;
+	Color c = cs[random.nextInt(cs.length)];
+	RGB rgb = new RGB(c.getRed(), c.getGreen(), c.getBlue());
+	return rgb;
+	// PreferenceConverter.getDefaultColor(store,TigerseyeUIPreferenceConstants.DEFAULT_COLOR_VALUE)
     }
 
     public static boolean isTigerseyeHighlightingActive(IPreferenceStore store) {

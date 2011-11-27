@@ -278,8 +278,8 @@ public class Builder extends IncrementalProjectBuilder {
 		    if (type == IResource.FILE) {
 			IFile file = (IFile) resource;
 			FileType typeForSrcResource = FileTypeHelper.getTypeForSrcResource(file.getName());
-			if (FileType.TIGERSEYE.equals(typeForSrcResource)) {
-			    System.out.println("adding file " + file + " for build");
+			if (typeForSrcResource != null) {
+			    logger.debug("queuing file for build: {}", file);
 			    teSrcFiles.add(file);
 			}
 			return false;

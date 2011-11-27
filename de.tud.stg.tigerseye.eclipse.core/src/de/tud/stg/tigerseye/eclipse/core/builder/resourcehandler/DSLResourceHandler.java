@@ -74,16 +74,14 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
     // preference.
     private boolean tigerseyetransforamtiondebug = false;
 
-
     @Override
     public boolean visit(IResource aResource) throws CoreException {
 	if (!(aResource instanceof IFile)) {
 	    logger.debug("Expected to visit a file but got {}", aResource);
 	    return true;
-	}
-	else {
-	    handleResource(aResource);
-	    return false;
+	} else {
+	    IFile file = (IFile) aResource;
+	    return handleFileIfInterested(IResourceDelta.CHANGED, file);
 	}
     }
 
@@ -96,18 +94,8 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 	if (aResource.getFullPath().toString().contains("/bin/"))
 	    return false;
 
-	IFile file;
 	if (aResource instanceof IFile) {
-	    if (!isInteresstedIn(aResource))
-		return false;
-
-	    file = (IFile) aResource;
-	    if (fileNeedsRehandle(file)) {
-		rehandleFile(delta, file);
-	    } else {
-		logger.info("Already handled {}. Skipping file.", file);
-	    }
-	    return false;
+	    return handleFileIfInterested(delta.getKind(), aResource);
 	} else {
 	    logger.trace("Skipping resource {}, since not of type IFile", aResource);
 	    // Returning true since this will usually mean the resource is a
@@ -118,14 +106,25 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 
     }
 
-    private void rehandleFile(IResourceDelta delta, IFile file) {
-	int kind = delta.getKind();
+    private boolean handleFileIfInterested(int kind, IResource aResource) {
+	IFile file = (IFile) aResource;
+	if (isInteresstedIn(file)) {
+	    handleFile(kind, file);
+	}
+	return false;
+    }
+
+    private void handleFile(int kind, IFile file) {
 	switch (kind) {
 	case IResourceDelta.CHANGED:
 	    logger.trace("File '{}' changed.", file);
-	    boolean wasHandled = handleChanged(file);
-	    if (!wasHandled) {
-		logger.debug("Failed to handle file {} ", file);
+	    if (fileNeedsRehandle(file)) {
+		boolean wasHandled = handleChanged(file);
+		if (!wasHandled) {
+		    logger.info("Failed to handle file {} ", file);
+		}
+	    } else {
+		logger.info("Already handled {}. Skipping file.", file);
 	    }
 	    break;
 	case IResourceDelta.ADDED:
@@ -366,12 +365,12 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 
 	final ArrayList<TransformationType> idents = new ArrayList<TransformationType>(context.getDsls());
 	idents.add(context.getFiletype());
-	
-	Collection<ITransformationHandler> configuredTransformations = getTransformerProvider().getConfiguredTransformations();
-	
+
+	Collection<ITransformationHandler> configuredTransformations = getTransformerProvider()
+		.getConfiguredTransformations();
+
 	List<Transformation> transformers = getTransformationsActiveForAllTransformationsTypes(
 		configuredTransformations, idents);
-	    
 
 	Collections.sort(transformers, new Comparator<Transformation>() {
 
@@ -382,7 +381,6 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 	});
 
 	Iterator<Transformation> transformationIterator;
-
 
 	String textualTransformedInput = input.toString();
 
@@ -416,8 +414,6 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 
 	ATerm term = getATermFromChart(chart);
 
-
-
 	if (tigerseyetransforamtiondebug) {
 	    AtermPrinter atermPrinter = new AtermPrinter();
 	    try {
@@ -429,7 +425,6 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 	    writeDebugInformation(context.getTransformedFile(), new Object[] { context.getGrammar(), chart.getAST(),
 		    atermPrinter });
 	}
-
 
 	// ATerm astTransformedTerm = this.performASTTransformations(term,
 	// context, methodOptions);
@@ -542,8 +537,7 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
     // return transformedInput;
     // }
 
-    
-// private ATerm performASTTransformations(ATerm aterm, Context context,
+    // private ATerm performASTTransformations(ATerm aterm, Context context,
     // Map<String, DSLMethodDescription> methodOptions) {
     // logger.trace("starting ast transformations");
     // ArrayList<TransformationType> idents = new
