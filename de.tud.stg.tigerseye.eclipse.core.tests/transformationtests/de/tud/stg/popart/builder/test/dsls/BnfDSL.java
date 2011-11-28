@@ -6,12 +6,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import de.tud.stg.parlex.core.Category;
 import de.tud.stg.parlex.core.Grammar;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod.PreferencePriority;
-import de.tud.stg.popart.builder.core.annotations.DSLParameter;
-import de.tud.stg.popart.builder.core.annotations.DSLClass;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod;
 import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeyword;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLClass;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLParameter;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod.PreferencePriority;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.CategoryNames;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.TypeHandler;
 
@@ -23,7 +23,7 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.TypeHandler
  */
 @DSLClass(whitespaceEscape = " ", typeRules = { BnfDSL.LetterType.class, BnfDSL.DigitType.class,
 		BnfDSL.AnyCharacterType.class }, arrayDelimiter = " ", waterSupported=false)
-public class BnfDSL implements de.tud.stg.popart.dslsupport.DSL {
+public class BnfDSL implements de.tud.stg.tigerseye.dslsupport.DSL {
 
 	public static class LetterType extends TypeHandler {
 		@Override

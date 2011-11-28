@@ -4,10 +4,10 @@ import groovy.lang.Closure;
 
 import java.util.HashMap;
 
-import de.tud.stg.popart.builder.core.annotations.DSLMethod;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod.DslMethodType;
 import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeyword;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod.DslMethodType;
 
 /**
  * {@link PrefixDSL} is a DSL with support for conditional statements in an alternative if-then-else syntax
@@ -15,7 +15,7 @@ import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeywor
  * @author Kamil Erhard
  * 
  */
-public class PrefixDSL implements de.tud.stg.popart.dslsupport.DSL {
+public class PrefixDSL implements de.tud.stg.tigerseye.dslsupport.DSL {
 
 	public Object eval(HashMap map, Closure cl) {
 		cl.setDelegate(this);

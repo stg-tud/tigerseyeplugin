@@ -5,7 +5,7 @@ import groovy.sql.Sql;
 import java.util.List;
 import java.util.Map;
 
-import de.tud.stg.popart.dslsupport.Interpreter;
+import de.tud.stg.tigerseye.dslsupport.Interpreter;
 import de.tud.stg.popart.dslsupport.sql.model.*;
 import static de.tud.stg.popart.dslsupport.sql.ListHelper.*;
 

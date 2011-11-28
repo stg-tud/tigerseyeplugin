@@ -15,11 +15,13 @@ import aterm.ATermList;
 import aterm.Visitable;
 import aterm.pure.PureFactory;
 import aterm.pure.SingletonFactory;
-import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
+import de.tud.stg.tigerseye.dslsupport.DSLInvoker;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ASTTransformation;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
-import de.tud.stg.tigerseye.eclipse.core.builder.transformers.textual.TextualTransformationUtils;
-import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.MethodOptions;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationConstants;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationUtils;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.DSLMethodDescription;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.RecursiveVisitor;
 
 /**
@@ -28,33 +30,71 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.aterm.RecursiveVisitor;
  * one AST.
  * 
  * @author Kamil Erhard
+ * @author Leo_Roos
  * 
  */
 public class ClosureResultTransformation extends RecursiveVisitor implements ASTTransformation {
-private static final Logger logger = LoggerFactory.getLogger(ClosureResultTransformation.class);
+    private static final Logger logger = LoggerFactory.getLogger(ClosureResultTransformation.class);
 
+    public ClosureResultTransformation() {
+    }
+
+    @Override
+    public ATerm transform(Context context, ATerm aterm) {
+
+	logger.debug("start ClosureResultTransformation");
+	try {
+	    aterm = (ATerm) aterm.accept(new ClosureResultVisitor(context.getDslMethodDescriptions()));
+	} catch (VisitFailure e) {
+	    logger.warn("Failed visiting ClosureResultTransformation", this, e);
+	}
+
+	return aterm;
+    }
+
+    @Override
+    public Set<ATerm> getAssurances() {
+	return Collections.emptySet();
+    }
+
+    @Override
+    public Set<ATerm> getRequirements() {
+	return Collections.emptySet();
+    }
+
+    @Override
+    public Set<FileType> getSupportedFileTypes() {
+	return TransformationUtils.getSetForFiletypes(FileType.GROOVY, FileType.TIGERSEYE);
+    }
+
+    @Override
+    public String getDescription() {
+	return "Scans the AST for method calls to a DSL interface and encapsulates them into closures";
+    }
+
+    @Override
+    public int getBuildOrderPriority() {
+	return TransformationConstants.CLOSURE_RESULT_TRANSFORMATION;
+    }
+
+    private static class ClosureResultVisitor extends RecursiveVisitor {
 
 	private final static ATermAppl closureEnd;
 	private final static ATermAppl closureBegin;
 	private final static AFun dslInvokerFunction;
 
-	private ATermList dslInvokerClasses;
-    private Map<String, MethodOptions> moptions;
-
 	static {
-		PureFactory factory = SingletonFactory.getInstance();
-
-		dslInvokerFunction = factory.makeAFun("DSLInvoker.eval", 2, false);
-		closureBegin = factory.makeAppl(factory.makeAFun("{", 0, false));
-		closureEnd = factory.makeAppl(factory.makeAFun("}", 0, false));
+	    PureFactory factory = SingletonFactory.getInstance();
+	    String dslInvokerName = DSLInvoker.class.getSimpleName();
+	    dslInvokerFunction = factory.makeAFun(dslInvokerName + ".eval", 2, false);
+	    closureBegin = factory.makeAppl(factory.makeAFun("{", 0, false));
+	    closureEnd = factory.makeAppl(factory.makeAFun("}", 0, false));
 	}
 
-	public ClosureResultTransformation() {
-	}
+	private final Map<String, DSLMethodDescription> moptions;
 
-    public ClosureResultTransformation(Map<String, MethodOptions> moptions) {
-	this.moptions = moptions;
-		dslInvokerClasses = factory.makeList();
+	public ClosureResultVisitor(Map<String, DSLMethodDescription> moptions) {
+	    this.moptions = moptions;
 	}
 
 	@Override
@@ -62,6 +102,7 @@ private static final Logger logger = LoggerFactory.getLogger(ClosureResultTransf
 		if (arg.getArity() > 0) {
 			return this.transformATerm(arg);
 		} else {
+	    // should probably be also transformed for properties
 			return arg;
 		}
 	}
@@ -73,60 +114,28 @@ private static final Logger logger = LoggerFactory.getLogger(ClosureResultTransf
 		if (v0 != null) {
 			String statement = ((ATermAppl) v0).getName();
 
-	    MethodOptions methodAlias = moptions
-.get(
-		    statement);
+	    DSLMethodDescription methodAlias = moptions.get(statement);
 
 			if (methodAlias != null) {
 
-				ATermAppl dslInvokerClasses = factory.makeAppl(factory.makeAFun(methodAlias.getParentClass()
+				Class<?> parentClass = methodAlias.getParentClass();
+				AFun makeAFun = factory.makeAFun(parentClass
 						.getSimpleName()
-						+ ".class", 0, false));
+						+ ".class", 0, false);
+				ATermAppl dslInvokerClasses = factory.makeAppl(makeAFun);
 
 				ATermList closureArgument = factory.makeList();
 				closureArgument = closureArgument.append(closureBegin);
 				closureArgument = closureArgument.append(arg);
 				closureArgument = closureArgument.append(closureEnd);
 
-				return factory.makeAppl(dslInvokerFunction, dslInvokerClasses, closureArgument);
+				ATermAppl makeAppl = factory.makeAppl(dslInvokerFunction, dslInvokerClasses, closureArgument);
+				return makeAppl;
 			}
 		}
 
 		return arg;
 	}
 
-    @Override
-    public ATerm transform(Map<String, MethodOptions> moptions, ATerm aterm) {
-	ClosureResultTransformation crt = new ClosureResultTransformation(
-		moptions);
-
-	logger.info("[ClosureResult] start");
-	try {
-	    aterm = (ATerm) aterm.accept(crt);
-	} catch (VisitFailure e) {
-	    logger.warn("Failed visiting ClosureResultTransformation", crt, e);
-	}
-
-	return aterm;
-    }
-
-	@Override
-	public Set<ATerm> getAssurances() {
-		return Collections.emptySet();
-	}
-
-	@Override
-	public Set<ATerm> getRequirements() {
-		return Collections.emptySet();
-	}
-
-	@Override
-	public Set<TransformationType> getSupportedFileTypes() {
-		return TextualTransformationUtils.getSetForFiletypes(FileType.GROOVY);
-	}
-
-	@Override
-    public String getDescription() {
-	return "Scans the AST for method calls to a DSL interface and encapsulates them into closures";
     }
 }

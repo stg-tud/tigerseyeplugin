@@ -12,11 +12,11 @@ public abstract class AbstractDSLConfigurationElement implements
 
     @Override
     public String getId() {
-	String attribute = getAttribute(DSLDefinitionsAttribute.Class);
-	if (attribute == null)
+	String className = getAttribute(DSLDefinitionsAttribute.Class);
+	if (className == null)
 	    throw new IllegalStateException(
 		    "At least the class attribute must have been set");
-	return getContributor().getId() + attribute;
+	return getContributor().getId() + className;
     }
 
     @Override

@@ -14,7 +14,6 @@ Bundle-ClassPath: libs/powermock-mockito-1.4.6-full.jar,
  libs/fest-assert-1.4/fest-assert-1.4.jar
 Export-Package: de.tud.stg.popart.builder.test.dsls,
  de.tud.stg.popart.builder.test.junit,
- de.tud.stg.popart.builder.test.statemachine,
  de.tud.stg.tigerseye.test,
  de.tud.stg.tigerseye.test.transformation.utils,
  org.mockito,

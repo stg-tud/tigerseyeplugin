@@ -4,8 +4,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import utilities.SystemPropertyRule;
-
 import de.tud.stg.popart.builder.test.junit.AmbiguityFailuresTest;
 import de.tud.stg.popart.builder.test.junit.ConditionalWithNestingDSL;
 import de.tud.stg.popart.builder.test.junit.LiteralsDSLTest;
@@ -20,9 +18,7 @@ import de.tud.stg.popart.builder.test.junit.TestNumberRepresentationDSL;
 import de.tud.stg.popart.builder.test.junit.TestPrefixDSL;
 import de.tud.stg.popart.builder.test.junit.TestSetDSL;
 import de.tud.stg.popart.builder.test.junit.TestSimpleSqlDSL;
-import de.tud.stg.popart.builder.test.junit.TestStateMaschineDSL;
 import de.tud.stg.popart.builder.test.junit.TestStatefulDSL;
-import de.tud.stg.popart.builder.test.junit.TestWordMachine;
 
 @RunWith(Suite.class)
 @SuiteClasses({ConditionalWithNestingDSL.class, //
@@ -38,10 +34,8 @@ import de.tud.stg.popart.builder.test.junit.TestWordMachine;
 	TestSetDSL.class, //
 	TestSimpleSqlDSL.class, //
 	TestStatefulDSL.class, //
-	TestStateMaschineDSL.class, //
 	AmbiguityFailuresTest.class, //
 	LiteralsDSLTest.class, //
-	TestWordMachine.class, //Too Long
 })
 public class AllTestsCoreTranformationTests {
 }

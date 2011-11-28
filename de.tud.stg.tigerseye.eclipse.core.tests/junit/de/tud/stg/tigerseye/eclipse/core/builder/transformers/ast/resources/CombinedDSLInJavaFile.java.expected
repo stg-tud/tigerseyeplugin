@@ -1,0 +1,37 @@
+package de.tud.stg.tigerseye.eclipse.core.builder.transformers.ast.resources;
+
+import java.util.Set;
+
+import de.tud.stg.popart.builder.test.dsls.SetDSL;
+import de.tud.stg.popart.builder.test.dsls.SimpleSqlDSL;
+import de.tud.stg.tigerseye.dslsupport.DSLInvoker;
+
+public class CombinedDSLInJavaFile {
+
+	public CombinedDSLInJavaFile() {
+
+	}
+
+	public void foo() {
+
+		Set s = DSLInvoker.getDSL(SetDSL.class).union(
+				DSLInvoker.getDSL(SetDSL.class).asSet(
+						DSLInvoker.getDSL(SetDSL.class).multiElementedList("k",
+								DSLInvoker.getDSL(SetDSL.class).singleElementedList("l"))),
+				DSLInvoker.getDSL(SetDSL.class).asSet(
+						DSLInvoker.getDSL(SetDSL.class).multiElementedList("m",
+								DSLInvoker.getDSL(SetDSL.class).singleElementedList("n"))));
+
+		System.out.println("Should return \"[n, l, m, k]\" was: " + s);
+
+		String query = DSLInvoker.getDSL(SimpleSqlDSL.class).selectFrom(new String[] { "id" },
+				new String[] { "students" });
+
+		System.out.println("Query was: " + query);
+
+	}
+
+	public static void main(String[] args) {
+		new CombinedDSLInJavaFile().foo();
+	}
+}

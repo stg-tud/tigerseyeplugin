@@ -108,7 +108,7 @@ public class WorkspaceProjectClassLoaderStrategy implements ClassLoaderStrategy 
 			"Failed to transform classpath location file " + entry + " to an URL.", e);
 	    }
 	}
-	URL[] urls = urlList.toArray(new URL[0]);
+	URL[] urls = urlList.toArray(new URL[urlList.size()]);
 	return urls;
     }
 

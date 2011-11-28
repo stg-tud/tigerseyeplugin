@@ -17,12 +17,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import utilities.TestUtils;
-import de.tud.stg.popart.builder.core.annotations.DSLParameter;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod.Associativity;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod.DslMethodType;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod.PreferencePriority;
 import de.tud.stg.popart.builder.test.dsls.SetDSL;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLParameter;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod.Associativity;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod.DslMethodType;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod.PreferencePriority;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.GroovyClassWithSomeAnnotatedMethodsForExtractorTest;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.MixedAnnotatedMethodsForExtractionTest;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.resources.MixedAnnotatedProductionForMethodDSLInfoTest;
@@ -447,7 +447,7 @@ public class MethodDSLInformationTest {
 	}
 
 	@Test
-	public void shouldGetMethod() {
+	public void shouldGetExpectedMethod() {
 		Method aMethod = getFirstMethod(SdfDSLForExtractingTest.class, "contextFreeStartSymbols");
 		MethodDSLInformation aMInfo = new MethodDSLInformation(aMethod);
 		assertThat(aMInfo.getMethod()).isEqualTo(aMethod);
@@ -551,6 +551,7 @@ public class MethodDSLInformationTest {
 		assertThat(mi.isToplevel()).isEqualTo(def.topLevel());
 		assertThat(mi.getProduction()).isEqualTo(expectedProduction);
 		assertThat(mi.getUniqueIdentifier()).isEqualTo(expectedUniqueIdentifier);
+		assertThat(mi.isKeywordUnicodeTransformationEnabled()).isEqualTo(def.isUnicodeEncoding());
 	}
 
 	@Test
@@ -636,7 +637,7 @@ public class MethodDSLInformationTest {
 	}
 
 	@Test
-	public void shouldToString() {
+	public void shouldHaveAllExpectedInformationInToString() {
 		// @DSLMethod(production = "asdf.zuul",stringQuotation =
 		// "\".*?(?<!\\)\"", whitespaceEscape = ".")public void
 		// annotationWithSomeConfigurationOptions() {
@@ -747,5 +748,40 @@ public class MethodDSLInformationTest {
 		assertThat(minf.getProduction()).isEqualTo("get__p0");
 		assertThat(minf.getDSLType()).isEqualTo(DslMethodType.Operation);
 	}
+	
+	@Test
+	public void shouldBeFalseWhetherProductionInAnnotationDefined() throws Exception {
+		boolean hasProductionInAnnotationDefined = getSomeliteral_MethodInfo.hasProductionInAnnotationDefined();
+		assertThat(hasProductionInAnnotationDefined).isFalse();
+	}
+	
+	@Test
+	public void shouldBeTrueWhetherProductionInAnnotationDefined() throws Exception {
+		//	@DSLMethod(production = "grep_p0")
+		//	public Object has_production(String arg) {
+		boolean hasProductionInAnnotationDefined = getMinfFromMixed("has_production").hasProductionInAnnotationDefined();
+		assertThat(hasProductionInAnnotationDefined).isTrue();
+	}
+	
+	@Test
+	public void shouldHaveDefaultKeywordTranslationValue() throws Exception {
+		assertThat(notAnnotated_MethodInfo.isKeywordUnicodeTransformationEnabled()).isEqualTo(DSLInformationDefaults.DEFAULT_DSLMethod.isUnicodeEncoding());
+	}
+	
+	@Test
+	public void shouldHaveactivateKeywordTranslation() throws Exception {
+//	@DSLMethod(keywordUnicodeTranslation=true)
+//	public void hasKeywordTranslationActivated(int i){
+		MethodDSLInformation mut = getFirstMethodInfoInClass(MixedAnnotatedProductionForMethodDSLInfoTest.class, "hasKeywordTranslationActivated");
+		assertThat(mut.isKeywordUnicodeTransformationEnabled()).isTrue();
+	}
+	
+	@Test
+	public void shouldHaveExplicitlyFalseDefinedKeywordTranslation() throws Exception {
+		MethodDSLInformation mut = getFirstMethodInfoInClass(MixedAnnotatedProductionForMethodDSLInfoTest.class, "hasKeywordTranslationExplicitlyFalse");
+		assertThat(mut.isKeywordUnicodeTransformationEnabled()).isFalse();
+	}
+	
+	
 
 }

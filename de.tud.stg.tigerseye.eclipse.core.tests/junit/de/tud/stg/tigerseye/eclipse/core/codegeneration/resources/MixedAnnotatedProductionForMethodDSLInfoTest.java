@@ -1,9 +1,9 @@
 package de.tud.stg.tigerseye.eclipse.core.codegeneration.resources;
 
-import de.tud.stg.popart.builder.core.annotations.DSLMethod;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod.Associativity;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod.DslMethodType;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod.PreferencePriority;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod.Associativity;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod.DslMethodType;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod.PreferencePriority;
 
 public class MixedAnnotatedProductionForMethodDSLInfoTest {
 
@@ -149,6 +149,17 @@ public class MixedAnnotatedProductionForMethodDSLInfoTest {
 	@DSLMethod(production="get__p0")
 	public Object get__a0(String key) {
 		return null;
+	}
+	
+	
+	@DSLMethod(isUnicodeEncoding=true)
+	public void hasKeywordTranslationActivated(int i){
+		
+	}
+	
+	@DSLMethod(isUnicodeEncoding=false)
+	public void hasKeywordTranslationExplicitlyFalse(int j){
+		
 	}
 
 }

@@ -2,9 +2,9 @@ package de.tud.stg.popart.builder.test.dsls
 
 import java.awt.Color;
 
-import de.tud.stg.popart.builder.core.annotations.DSLMethod;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod.DslMethodType;
-import de.tud.stg.popart.dslsupport.DSL;
+import de.tud.stg.tigerseye.dslsupport.DSL;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod.DslMethodType;
 
 class LiteralsDSL  implements DSL {
 	
@@ -32,11 +32,12 @@ class LiteralsDSL  implements DSL {
 		return Color.GREEN;
 	}
 	
-	@DSLMethod(production="para__p0")
+	@DSLMethod(production="para__p0",isUnicodeEncoding=true)
 	def moreParameter(int i){
 		return Color.GREEN;
 	}
 	
+	@DSLMethod(isUnicodeEncoding=true)
 	def sum__p0(int[] inp){
 		res = inp.collect { it }
 		println res

@@ -9,6 +9,7 @@ import javax.annotation.Nonnull;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.ITransformationHandler;
 import de.tud.stg.tigerseye.eclipse.core.api.TigerseyeDefaultConstants;
@@ -42,14 +43,15 @@ public class TransformationHandler implements ITransformationHandler {
 		.get(identifiable);
 	return defBool == null ? false : defBool;
     }
+
     public static Map<TransformationType, Boolean> getDefaultTransformationValueMap() {
         HashMap<TransformationType, Boolean> map = new HashMap<TransformationType, Boolean>();
-        for (FileType fileType : FileType.RESOURCE_FILE_TYPES) {
+	for (FileType fileType : FileType.values()) {
             map.put(fileType,
         	    TigerseyeDefaultConstants.DEFAULT_TRANSFORMER_FOR_RESOURCES_ACTIVATION_STATE);
         }
-        for (FileType fileType : FileType.DSL_FILETYPES) {
-            map.put(fileType,
+	for (DSLDefinition dsl : TigerseyeCore.getLanguageProvider().getDSLDefinitions()) {
+	    map.put(dsl,
         	    TigerseyeDefaultConstants.DEFAULT_TRANSFORMER_FOR_DSLS_ACTIVATION_STATE);
         }
         return Collections.unmodifiableMap(map);
@@ -114,8 +116,6 @@ public class TransformationHandler implements ITransformationHandler {
      */
     @Override
     public boolean isActiveFor(TransformationType identifiable) {
-	if (!supports(identifiable))
-	    return false;
 	String preferenceKeyFor = getPreferenceKeyFor(identifiable);
 	if (!getStore().contains(preferenceKeyFor)) {
 	    getStore()
@@ -145,22 +145,10 @@ public class TransformationHandler implements ITransformationHandler {
      * @see de.tud.stg.tigerseye.eclipse.core.builder.transformers.ITransformationHandler#supports(de.tud.stg.tigerseye.eclipse.core.api.TransformationType)
      */
     @Override
-    public boolean supports(TransformationType type) {
-	Set<TransformationType> supportedFileTypes = getTransformation()
+    public boolean supports(FileType type) {
+	Set<FileType> supportedFileTypes = getTransformation()
 		.getSupportedFileTypes();
-	/*
-	 * FIXME: consider refactoring for FileType split into physical
-	 * representation (file extension) an conceptual (a DSL Language
-	 * provider); When is the type neither Filetype nor DSLDefinitionImpl
-	 */
-	if (type instanceof DSLDefinition)
-	    return supportedFileTypes.contains(FileType.DSL);
-	//
-	if (type instanceof FileType)
 	    return supportedFileTypes.contains(type);
-
-	throw new IllegalArgumentException(
-		"An object of not anticipated kind has been passed: " + type);
     }
 
     @Override

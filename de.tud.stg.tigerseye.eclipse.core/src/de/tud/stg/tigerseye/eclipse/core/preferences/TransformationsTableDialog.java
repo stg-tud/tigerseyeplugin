@@ -22,6 +22,7 @@ import de.tud.stg.tigerseye.eclipse.core.api.ITransformationHandler;
 import de.tud.stg.tigerseye.eclipse.core.api.Transformation;
 import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.ASTTransformation;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TextualTransformation;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationHandler;
 
@@ -89,14 +90,16 @@ public class TransformationsTableDialog extends TableDialog {
 	    }
 
 	    sb.append("\n\nSupported FileTypes:\n");
-	    Set<TransformationType> supportedFileTypes = handler
+	    Set<FileType> supportedFileTypes = handler
 		    .getTransformation()
 		    .getSupportedFileTypes();
 	    for (TransformationType fileType : supportedFileTypes) {
 		sb.append(fileType.toString()).append("\n");
 	    }
 	    sb.append("\nDescription:\n");
-	    sb.append(handler.getTransformation().getDescription());
+	    sb.append(handler.getTransformation().getDescription()).append("\n");
+	    sb.append("\nPosition in Build:\n");
+	    sb.append(handler.getTransformation().getBuildOrderPriority());
 	    String formatted = sb.toString();
 	    return formatted;
 	}

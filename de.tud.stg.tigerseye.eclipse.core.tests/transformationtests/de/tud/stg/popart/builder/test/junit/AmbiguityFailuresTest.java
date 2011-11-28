@@ -1,9 +1,7 @@
 package de.tud.stg.popart.builder.test.junit;
 
 import static de.tud.stg.tigerseye.test.TransformationUtils.test;
-import junit.framework.AssertionFailedError;
 
-import org.eclipse.jdt.core.dom.PrimitiveType.Code;
 import org.junit.ComparisonFailure;
 import org.junit.Test;
 

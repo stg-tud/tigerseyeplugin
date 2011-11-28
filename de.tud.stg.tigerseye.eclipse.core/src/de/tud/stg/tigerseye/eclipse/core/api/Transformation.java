@@ -22,6 +22,15 @@ public interface Transformation {
 	/**
 	 * @return the {@link FileType} for which this transformer can be used.
 	 */
-	public Set<TransformationType> getSupportedFileTypes();
+	public Set<FileType> getSupportedFileTypes();
+
+    /**
+     * Determines when this Transformation has to be build
+     * 
+     * @return the priority when to execute this transformation.
+     */
+    public int getBuildOrderPriority();
+    // XXX(leo;20.11.2011) add uniform transform statement or two! so they can
+    // be
 
 }

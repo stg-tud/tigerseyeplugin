@@ -5,11 +5,11 @@ import groovy.lang.Closure;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.tud.stg.popart.builder.core.annotations.DSLParameter;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod.DslMethodType;
 import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeyword;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLParameter;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod.DslMethodType;
 
 /**
  * {@link StatefulDSL} is a small DSL showing the possibility of setting and
@@ -18,7 +18,7 @@ import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeywor
  * @author Kamil Erhard
  * 
  */
-public class StatefulDSL implements de.tud.stg.popart.dslsupport.DSL {
+public class StatefulDSL implements de.tud.stg.tigerseye.dslsupport.DSL {
 
 	public Object eval(HashMap map, Closure cl) {
 		cl.setDelegate(this);
@@ -28,6 +28,7 @@ public class StatefulDSL implements de.tud.stg.popart.dslsupport.DSL {
 
 	Map<String, Object> variables = new HashMap<String, Object>();
 
+	@DSLMethod(isUnicodeEncoding=true)
 	public void set_p0_equals_p1(String key, Object value) {
 		this.variables.put(key, value);
 	}

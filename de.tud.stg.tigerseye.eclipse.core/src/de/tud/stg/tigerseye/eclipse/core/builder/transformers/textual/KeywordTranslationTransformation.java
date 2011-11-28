@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
@@ -28,12 +29,13 @@ import org.eclipse.core.runtime.IPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.AnnotationExtractor;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.Context;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.IllegalAnnotationFormat;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TextualTransformation;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationConstants;
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationUtils;
 
 public class KeywordTranslationTransformation implements TextualTransformation {
     private static final String possiblyInsufficientCharset = "This might be insufficient if characters are used that depend on a specific encoding.";
@@ -41,8 +43,6 @@ public class KeywordTranslationTransformation implements TextualTransformation {
     private static final Logger logger = LoggerFactory.getLogger(KeywordTranslationTransformation.class);
 
     /**
-     * 
-     * 
      * @author Leo_Roos
      * 
      */
@@ -101,18 +101,20 @@ public class KeywordTranslationTransformation implements TextualTransformation {
     }
 
     @Override
-    public StringBuffer transform(Context context, StringBuffer sb) {
+    public String transform(Context context, String input, Map<String, Object> data) {
+
+	StringBuffer sb = new StringBuffer(input);
 
 	AnnotationExtractor<Translation> annotationExtractor = new AnnotationExtractor<Translation>(Translation.class);
-	annotationExtractor.setInput(sb.toString());
+	annotationExtractor.setInput(input);
 
 	List<Translation> translations = findAndRemoveTranslationAnnotations(sb, annotationExtractor);
 
 	Set<TranslationAlias> aliasesCollector = collectTranslationAliases(context, translations);
 
-	sb = replaceAliases(aliasesCollector, sb);
+	StringBuffer result = replaceAliases(aliasesCollector, sb);
 
-	return sb;
+	return result.toString();
     }
 
     private Set<TranslationAlias> collectTranslationAliases(Context context, List<Translation> translations) {
@@ -261,8 +263,8 @@ public class KeywordTranslationTransformation implements TextualTransformation {
 	return translationFile;
     }
 
-    private StringBuffer replaceAliases(Set<TranslationAlias> aliasesCollector, StringBuffer sb) {
-	StringBuffer out = sb;
+    private StringBuffer replaceAliases(Set<TranslationAlias> aliasesCollector, StringBuffer input) {
+	StringBuffer out = input;
 	for (TranslationAlias p : aliasesCollector) {
 	    Matcher matcher = p.fromPattern.matcher(out);
 	    out = new StringBuffer();
@@ -290,8 +292,13 @@ public class KeywordTranslationTransformation implements TextualTransformation {
     }
 
     @Override
-    public Set<TransformationType> getSupportedFileTypes() {
-	return TextualTransformationUtils.getSetForFiletypes(FileType.DSL);
+    public Set<FileType> getSupportedFileTypes() {
+	return TransformationUtils.getSetForFiletypes(FileType.values());
+    }
+
+    @Override
+    public int getBuildOrderPriority() {
+	return TransformationConstants.KEYWORD_TRANSLATION_TRANSFORMATION;
     }
 
 }

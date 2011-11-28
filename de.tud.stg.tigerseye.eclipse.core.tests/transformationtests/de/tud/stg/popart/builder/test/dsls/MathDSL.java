@@ -1,12 +1,15 @@
 package de.tud.stg.popart.builder.test.dsls;
 
+import static org.junit.Assert.fail;
 import groovy.lang.Closure;
 
 import java.util.HashMap;
 
-import de.tud.stg.popart.builder.core.annotations.DSLMethod;
+import org.junit.Test;
+
 import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeyword;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod;
 
 /**
  * {@link MathDSL} is a DSL with some mathematical operations in unicode
@@ -14,7 +17,7 @@ import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeywor
  * @author Kamil Erhard
  * 
  */
-public class MathDSL implements de.tud.stg.popart.dslsupport.DSL {
+public class MathDSL implements de.tud.stg.tigerseye.dslsupport.DSL {
 
 	public Object eval(HashMap map, Closure cl) {
 		cl.setDelegate(this);
@@ -22,7 +25,7 @@ public class MathDSL implements de.tud.stg.popart.dslsupport.DSL {
 		return cl.call();
 	}
 	
-	@DSLMethod()
+	@DSLMethod(production="sum__p0", isUnicodeEncoding=true)
 	public int sum__p0(int[] elements) {
 		int sum = 0;
 		for (int i : elements) {

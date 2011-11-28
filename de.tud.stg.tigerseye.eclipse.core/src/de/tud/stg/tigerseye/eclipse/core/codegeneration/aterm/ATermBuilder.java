@@ -58,22 +58,27 @@ private static final Logger logger = LoggerFactory.getLogger(ATermBuilder.class)
 	int index = 0;
 
     private ATerm buildATerm(IAbstractNode node) {
-		int oldIndex = this.index;
+	int oldIndex = this.index;
 		this.index = 0;
 
 		if (node instanceof Terminal) {
 			Terminal t = (Terminal) node;
-			if (t.getTerm() == null) {
-				logger.error("getTerm for {} is null ", t);
-			}
+	    if (t.getTerm() == null) {
+		logger.error("getTerm for {} is null ignoring it", t);
+		// XXX(Leo_Roos;Nov 18, 2011) should return to avoid NullPoint,
+		// what would be a valid return value?
+	    }
 
-			ATerm term = fac.makeAppl(fac.makeAFun(t.getTerm(), 0, false));
+	  // XXX(Leo_Roos;Nov 18, 2011) would it make difference just to use
+	    // fac.make(t.getTerm())
+	    ATerm term = fac.makeAppl(fac.makeAFun(t.getTerm(), 0, false));
 
-			term = term.setAnnotation(fac.make("LHS"), fac.makeAppl(fac.makeAFun(t.getItem().getRule().getLhs()
-					.getName(), 0, true)));
+	    String lhsName = t.getItem().getRule().getLhs()
+					.getName();
+	    term = term.setAnnotation(fac.make("LHS"), fac.makeAppl(fac.makeAFun(lhsName, 0, true)));
 
-			term = term.setAnnotation(fac.make("RHS"), fac.makeAppl(fac.makeAFun(t.getItem().getRule().getRhs().get(
-					this.index).toString(), 0, true)));
+			String rhsName = t.getItem().getRule().getRhs().get(this.index).getName();
+	    term = term.setAnnotation(fac.make("RHS"), fac.makeAppl(fac.makeAFun(rhsName, 0, true)));
 
 			this.index = oldIndex;
 			return term;
@@ -85,10 +90,11 @@ private static final Logger logger = LoggerFactory.getLogger(ATermBuilder.class)
 				this.index++;
 			}
 
-			list = (ATermList) list.setAnnotation(fac.make("LHS"), fac.makeAppl(fac.makeAFun(node.getItem().getRule()
-					.getLhs().getName(), 0, true)));
-			String tmp = node.getItem().getRule().getRhs().toString();
-			list = (ATermList) list.setAnnotation(fac.make("RHS"), fac.makeAppl(fac.makeAFun(tmp.substring(1, tmp
+	    String lhsName = node.getItem().getRule().getLhs().getName();
+	    list = (ATermList) list.setAnnotation(fac.make("LHS"), fac.makeAppl(fac.makeAFun(lhsName, 0, true)));
+	    String rhsListString = node.getItem().getRule().getRhs().toString();
+	    list = (ATermList) list.setAnnotation(fac.make("RHS"),
+		    fac.makeAppl(fac.makeAFun(rhsListString.substring(1, rhsListString
 					.length() - 1), 0, true)));
 
 			if (this.isArray(node)) {

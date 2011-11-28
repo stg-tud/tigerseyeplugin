@@ -8,10 +8,9 @@ import java.util.HashMap;
 
 import de.tud.stg.parlex.core.Grammar;
 import de.tud.stg.parlex.core.IGrammar;
-import de.tud.stg.popart.builder.core.annotations.DSLParameter;
-import de.tud.stg.popart.builder.core.annotations.DSLClass;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod;
-import de.tud.stg.popart.builder.core.annotations.DSLParameter;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLClass;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLParameter;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.HostLanguageGrammar;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.TypeHandler;
 
@@ -23,7 +22,7 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.TypeHandler
 		SdfDSLForExtractingTest.CaseInsensitiveLiteralSymbolType.class },// 
 		hostLanguageRules = { //
 		SdfDSLForExtractingTest.MyHostLanguage.class })
-public class SdfDSLForExtractingTest implements de.tud.stg.popart.dslsupport.DSL {
+public class SdfDSLForExtractingTest implements de.tud.stg.tigerseye.dslsupport.DSL {
 
 	public static class MyHostLanguage implements HostLanguageGrammar {
 

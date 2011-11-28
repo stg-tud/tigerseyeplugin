@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.eclipse.jdt.internal.corext.refactoring.typeconstraints.typesets.ArraySuperTypeSet;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
@@ -25,6 +24,9 @@ import de.tud.stg.tigerseye.util.OSInfo.OSType;
  * @author Leo_Roos
  * 
  */
+// TODO(Leo_Roos;Nov 18, 2011) consider implementing global register where every
+// annotation can provide it's own logic, what should happen if it is called in
+// the context of this rule.
 public class SystemPropertyRule implements MethodRule {
 
 	private static final String FALSE = "false";
@@ -59,6 +61,11 @@ public class SystemPropertyRule implements MethodRule {
 		}
 		if (isPropertyOfBooleanValue(TodoTest.PROPERTY_KEY_TESTS_TODO, false)) {
 			skipWithReason("TODO tests have been disabled.");
+		}else{
+			if(TodoTest.ACTIVATE_TODO_TESTS_DEFAULT){
+				return;
+			}else
+				skipWithReason("Found LongRunningTest annotation, default is to skip.");
 		}
 	}
 

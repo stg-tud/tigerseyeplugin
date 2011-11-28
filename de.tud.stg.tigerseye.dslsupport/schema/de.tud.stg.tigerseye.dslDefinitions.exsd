@@ -60,7 +60,7 @@
                   The fully qualified name of the main Popart DSL class (e.g. de.tud.stg.tigerseye.examples.TrivalentDSL).
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":de.tud.stg.popart.dslsupport.DSL"/>
+                  <meta.attribute kind="java" basedOn=":de.tud.stg.tigerseye.dslsupport.DSL"/>
                </appinfo>
             </annotation>
          </attribute>

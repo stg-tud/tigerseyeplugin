@@ -98,7 +98,7 @@ public class TransformerTableDialogTest{
 		return newList;
 	}	
 	
-	@Ignore("Needs manual intervention, consider introducing tools such as SWTBOT as a workaround")
+	@Ignore("Needs manual interaction, consider introducing tools such as SWTBOT alternatively")
 	@Test
 	public void shouldShowCheckedTableOfElements() throws Exception {
 		CheckedItem el = ci(nullId, "name", false);

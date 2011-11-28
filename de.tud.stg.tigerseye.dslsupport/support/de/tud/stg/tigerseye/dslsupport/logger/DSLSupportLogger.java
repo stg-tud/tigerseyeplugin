@@ -10,6 +10,19 @@ import java.io.StringWriter;
  * 
  */
 public class DSLSupportLogger {
+	
+	private static Level currentLogLevel = Level.ERROR;
+	
+	static {
+		String property = System.getProperty("tigerseye.dsllogger");
+		if(property != null){
+			Level toSet = Level.parse(property);
+			if(toSet != null)
+				currentLogLevel = toSet;
+			else
+				new DSLSupportLogger(DSLSupportLogger.class).error("Unknown Level " + property);
+		}
+	}
 
 	public enum Level {
 		DEBUG("DEBUG", -1), INFO("INFO", 0), ERROR("ERROR", 1);
@@ -22,12 +35,31 @@ public class DSLSupportLogger {
 			this.prio = prio;
 		}
 
-		private boolean hasLowerPriorityThan(Level l) {
-			return this.prio <= l.prio;
+		public static Level parse(String property) {
+			Level[] values = Level.values();
+			for (Level level : values) {
+				if(level.name.equalsIgnoreCase(property))
+					return level;
+			}
+			return null;
+		}
+
+		private boolean isIncludedIn(Level l) {
+			return this.prio >= l.prio;
+		}
+		
+		public boolean isEnabled(){
+			return this.isIncludedIn(currentLogLevel);
 		}
 	}
-
-	public static Level level = Level.ERROR;
+	
+	public boolean isDebugEnabled(){
+		return Level.DEBUG.isEnabled();
+	}
+	
+	public Level getLevel() {
+		return currentLogLevel;
+	}
 
 	private String name;
 
@@ -41,6 +73,10 @@ public class DSLSupportLogger {
 
 	public void debug(String msg) {
 		out(Level.DEBUG, msg, null);
+	}
+	
+	public void debug(String msg, Throwable e) {
+		out(Level.DEBUG, msg, e);
 	}
 
 	private String formatLogMsg(Level error, String msg) {
@@ -60,23 +96,21 @@ public class DSLSupportLogger {
 	}
 
 	public void error(String msg, Throwable e) {
-		if (level.hasLowerPriorityThan(Level.ERROR))
-			out(Level.ERROR, msg, e);
+		out(Level.ERROR, msg, e);
 	}
 
-	private void out(Level error, String msg, Throwable e) {
-		if (level.hasLowerPriorityThan(error)) {
-			String formatted = formatLogMsg(error,
-					formatMsgWithException(msg, e));
+	private void out(Level logLevel, String msg, Throwable e) {
+		if (logLevel.isIncludedIn(currentLogLevel)) {
+			String formatted = formatLogMsg(logLevel, formatMsgWithException(msg, e));
 			System.err.println(formatted);
 		}
 	}
 
 	private String formatMsgWithException(String msg, Throwable e) {
-		StringWriter stringWriter = new StringWriter();
 		if (e != null) {
+			StringWriter stringWriter = new StringWriter();
 			e.printStackTrace(new PrintWriter(stringWriter));
-			return msg + " " + stringWriter;
+			return "DSLSupport:" +msg + " " + stringWriter.toString();
 		} else {
 			return msg;
 		}

@@ -11,7 +11,7 @@ import java.util.Map;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
-import de.tud.stg.popart.builder.core.annotations.DSLParameter;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLParameter;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.ConfigurationOptions;
 
 public class ParameterDSLInformation extends DSLInformation {

@@ -7,9 +7,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import de.tud.stg.parlex.core.Category;
 import de.tud.stg.parlex.core.Grammar;
-import de.tud.stg.popart.builder.core.annotations.DSLParameter;
-import de.tud.stg.popart.builder.core.annotations.DSLClass;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLClass;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLParameter;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.grammars.CategoryNames;
 import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.TypeHandler;
 
@@ -20,7 +20,7 @@ import de.tud.stg.tigerseye.eclipse.core.codegeneration.typeHandling.TypeHandler
  * 
  */
 @DSLClass(whitespaceEscape = " ", typeRules = { ImprovedBnfDSL.IdentifierType.class, ImprovedBnfDSL.QuotedSymbolType.class }, arrayDelimiter = " ")
-public class ImprovedBnfDSL implements de.tud.stg.popart.dslsupport.DSL {
+public class ImprovedBnfDSL implements de.tud.stg.tigerseye.dslsupport.DSL {
 
 	private Grammar grammar = new Grammar();
 

@@ -3,7 +3,7 @@
  */
 package de.tud.stg.popart.dslsupport.analysis.syntax;
 
-import de.tud.stg.popart.dslsupport.Interpreter;
+import de.tud.stg.tigerseye.dslsupport.Interpreter;
 
 /**
  * This is an abstract interpreter that can be used to determine all keywords a DSL program uses.

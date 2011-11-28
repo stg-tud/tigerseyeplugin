@@ -6,8 +6,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import de.tud.stg.popart.builder.core.annotations.DSLParameter;
-import de.tud.stg.popart.builder.core.annotations.DSLMethod;
 import de.tud.stg.popart.eclipse.core.debug.annotations.PopartType;
 import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeyword;
 
@@ -18,9 +16,11 @@ import de.tud.stg.popart.eclipse.core.debug.model.keywords.PopartOperationKeywor
  * @author Kamil Erhard
  * 
  */
-import de.tud.stg.popart.builder.core.annotations.DSLClass;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLClass;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLMethod;
+import de.tud.stg.tigerseye.dslsupport.annotations.DSLParameter;
 @DSLClass(whitespaceEscape = " ")
-public class ForEachSyntaxDSL implements de.tud.stg.popart.dslsupport.DSL {
+public class ForEachSyntaxDSL implements de.tud.stg.tigerseye.dslsupport.DSL {
 
 	public Object eval(HashMap map, Closure cl) {
 		cl.setDelegate(this);
@@ -28,14 +28,12 @@ public class ForEachSyntaxDSL implements de.tud.stg.popart.dslsupport.DSL {
 		return cl.call();
 	}
 
-	@DSLMethod(production = "for ( p0 p1 : p2 ) { p3 }")
-	
+	@DSLMethod(production = "for ( p0 p1 : p2 ) { p3 }")	
 	public <T> void forEach(Class<T> t, String var, Iterable<T> list, Closure c) {
 		this.iterate(var, list.iterator(), c);
 	}
 
-	@DSLMethod(production = "for ( p0 p1 : p2 ) { p3 }")
-	
+	@DSLMethod(production = "for ( p0 p1 : p2 ) { p3 }")	
 	public <T> void forEach(Class<T> t, String var, T[] array, Closure c) {
 
 		this.iterate(var, Arrays.asList(array).iterator(), c);

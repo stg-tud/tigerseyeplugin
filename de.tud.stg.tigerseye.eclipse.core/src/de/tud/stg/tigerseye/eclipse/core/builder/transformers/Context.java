@@ -13,10 +13,12 @@ import org.eclipse.core.resources.IProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tud.stg.popart.dslsupport.DSL;
+import de.tud.stg.parlex.core.IGrammar;
+import de.tud.stg.tigerseye.dslsupport.DSL;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLKey;
 import de.tud.stg.tigerseye.eclipse.core.api.NoLegalPropertyFoundException;
+import de.tud.stg.tigerseye.eclipse.core.codegeneration.GrammarBuilder.DSLMethodDescription;
 
 /**
  * This class represents the context of a Tigerseye source file during the
@@ -48,12 +50,14 @@ public class Context {
 
     private final String fileName;
     private IFile transformedFile;
+    private Map<String, DSLMethodDescription> dslMethodDescriptions;
+    private IGrammar<String> grammar;
 
     public Context(String fileName) {
 	this.fileName = fileName;
     }
 
-    public void addDSL(String extension, Class<? extends DSL> clazz) {
+    private void addExtensionToClassRelation(String extension, Class<? extends DSL> clazz) {
 	this.dslClasses.put(extension, clazz);
     }
 
@@ -61,7 +65,6 @@ public class Context {
 	return this.dslClasses.keySet().toArray(new String[this.dslClasses.size()]);
     }
 
-    @Deprecated
     @SuppressWarnings("unchecked")
     public Class<? extends DSL>[] getDSLClasses() {
 	return this.dslClasses.values().toArray(new Class[this.dslClasses.size()]);
@@ -77,7 +80,7 @@ public class Context {
 
     public void addDSL(DSLDefinition dsl) throws NoLegalPropertyFoundException {
 	if (dsl.isDSLClassLoadable()) {
-	    addDSL(dsl.getValue(DSLKey.EXTENSION), dsl.getDSLClassChecked());
+	    addExtensionToClassRelation(dsl.getValue(DSLKey.EXTENSION), dsl.getDSLClassChecked());
 	    this.dsls.add(dsl);
 	} else {
 	    logger.error("tried to add not loadable dsl {}", dsl);
@@ -97,7 +100,7 @@ public class Context {
     }
 
     /**
-     * This method will simply call {@link #addDSL(String, Class)} for each
+     * This method will simply call {@link #addExtensionToClassRelation(String, Class)} for each
      * element and ignore any element that causes an exception during the
      * addition.
      * 
@@ -118,6 +121,8 @@ public class Context {
     }
 
     public IFile getTransformedFile() {
+	if (transformedFile == null)
+	    throw new IllegalStateException("transformedFile has not been set yet.");
 	return transformedFile;
     }
 
@@ -125,6 +130,26 @@ public class Context {
 	if (transformedFile == null)
 	    throw new IllegalStateException("transformedFile has not been set yet.");
 	return transformedFile.getProject();
+    }
+
+    public void setDSLMethodDescriptions(Map<String, DSLMethodDescription> methodOptions) {
+	this.dslMethodDescriptions = methodOptions;
+    }
+
+    public Map<String, DSLMethodDescription> getDslMethodDescriptions() {
+	if (dslMethodDescriptions == null)
+	    throw new IllegalStateException("dslMethodDescriptions has not been set yet.");
+	return dslMethodDescriptions;
+    }
+
+    public void setGrammar(IGrammar<String> grammar) {
+	this.grammar = grammar;
+    }
+
+    public IGrammar<String> getGrammar() {
+	if (grammar == null)
+	    throw new IllegalStateException("grammar has not been set yet.");
+	return grammar;
     }
 
 }

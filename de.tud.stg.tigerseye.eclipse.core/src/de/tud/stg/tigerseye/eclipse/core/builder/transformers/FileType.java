@@ -2,9 +2,6 @@ package de.tud.stg.tigerseye.eclipse.core.builder.transformers;
 
 import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 
-/*
- * FIXME need to reorder responsibilities. java groovy tigerseye are resource types, all four are transformation types.
- */
 /**
  * Describes different source file types and the corresponding applied file
  * extensions as they are used in the source folder and the translated output
@@ -16,11 +13,8 @@ public enum FileType implements TransformationType {
     JAVA("JAVA", "java.dsl", "java"), //
     GROOVY("GROOVY", "groovy.dsl", "groovy"), //
     TIGERSEYE("TIGERSEYE", "dsl", "dsl.groovy"), //
-    DSL("DSL", "notset", "notset"); /*
-				     * XXX Actually not a FileType. Renaming
-				     * this enumeration to DomainType?
-				     */
 
+    ;
     /**
      * File extension for this FileType in the Tigerseye source folder context.
      */
@@ -34,12 +28,6 @@ public enum FileType implements TransformationType {
      * This FileTypes descriptive, unique name.
      */
     public final String name;
-    // FIXME(Leo_Roos;Aug 27, 2011) Filetypes should be changed to separate
-    // enums. Although the array itself is declared final its content can still
-    // be modified
-    public static final FileType[] RESOURCE_FILE_TYPES = { JAVA, GROOVY,
-	    TIGERSEYE };
-    public static final FileType[] DSL_FILETYPES = { DSL };
 
     private FileType(String name, String srcFileEnding, String outPutFileEnding) {
 	this.name = name;

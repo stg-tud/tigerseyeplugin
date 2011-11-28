@@ -2,3 +2,7 @@
 OPTIONAL/*/bin/
 */*/generated/*
 */*/generated*
+TigerseyeUpdateSite/artifacts.jar
+TigerseyeUpdateSite/content.jar
+TigerseyeUpdateSite/features
+TigerseyeUpdateSite/plugins

@@ -167,7 +167,6 @@ public class UnicodeLookupTable {
 		 * and undefined otherwise.
 		 */
 		if (splitString.equals(characterString) && element.isEmpty()) {
-		    elementNumber--;
 		    /**
 		     * Have to try next element to support both versions, i.e.
 		     * 11 and 12, of MatchClassEx, which differ in that 11 just
@@ -179,6 +178,7 @@ public class UnicodeLookupTable {
 		     * 003B;P;;;semi;ISONUM;;SEMICOLONv
 		     * </code>.
 		     */
+		    elementNumber--;
 		}
 		name = element;
 		break;
