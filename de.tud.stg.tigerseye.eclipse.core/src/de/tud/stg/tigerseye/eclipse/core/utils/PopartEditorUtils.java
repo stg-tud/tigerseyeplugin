@@ -59,12 +59,17 @@ public class PopartEditorUtils {
     	return litralKeywordName;
     }
 
-	/**
-     * This method checks whether the given IFile is suitable for running like
+    
+	            /**
+     * This method checks whether the given IFile is suitable for running like a
      * Popart class or not.
+     * <p>
+     * FIXME(leo;06.12.2011)
+     * This implementation is just a heuristic on plain text and may fail if by
+     * accident actual code uses the same keywords that are expected here.  
      * 
      * @param file
-     *            the IFiele that should be checked.
+     *            the IFile that should be checked.
      * @return <code>true</code> if <code>file</code> has popart type main
      */
 	public static boolean hasPopartMain(IFile file) {

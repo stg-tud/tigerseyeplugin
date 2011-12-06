@@ -162,7 +162,7 @@ public class TigerseyeGroovyEditorHighlightingExtender implements
 	try {
 	    value = dsl.getValue(DSLUIKey.COLOR);
 	} catch (NoLegalPropertyFoundException e) {
-	    value = DSLUIKey.getDefaultColor(TigerseyeCore.getPreferences());
+	    value = DSLUIKey.getAndSetDefaultColor(TigerseyeCore.getPreferences(), dsl);
 	}
 	return new TextAttribute(cmanager.getColor(value), null, SWT.BOLD);
     }

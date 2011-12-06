@@ -184,7 +184,7 @@ public class TigerseyeUIPreferencePage extends PreferencePage
 	    try {
 		this.rgb = getDsl().getValue(DSLUIKey.COLOR);
 	    } catch (NoLegalPropertyFoundException e) {
-		this.rgb = DSLUIKey.getDefaultColor(getStore());
+		this.rgb = DSLUIKey.getAndSetDefaultColor(store, dsl);
 	    }
 	}
 
