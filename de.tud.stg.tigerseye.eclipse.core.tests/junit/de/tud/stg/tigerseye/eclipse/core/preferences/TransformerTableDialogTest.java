@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.tud.stg.tigerseye.eclipse.core.api.ITransformationHandler;
 import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 import de.tud.stg.tigerseye.eclipse.core.preferences.TableDialog.CheckedItem;
 
@@ -149,8 +150,17 @@ public class TransformerTableDialogTest{
 	private static class dummyType implements TransformationType{
 
 		@Override
-		public String getIdentifer() {
-			return "String";
+		public boolean isActiveFor(ITransformationHandler handler) {
+			return false;
+		}
+
+		@Override
+		public boolean getDefaultActiveFor(ITransformationHandler handler) {
+			return false;
+		}
+
+		@Override
+		public void setActiveStateFor(ITransformationHandler handler, boolean value) {
 		}
 
 	}

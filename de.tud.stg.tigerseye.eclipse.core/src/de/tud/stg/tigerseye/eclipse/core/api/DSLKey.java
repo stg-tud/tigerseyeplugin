@@ -2,7 +2,6 @@ package de.tud.stg.tigerseye.eclipse.core.api;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 
-import de.tud.stg.tigerseye.eclipse.core.internal.DSLActivationState;
 import de.tud.stg.tigerseye.eclipse.core.preferences.TigerseyePreferenceConstants;
 
 
@@ -162,43 +161,6 @@ public abstract class DSLKey<T> {
 
     }
 
-
-    private final static class ActivatedDSLKey extends DSLKey<Boolean> {
-
-	private static final String TRUE = "MYTRUE";
-	private static final String FALSE = "MYFALSE";
-
-	protected ActivatedDSLKey() {
-	    super(SUFFIX_LANGUAGE);
-	}
-
-	@Override
-	public Boolean getValue(DSLDefinition dsl, IPreferenceStore store)
-		throws NoLegalPropertyFoundException {
-	    String key = dsl.getLanguageKey();
-	    return DSLActivationState.getValue(key, store);
-	}
-
-	@Override
-	public void setValue(DSLDefinition dsl, IPreferenceStore store,
-		Boolean value) {
-	    String key = dsl.getLanguageKey();
-	    DSLActivationState.setValue(key, store, value);
-	}
-
-	/**
-	 * This implementation only forwards to
-	 * {@link DSLActivationState#getDefault()}
-	 * 
-	 * @see de.tud.stg.tigerseye.eclipse.core.api.DSLKey#getDefault(de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition,
-	 *      org.eclipse.jface.preference.IPreferenceStore)
-	 */
-	@Override
-	public Boolean getDefault(DSLDefinition dsl, IPreferenceStore store) {
-	    return DSLActivationState.getDefault();
-	}
-
-    }
 
     private static final class NullDSLKey extends DSLKey<Object> {
 

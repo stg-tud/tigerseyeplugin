@@ -51,6 +51,8 @@ public class DSLDefinitionImpl implements DSLDefinition {
     private @Nullable
     Class<? extends DSL> dslClass;
 
+    private DSLActivationState dslActivationstate;
+
     /**
      * Constructs a {@link DSLDefinition} for given values, <code>null</code> is
      * never valid.
@@ -148,14 +150,22 @@ public class DSLDefinitionImpl implements DSLDefinition {
 	this.store = store;
     }
 
+
     @Override
     public boolean isActive() {
-	return DSLActivationState.getValue(this, getStore());
+	return getState().getValue(this);
+    }
+
+    private DSLActivationState getState() {
+	if (this.dslActivationstate == null) {
+	    this.dslActivationstate = new DSLActivationState(getStore());
+	}
+	return this.dslActivationstate;
     }
 
     @Override
     public void setActive(boolean active) {
-	DSLActivationState.setValue(this, getStore(), active);
+	getState().setValue(this, active);
     }
 
     @Override
@@ -202,11 +212,6 @@ public class DSLDefinitionImpl implements DSLDefinition {
     @Override
     public DSLContributor getContributor() {
 	return this.configurationElement.getContributor();
-    }
-
-    @Override
-    public String getIdentifer() {
-	return getLanguageKey();
     }
 
     @Override

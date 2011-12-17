@@ -30,7 +30,7 @@ public interface Transformation {
      * @return the priority when to execute this transformation.
      */
     public int getBuildOrderPriority();
-    // XXX(leo;20.11.2011) add uniform transform statement or two! so they can
-    // be
+    // XXX(leo;20.11.2011) add uniform transform statement or two! so that the
+    // sub transformation interfaces can be merged to one
 
 }

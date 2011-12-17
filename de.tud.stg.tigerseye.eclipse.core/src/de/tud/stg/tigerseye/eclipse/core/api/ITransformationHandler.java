@@ -1,12 +1,25 @@
 package de.tud.stg.tigerseye.eclipse.core.api;
 
-import org.eclipse.jface.preference.IPreferenceStore;
-
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 
+/**
+ * Wrapper around {@link Transformation} adds some additional properties without
+ * breaking other dependencies the wrapped interface.
+ * 
+ * @author Leo_Roos
+ * 
+ */
 public interface ITransformationHandler {
 
-    void setPreferenceStore(IPreferenceStore store);
+    /**
+     * The id for the transformations extension point
+     */
+    public static final String ID = "de.tud.stg.tigerseye.transformers";
+
+    /**
+     * @return the unique identifier for this Transformation
+     */
+    String getIdentifier();
 
     /**
      * @return the registered {@link Transformation} object.
@@ -19,36 +32,11 @@ public interface ITransformationHandler {
      */
     String getName();
 
+    /**
+     * FileTypes this transformer is intended for.
+     * 
+     * @see Transformation#getSupportedFileTypes()
+     */
     boolean supports(FileType type);
-
-    /**
-     * @return the unique identifier for this Transformation
-     */
-    String getIdentifier();
-
-    /**
-     * Returns a string representing the preference for key for this handler for
-     * the passed {@link TransformationType} object
-     * 
-     * @param identifiable
-     *            the object associated to this transformation
-     * @return preference key
-     */
-    String getPreferenceKeyFor(TransformationType identifiable);
-
-    /**
-     * @param identifiable
-     * @return whether the transformation is active for {@code identifiable}.
-     */
-    boolean isActiveFor(TransformationType identifiable);
-
-    /**
-     * Set the active of this transformation for the passed {@code identifiable}
-     * .
-     * 
-     * @param identifiable
-     * @param value
-     */
-    void setActiveStateFor(TransformationType identifiable, boolean value);
 
 }

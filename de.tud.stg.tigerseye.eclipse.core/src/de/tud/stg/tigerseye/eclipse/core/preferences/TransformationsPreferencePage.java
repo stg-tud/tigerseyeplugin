@@ -27,6 +27,8 @@ import org.slf4j.LoggerFactory;
 
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
+import de.tud.stg.tigerseye.eclipse.core.api.DSLTransformation;
+import de.tud.stg.tigerseye.eclipse.core.api.FileTypeTransformation;
 import de.tud.stg.tigerseye.eclipse.core.api.ILanguageProvider;
 import de.tud.stg.tigerseye.eclipse.core.api.ITransformationHandler;
 import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
@@ -57,11 +59,11 @@ public class TransformationsPreferencePage extends PreferencePage implements
 	this.languageProvider = TigerseyeCore.getLanguageProvider();
     }
 
-    public ILanguageProvider getLanguageProvider() {
+    private ILanguageProvider getLanguageProvider() {
 	return languageProvider;
     }
 
-    public List<ITransformationHandler> getConfiguredTransformations() {
+    private List<ITransformationHandler> getConfiguredTransformations() {
 	return configuredTransformations;
     }
 
@@ -216,11 +218,13 @@ public class TransformationsPreferencePage extends PreferencePage implements
     private void openDSLTransformationDialog(DSLDefinition selectedDSL) {
 	String title = "Transformations for '" + selectedDSL.getDslName() + "'";
 
-	List<CheckedItem> items = getTransformationsForFiletypeAssociatedToIdentity(selectedDSL);
+	DSLTransformation dslTransformation = new DSLTransformation(selectedDSL, getPreferenceStore());
+
+	List<CheckedItem> items = getTransformationsForFiletypeAssociatedToIdentity(dslTransformation);
 	List<CheckedItem> changedItems = openDialogForItemsReturnChanged(items,
  title,
-		TransformationHandler.getDefaultActivationStateFor(selectedDSL));
-	saveItemsFor(changedItems, selectedDSL);
+ dslTransformation);
+	saveItemsFor(changedItems, dslTransformation);
     }
 
     private void openFileTypeTransformationDialog(FileType data) {
@@ -228,16 +232,16 @@ public class TransformationsPreferencePage extends PreferencePage implements
 	openFileTypeTransformationDialog(data, title);
     }
 
-    private void openFileTypeTransformationDialog(FileType fileType,
-	    String title) {
+    private void openFileTypeTransformationDialog(FileType fileType, String title) {
 	List<ITransformationHandler> supportedTransformationsForFiletype = getSupportedTransformationsForFiletype(fileType);
 	sortTransformationHandlerAfterBuildOrder(supportedTransformationsForFiletype);
 
+	FileTypeTransformation fileTypeTransformation = new FileTypeTransformation(fileType, getPreferenceStore());
+
 	List<CheckedItem> items = makeCheckItemsForTransformationsAssociatedToIdentity(
-		supportedTransformationsForFiletype, fileType);
-	List<CheckedItem> changedItems = openDialogForItemsReturnChanged(items,
-		title, TransformationHandler.getDefaultActivationStateFor(fileType));
-	saveItemsFor(changedItems, fileType);
+		supportedTransformationsForFiletype, fileTypeTransformation);
+	List<CheckedItem> changedItems = openDialogForItemsReturnChanged(items, title, fileTypeTransformation);
+	saveItemsFor(changedItems, fileTypeTransformation);
     }
 
     private void sortTransformationHandlerAfterBuildOrder(List<ITransformationHandler> transformationHandler) {
@@ -250,9 +254,10 @@ public class TransformationsPreferencePage extends PreferencePage implements
     }
 
     private List<CheckedItem> openDialogForItemsReturnChanged(
-	    List<CheckedItem> items, String title, boolean defaultCheckState) {
+List<CheckedItem> items, String title,
+	    TransformationType tt) {
 	TransformationsTableDialog transformerDialog = new TransformationsTableDialog(
-		getShell(), title, defaultCheckState);
+getShell(), title, tt);
 	transformerDialog.setTitle("Select Transformations");
 	transformerDialog.setItems(items);
 	transformerDialog.open();
@@ -272,8 +277,7 @@ public class TransformationsPreferencePage extends PreferencePage implements
 			"Wrong configured. Expected TransformationHandler",
 			null);
 	    ITransformationHandler transformationHandler = (ITransformationHandler) data;
-	    transformationHandler.setActiveStateFor(toBeAssociatedTo,
-		    checkedItem.checked);
+	    toBeAssociatedTo.setActiveStateFor(transformationHandler, checkedItem.checked);
 	}
     }
 
@@ -294,7 +298,7 @@ public class TransformationsPreferencePage extends PreferencePage implements
 	    TransformationType identity) {
 	List<CheckedItem> items = new ArrayList<CheckedItem>();
 	for (ITransformationHandler handler : supportedTransformers) {
-	    boolean activeFor = handler.isActiveFor(identity);
+	    boolean activeFor = identity.isActiveFor(handler);
 	    items.add(new CheckedItem(handler, handler.getName(), activeFor));
 	}
 	return items;
@@ -302,19 +306,24 @@ public class TransformationsPreferencePage extends PreferencePage implements
 
     private ArrayList<ITransformationHandler> getSupportedTransformationsForFiletype(
 	    FileType type) {
-	ArrayList<ITransformationHandler> supportedTransformers = new ArrayList<ITransformationHandler>();
-	for (ITransformationHandler handler : getConfiguredTransformations()) {
-	    if (handler.supports(type)) {
-		supportedTransformers.add(handler);
-	    }
-	}
-	return supportedTransformers;
+	// ArrayList<ITransformationHandler> supportedTransformers = new
+	// ArrayList<ITransformationHandler>();
+	// for (ITransformationHandler handler : getConfiguredTransformations())
+	// {
+	// if (handler.supports(type)) {
+	// supportedTransformers.add(handler);
+	// }
+	// }
+	// return supportedTransformers;
+
+	return new ArrayList<ITransformationHandler>(getConfiguredTransformations());
+
     }
 
     private ArrayList<ITransformationHandler> getSupportedTransformationsForFiletype(TransformationType type) {
 	ArrayList<ITransformationHandler> supportedTransformers = new ArrayList<ITransformationHandler>();
 	for (ITransformationHandler handler : getConfiguredTransformations()) {
-	    if (handler.isActiveFor(type)) {
+	    if (type.isActiveFor(handler)) {
 		supportedTransformers.add(handler);
 	    }
 	}

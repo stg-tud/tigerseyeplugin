@@ -84,10 +84,9 @@ public class TigerseyeCore {
     public static ITransformationProvider getTransformationProvider() {
 	IExtensionRegistry extensionRegistry = RegistryFactory.getRegistry();
 	if (extensionRegistry != null) {
-	    return new TransformationProviderImpl(getPreferences(),
-		    extensionRegistry.getConfigurationElementsFor(TransformationHandler.ID));
+	    return new TransformationProviderImpl(extensionRegistry.getConfigurationElementsFor(TransformationHandler.ID));
 	} else {
-	    return new TransformationProviderImpl(getPreferences(), new IConfigurationElement[0]);
+	    return new TransformationProviderImpl(new IConfigurationElement[0]);
 	}
     }
 

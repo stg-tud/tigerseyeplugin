@@ -21,6 +21,7 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +33,8 @@ import de.tud.stg.parlex.parser.earley.EarleyParser;
 import de.tud.stg.tigerseye.eclipse.core.TigerseyeCore;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLDefinition;
 import de.tud.stg.tigerseye.eclipse.core.api.DSLNotFoundException;
+import de.tud.stg.tigerseye.eclipse.core.api.DSLTransformation;
+import de.tud.stg.tigerseye.eclipse.core.api.FileTypeTransformation;
 import de.tud.stg.tigerseye.eclipse.core.api.ILanguageProvider;
 import de.tud.stg.tigerseye.eclipse.core.api.ITransformationHandler;
 import de.tud.stg.tigerseye.eclipse.core.api.ITransformationProvider;
@@ -255,13 +258,14 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 
     public abstract boolean isInteresstedIn(IResource resource);
 
-    // private IPreferenceStore tigerseyePreferenceStore;
+    private IPreferenceStore tigerseyePreferenceStore;
 
     public DSLResourceHandler(FileType fileType, CodePrinter prettyPrinter) {
 	this.fileType = fileType;
 	this.prettyPrinter = prettyPrinter;
 	init();
     }
+
 
     protected void init() {
 	this.ult = TigerseyeCore.getUnicodeLookupTable();
@@ -271,7 +275,7 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 	String property = System.getProperty(TRANSFORMATION_DEBUG_SYSTEM_PROPERTY);
 	if (property != null)
 	    this.tigerseyetransforamtiondebug = true;
-	// this.tigerseyePreferenceStore = TigerseyeCore.getPreferences();
+	this.tigerseyePreferenceStore = TigerseyeCore.getPreferences();
     }
 
     protected ITransformationProvider getTransformerProvider() {
@@ -363,8 +367,11 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 
 	Map<String, Object> transformerCommunicationData = new HashMap<String, Object>();
 
-	final ArrayList<TransformationType> idents = new ArrayList<TransformationType>(context.getDsls());
-	idents.add(context.getFiletype());
+	final ArrayList<TransformationType> idents = new ArrayList<TransformationType>();
+	for (DSLDefinition transformationType : context.getDsls()) {
+	    idents.add(new DSLTransformation(transformationType, getPreferenceStore()));
+	}
+	idents.add(new FileTypeTransformation(context.getFiletype(), getPreferenceStore()));
 
 	Collection<ITransformationHandler> configuredTransformations = getTransformerProvider()
 		.getConfiguredTransformations();
@@ -492,13 +499,17 @@ public abstract class DSLResourceHandler implements IResourceDeltaVisitor, IReso
 	List<Transformation> transformers = new ArrayList<Transformation>(configuredTransformations.size());
 	outer: for (ITransformationHandler iTransformationHandler : configuredTransformations) {
 	    for (TransformationType transformationType : idents) {
-		boolean activeFor = iTransformationHandler.isActiveFor(transformationType);
+		boolean activeFor = transformationType.isActiveFor(iTransformationHandler);
 		if (!activeFor)
 		    continue outer;
 	    }
 	    transformers.add(iTransformationHandler.getTransformation());
 	}
 	return transformers;
+    }
+
+    private IPreferenceStore getPreferenceStore() {
+	return tigerseyePreferenceStore;
     }
 
     protected ByteArrayOutputStream performPrettyPrinting(ATerm term) {
