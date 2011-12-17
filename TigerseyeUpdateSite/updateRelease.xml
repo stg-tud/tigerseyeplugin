@@ -10,7 +10,7 @@
 	<property name="latest" location="../../tigerseyeplugin-releases/latest" />
 
 	<tstamp>
-		<format property="timestamp" pattern="yyyyMMddhhmm" unit="hour" />
+		<format property="timestamp" pattern="yyyyMMddhhmm" />
 	</tstamp>
 
 	<property name="release" location="${releasesfolder}/r${timestamp}" />
@@ -19,7 +19,7 @@
           target: update              
          ================================= -->
 	<target name="update" depends="info,-delete-latest" description="performes the copy operations">
-		<!-- Should use ant-contrib to avoid duplication because variables are not possible -->
+		<!-- Could use ant-contrib to avoid duplication, standard ant does not support variables -->
 
 		<copy todir="${release}">
 			<fileset dir="${updatesite}">
@@ -53,11 +53,11 @@
 
 	<target name="info">
 		<echo>
-        	Timestamp is      ${timestamp}
-        	Updatesite is     ${updatesite}
-        	Releasesfolder is ${releasesfolder}
-        	latest is         ${latest}
-        	new release  s    ${release}
+        	Timestamp is          ${timestamp}
+        	Updatesite is         ${updatesite}
+        	Releasesfolder is     ${releasesfolder}
+        	latest is             ${latest}
+        	new release folder is ${release}
         </echo>
 	</target>
 
