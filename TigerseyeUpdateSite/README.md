@@ -22,5 +22,5 @@ The `updateRelease.xml` ant build file copies the build release into the release
 * the `latest` folder and
 * to a, for each release unique, release folder.
 
-By convention the release folder/repository is on the same level as this update-site folder.
-For a different configuration adjust the predefined properties in the  `updateRelease.xml`. 
+By convention the release folder is located relative to this folder at `../../tigerseyeplugin-releases`.
+For a different configuration adjust the properties in the `updateRelease.xml` file. 
