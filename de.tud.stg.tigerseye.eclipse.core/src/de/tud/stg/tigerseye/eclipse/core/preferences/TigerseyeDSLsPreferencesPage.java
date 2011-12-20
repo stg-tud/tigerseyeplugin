@@ -464,12 +464,13 @@ public class TigerseyeDSLsPreferencesPage extends PreferencePage implements IWor
     @Override
     protected void performDefaults() {
 	List<PrefDSL> dsls = getDslList();
+	DSLActivationState state = new DSLActivationState(getPreferenceStore());
 	for (PrefDSL dsl : dsls) {
 	    DSLDefinition dslDefinition = dsl.getDsl();
 	    String defExt = DSLKey.EXTENSION.getDefault(dslDefinition, getPreferenceStore());
 	    dsl.setExtension(defExt);
 
-	    boolean activeKey = DSLActivationState.getDefault();
+	    boolean activeKey = state.getDefault();
 	    dsl.setIsActiveLocal(activeKey);
 	}
 	rebuildTableItems(dsls);

@@ -162,7 +162,7 @@ Collection<DSLDefinition> registeredDefinitions) {
     }
 
     private boolean activeStateAlreadySet(DSLDefinition dsl) {
-	return getStore().contains(DSLActivationState.getKeyFor(dsl));
+	return new DSLActivationState(getStore()).storeContainsKeyFor(dsl);
     }
 
     @Override

@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
  * 
  */
 @Nonnull
-public interface DSLDefinition extends TransformationType {
+public interface DSLDefinition {
 
     /**
      * DSL with no behavior or state.
@@ -190,11 +190,6 @@ public interface DSLDefinition extends TransformationType {
 	@Override
 	public Class<? extends de.tud.stg.tigerseye.dslsupport.DSL> getDSLClassChecked() {
 	    return de.tud.stg.tigerseye.dslsupport.DSL.class;
-	}
-
-	@Override
-	public String getIdentifer() {
-	    return "";
 	}
 
 	@Override

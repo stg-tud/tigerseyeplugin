@@ -1,0 +1,75 @@
+<project name="UpdateRelease" default="update" basedir=".">
+	<description>
+        Copies this update site to the release repository.
+		Assumes it to be in the same git parent folder as the tigerseyeplugin.
+		Replaces the latest directory and creates a new repository folder with the time stamp of its execution.
+    </description>
+	<!-- set global properties for this build -->
+	<property name="updatesite" location="." />
+	<property name="releasesfolder" location="../../tigerseyeplugin-releases" />
+	<property name="latest" location="../../tigerseyeplugin-releases/latest" />
+
+	<tstamp>
+		<format property="timestamp" pattern="yyyyMMddHHmm"/>
+	</tstamp>
+
+	<property name="release" location="${releasesfolder}/r${timestamp}" />
+
+	<!-- ================================= 
+          target: update              
+         ================================= -->
+	<target name="update" depends="info,-delete-latest" description="performes the copy operations">
+		<!-- Could use ant-contrib to avoid duplication, standard ant does not support variables -->
+
+		<copy todir="${release}">
+			<fileset dir="${updatesite}">
+				<exclude name="*.md" />
+				<exclude name="*.xml" />
+				<exclude name=".gitignore" />
+			</fileset>
+		</copy>
+		<copy todir="${release}" file="site.xml" />
+
+		<copy todir="${latest}">
+			<fileset dir="${updatesite}">
+				<exclude name="*.md" />
+				<exclude name="*.xml" />
+				<exclude name=".gitignore" />
+				<exclude name=".project" />
+			</fileset>
+		</copy>
+		<copy todir="${latest}" file="site.xml" />
+	</target>
+
+
+	<target name="-delete-latest" depends="-check-latest-exists" if="latest.exists">
+		<delete includeEmptyDirs="true">
+			<fileset dir="${latest}" />
+		</delete>
+	</target>
+
+	<target name="clean">
+		<delete file="artifacts.jar"/>
+		<delete file="content.jar"/>
+		<delete includeEmptyDirs="true">
+			<fileset dir="features" />
+			<fileset dir="plugins" />
+		</delete>
+	</target>
+
+	<target name="-check-latest-exists">
+		<available property="latest.exists" file="${latest}" />
+	</target>
+
+	<target name="info">
+		<echo>
+        	Timestamp is          ${timestamp}
+        	Updatesite is         ${updatesite}
+        	Releasesfolder is     ${releasesfolder}
+        	latest is             ${latest}
+        	new release folder is ${release}
+        </echo>
+	</target>
+
+
+</project>

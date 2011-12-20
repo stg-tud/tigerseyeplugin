@@ -51,6 +51,8 @@ public class DSLDefinitionImpl implements DSLDefinition {
     private @Nullable
     Class<? extends DSL> dslClass;
 
+    private DSLActivationState dslActivationstate;
+
     /**
      * Constructs a {@link DSLDefinition} for given values, <code>null</code> is
      * never valid.
@@ -148,14 +150,22 @@ public class DSLDefinitionImpl implements DSLDefinition {
 	this.store = store;
     }
 
+
     @Override
     public boolean isActive() {
-	return DSLActivationState.getValue(this, getStore());
+	return getState().getValue(this);
+    }
+
+    private DSLActivationState getState() {
+	if (this.dslActivationstate == null) {
+	    this.dslActivationstate = new DSLActivationState(getStore());
+	}
+	return this.dslActivationstate;
     }
 
     @Override
     public void setActive(boolean active) {
-	DSLActivationState.setValue(this, getStore(), active);
+	getState().setValue(this, active);
     }
 
     @Override
@@ -205,11 +215,6 @@ public class DSLDefinitionImpl implements DSLDefinition {
     }
 
     @Override
-    public String getIdentifer() {
-	return getLanguageKey();
-    }
-
-    @Override
     public boolean isDSLClassLoadable() {
 	DSLDefinitionImpl dsl = this;
 	try {
@@ -223,8 +228,10 @@ public class DSLDefinitionImpl implements DSLDefinition {
 	    // loadClass.newInstance();
 	    logIfClassHasNoZeroArgConstructor(loadClass);
 	} catch (Exception e) {
-	    logger.warn(
-		    "Could not access registered DSL {} with class {} of plug-in {}. It will be ignored. Check your configuration. Is the correct DSL class name given? Is the plug-in accessible?",
+	    logger.warn("Could not access registered DSL {} with class {} of plug-in {}."
+		    + "It will be ignored. Check your configuration."
+		    + "Is the specified class on the classpath (compileerrors?). "
+		    + "Is the correct DSL class name given? Is the host-plug-in accessible?",
 		    new Object[] { dsl.getDslName(), dsl.getClassPath(), dsl.getContributor().getId(), e });
 	    return false;
 	}
@@ -244,9 +251,9 @@ public class DSLDefinitionImpl implements DSLDefinition {
 	    String installLocation = model.getInstallLocation();
 	    File file = new File(installLocation);
 	    if (!file.exists()) {
-		logger.warn(
-			"location of plugin {} not found. Can not add DSL {} to classpath; Consider not to change the location of an active plug-in ;)",
-			dsl.getContributor().getId(), dsl.getDslName());
+		logger.warn("location of plugin {} not found. Can not add DSL {} to classpath;"
+			+ "Consider not to change the location of an active plug-in ;)", dsl.getContributor().getId(),
+			dsl.getDslName());
 		return false;
 	    }
 	}
@@ -273,7 +280,8 @@ public class DSLDefinitionImpl implements DSLDefinition {
 		}
 	    }
 	    if (!hasZeroArgConstructor) {
-		logger.warn("DSL Class has no public contructor with zero arguments. Tigerseye expects a public constructor with zero arguments");
+		logger.warn("DSL Class has no public contructor with zero arguments."
+			+ "Tigerseye expects a public constructor with zero arguments");
 	    }
 	}
     }

@@ -123,13 +123,15 @@ public class TigerseyeLibraryClasspathResolver {
 		    .isBundleWorkspaceProject(bundle)) {
 		IProject linkedP = ProjectLinker
 			.linkOpenedPluginIntoWorkspace(bundle);
+		String locForErDesc = bundle.getLocation();
 		if (linkedP == null) {
-		    logger.error("Could not link plug-in {}", bundle);
+		    logger.error("Could not link plug-in {} altough is probably workspace project at {}", bundle,
+			    locForErDesc);
 		    return Collections.emptySet();
 		}
 		IPluginModelBase findModel = PluginRegistry.findModel(linkedP);
 		if (findModel == null) {
-		    logger.error("Found no PluginModel for {}", linkedP);
+		    logger.warn("Found no PluginModel for {} located at {}", linkedP, locForErDesc);
 		    return Collections.emptySet();
 		}
 		Assert.isNotNull(findModel.getUnderlyingResource());

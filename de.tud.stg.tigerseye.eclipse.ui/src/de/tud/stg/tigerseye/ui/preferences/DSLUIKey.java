@@ -21,12 +21,30 @@ public abstract class DSLUIKey extends DSLKey<Object> {
 
     private static final Random random = new Random();
 
+    /**
+     * Returns a random default color.
+     * 
+     * @param store
+     * @return the default color
+     */
     public static RGB getDefaultColor(IPreferenceStore store) {
 	Color[] cs = TigerseyeUIPreferenceConstants.DEFAULT_COLORS;
 	Color c = cs[random.nextInt(cs.length)];
 	RGB rgb = new RGB(c.getRed(), c.getGreen(), c.getBlue());
 	return rgb;
 	// PreferenceConverter.getDefaultColor(store,TigerseyeUIPreferenceConstants.DEFAULT_COLOR_VALUE)
+    }
+
+    /**
+     * Returns a random default color. And sets it as the new DSL Color.
+     * 
+     * @param store
+     * @return the default color
+     */
+    public static RGB getAndSetDefaultColor(IPreferenceStore store, DSLDefinition dsl) {
+	RGB defaultColor = getDefaultColor(store);
+	dsl.setValue(DSLUIKey.COLOR, defaultColor);
+	return defaultColor;
     }
 
     public static boolean isTigerseyeHighlightingActive(IPreferenceStore store) {

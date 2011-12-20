@@ -33,10 +33,9 @@ public class TransformationsTableDialog extends TableDialog {
     public static final int TRAY_TOGGLE_ID = clientidstart + 1;
     public static final int TO_DEFAULT_ID = clientidstart + 2;
 
-    private static final Logger logger = LoggerFactory
-	    .getLogger(TransformationsTableDialog.class);
+    private static final Logger logger = LoggerFactory.getLogger(TransformationsTableDialog.class);
 
-    private final boolean defaultCheckState;
+    private final TransformationType openedOn;
     private TransformationHandlerTray tray;
     private CheckedItem checkedItem = new CheckedItem("", false);
 
@@ -52,8 +51,7 @@ public class TransformationsTableDialog extends TableDialog {
 	    Composite trayArea = new Composite(parent, SWT.NONE);
 	    trayArea.setLayout(new GridLayout());
 	    trayArea.setLayoutData(newFillGD());
-	    infoArea = new Text(trayArea, SWT.MULTI | SWT.READ_ONLY
-		    | SWT.WRAP | SWT.V_SCROLL);
+	    infoArea = new Text(trayArea, SWT.MULTI | SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
 	    GridData infoGD = newFillGD();
 	    infoGD.widthHint = 200;
 	    infoArea.setLayoutData(infoGD);
@@ -90,10 +88,8 @@ public class TransformationsTableDialog extends TableDialog {
 	    }
 
 	    sb.append("\n\nSupported FileTypes:\n");
-	    Set<FileType> supportedFileTypes = handler
-		    .getTransformation()
-		    .getSupportedFileTypes();
-	    for (TransformationType fileType : supportedFileTypes) {
+	    Set<FileType> supportedFileTypes = handler.getTransformation().getSupportedFileTypes();
+	    for (FileType fileType : supportedFileTypes) {
 		sb.append(fileType.toString()).append("\n");
 	    }
 	    sb.append("\nDescription:\n");
@@ -110,10 +106,9 @@ public class TransformationsTableDialog extends TableDialog {
 
     }
 
-    public TransformationsTableDialog(Shell shell, String title,
-	    boolean defaultCheckState) {
+    public TransformationsTableDialog(Shell shell, String title, TransformationType opendedOn) {
 	super(shell, title);
-	this.defaultCheckState = defaultCheckState;
+	this.openedOn = opendedOn;
     }
 
     @Override
@@ -130,13 +125,11 @@ public class TransformationsTableDialog extends TableDialog {
 	// Default OK and Cancel Button copied from super method to replace "OK"
 	// label with "Save"
 	createButton(parent, IDialogConstants.OK_ID, "Save", true);
-	createButton(parent, IDialogConstants.CANCEL_ID,
-		IDialogConstants.CANCEL_LABEL, false);
+	createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
 	// Additionally create Default and toggle Tray button
 	createButton(parent, TO_DEFAULT_ID, "To Default", false);
 
-	Image toggleImage = PlatformUI.getWorkbench().getSharedImages()
-		.getImage(ISharedImages.IMG_OBJS_INFO_TSK);
+	Image toggleImage = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_INFO_TSK);
 	createButton(parent, TRAY_TOGGLE_ID, "", false).setImage(toggleImage);
 
     }
@@ -167,7 +160,18 @@ public class TransformationsTableDialog extends TableDialog {
     private void restoreDefaultsPressed() {
 	TableItem[] items = getTable().getItems();
 	for (TableItem it : items) {
-	    it.setChecked(defaultCheckState);
+	    Object data = it.getData();
+	    if (data instanceof CheckedItem) {
+		CheckedItem ci = (CheckedItem) data;
+		Object data2 = ci.data;
+		if (data2 instanceof TransformationHandler) {
+		    TransformationHandler handler = (TransformationHandler) data2;
+		    boolean defaultActivationStateFor = openedOn.getDefaultActiveFor(handler);
+		    it.setChecked(defaultActivationStateFor);
+		}
+	    } else {
+		it.setChecked(false);
+	    }
 	}
     }
 

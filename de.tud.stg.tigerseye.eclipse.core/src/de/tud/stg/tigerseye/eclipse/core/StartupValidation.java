@@ -104,8 +104,10 @@ public class StartupValidation {
     private static void linkActiveDSLProjectsIntoWorkspace(IPreferenceStore preferences) {
 	Set<PluginDSLConfigurationElement> installedDSLConfigurationElements = DSLConfigurationElementResolver
 		.getInstalledDSLConfigurationElements();
+	DSLActivationState activationState = new DSLActivationState(preferences);
+
 	for (PluginDSLConfigurationElement confEl : installedDSLConfigurationElements) {
-	    Boolean active = DSLActivationState.getValue(confEl.getId(), preferences);
+	    boolean active = activationState.getValue(confEl.getId());
 	    String id = confEl.getContributor().getId();
 	    if (active) {
 		Bundle bundle = Platform.getBundle(id);

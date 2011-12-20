@@ -1,6 +1,5 @@
 package de.tud.stg.tigerseye.eclipse.core.builder.transformers;
 
-import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
 
 /**
  * Describes different source file types and the corresponding applied file
@@ -9,7 +8,7 @@ import de.tud.stg.tigerseye.eclipse.core.api.TransformationType;
  * 
  * @author Leo Roos
  */
-public enum FileType implements TransformationType {
+public enum FileType {
     JAVA("JAVA", "java.dsl", "java"), //
     GROOVY("GROOVY", "groovy.dsl", "groovy"), //
     TIGERSEYE("TIGERSEYE", "dsl", "dsl.groovy"), //
@@ -51,11 +50,6 @@ public enum FileType implements TransformationType {
     public String toString() {
 	return getClass().getSimpleName() + ":" + name + "[" + srcFileEnding
 		+ "," + outputFileEnding + "]";
-    }
-
-    @Override
-    public String getIdentifer() {
-	return getClass().getName() + this.name;
     }
 
 }

@@ -59,7 +59,7 @@ TransformationFilter<T> filter,
 	for (TransformationType i : identfiables) {
 	    Collection<ITransformationHandler> transformations = getTransformations();
 	    for (ITransformationHandler h : transformations) {
-		if (h.isActiveFor(i)) {
+		if (i.isActiveFor(h)) {
 		    Transformation t = h.getTransformation();
 		    T instanceOrNull = filter.instanceOrNull(t);
 		    if (instanceOrNull != null)

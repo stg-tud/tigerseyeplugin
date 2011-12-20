@@ -4,29 +4,20 @@ import java.util.ArrayList;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.jface.preference.IPreferenceStore;
 
 import de.tud.stg.tigerseye.eclipse.core.api.ITransformationHandler;
 import de.tud.stg.tigerseye.eclipse.core.api.ITransformationProvider;
 import de.tud.stg.tigerseye.eclipse.core.api.TigerseyeRuntimeException;
 import de.tud.stg.tigerseye.eclipse.core.api.Transformation;
-import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
 import de.tud.stg.tigerseye.eclipse.core.builder.transformers.TransformationHandler;
 
 
 public class TransformationProviderImpl implements ITransformationProvider {
 
-    private final IPreferenceStore preferences;
     private final IConfigurationElement[] configurationElementsFor;
 
-    public TransformationProviderImpl(IPreferenceStore preferences,
-	    IConfigurationElement[] configurationElementsFor) {
-	this.preferences = preferences;
+    public TransformationProviderImpl(IConfigurationElement[] configurationElementsFor) {
 	this.configurationElementsFor = configurationElementsFor;
-    }
-
-    private IPreferenceStore getPreferences() {
-	return preferences;
     }
 
     /* (non-Javadoc)
@@ -44,10 +35,6 @@ public class TransformationProviderImpl implements ITransformationProvider {
 			    .createExecutableExtension("class");
 		    TransformationHandler handler = new TransformationHandler(
 			    contributor, name, t);
-		    handler.setPreferenceStore(getPreferences());
-		    for (FileType filetype : FileType.values()) {
-			getPreferences().setDefault(handler.getPreferenceKeyFor(filetype), handler.supports(filetype));
-		    }
 		    transformationsList.add(handler);
 		}
 	    }

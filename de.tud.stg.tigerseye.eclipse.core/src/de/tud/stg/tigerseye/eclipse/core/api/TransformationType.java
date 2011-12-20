@@ -1,13 +1,23 @@
 package de.tud.stg.tigerseye.eclipse.core.api;
 
+import de.tud.stg.tigerseye.eclipse.core.builder.transformers.FileType;
+
 /**
- * Implemented by classes which need to be identifiable by a specific if
- * possible unique key.
+ * A wrapper around types that have an activation state for
+ * {@link ITransformationHandler}.
+ * 
+ * 
+ * @see FileType
+ * @see DSLDefinition
  * 
  * @author Leo Roos
  */
 public interface TransformationType {
 
-    String getIdentifer();
+    boolean isActiveFor(ITransformationHandler handler);
+
+    boolean getDefaultActiveFor(ITransformationHandler handler);
+
+    void setActiveStateFor(ITransformationHandler handler, boolean value);
 
 }
