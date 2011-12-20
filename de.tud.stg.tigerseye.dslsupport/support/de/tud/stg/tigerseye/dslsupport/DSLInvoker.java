@@ -18,7 +18,8 @@ public final class DSLInvoker{
 
 	private static final DSLSupportLogger logger = new DSLSupportLogger(DSLInvoker.class);
 	
-	// TODO(Leo_Roos;Nov 18, 2011) 
+	// TODO For Issue #37 (Leo_Roos;Nov 18, 2011)
+	// In the current version, the DSL instances are shared between different DSL files.
 	// Shouldn't cache instances, they might change between files, need additional information about the file _and_ class to have an exact instance definition
 	private static final ConcurrentHashMap<dslObjectKey<?>, DSL> invokers = new ConcurrentHashMap<dslObjectKey<?>, DSL>();
 
@@ -48,7 +49,7 @@ public final class DSLInvoker{
 				dsls.add(dsl);
 		}
 
-		InterpreterCombiner ic = new InterpreterCombiner(dsls, new HashMap<String, Object>());
+		InterpreterCombiner ic = new InterpreterCombiner(dsls, new HashMap<String, Object>()); //TODO For Issue #36, sort the DSL instances "dsls"
 		return ic.eval(c);
 	}
 	
