@@ -35,6 +35,7 @@
 				<exclude name="*.md" />
 				<exclude name="*.xml" />
 				<exclude name=".gitignore" />
+				<exclude name=".project" />
 			</fileset>
 		</copy>
 		<copy todir="${latest}" file="site.xml" />
